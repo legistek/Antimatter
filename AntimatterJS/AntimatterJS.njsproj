@@ -1,0 +1,124 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>AntimatterJS</Name>
+    <RootNamespace>AntimatterJS</RootNamespace>
+    <EnableTypeScript>true</EnableTypeScript>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>f78362a3-0eef-4851-a840-62d70db8d177</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>start</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <NodejsPort>1337</NodejsPort>
+    <StartWebBrowser>True</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="index.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include="tsconfig.json">
+      <SubType>Code</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Folder Include="src\ReactMVVM\" />
+    <Folder Include="src\ReactMVVM\Controls\" />
+    <Folder Include="src\React\" />
+    <Folder Include="src\React\Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="index.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\Antimatter.tsx" />
+    <TypeScriptCompile Include="src\Binding.tsx" />
+    <TypeScriptCompile Include="src\BindingExpression.tsx" />
+    <TypeScriptCompile Include="src\BindingSource.tsx" />
+    <TypeScriptCompile Include="src\IClient.tsx" />
+    <TypeScriptCompile Include="src\IServer.tsx" />
+    <TypeScriptCompile Include="src\ModelObjectReference.tsx" />
+    <TypeScriptCompile Include="src\ModelValue.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\Controls\ModernButton.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\Controls\TextBlock.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\DependencyBindingExpression.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\DependencyObject.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\DependencyProperty.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\Event.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\ICommand.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\IDependencyObject.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\INotifyPropertyChanged.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\ObservableObject.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\Person.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\PropertyChangedEventArgs.tsx" />
+    <TypeScriptCompile Include="src\ReactMVVM\ReactMVVMClient.tsx" />
+    <TypeScriptCompile Include="src\React\Controls\DataContext.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\React\DumbTextBlock.tsx" />
+    <TypeScriptCompile Include="src\React\ReactClient.tsx" />
+    <TypeScriptCompile Include="src\SignalRServer.tsx" />
+    <TypeScriptCompile Include="src\Utilities.tsx" />
+    <TypeScriptCompile Include="src\WebassemblyServer.tsx" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

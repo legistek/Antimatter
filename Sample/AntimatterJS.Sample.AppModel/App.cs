@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AntimatterJS.Sample.AppModel
+{
+    public class App : ObservableObject
+    {
+        public Company Company { get; } = new Company()
+        {
+            Name = "Edison Electric"
+        };
+
+        public async Task StartAsync()
+        {
+            this.Company.CEO = new Employee
+            {
+                FirstName = "Thomas",
+                LastName = "Edison",
+                Age = 50                
+            };
+            this.Company.Employees.Add(this.Company.CEO);
+        }
+    }
+}
