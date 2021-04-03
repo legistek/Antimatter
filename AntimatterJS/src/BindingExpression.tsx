@@ -47,7 +47,7 @@ export class BindingExpression
         return !this.Source;
     }
 
-    public Apply(dataContext: ModelObjectReference | undefined): boolean
+    public Apply(dataContext?: ModelObjectReference): boolean
     {
         BindingExpression._globalBindings.set(this.Index, this);
 

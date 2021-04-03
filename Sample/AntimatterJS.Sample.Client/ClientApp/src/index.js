@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
-import { Antimatter, SignalRServer, ReactClient, WebassemblyServer } from '@antimatterjs/react';
+import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext } from '@antimatterjs/react';
 
 (async function ()
 {
@@ -17,7 +17,7 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer } from '@anti
 
     ReactDOM.render(
         <BrowserRouter basename={baseUrl}>
-            <App DataContext={appModel} />
+            <App Model={appModel} />
         </BrowserRouter>,
         rootElement);
 

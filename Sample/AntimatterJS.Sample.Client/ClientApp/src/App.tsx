@@ -4,27 +4,29 @@ import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
-import { Company } from './components/Company';
+import { AntimatterComponent, Company } from './components/Company';
 
 import './custom.css'
 import { Antimatter, DataContext } from '@antimatterjs/react';
 import { Binding } from '@antimatterjs/react/src/Binding';
+import { ModelObjectReference } from '@antimatterjs/react/src/ModelObjectReference';
 
-export default class App extends Component<{DataContext: any}>
+export default class App extends AntimatterComponent<{ Model: ModelObjectReference }, { Model: ModelObjectReference }>
 {
     static displayName = App.name;
 
     constructor(props)
     {
-        super(props);        
-        Antimatter.InitializeComponent(this);        
+        super(props);         
     }
 
     render()
     {
         return (
-            <DataContext DataContext={new Binding("Company")}>
-                <Company />
+            <DataContext Value={this.state.Model}>
+                <DataContext Value={new Binding("Company")}>
+                    <Company />
+                </DataContext>
             </DataContext>
             
 

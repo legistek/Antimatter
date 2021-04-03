@@ -8,11 +8,20 @@ import { ModelObjectReference } from '../ModelObjectReference';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
+interface IBoundComponent extends Component
+{
+    antimatterBindingBases: Map<string, BindingBase>;
+    antimatterBindingExps: Map<string, BindingExpression>;    
+    antimatterOldShouldComponentUpdate?: any;
+    antimatterOldRender?: any;
+    antimatterLastDataContext?: ModelObjectReference;
+}
+
 export class ReactClient implements IClient
 {
-    BindCommand(target: any, args?: { path: string, source?: ModelObjectReference }): () => void
+    BindCommand(target: any, args?: { path: string, source: ModelObjectReference }): () => void
     {
-        const stateVar: string = (args?.source?.toString() || "dctx") + "." + args?.path;
+        const stateVar: string = (args?.source?.Handle || "dctx") + "." + args?.path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
         if (exp &&
@@ -24,7 +33,7 @@ export class ReactClient implements IClient
             exp.Unapply();
 
         exp = new BindingExpression(target, stateVar, args?.source, args?.path, false);
-        exp.Apply(target.state["DataContext"]);
+        exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
         return target.state[stateVar + "Command"] = (function ()
@@ -33,9 +42,9 @@ export class ReactClient implements IClient
         }).bind(target);
     }
 
-    Bind(target: any, args?: { path?: string, source?: any }): any
+    Bind(target: any, args?: { path?: string, source: ModelObjectReference }): any
     {
-        const stateVar: string = (args?.source?.toString() || "dctx") + "." + args?.path;
+        const stateVar: string = (args?.source?.Handle || "dctx") + "." + args?.path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
         if (exp && exp.Source == args?.source && exp.SourcePath == args?.path)
@@ -45,7 +54,7 @@ export class ReactClient implements IClient
             exp.Unapply();
 
         exp = new BindingExpression(target, stateVar, args?.source, args?.path);
-        exp.Apply(target.state["DataContext"]);
+        exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
         return target.state[stateVar];
@@ -65,146 +74,65 @@ export class ReactClient implements IClient
         }
     }
 
-    InitializeComponent(target: any)
+    InitializeComponent(component: Component)
     {
-        (target as any).antimatterBindingBases = new Map<string, BindingBase>();
-        (target as any).antimatterBindingExps = new Map<string, BindingExpression>();
+        var target = component as IBoundComponent;
+        target.antimatterBindingBases = new Map<string, BindingBase>();
+        target.antimatterBindingExps = new Map<string, BindingExpression>();
 
         // Handle prop changes after construction
-        (target as any).antimatterOldShouldComponentUpdate = target.shouldComponentUpdate;       
+        target.antimatterOldShouldComponentUpdate = target.shouldComponentUpdate;       
         target.shouldComponentUpdate = (nextProps, nextState) =>
         {
-            this.BindPropsInternal(target, nextProps, false);            
+            this.BindPropsInternal(target, nextProps);            
             if ((target as any).antimatterOldShouldComponentUpdate)
                 return (target as any).antimatterOldShouldComponentUpdate;
             return true;
         };
 
         // Intercept render to provide or consume data context
-        (target as any).antimatterOldRender = target.render;
+        target.antimatterOldRender = target.render;
         target.render = () =>
-        {
-            if (target.props["DataContext"])
-            {
-                // target has its own data context that was set explciitly 
-                // through its props (direct or bound) so it's the provider for the branch
-                // (but remember the value comes from state)
-
-                if (target.props["DataContext"].IsDataContextDependent)
+        {                        
+            // consume data context from parent tree 
+            // TODO - only need to consume dctx if we have dctx-dependent bindings
+            return (
+                <ReactDataContext.Consumer>
                 {
-                    // target needs to consume the parent data context in order to 
-                    // properly bind its own
-                    return (
-                        <ReactDataContext.Consumer>
-                            {
-                                (parentCtx) =>
-                                {
-                                    var exp = (target as any).antimatterBindingExps.get("DataContext") as BindingExpression;
-                                    if (exp)
-                                        exp.Apply(parentCtx);
-                                    // Takes care of any of target's other properties that are
-                                    // dctx dependent
-                                    this.CheckReapplyDataContext(target, target.state["DataContext"]);
-                                    return (
-                                        <ReactDataContext.Provider value={target.state["DataContext"]}>
-                                            {(target as any).antimatterOldRender()}
-                                        </ReactDataContext.Provider>
-                                    );
-                                }
-                            }
-                        </ReactDataContext.Consumer>
-                    );
-                }
-                else
-                {
-                    // Takes care of any of target'other properties that are dctx dependent
-                    this.CheckReapplyDataContext(target, target.state["DataContext"]);
-                    return (
-                        <ReactDataContext.Provider value={target.state["DataContext"]}>
-                            {(target as any).antimatterOldRender()}
-                        </ReactDataContext.Provider>
-                    );
-                }
-            }
-            else
-            {
-                // consume data context from parent tree 
-                // TODO - only need to consume dctx if we have dctx-dependent bindings
-                return (
-                    <ReactDataContext.Consumer>
+                    (ctx) =>
                     {
-                        (ctx) =>
-                        {
-                            if (this.CheckReapplyDataContext(target, ctx))
-                            {
-                                target.state["DataContext"] = ctx;
-                            }
-                            return (target as any).antimatterOldRender();
-                        }                        
+                        this.CheckReapplyDataContext(target, ctx);                       
+                        return (target as any).antimatterOldRender();
                     }                        
-                    </ReactDataContext.Consumer>                    
-                )
-            }
+                }                        
+                </ReactDataContext.Consumer>                    
+            )            
         };
         
-        if (!(target as any).state)
-            (target as any).state = {};
-        this.BindPropsInternal(target, target.props, true);
+        if (!target.state)
+            target.state = {};
+        this.BindPropsInternal(target, target.props);
     }
 
-    private BindPropsInternal(target: Component, props: Readonly<{}>, initial: boolean): void
+    private BindPropsInternal(target: IBoundComponent, props: Readonly<{}>): void
     {        
-        // Check to see if there's been an explicit dctx change, i.e.,
-        // a different direct value or different BindingBase.
-        let dctxValueChange: boolean = false;
-
-        var oldDctx = target.props["DataContext"];
-
         var entries = Object.entries(props);
-
-        // Ensure data context is always handled first       
         for (const entry of entries)
-        {
-            if (entry[0] === "DataContext")
-            {                
-                if (entry[1] != oldDctx || initial)
-                {
-                    // Direct assignment                    
-                    dctxValueChange = true;
-                }
-
-                this.ProcessPropChange(target, entry[0], entry[1], false);
-                break;
-            }
-        }
-
-        for (const entry of entries)
-        {
-            if (entry[0] === "DataContext")
-                continue;
-            this.ProcessPropChange(target, entry[0], entry[1], dctxValueChange);
-        }            
+            this.ProcessPropChange(target, entry[0], entry[1]);
     }
 
-    private ProcessPropChange(
-        target: any,
-        prop: string,
-        value: any,
-        dctxValueChange: boolean)
+    private ProcessPropChange(target: IBoundComponent, prop: string, value: any)
     {
         let exp: BindingExpression | undefined;
-        var existingBinding = (target as any).antimatterBindingBases.get(prop) as BindingBase;
+        var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
         {
             var sameBindingBase = existingBinding === value;
-            if (sameBindingBase &&
-                (!existingBinding.IsDataContextDependent || !dctxValueChange))
-                // same binding and it's either not DCTX dependent or 
-                // there hasn't been a DCTX change, so nothing left to do
+            if (sameBindingBase)                
                 return;
 
-            exp = (target as any).antimatterBindingExps.get(prop) as BindingExpression;
-            if (exp && !sameBindingBase)
+            exp = target.antimatterBindingExps.get(prop);
+            if (exp)
             {
                 // Different binding base requires unapplying the old binding
                 exp?.Unapply();
@@ -213,25 +141,30 @@ export class ReactClient implements IClient
 
         if (!value || !value.IsAntimatterBindingBase)
         {
-            // Set the state and continue
-            (target as any).state[prop] = value;
+            // Plain old value; set the state and continue
+            target.state[prop] = value;
+            if (exp)
+            {
+                target.antimatterBindingBases.delete(prop);
+                target.antimatterBindingExps.delete(prop);
+            }
             return;
         }
 
         if (!exp)
         {
             exp = (value as BindingBase).CreateBindingExpression(target, prop);
-            (target as any).antimatterBindingBases.set(prop, value);
-            (target as any).antimatterBindingExps.set(prop, exp);
+            target.antimatterBindingBases.set(prop, value);
+            target.antimatterBindingExps.set(prop, exp);
         }
 
-        if (dctxValueChange || !exp.IsDataContextDependent)
-        {
-            exp.Apply(target.state["DataContext"]);
-        }
+        if (!exp.IsDataContextDependent)
+            // We can apply it now at prop assignment if it's not dctx dependent
+            // Otherwise we have to wait for render
+            exp.Apply();
     }
 
-    private CheckReapplyDataContext(target: any, ctx: ModelObjectReference | undefined): boolean
+    private CheckReapplyDataContext(target: IBoundComponent, ctx: ModelObjectReference | undefined): boolean
     {
         if (ModelObjectReference.Equals(target.antimatterLastDataContext, ctx))            
             return false;
@@ -239,10 +172,10 @@ export class ReactClient implements IClient
         target.antimatterLastDataContext = ctx;
 
         // (re)apply dctx-dependent exps
-        var exps = Array.from(target.antimatterBindingExps as Map<string, BindingExpression>);
+        var exps = Array.from(target.antimatterBindingExps);
         for (const exp of exps)
         {
-            if (!exp[1].IsDataContextDependent || exp[0] === "DataContext")
+            if (!exp[1].IsDataContextDependent)
                 continue;
             exp[1].Apply(ctx);
         }
