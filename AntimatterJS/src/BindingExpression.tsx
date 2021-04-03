@@ -1,5 +1,6 @@
 ﻿import { Antimatter } from "./Antimatter";
 import { BindingSource, BindingSourceType } from "./BindingSource";
+import { ModelObjectReference } from "./ModelObjectReference";
 
 export class BindingExpression
 {
@@ -8,22 +9,24 @@ export class BindingExpression
     
     public readonly TargetProperty: string;
     public readonly SourcePath?: string;
-    public readonly Source: any;
-
+    public readonly Source: ModelObjectReference | undefined;
 
     protected _resolvedSource?: BindingSource;    
     
     protected _target: any;
 
-    private _lastAppliedBindingContext: any;
+    private _lastAppliedBindingContext: ModelObjectReference | undefined;
+    private _isApplied: boolean = false;
+    private _affectsRender: boolean = false;
 
     public readonly Index: number;
    
     public constructor(
         target: any,
         targetProperty: string,
-        source?: any,
-        sourcePath?: string)
+        source?: ModelObjectReference,
+        sourcePath?: string,
+        affectsRender?: boolean)
     {               
         this.Index = BindingExpression._globalIndex++;
         this.TargetProperty = targetProperty;
@@ -33,6 +36,9 @@ export class BindingExpression
         
         this.SourcePath = sourcePath;
 
+        if (affectsRender === undefined || affectsRender)
+            this._affectsRender = true;
+
         // this.onSourcePropertyChanged = this.onSourcePropertyChanged.bind(this);
     }
 
@@ -41,7 +47,7 @@ export class BindingExpression
         return !this.Source;
     }
 
-    public Apply(dataContext: any): boolean
+    public Apply(dataContext: ModelObjectReference | undefined): boolean
     {
         BindingExpression._globalBindings.set(this.Index, this);
 
@@ -62,18 +68,19 @@ export class BindingExpression
             //}
             if (dataContext)
             {
-                if (this._lastAppliedBindingContext === dataContext)
+                if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))                    
                     return false; // no need to reapply
                 this._lastAppliedBindingContext = dataContext;                
                 this._resolvedSource = new BindingSource(dataContext);
             }
         }
         
-        console.log("Binding Applied " + this._resolvedSource?.NetRef?.Handle + "." + this.SourcePath + " to " + this.TargetProperty);
+        //console.log("Binding Applied " + this._resolvedSource?.NetRef?.Handle + "." + this.SourcePath + " to " + this.TargetProperty);
 
         // this.ApplyInternal();
 
-        return this.subscribeToSourcePropertyChanges();
+        this._isApplied = this.subscribeToSourcePropertyChanges();
+        return this._isApplied;
     }
 
     //protected abstract ApplyInternal();
@@ -136,6 +143,6 @@ export class BindingExpression
         if (!exp)
             return;
 
-        Antimatter.UpdateTargetValue(exp._target, exp.TargetProperty, value);
+        Antimatter.UpdateTargetValue(exp._target, exp.TargetProperty, value, exp._isApplied && exp._affectsRender);
     }
 }

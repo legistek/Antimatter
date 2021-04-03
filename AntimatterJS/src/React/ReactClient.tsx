@@ -4,23 +4,26 @@ import { Antimatter } from '../Antimatter';
 import { BindingBase } from '../Binding';
 import { BindingExpression } from '../BindingExpression';
 import { IClient } from '../IClient';
+import { ModelObjectReference } from '../ModelObjectReference';
 
-export const ReactDataContext = React.createContext<any>(null);
+export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
 export class ReactClient implements IClient
 {
-    BindCommand(target: any, args?: { path: string, source?: any }): () => void
+    BindCommand(target: any, args?: { path: string, source?: ModelObjectReference }): () => void
     {
         const stateVar: string = (args?.source?.toString() || "dctx") + "." + args?.path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
-        if (exp && exp.Source == args?.source && exp.SourcePath == args?.path)
+        if (exp &&
+            ModelObjectReference.Equals(exp.Source, args?.source) &&
+            exp.SourcePath == args?.path)
             return target.state[stateVar + "Command"];     // already bound
 
         if (exp)
             exp.Unapply();
 
-        exp = new BindingExpression(target, stateVar, args?.source, args?.path);
+        exp = new BindingExpression(target, stateVar, args?.source, args?.path, false);
         exp.Apply(target.state["DataContext"]);
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
@@ -48,13 +51,18 @@ export class ReactClient implements IClient
         return target.state[stateVar];
     }
 
-    UpdateTargetValue(target: any, targetProperty: string, value: any)
+    UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
         if (!target || !target.setState)
             return;
-        let state: any = {};
-        state[targetProperty] = value;
-        target.setState(state);
+        if (!target.state)
+            target.state = {};
+        if (target.state[targetProperty] != value)
+        {
+            target.state[targetProperty] = value;
+            if (reRender)
+                target.setState({});
+        }
     }
 
     InitializeComponent(target: any)
@@ -223,9 +231,9 @@ export class ReactClient implements IClient
         }
     }
 
-    private CheckReapplyDataContext(target: any, ctx: any): boolean
+    private CheckReapplyDataContext(target: any, ctx: ModelObjectReference | undefined): boolean
     {
-        if (target.antimatterLastDataContext == ctx)    // undefined == null
+        if (ModelObjectReference.Equals(target.antimatterLastDataContext, ctx))            
             return false;
 
         target.antimatterLastDataContext = ctx;

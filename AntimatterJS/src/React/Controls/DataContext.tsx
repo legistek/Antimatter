@@ -9,20 +9,22 @@ import { ReactDataContext } from '../ReactClient';
  * that of its parent. Use as an alternative to binding a new DataContext to child props
  * to reduce the number of bindings in an application, or to use bindings 
  * in functional components (which cannot be used with prop bindings). */
-export class DataContext extends Component<{ Value?: BindingBase | ModelObjectReference }, { Value?: ModelObjectReference }>
+export class DataContext extends Component<{ DataContext?: BindingBase | ModelObjectReference }, { DataContext?: ModelObjectReference }>
 {
     constructor(props)
     {
         super(props);
-        Antimatter.InitializeComponent(this);
+        Antimatter.InitializeComponent(this);        
     }
 
     render()
     {
+        if (!this.state.DataContext)
+            return null;
         return (
-            <ReactDataContext.Provider value={this.state.Value}>
+            <React.Fragment>
                 {this.props.children}
-            </ReactDataContext.Provider>
+            </React.Fragment>
         );
     }
 }

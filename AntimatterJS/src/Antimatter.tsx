@@ -1,5 +1,6 @@
 import { IClient } from "./IClient";
 import { IServer } from "./IServer";
+import { ModelObjectReference } from "./ModelObjectReference";
 
 export class Antimatter
 {
@@ -14,9 +15,9 @@ export class Antimatter
         return server.StartupAsync();
     }
 
-    public static UpdateTargetValue(target: any, targetProperty: string, value: any)
+    public static UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
-        Antimatter._client.UpdateTargetValue(target, targetProperty, value);
+        Antimatter._client.UpdateTargetValue(target, targetProperty, value, reRender);
     }
 
     public static InitializeComponent(target: any)
@@ -29,7 +30,7 @@ export class Antimatter
         return Antimatter._client.Bind(target, args);
     }
 
-    public static BindCommand(target: any, args?: { path: string, source?: any }): () => void
+    public static BindCommand(target: any, args?: { path: string, source?: ModelObjectReference }): () => void
     {
         return Antimatter._client.BindCommand(target, args);
     }

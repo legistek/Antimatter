@@ -23,7 +23,7 @@ export default class App extends Component<{DataContext: any}>
     render()
     {
         return (
-            <DataContext Value={new Binding("Company")}>
+            <DataContext DataContext={new Binding("Company")}>
                 <Company />
             </DataContext>
             
