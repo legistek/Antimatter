@@ -9,24 +9,79 @@ namespace Antimatter.Net.Interop
     public class DotNetValue
     {
         [FieldOffset(0)]
-        public DotNetValueType Type;
+        public DotNetValueType type;
+        public DotNetValueType Type
+        {
+            get => type;
+            set => type = value;
+        }
 
         [FieldOffset(8)]
-        public string StringValue;
+        public string stringValue;
+        public string StringValue
+        {
+            get => stringValue;
+            set => stringValue = value;
+        }
 
         [FieldOffset(16)]
-        public int ObjectHandle;
+        public int objectHandle;
+        public int ObjectHandle
+        {
+            get => objectHandle;
+            set => objectHandle = value;
+        }
 
         [FieldOffset(16)]
-        public float FloatValue;
+        public float floatValue;
+        public float FlatValue
+        {
+            get => floatValue;
+            set => floatValue = value;
+        }
 
         [FieldOffset(16)]
-        public double DoubleValue;
+        public double doubleValue;
+        public double DoubleValue
+        {
+            get => doubleValue;
+            set => doubleValue = value;
+        }
 
         [FieldOffset(16)]
-        public int IntValue;
+        public int intValue;
+        public int IntValue
+        {
+            get => intValue;
+            set => intValue = value;
+        }
 
         [FieldOffset(16)]
-        public long LongValue;
+        public long longValue;
+        public long LongValue
+        {
+            get => longValue;
+            set => longValue = value;
+        }
+
+        public object ToCSValue(ObjectManager mgr)
+        {
+            switch (this.type)
+            {
+                case DotNetValueType.Double:
+                    return this.doubleValue;
+                case DotNetValueType.Float:
+                    return this.floatValue;
+                case DotNetValueType.Int:
+                    return this.intValue;
+                case DotNetValueType.Long:
+                    return this.longValue;
+                case DotNetValueType.String:
+                    return this.stringValue;
+                case DotNetValueType.Object:
+                    return mgr.GetReference(this.objectHandle)?.Object;
+            }
+            return null;
+        }
     }
 }

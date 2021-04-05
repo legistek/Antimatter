@@ -22,16 +22,16 @@ namespace Antimatter.Net.Interop
                     var dnr = mgr.GetOrCreateReference(value);
                     if (dnr == null)
                     {
-                        dnv.Type = DotNetValueType.None;
+                        dnv.type = DotNetValueType.None;
                         return;
                     }
-                    dnv.ObjectHandle = dnr.Handle;
+                    dnv.objectHandle = dnr.Handle;
                 },
-                (mgr, dnv, value) => dnv.StringValue = (string)value,
-                (mgr, dnv, value) => dnv.IntValue = (int)value,
-                (mgr, dnv, value) => dnv.LongValue = (long)value,
-                (mgr, dnv, value) => dnv.FloatValue = (float)value,
-                (mgr, dnv, value) => dnv.DoubleValue = (double)value
+                (mgr, dnv, value) => dnv.stringValue = (string)value,
+                (mgr, dnv, value) => dnv.intValue = (int)value,
+                (mgr, dnv, value) => dnv.longValue = (long)value,
+                (mgr, dnv, value) => dnv.floatValue = (float)value,
+                (mgr, dnv, value) => dnv.doubleValue = (double)value
             };
         private static Dictionary<Type, DotNetValueType> _typeConv = new Dictionary<Type, DotNetValueType>
         {
@@ -58,6 +58,14 @@ namespace Antimatter.Net.Interop
         public void RegisterRootObject(string referenceName, object obj)
         {
             _rootObjects[$"{referenceName}"] = GetOrCreateReference(obj);
+        }
+
+        public void UpdateBindingSource(int bxIndex, DotNetValue value)
+        {
+            BindingExpression bx;
+            if (!this.Bindings.TryGetValue(bxIndex, out bx))
+                return;
+            bx.UpdateSource(value);
         }
 
         public void Bind(int handle, string path, int bxIndex)
@@ -114,7 +122,7 @@ namespace Antimatter.Net.Interop
             if (obj == null)
                 return new DotNetValue
                 {
-                    Type = DotNetValueType.None
+                    type = DotNetValueType.None
                 };
 
             var type = obj.GetType();
@@ -123,14 +131,14 @@ namespace Antimatter.Net.Interop
             {
                 return new DotNetValue
                 {
-                    Type = DotNetValueType.Object,
-                    ObjectHandle = GetOrCreateReference(obj).Handle
+                    type = DotNetValueType.Object,
+                    objectHandle = GetOrCreateReference(obj).Handle
                 };
             }
 
             DotNetValue dnv = new DotNetValue
             {
-                Type = t,
+                type = t,
             };
             _setters[(int)t](this, dnv, obj);
 
@@ -153,28 +161,28 @@ namespace Antimatter.Net.Interop
                 return;
             }
 
-            switch (value.Type)
+            switch (value.type)
             {
                 case DotNetValueType.Object:
                     ObjectReference valueObjRef;
                     object valueObj = null;
-                    _dict.TryGetValue(value.ObjectHandle, out valueObjRef);
+                    _dict.TryGetValue(value.objectHandle, out valueObjRef);
                     pi.SetValue(obj, valueObj);
                     break;
                 case DotNetValueType.Float:
-                    pi.SetValue(obj, value.FloatValue);
+                    pi.SetValue(obj, value.floatValue);
                     break;
                 case DotNetValueType.Double:
-                    pi.SetValue(obj, value.DoubleValue);
+                    pi.SetValue(obj, value.doubleValue);
                     break;
                 case DotNetValueType.Int:
-                    pi.SetValue(obj, value.IntValue);
+                    pi.SetValue(obj, value.intValue);
                     break;
                 case DotNetValueType.Long:
-                    pi.SetValue(obj, value.LongValue);
+                    pi.SetValue(obj, value.longValue);
                     break;
                 case DotNetValueType.String:
-                    pi.SetValue(obj, value.StringValue);
+                    pi.SetValue(obj, value.stringValue);
                     break;
             }
         }
@@ -199,7 +207,7 @@ namespace Antimatter.Net.Interop
 
             DotNetValue v = new DotNetValue
             {
-                Type = type
+                type = type
             };
 
             object value = pi.GetValue(obj);
@@ -208,22 +216,22 @@ namespace Antimatter.Net.Interop
                 switch (type)
                 {
                     case DotNetValueType.Object:
-                        v.ObjectHandle = GetOrCreateReference(value).Handle;
+                        v.objectHandle = GetOrCreateReference(value).Handle;
                         break;
                     case DotNetValueType.Int:
-                        v.IntValue = (int)value;
+                        v.intValue = (int)value;
                         break;
                     case DotNetValueType.Long:
-                        v.LongValue = (long)value;
+                        v.longValue = (long)value;
                         break;
                     case DotNetValueType.Float:
-                        v.FloatValue = (float)value;
+                        v.floatValue = (float)value;
                         break;
                     case DotNetValueType.Double:
-                        v.DoubleValue = (double)value;
+                        v.doubleValue = (double)value;
                         break;
                     case DotNetValueType.String:
-                        v.StringValue = (string)value;
+                        v.stringValue = (string)value;
                         break;
                 }
             }

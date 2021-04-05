@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { Antimatter } from '../Antimatter';
-import { BindingBase } from '../Binding';
+import { BindingBase, BindingMode, BindingParameters } from '../Binding';
 import { BindingExpression } from '../BindingExpression';
 import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
+import { ModelValue } from '../ModelValue';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
-interface IBoundComponent extends Component
+export interface IBoundComponent extends Component
 {
     antimatterBindingBases: Map<string, BindingBase>;
     antimatterBindingExps: Map<string, BindingExpression>;    
@@ -42,22 +43,52 @@ export class ReactClient implements IClient
         }).bind(target);
     }
 
-    Bind(target: any, args?: { path?: string, source: ModelObjectReference }): any
+    Bind(target: any, args?: BindingParameters, stateVar?: string): any
     {
-        const stateVar: string = (args?.source?.Handle || "dctx") + "." + args?.path;
+        if (!stateVar)
+            stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
-        if (exp && exp.Source == args?.source && exp.SourcePath == args?.path)
+        if (exp &&
+            exp.Source == args?.Source &&
+            exp.SourcePath == args?.Path)
             return target.state[stateVar];     // already bound
 
         if (exp)
             exp.Unapply();
 
-        exp = new BindingExpression(target, stateVar, args?.source, args?.path);
+        exp = new BindingExpression(target, stateVar, args?.Source, args?.Path, true, args?.Mode);
         exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
-        return target.state[stateVar];
+        if (args?.Mode === BindingMode.TwoWay)
+        {
+            target.state[stateVar + "Changed"] = (function (value: any)
+            {
+                Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
+                var newState = {};
+                newState[stateVar || ""] = value;
+                target.setState(newState);                
+            }).bind(target);
+        }
+
+        return target.state[stateVar];  
+    }
+
+    public PropChanged(component: Component, prop: string, value: any):void
+    {
+        var target = component as IBoundComponent;
+        if (!target.antimatterBindingExps)
+            throw "Components using prop binding must call InitializeComponent in their constructors or extend from AntimatterComponent";
+
+        var exp = target.antimatterBindingExps.get(prop);
+        if (exp && exp.Mode === BindingMode.TwoWay)
+        {
+            Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
+            var newState = {};
+            newState[prop] = value;
+            target.setState(newState);
+        }
     }
 
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
@@ -101,7 +132,11 @@ export class ReactClient implements IClient
                 {
                     (ctx) =>
                     {
-                        this.CheckReapplyDataContext(target, ctx);                       
+                        this.CheckReapplyDataContext(target, ctx);
+
+                        // Make this available for rendering inline bindings
+                        target.state["DataContext"] = ctx;
+
                         return (target as any).antimatterOldRender();
                     }                        
                 }                        

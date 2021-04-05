@@ -45,6 +45,11 @@ namespace Antimatter.Net.SignalR
             GetOrCreateReferenceManager().ExecuteICommand(netRef);
         }
 
+        public void UpdateBindingSource(int bxIndex, DotNetValue value)
+        {
+            GetOrCreateReferenceManager().UpdateBindingSource(bxIndex, value);
+        }
+
         void IClient.UpdateBinding(string clientID, int bxIndex, DotNetValue value)
         {
             var json = JsonConvert.SerializeObject(value);

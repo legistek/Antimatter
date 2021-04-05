@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 using Antimatter.Net.Interop;
 
@@ -20,6 +21,12 @@ namespace Antimatter.Net.Webassembly
         public static void Bind(int netRef, string path, int bxIndex)
         {
             Manager.Bind(netRef, path, bxIndex);            
+        }
+
+        public static void UpdateBindingSource(int bxIndex, string valueJson)
+        {
+            var value = JsonSerializer.Deserialize<DotNetValue>(valueJson);
+            Manager.UpdateBindingSource(bxIndex, value);
         }
 
         public static int GetRootObject(string identifier)

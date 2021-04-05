@@ -1,8 +1,9 @@
-import { Antimatter, Binding, BindingBase, BindingParameters, DataContext, ReactDataContext } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingBase, BindingMode, BindingParameters, DataContext, ReactClient, ReactDataContext } from '@antimatterjs/react';
 import * as React from 'react';
 import { Component } from 'react';
-import { PrimaryButton } from '@fluentui/react';
+import { ITextFieldProps, PrimaryButton, TextField } from '@fluentui/react';
 import { ModelObjectReference } from '@antimatterjs/react/src/ModelObjectReference';
+import { BindingExpression } from '@antimatterjs/react/src/BindingExpression';
 
 //export class Employee extends Component<{DataContext: any}>
 //{
@@ -33,27 +34,65 @@ export class AntimatterComponent<P = {}, S = {}> extends Component<P, S>
         Antimatter.InitializeComponent(this);
     }
 
-    protected Binding(parameters: BindingParameters): any
+    protected Binding(parameters: BindingParameters, stateVar?: string): any
     {
         // Inline Binding. Binding function returns a value 
         // immediately and also binds state for future update                
-        return Antimatter.Bind(this, { path: parameters.Path, source: parameters.Source });
+        return Antimatter.Bind(this, parameters, stateVar);
+    }
+
+    public OnPropChanged(property: string, newValue: any):void
+    {
+        Antimatter.PropChanged(this, property, newValue);
     }
 }
 
-export class Employee extends AntimatterComponent<{num?: number}>
+export interface ITextBoxProps
+{
+    Text: string | BindingBase,
+    Label: string | BindingBase
+}
+interface ITextBoxState
+{
+    Text: string,
+    Label: string
+}
+
+export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
+{
+    render()
+    {
+        return (
+            <TextField
+                label={this.state.Label}
+                value={this.state.Text || ''}
+                onChange={(event, newValue) =>                
+                    this.OnPropChanged("Text", newValue)
+                }
+            />);
+    }
+}
+
+export class Employee extends AntimatterComponent<{ num?: number }, {FirstNameValue: string, FirstNameValueChanged: (value?: string) => void}>
 {
     static displayName = Employee.name;
+
+    constructor(props)
+    {
+        super(props);
+    }
 
     render()
     {
         console.log("Employee " + this.props.num + " rendering");
         
         return (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <h4>Name</h4>
-                <TextBlock Text={new Binding("FirstName")} />
-                <TextBlock Text={new Binding("LastName")} />
+            <div style={{ display: "flex", flexDirection: "column" }}>                
+                <TextBlock Text={new Binding("FullName")} />
+
+                <h4>Edit Info</h4>
+                <TextBox Label="First Name" Text={new Binding("FirstName", undefined, BindingMode.TwoWay)} />
+                <TextBox Label="Last Name" Text={new Binding("LastName", undefined, BindingMode.TwoWay)} />
                 <h4>Age</h4>
                 <TextBlock Text={new Binding("Age")} />
                 {/*<PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand" })}>*/}
@@ -229,19 +268,6 @@ export class Company extends AntimatterComponent
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={11} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
-                                    Increase
-                                </PrimaryButton>
-                            </div>
-                        )}
-                    </ReactDataContext.Consumer>
-                </DataContext>
-                <DataContext Value={new Binding("CEO")}>
-                    <ReactDataContext.Consumer>
-                        {ctx => (
-                            <div>
-                                <h2>CEO</h2>
-                                <Employee num={12} />
                                 <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
                                     Increase
                                 </PrimaryButton>

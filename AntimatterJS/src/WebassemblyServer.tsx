@@ -3,7 +3,7 @@ import { BindingExpression } from "./BindingExpression";
 import { ModelObjectReference } from "./ModelObjectReference";
 
 import { IServer } from "./IServer";
-import { ModelValueType } from "./ModelValue";
+import { ModelValue, ModelValueType } from "./ModelValue";
 import { Binding } from "./Binding";
 
 export class WebassemblyServer implements IServer
@@ -68,6 +68,19 @@ export class WebassemblyServer implements IServer
                     "Bind"));
         }
         this._bindMethod(ref.Handle, path, expression.Index);
+    }
+
+    UpdateBindingSource(bxIndex: number, value: ModelValue)
+    {
+        if (!this._updateSourceValueMethod)
+        {
+            this._updateSourceValueMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "UpdateBindingSource"));
+        }
+        this._updateSourceValueMethod(bxIndex, JSON.stringify(value));
     }
 
     //#endregion
@@ -158,6 +171,7 @@ export class WebassemblyServer implements IServer
     private _cachedMethods: Map<string, any> = new Map<string, any>();
     private _bindMethod: any;
     private _executeICommandMethod: any;
+    private _updateSourceValueMethod: any;
 
     //#endregion
 }

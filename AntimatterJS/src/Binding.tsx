@@ -1,5 +1,6 @@
 ﻿import { BindingExpression } from "./BindingExpression";
 import { Antimatter } from "./Antimatter";
+import { ModelObjectReference } from "./ModelObjectReference";
 
 export abstract class BindingBase
 {
@@ -14,9 +15,8 @@ export class BindingParameters
 {
     Target?: any;
     Path?: string;
-    Source?: any;
+    Source?: ModelObjectReference;
     Mode?: BindingMode;
-    Inline?: boolean;
 }
 
 export class Binding extends BindingBase
@@ -43,7 +43,7 @@ export class Binding extends BindingBase
         targetProperty: string): BindingExpression
     {
         // return Antimatter.Client.Bind(target, targetProperty, this.Source, this.Path, this.Mode);
-        return new BindingExpression(target, targetProperty, this.Source, this.Path);
+        return new BindingExpression(target, targetProperty, this.Source, this.Path, true, this.Mode);
     }
 }
 

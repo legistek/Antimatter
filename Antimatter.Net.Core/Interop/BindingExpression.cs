@@ -13,6 +13,7 @@ namespace Antimatter.Net.Interop
         PropertyInfo _pi;
         DotNetValue _lastValue;
         ObjectManager _manager;
+        bool _suspendPropertyChangeReport;
 
         internal BindingExpression(ObjectManager manager)
         {
@@ -42,6 +43,23 @@ namespace Antimatter.Net.Interop
         {
         }
 
+        public void UpdateSource(DotNetValue value)
+        {
+            this._suspendPropertyChangeReport = true;
+            try
+            {
+                var rs = this.ResolvedSource;
+                if (this._pi == null || rs == null)
+                    return;
+                var val = value.ToCSValue(this._manager);
+                this._pi.SetValue(rs, val);
+            }
+            finally
+            {
+                this._suspendPropertyChangeReport = false;
+            }
+        }
+
         public bool Apply()
         {
             // Always store this locally to make sure
@@ -62,27 +80,29 @@ namespace Antimatter.Net.Interop
 
             if (source is INotifyPropertyChanged inpc)
             {
-                inpc.PropertyChanged += OnSourcePropertyChanged;
+                inpc.PropertyChanged += OnSourcePropertyChanged; ;
             }
 
             // Notify the binding target of the new value just as 
             // if it had changed.
-            OnSourcePropertyChanged(
-                this.ResolvedSource, 
-                new PropertyChangedEventArgs(this.Path));
+            ReportSourcePropertyUpdate();
 
             return true;
+        }
+
+        private void OnSourcePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (this._suspendPropertyChangeReport || e.PropertyName != this.Path)
+                return;
+            ReportSourcePropertyUpdate();
         }
 
         private void Unapply()
         {
         }
 
-        private void OnSourcePropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ReportSourcePropertyUpdate()
         {
-            if (e.PropertyName != this.Path)
-                return;
-
             var obj = this.ResolvedSource;
             if (obj == null)
                 return;
@@ -92,9 +112,9 @@ namespace Antimatter.Net.Interop
 
             // TODO - What if value is unchanged?
 
-            if (_lastValue?.Type == DotNetValueType.Object)
+            if (_lastValue?.type == DotNetValueType.Object)
             {
-                _manager.GetReference(_lastValue.ObjectHandle)?.Release(this._manager);
+                _manager.GetReference(_lastValue.objectHandle)?.Release(this._manager);
             }
 
             _lastValue = dnv;

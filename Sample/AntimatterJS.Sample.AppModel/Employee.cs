@@ -21,6 +21,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _FirstName = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(FullName));
                 }
             }
         }
@@ -40,7 +41,18 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _LastName = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(FullName));
                 }
+            }
+        }
+        #endregion
+
+        #region string FullName property
+        public string FullName
+        {
+            get
+            {
+                return $"{FirstName} {LastName} (age {Age})";
             }
         }
         #endregion
@@ -59,6 +71,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _Age = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(FullName));
                 }
             }
         }

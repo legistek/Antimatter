@@ -7,6 +7,36 @@
     DoubleValue?: number;
     IntValue?: number;
     LongValue?: number;
+
+    public static Get(jsValue: any): ModelValue
+    {
+        const val: ModelValue = new ModelValue;
+
+        if (jsValue?.IsModelObjectReference)
+        {
+            val.Type = ModelValueType.ObjectHandle;
+            val.ObjectHandle = jsValue.Handle;
+        }
+        else
+        {
+            switch (typeof jsValue)
+            {
+                case "undefined":
+                    val.Type = ModelValueType.None;
+                    break;
+                case "number":
+                    val.Type = ModelValueType.Long;
+                    val.LongValue = jsValue;
+                    break;
+                case "string":
+                    val.Type = ModelValueType.String;
+                    val.StringValue = jsValue;
+                    break;
+            }
+        }
+
+        return val;
+    }
 }
 
 export enum ModelValueType 

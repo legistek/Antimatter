@@ -36,6 +36,11 @@ export class SignalRServer implements IServer
         this._connection.invoke("Bind", netRef.Handle, path, expression.Index);
     }
 
+    public UpdateBindingSource(bxIndex: number, value: ModelValue)
+    {
+        this._connection.invoke("UpdateBindingSource", bxIndex, value);
+    }
+
     //#endregion
 
     //#region Server-Invocable Methods

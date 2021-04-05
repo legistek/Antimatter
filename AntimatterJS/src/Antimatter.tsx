@@ -1,3 +1,5 @@
+import { Component } from "react";
+import { BindingParameters } from "./Binding";
 import { IClient } from "./IClient";
 import { IServer } from "./IServer";
 import { ModelObjectReference } from "./ModelObjectReference";
@@ -25,13 +27,18 @@ export class Antimatter
         Antimatter._client.InitializeComponent(target);
     }
 
-    public static Bind(target: any, args?: { path?: string, source?: any }): any
+    public static Bind(target: any, args?: BindingParameters, stateVar?: string): any
     {
-        return Antimatter._client.Bind(target, args);
+        return Antimatter._client.Bind(target, args, stateVar);
     }
 
     public static BindCommand(target: any, args?: { path: string, source?: ModelObjectReference }): () => void
     {
         return Antimatter._client.BindCommand(target, args);
+    }
+
+    public static PropChanged(component: Component, prop: string, value: any): void
+    {
+        return Antimatter._client.PropChanged(component, prop, value);
     }
 }

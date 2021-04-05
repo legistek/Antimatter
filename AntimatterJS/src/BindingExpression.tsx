@@ -1,4 +1,5 @@
 ﻿import { Antimatter } from "./Antimatter";
+import { BindingMode } from "./Binding";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
 
@@ -10,6 +11,7 @@ export class BindingExpression
     public readonly TargetProperty: string;
     public readonly SourcePath?: string;
     public readonly Source: ModelObjectReference | undefined;
+    public readonly Mode: BindingMode = BindingMode.OneWay;
 
     protected _resolvedSource?: BindingSource;    
     
@@ -26,10 +28,14 @@ export class BindingExpression
         targetProperty: string,
         source?: ModelObjectReference,
         sourcePath?: string,
-        affectsRender?: boolean)
+        affectsRender?: boolean,
+        mode?: BindingMode)
     {               
         this.Index = BindingExpression._globalIndex++;
         this.TargetProperty = targetProperty;
+
+        if (mode !== undefined)
+            this.Mode = mode;        
 
         this._target = target;
         this.Source = source;
