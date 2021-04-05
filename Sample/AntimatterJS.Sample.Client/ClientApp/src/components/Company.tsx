@@ -1,9 +1,7 @@
 import { Antimatter, Binding, BindingBase, BindingMode, BindingParameters, DataContext, ReactClient, ReactDataContext } from '@antimatterjs/react';
 import * as React from 'react';
 import { Component } from 'react';
-import { ITextFieldProps, PrimaryButton, TextField } from '@fluentui/react';
-import { ModelObjectReference } from '@antimatterjs/react/src/ModelObjectReference';
-import { BindingExpression } from '@antimatterjs/react/src/BindingExpression';
+import { PrimaryButton, TextField } from '@fluentui/react';
 
 //export class Employee extends Component<{DataContext: any}>
 //{
@@ -88,13 +86,13 @@ export class Employee extends AntimatterComponent<{ num?: number }, {FirstNameVa
         
         return (
             <div style={{ display: "flex", flexDirection: "column" }}>                
-                <TextBlock Text={new Binding("FullName")} />
+                <TextBlock Text={new Binding({Path: "FullName"})} />
 
                 <h4>Edit Info</h4>
-                <TextBox Label="First Name" Text={new Binding("FirstName", undefined, BindingMode.TwoWay)} />
-                <TextBox Label="Last Name" Text={new Binding("LastName", undefined, BindingMode.TwoWay)} />
+                <TextBox Label="First Name" Text={new Binding({ Path: "FirstName", Mode: BindingMode.TwoWay })} />
+                <TextBox Label="Last Name" Text={new Binding({ Path: "LastName", Mode: BindingMode.TwoWay })} />
                 <h4>Age</h4>
-                <TextBlock Text={new Binding("Age")} />
+                <TextBlock Text={new Binding({ Path: "Age"})} />
                 {/*<PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand" })}>*/}
                 {/*    Increase*/}
                 {/*</PrimaryButton>*/}
@@ -129,153 +127,152 @@ export class Company extends AntimatterComponent
                         )}
                     </ReactDataContext.Consumer>
                     
-                    <TextBlock Text={new Binding("Name")}/>
+                    <TextBlock Text={new Binding({ Path: "Name"})}/>
                 </div>                
 
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO"})}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={1} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO"})}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={2} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>                
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={3} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={4} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={5} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={6} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={7} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={8} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={9} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={10} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-                <DataContext Value={new Binding("CEO")}>
+                <DataContext Value={new Binding({ Path: "CEO" })}>
                     <ReactDataContext.Consumer>
                         {ctx => (
                             <div>
                                 <h2>CEO</h2>
                                 <Employee num={11} />
-                                <PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand", source: ctx })}>
+                                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>
                                     Increase
                                 </PrimaryButton>
                             </div>
                         )}
                     </ReactDataContext.Consumer>
                 </DataContext>
-
             </div>
         );
     }

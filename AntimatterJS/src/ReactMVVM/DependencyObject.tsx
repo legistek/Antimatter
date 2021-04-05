@@ -3,7 +3,6 @@ import { Component } from 'react';
 import { DependencyProperty, DependencyPropertyChangedEventArgs, FrameworkPropertyMetadataOptions, PropertyMetadata } from './DependencyProperty';
 import { BindingExpression } from '../BindingExpression';
 import { BindingBase } from '../Binding';
-import { isUndefined } from 'util';
 import { IDependencyObject } from './IDependencyObject';
 import { Event } from './Event';
 const ParentContext = React.createContext<any>(null);
@@ -61,7 +60,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
     public GetValue(property: DependencyProperty): any
     {
         var localValue = this._localValues[property.GlobalIndex];
-        if (!isUndefined(localValue))
+        if (localValue == undefined)
             return localValue;
 
         if (property.Inherits && this.Parent && !this._bindings.get(property.GlobalIndex))
@@ -112,7 +111,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
             // For children who inherit their values from us
             this.InheritablePropertyChanged.invoke(this, changedArgs);
 
-        if (isUndefined(value))
+        if (value == undefined)
             this._localValues.delete(property.GlobalIndex);
         else
             this._localValues.set(property.GlobalIndex, value);

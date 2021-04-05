@@ -32,7 +32,7 @@ export class Antimatter
         return Antimatter._client.Bind(target, args, stateVar);
     }
 
-    public static BindCommand(target: any, args?: { path: string, source?: ModelObjectReference }): () => void
+    public static BindCommand(target: any, args?: BindingParameters): () => void
     {
         return Antimatter._client.BindCommand(target, args);
     }

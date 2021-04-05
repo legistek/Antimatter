@@ -1,5 +1,5 @@
 ﻿import { Antimatter } from "./Antimatter";
-import { BindingMode } from "./Binding";
+import { BindingMode, BindingParameters } from "./Binding";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
 
@@ -8,83 +8,59 @@ export class BindingExpression
     protected static _globalIndex: number = 0;
     protected static _globalBindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();
     
-    public readonly TargetProperty: string;
-    public readonly SourcePath?: string;
-    public readonly Source: ModelObjectReference | undefined;
-    public readonly Mode: BindingMode = BindingMode.OneWay;
+    //public readonly SourcePath?: string;
+    //public readonly Source: ModelObjectReference | undefined;
+    //public readonly Mode: BindingMode = BindingMode.OneWay;
 
     protected _resolvedSource?: BindingSource;    
     
     protected _target: any;
+    public readonly TargetProperty: string;
 
     private _lastAppliedBindingContext: ModelObjectReference | undefined;
     private _isApplied: boolean = false;
     private _affectsRender: boolean = false;
 
     public readonly Index: number;
-   
+
+    public readonly Parameters?: BindingParameters;
+
     public constructor(
         target: any,
         targetProperty: string,
-        source?: ModelObjectReference,
-        sourcePath?: string,
-        affectsRender?: boolean,
-        mode?: BindingMode)
+        args?: BindingParameters)
     {               
         this.Index = BindingExpression._globalIndex++;
         this.TargetProperty = targetProperty;
-
-        if (mode !== undefined)
-            this.Mode = mode;        
-
+        this.Parameters = args;
         this._target = target;
-        this.Source = source;
-        
-        this.SourcePath = sourcePath;
 
-        if (affectsRender === undefined || affectsRender)
-            this._affectsRender = true;
+        if (this.Parameters?.Mode !== undefined)
+            this.Parameters.Mode = args?.Mode;                
 
-        // this.onSourcePropertyChanged = this.onSourcePropertyChanged.bind(this);
+        if (args?.AffectsRender === undefined || args?.AffectsRender)
+            this._affectsRender = true;        
     }
 
     public get IsDataContextDependent(): boolean
     {
-        return !this.Source;
+        return this.Parameters?.Source == undefined;    // undefined or null
     }
 
     public Apply(dataContext?: ModelObjectReference): boolean
     {
         BindingExpression._globalBindings.set(this.Index, this);
 
-        if (this.Source)
-            this._resolvedSource = new BindingSource(this.Source);
-        else
+        if (this.Parameters?.Source)
+            this._resolvedSource = new BindingSource(this.Parameters?.Source);
+        else if (dataContext)
         {
-            //let dataContext: any = undefined;
-            //if (this._targetProperty !== "DataContext")
-            //{
-            //    dataContext = Antimatter.Client.GetBindingContext(this._target);
-            //}
-            //else
-            //{
-            //    var parent = Antimatter.Client.GetParent(this._target);
-            //    if (parent)
-            //        dataContext = Antimatter.Client.GetBindingContext(parent);
-            //}
-            if (dataContext)
-            {
-                if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))                    
-                    return false; // no need to reapply
-                this._lastAppliedBindingContext = dataContext;                
-                this._resolvedSource = new BindingSource(dataContext);
-            }
+            if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))                    
+                return false; // no need to reapply
+            this._lastAppliedBindingContext = dataContext;                
+            this._resolvedSource = new BindingSource(dataContext);
         }
         
-        //console.log("Binding Applied " + this._resolvedSource?.NetRef?.Handle + "." + this.SourcePath + " to " + this.TargetProperty);
-
-        // this.ApplyInternal();
-
         this._isApplied = this.subscribeToSourcePropertyChanges();
         return this._isApplied;
     }
@@ -95,14 +71,14 @@ export class BindingExpression
     {
     }
 
-    public GetSourceValue(): any
-    {
-        if (!this._resolvedSource)
-            return null;
-        if ((this._resolvedSource.Type & BindingSourceType.POJO) > 0)
-            return this._resolvedSource.POJO[this.SourcePath as string];
-        return null;
-    }
+    //public GetSourceValue(): any
+    //{
+    //    if (!this._resolvedSource)
+    //        return null;
+    //    if ((this._resolvedSource.Type & BindingSourceType.POJO) > 0)
+    //        return this._resolvedSource.POJO[this.SourcePath as string];
+    //    return null;
+    //}
 
     private unsubscribeFromSourcePropertyChanges()
     {
@@ -117,31 +93,13 @@ export class BindingExpression
         {
             Antimatter.Server.Bind(
                 this._resolvedSource.NetRef,
-                this.SourcePath,
+                this.Parameters?.Path,
                 this);
             return true;
         }
 
-        return false;
-        //}
-        //else if ((this._resolvedSource.Type & BindingSourceType.DependencyObject) > 0)
-        //{
-
-        //}
-        //else if ((this._resolvedSource.Type & BindingSourceType.POJO) > 0 &&
-        //    (this._resolvedSource.Type & BindingSourceType.INPC) > 0)
-        //{
-        //    var inpc = this._resolvedSource.POJO as INotifyPropertyChanged;
-        //    inpc.propertyChanged.subscribe(this.onSourcePropertyChanged);
-        //    this._target.SetCurrentValue(this._targetProperty, this.GetSourceValue());
-        //}
+        return false;        
     }
-
-    //private onSourcePropertyChanged(sender: any, e: PropertyChangedEventArgs): void
-    //{
-    //    if (e.propertyName === this._sourcePath)
-    //        this._target.SetCurrentValue(this._targetProperty, this.GetSourceValue());
-    //}
 
     public static OnExternalSourceValueChanged(bxIndex: number, value: any): void
     {

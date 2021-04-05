@@ -20,20 +20,20 @@ export interface IBoundComponent extends Component
 
 export class ReactClient implements IClient
 {
-    BindCommand(target: any, args?: { path: string, source: ModelObjectReference }): () => void
+    BindCommand(target: any, args?: BindingParameters): () => void
     {
-        const stateVar: string = (args?.source?.Handle || "dctx") + "." + args?.path;
+        const stateVar: string = (args?.Source?.Handle || "dctx") + "." + args?.Path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
         if (exp &&
-            ModelObjectReference.Equals(exp.Source, args?.source) &&
-            exp.SourcePath == args?.path)
+            ModelObjectReference.Equals(exp.Parameters?.Source, args?.Source) &&
+            exp.Parameters?.Path == args?.Path)
             return target.state[stateVar + "Command"];     // already bound
 
         if (exp)
             exp.Unapply();
 
-        exp = new BindingExpression(target, stateVar, args?.source, args?.path, false);
+        exp = new BindingExpression(target, stateVar, args);
         exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
@@ -49,15 +49,14 @@ export class ReactClient implements IClient
             stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
-        if (exp &&
-            exp.Source == args?.Source &&
-            exp.SourcePath == args?.Path)
+        if (exp?.Parameters?.Source == args?.Source &&
+            exp?.Parameters?.Path == args?.Path)
             return target.state[stateVar];     // already bound
 
         if (exp)
             exp.Unapply();
 
-        exp = new BindingExpression(target, stateVar, args?.Source, args?.Path, true, args?.Mode);
+        exp = new BindingExpression(target, stateVar, args);
         exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
@@ -82,7 +81,7 @@ export class ReactClient implements IClient
             throw "Components using prop binding must call InitializeComponent in their constructors or extend from AntimatterComponent";
 
         var exp = target.antimatterBindingExps.get(prop);
-        if (exp && exp.Mode === BindingMode.TwoWay)
+        if (exp?.Parameters?.Mode === BindingMode.TwoWay)
         {
             Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
             var newState = {};

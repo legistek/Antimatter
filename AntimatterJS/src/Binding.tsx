@@ -1,5 +1,4 @@
 ﻿import { BindingExpression } from "./BindingExpression";
-import { Antimatter } from "./Antimatter";
 import { ModelObjectReference } from "./ModelObjectReference";
 
 export abstract class BindingBase
@@ -17,33 +16,29 @@ export class BindingParameters
     Path?: string;
     Source?: ModelObjectReference;
     Mode?: BindingMode;
+    AffectsRender?: boolean;
 }
 
 export class Binding extends BindingBase
 {
-    constructor(path?: string, source?: any, mode: BindingMode = BindingMode.Default)
+    constructor(args?: BindingParameters)
     {
         super();
-        this.Path = path;
-        this.Source = source;
-        this.Mode = mode;
+        this.Parameters = args;
     }
 
-    public Source?: any;
-    public Path?: string;
-    public Mode: BindingMode = BindingMode.Default;
-
+    public readonly Parameters?: BindingParameters;
+    
     public get IsDataContextDependent(): boolean
     {
-        return !this.Source;
+        return this.Parameters?.Source == undefined; // null
     }
 
     public CreateBindingExpression(
         target: any,
         targetProperty: string): BindingExpression
     {
-        // return Antimatter.Client.Bind(target, targetProperty, this.Source, this.Path, this.Mode);
-        return new BindingExpression(target, targetProperty, this.Source, this.Path, true, this.Mode);
+        return new BindingExpression(target, targetProperty, this.Parameters);
     }
 }
 

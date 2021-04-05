@@ -24,7 +24,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <DataContext Value={this.state.Model}>
-                <DataContext Value={new Binding("Company")}>
+                <DataContext Value={new Binding({ Path: "Company"})}>
                     <Company />
                 </DataContext>
             </DataContext>
