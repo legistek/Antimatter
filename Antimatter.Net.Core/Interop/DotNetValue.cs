@@ -63,7 +63,7 @@ namespace Antimatter.Net.Interop
             get => longValue;
             set => longValue = value;
         }
-
+        
         [FieldOffset(24)]
         private DotNetValue[] _collection;
         public DotNetValue[] Collection

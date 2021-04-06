@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Linq;
-using System.Collections;
 
 namespace Antimatter.Net.Interop
 {
@@ -143,10 +141,11 @@ namespace Antimatter.Net.Interop
             {
                 if (obj is IEnumerable<object> ienum)
                 {
+                    var arr = ienum.Select(item => GetDotNetValue(item)).ToArray();
                     return new DotNetValue
                     {
-                        Type = DotNetValueType.Collection,                        
-                        Collection = ienum.Select(item => GetDotNetValue(item)).ToArray()
+                        Type = DotNetValueType.Collection,     
+                        Collection = arr
                     };
                 }
                 else

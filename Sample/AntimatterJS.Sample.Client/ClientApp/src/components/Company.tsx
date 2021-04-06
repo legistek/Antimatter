@@ -134,7 +134,8 @@ export class Company extends AntimatterComponent
                     <TextBlock Text={new Binding({ Path: "Name"})}/>
                 </div>                
 
-                <List items={this.state["employees"]}
+                <List
+                    items={this.state["employees"]}
                     onRenderCell={
                         (item, index) =>
                         (                    

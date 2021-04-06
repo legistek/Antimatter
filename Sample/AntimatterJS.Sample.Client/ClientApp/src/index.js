@@ -9,7 +9,7 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext 
 
 (async function ()
 {
-    await Antimatter.StartAsync(new SignalRServer(), new ReactClient());
+    await Antimatter.StartAsync(new WebassemblyServer(), new ReactClient());
     var appModel = await Antimatter.Server.GetRootObject("app");
 
     const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');

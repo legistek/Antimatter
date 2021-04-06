@@ -21,7 +21,7 @@ namespace AntimatterJS.Sample.AppModel
                 Age = 50                
             };
             this.Company.Employees.Add(this.Company.CEO);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 this.Company.Employees.Add(new Employee("Mickey", "Mouse", 100));
                 this.Company.Employees.Add(new Employee("Santa", "Clause", 500));

@@ -142,9 +142,24 @@ export class WebassemblyServer implements IServer
         return this.Module.HEAPF32[ptr >> 2];
     }
 
-    private getArrayValue(ptr: number)
+    private getArrayValue(ptrptr: number)
     {
-        return (window as any).BINDING.mono_array_to_js_array(ptr);
+        // Where the array's actual data is
+        var ptr = this.getValueI32(ptrptr);
+
+        // Length is 12 bytes up
+        var len = this.getValueI32(ptr + 12);
+
+        // Actual element ptrs begin at 16, then
+        // each array entry is a 32-bit pointer to a DotNetValue
+        let arr: Array<any> = new Array<any>(len);
+        for (let i: number = 0; i < len; i++)
+        {
+            var itemPtr = this.getValueI32(ptr + 16 + i * 4);
+            arr[i] = this.getDotNetValue(itemPtr);
+        }
+
+        return arr;
     }
 
     private MakeMethodKey(assembly: string, className: string, methodName: string): string
@@ -166,7 +181,7 @@ export class WebassemblyServer implements IServer
                 var index = this.getValueI32(valuePtr + 16);
                 return new ModelObjectReference(index);
             case ModelValueType.Collection:
-                return (this.getArrayValue(valuePtr + 24) as Array<any>).map(item => this.getDotNetValue(item));
+                return this.getArrayValue(valuePtr + 24);
             case ModelValueType.Int:
                 return this.getValueI32(valuePtr + 16);            
         }
