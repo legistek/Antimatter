@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Linq;
+using System.Collections;
 
 namespace Antimatter.Net.Interop
 {
@@ -31,7 +33,17 @@ namespace Antimatter.Net.Interop
                 (mgr, dnv, value) => dnv.intValue = (int)value,
                 (mgr, dnv, value) => dnv.longValue = (long)value,
                 (mgr, dnv, value) => dnv.floatValue = (float)value,
-                (mgr, dnv, value) => dnv.doubleValue = (double)value
+                (mgr, dnv, value) => dnv.doubleValue = (double)value,
+                (mgr, dnv, value) =>
+                {
+                    var dnr = mgr.GetOrCreateReference(value);
+                    if (dnr == null)
+                    {
+                        dnv.type = DotNetValueType.None;
+                        return;
+                    }
+                    dnv.objectHandle = dnr.Handle;
+                }
             };
         private static Dictionary<Type, DotNetValueType> _typeConv = new Dictionary<Type, DotNetValueType>
         {
@@ -129,11 +141,22 @@ namespace Antimatter.Net.Interop
             DotNetValueType t = DotNetValueType.None;
             if (!_typeConv.TryGetValue(type, out t))
             {
-                return new DotNetValue
+                if (obj is IEnumerable<object> ienum)
                 {
-                    type = DotNetValueType.Object,
-                    objectHandle = GetOrCreateReference(obj).Handle
-                };
+                    return new DotNetValue
+                    {
+                        Type = DotNetValueType.Collection,                        
+                        Collection = ienum.Select(item => GetDotNetValue(item)).ToArray()
+                    };
+                }
+                else
+                {
+                    return new DotNetValue
+                    {
+                        Type = DotNetValueType.Object,
+                        ObjectHandle = GetOrCreateReference(obj).Handle,
+                    };
+                }
             }
 
             DotNetValue dnv = new DotNetValue
@@ -216,6 +239,7 @@ namespace Antimatter.Net.Interop
                 switch (type)
                 {
                     case DotNetValueType.Object:
+                    case DotNetValueType.Collection:
                         v.objectHandle = GetOrCreateReference(value).Handle;
                         break;
                     case DotNetValueType.Int:

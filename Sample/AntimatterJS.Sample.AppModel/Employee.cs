@@ -7,6 +7,17 @@ namespace AntimatterJS.Sample.AppModel
 {
     public class Employee : ObservableObject
     {
+        public Employee()
+        {
+        }
+
+        public Employee(string firstName, string lastName, int age)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Age = age;
+        }
+
         #region string FirstName property
         private string _FirstName;
         public string FirstName

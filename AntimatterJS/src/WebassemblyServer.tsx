@@ -138,8 +138,13 @@ export class WebassemblyServer implements IServer
     }
 
     private getValueFloat(ptr: number)
-    {
+    {        
         return this.Module.HEAPF32[ptr >> 2];
+    }
+
+    private getArrayValue(ptr: number)
+    {
+        return (window as any).BINDING.mono_array_to_js_array(ptr);
     }
 
     private MakeMethodKey(assembly: string, className: string, methodName: string): string
@@ -160,6 +165,8 @@ export class WebassemblyServer implements IServer
             case ModelValueType.ObjectHandle:
                 var index = this.getValueI32(valuePtr + 16);
                 return new ModelObjectReference(index);
+            case ModelValueType.Collection:
+                return (this.getArrayValue(valuePtr + 24) as Array<any>).map(item => this.getDotNetValue(item));
             case ModelValueType.Int:
                 return this.getValueI32(valuePtr + 16);            
         }

@@ -64,6 +64,14 @@ namespace Antimatter.Net.Interop
             set => longValue = value;
         }
 
+        [FieldOffset(24)]
+        private DotNetValue[] _collection;
+        public DotNetValue[] Collection
+        {
+            get => _collection;
+            set => _collection = value;
+        }
+
         public object ToCSValue(ObjectManager mgr)
         {
             switch (this.type)
@@ -79,6 +87,8 @@ namespace Antimatter.Net.Interop
                 case DotNetValueType.String:
                     return this.stringValue;
                 case DotNetValueType.Object:
+                    return mgr.GetReference(this.objectHandle)?.Object;
+                case DotNetValueType.Collection:
                     return mgr.GetReference(this.objectHandle)?.Object;
             }
             return null;

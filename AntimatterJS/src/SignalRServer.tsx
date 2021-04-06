@@ -64,6 +64,8 @@ export class SignalRServer implements IServer
                 return valuePtr.IntValue;
             case ModelValueType.String:
                 return valuePtr.StringValue;
+            case ModelValueType.Collection:
+                return valuePtr.Collection?.map(item => this.getDotNetValue(item));
             case ModelValueType.ObjectHandle:
                 var index = valuePtr.ObjectHandle;
                 if (index)

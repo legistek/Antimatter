@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Antimatter.Net.Interop
 {
+    // DO NOT CHANGE THESE NUMBERS; ONLY ADD
     public enum DotNetValueType : int
     {
         None = 0,
@@ -13,5 +14,6 @@ namespace Antimatter.Net.Interop
         Long = 4,
         Float = 5,
         Double = 6,
+        Collection = 7,
     }
 }
