@@ -4,7 +4,6 @@ import { ModelObjectReference } from "./ModelObjectReference";
 
 import { IServer } from "./IServer";
 import { ModelValue, ModelValueType } from "./ModelValue";
-import { Binding } from "./Binding";
 
 export class WebassemblyServer implements IServer
 {

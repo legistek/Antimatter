@@ -1,5 +1,5 @@
 ﻿import { Antimatter } from "./Antimatter";
-import { BindingMode, BindingParameters } from "./Binding";
+import { BindingParameters } from "./BindingParameters";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
 
@@ -53,12 +53,18 @@ export class BindingExpression
 
         if (this.Parameters?.Source)
             this._resolvedSource = new BindingSource(this.Parameters?.Source);
-        else if (dataContext)
+        else 
         {
-            if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))                    
+            if (!dataContext)
+                dataContext = this._target.state["DataContext"];
+
+            if (!dataContext)
+                return false;   // no source provided
+                        
+            if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))
                 return false; // no need to reapply
-            this._lastAppliedBindingContext = dataContext;                
-            this._resolvedSource = new BindingSource(dataContext);
+            this._lastAppliedBindingContext = dataContext;
+            this._resolvedSource = new BindingSource(dataContext);            
         }
         
         this._isApplied = this.subscribeToSourcePropertyChanges();

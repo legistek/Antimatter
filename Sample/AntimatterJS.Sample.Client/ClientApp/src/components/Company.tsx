@@ -1,54 +1,12 @@
-import { Antimatter, Binding, BindingBase, BindingMode, BindingParameters, DataContext, ReactClient, ReactDataContext } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingMode, BindingParameters, DataContext, ReactClient, AntimatterComponent, ReactDataContext } from '@antimatterjs/react';
 import * as React from 'react';
 import { Component } from 'react';
 import { List, PrimaryButton, TextField } from '@fluentui/react';
 
-//export class Employee extends Component<{DataContext: any}>
-//{
-//    static displayName = Employee.name;
-
-//    constructor(props)
-//    {
-//        super(props);
-//        Antimatter.InitializeComponent(this);
-//    }
-
-//    render()
-//    {
-//        return (
-//            <div>
-//                <TextBlock Text={new Binding("FirstName")} />
-//                <TextBlock Text={new Binding("LastName")} />                
-//            </div>
-//            );
-//    }
-//}
-
-export class AntimatterComponent<P = {}, S = {}> extends Component<P, S>
-{
-    constructor(props)
-    {       
-        super(props);
-        Antimatter.InitializeComponent(this);
-    }
-
-    protected Binding(parameters: BindingParameters, stateVar?: string): any
-    {
-        // Inline Binding. Binding function returns a value 
-        // immediately and also binds state for future update                
-        return Antimatter.Bind(this, parameters, stateVar);
-    }
-
-    public OnPropChanged(property: string, newValue: any):void
-    {
-        Antimatter.PropChanged(this, property, newValue);
-    }
-}
-
 export interface ITextBoxProps
 {
-    Text: string | BindingBase,
-    Label: string | BindingBase
+    Text: string | Binding,
+    Label: string | Binding
 }
 interface ITextBoxState
 {
@@ -65,13 +23,13 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
                 label={this.state.Label}
                 value={this.state.Text || ''}
                 onChange={(event, newValue) =>                
-                    this.OnPropChanged("Text", newValue)
+                    this.OnTargetChanged("Text", newValue)
                 }
             />);
     }
 }
 
-export class Employee extends AntimatterComponent<{ num?: number }, {FirstNameValue: string, FirstNameValueChanged: (value?: string) => void}>
+export class Employee extends AntimatterComponent<{ num?: number }>
 {
     static displayName = Employee.name;
 
@@ -92,16 +50,16 @@ export class Employee extends AntimatterComponent<{ num?: number }, {FirstNameVa
                 <TextBox Label="First Name" Text={new Binding({ Path: "FirstName", Mode: BindingMode.TwoWay })} />
                 <TextBox Label="Last Name" Text={new Binding({ Path: "LastName", Mode: BindingMode.TwoWay })} />
                 <h4>Age</h4>
-                <TextBlock Text={new Binding({ Path: "Age"})} />
-                {/*<PrimaryButton onClick={Antimatter.BindCommand(this, { path: "IncreaseAgeCommand" })}>*/}
-                {/*    Increase*/}
-                {/*</PrimaryButton>*/}
+                <TextBlock Text={new Binding({ Path: "Age" })} />
+                <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand" })}>
+                    INCREASE
+                </PrimaryButton>
             </div>
         );
     }
 }
 
-export class TextBlock extends AntimatterComponent<{ Text?: string | BindingBase }>
+export class TextBlock extends AntimatterComponent<{ Text?: string | Binding }>
 {
     static displayName = TextBlock.name;
 
@@ -120,14 +78,14 @@ export class Company extends AntimatterComponent
         console.log("Company rendering");
 
 
-        Antimatter.Bind(this, { Source: this.state["DataContext"], Path: "Employees" }, "employees");
+        this.BindState({ Source: this.state["DataContext"], Path: "Employees" }, "employees");
 
         return (
             <div>
                 <div>
                     <ReactDataContext.Consumer>
                         {ctx => (
-                            <h1>{this.Binding({ Path: "Name", Source: ctx })}</h1>
+                            <h1>{this.BindState({ Path: "Name", Source: ctx })}</h1>
                         )}
                     </ReactDataContext.Consumer>
                     

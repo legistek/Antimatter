@@ -1,31 +1,14 @@
 ﻿import { BindingExpression } from "./BindingExpression";
-import { ModelObjectReference } from "./ModelObjectReference";
+import { BindingParameters } from "./BindingParameters";
 
-export abstract class BindingBase
-{
-    public readonly IsAntimatterBindingBase: boolean = true;
-
-    public abstract CreateBindingExpression(target: any, targetProperty: string): BindingExpression;
-
-    public abstract get IsDataContextDependent(): boolean;
-}
-
-export class BindingParameters
-{
-    Target?: any;
-    Path?: string;
-    Source?: ModelObjectReference;
-    Mode?: BindingMode;
-    AffectsRender?: boolean;
-}
-
-export class Binding extends BindingBase
+export class Binding
 {
     constructor(args?: BindingParameters)
-    {
-        super();
+    {        
         this.Parameters = args;
     }
+
+    public readonly IsAntimatterBinding: boolean = true;
 
     public readonly Parameters?: BindingParameters;
     
@@ -40,13 +23,4 @@ export class Binding extends BindingBase
     {
         return new BindingExpression(target, targetProperty, this.Parameters);
     }
-}
-
-export enum BindingMode
-{
-    TwoWay = 0,
-    OneWay = 1,
-    OneTime = 2,
-    OneWayToSource = 3,
-    Default = 4
 }

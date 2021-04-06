@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { DependencyProperty, FrameworkPropertyMetadataOptions, PropertyMetadata } from '../DependencyProperty';
 import { DependencyObject } from '../DependencyObject';
-import { Binding, BindingBase } from '../../Binding';
+import { Binding } from '../../Binding';
 
 type TextBlockProps = {
-    Text: string | BindingBase
+    Text: string | Binding
 }
 export class TextBlock extends DependencyObject<TextBlockProps> {
     constructor(props: TextBlockProps)

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { Antimatter } from '../Antimatter';
-import { BindingBase, BindingMode, BindingParameters } from '../Binding';
+import { Binding } from '../Binding';
 import { BindingExpression } from '../BindingExpression';
+import { BindingMode, BindingParameters } from '../BindingParameters';
 import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue } from '../ModelValue';
@@ -11,7 +12,7 @@ export const ReactDataContext = React.createContext<ModelObjectReference|undefin
 
 export interface IBoundComponent extends Component
 {
-    antimatterBindingBases: Map<string, BindingBase>;
+    antimatterBindingBases: Map<string, Binding>;
     antimatterBindingExps: Map<string, BindingExpression>;    
     antimatterOldShouldComponentUpdate?: any;
     antimatterOldRender?: any;
@@ -107,7 +108,7 @@ export class ReactClient implements IClient
     InitializeComponent(component: Component)
     {
         var target = component as IBoundComponent;
-        target.antimatterBindingBases = new Map<string, BindingBase>();
+        target.antimatterBindingBases = new Map<string, Binding>();
         target.antimatterBindingExps = new Map<string, BindingExpression>();
 
         // Handle prop changes after construction
@@ -173,7 +174,7 @@ export class ReactClient implements IClient
             }
         }
 
-        if (!value || !value.IsAntimatterBindingBase)
+        if (!value || !value.IsAntimatterBinding)
         {
             // Plain old value; set the state and continue
             target.state[prop] = value;
@@ -187,7 +188,7 @@ export class ReactClient implements IClient
 
         if (!exp)
         {
-            exp = (value as BindingBase).CreateBindingExpression(target, prop);
+            exp = (value as Binding).CreateBindingExpression(target, prop);
             target.antimatterBindingBases.set(prop, value);
             target.antimatterBindingExps.set(prop, exp);
         }

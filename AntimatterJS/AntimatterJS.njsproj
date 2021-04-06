@@ -53,8 +53,14 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\Antimatter.tsx" />
+    <TypeScriptCompile Include="src\React\AntimatterComponent.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\Binding.tsx" />
     <TypeScriptCompile Include="src\BindingExpression.tsx" />
+    <TypeScriptCompile Include="src\BindingParameters.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\BindingSource.tsx" />
     <TypeScriptCompile Include="src\IClient.tsx" />
     <TypeScriptCompile Include="src\IServer.tsx" />
@@ -73,10 +79,9 @@
     <TypeScriptCompile Include="src\ReactMVVM\Person.tsx" />
     <TypeScriptCompile Include="src\ReactMVVM\PropertyChangedEventArgs.tsx" />
     <TypeScriptCompile Include="src\ReactMVVM\ReactMVVMClient.tsx" />
-    <TypeScriptCompile Include="src\React\Controls\DataContext.tsx">
+    <TypeScriptCompile Include="src\React\DataContext.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\React\DumbTextBlock.tsx" />
     <TypeScriptCompile Include="src\React\ReactClient.tsx" />
     <TypeScriptCompile Include="src\SignalRServer.tsx" />
     <TypeScriptCompile Include="src\Utilities.tsx" />

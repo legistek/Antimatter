@@ -4,12 +4,18 @@ import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
-import { AntimatterComponent, Company } from './components/Company';
+import { Company } from './components/Company';
+import { createTheme, loadTheme } from '@fluentui/react';
+import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
 
 import './custom.css'
-import { Antimatter, DataContext } from '@antimatterjs/react';
-import { Binding } from '@antimatterjs/react/src/Binding';
-import { ModelObjectReference } from '@antimatterjs/react/src/ModelObjectReference';
+
+const theme = createTheme({
+    // You can also modify certain other properties such as fontWeight if desired
+    defaultFontStyle: { fontFamily: 'Roboto' }
+});
+
+loadTheme(theme);
 
 export default class App extends AntimatterComponent<{ Model: ModelObjectReference }, { Model: ModelObjectReference }>
 {

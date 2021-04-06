@@ -2,7 +2,7 @@
 import { Component } from 'react';
 import { DependencyProperty, DependencyPropertyChangedEventArgs, FrameworkPropertyMetadataOptions, PropertyMetadata } from './DependencyProperty';
 import { BindingExpression } from '../BindingExpression';
-import { BindingBase } from '../Binding';
+import { Binding } from '../Binding';
 import { IDependencyObject } from './IDependencyObject';
 import { Event } from './Event';
 const ParentContext = React.createContext<any>(null);
@@ -78,9 +78,9 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
             if (existingBinding)
                 existingBinding.Unapply();
 
-            if (value.IsAntimatterBindingBase)
+            if (value.IsAntimatterBinding)
             {
-                var exp = (value as BindingBase).CreateBindingExpression(this, property.Name);
+                var exp = (value as Binding).CreateBindingExpression(this, property.Name);
                 exp.Apply(property.GlobalIndex === DependencyObject.DataContextProperty.GlobalIndex
                     ? this.Parent?.DataContext
                     : this.DataContext);
@@ -89,7 +89,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
             }
         }
 
-        if (value && value.IsAntimatterBindingBase)
+        if (value && value.IsAntimatterBinding)
             return;
 
         this.SetCurrentValue(property, value);

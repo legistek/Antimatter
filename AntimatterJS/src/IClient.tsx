@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { BindingParameters } from "./Binding";
+import { BindingParameters } from "./BindingParameters";
 
 export interface IClient
 {        
