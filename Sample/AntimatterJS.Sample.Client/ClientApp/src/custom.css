@@ -2,6 +2,131 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+body {
+    all: unset;
+    margin: 0px;
+    font-family: CopyFont;
+    font-size: 14px;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+div {
+    /* Please think twice and then three times more before changing this */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    line-height: 1.2rem;
+    border-style: solid;
+    border-width: 0px;
+    box-shadow: unset;
+    box-sizing: border-box;
+    width: auto;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    align-self: stretch;
+}
+
+.amx-ha-right {
+    margin-left: auto !important;
+    margin-right: 0px !important;
+    width: unset !important;
+}
+
+.amx-ha-left {
+    margin-left: 0px !important;
+    margin-right: auto !important;
+    width: unset !important;
+}
+
+.amx-va-center {
+    align-self: center;
+}
+
+.amx-va-stretch {
+    max-height: 100%;
+    overflow: hidden;
+    top: 0px;
+    bottom: 0px;
+    display: flex;
+}
+
+.amx-overlaps {
+    position: absolute;
+}
+
+.amx-border {
+}
+
+/*:not(.amx-ha-left):not(.amx-ha-center):not(.amx-ha-right).amx-border {*/
+    /* amx-border relies on margin, not padding, which is ordinarily fine as
+    long as it's inside a flex box, but if it's inside a CSS grid,
+    a different hack is needed to both honor the margin and stretch
+    out to maximum width */
+    /*width: auto;
+    left: 0px;
+    right: 0px;
+}*/
+
+.amx-stack-panel {
+    display: block;
+    flex-direction: column;
+    padding: 10px 0px 10px 0px;
+}
+
+    .amx-stack-panel.scrollable {
+        overflow-y: auto;
+    }
+
+    .amx-stack-panel.horizontal {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+        .amx-stack-panel.horizontal > div {
+            width: auto;
+        }
+
+        .amx-stack-panel.horizontal > * {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+            .amx-stack-panel.horizontal > *:first-child {
+                padding-left: 0px;
+                margin-left: 0px;
+            }
+
+            .amx-stack-panel.horizontal > *:last-child {
+                padding-right: 0px;
+                margin-right: 0px;
+            }
+
+    .amx-stack-panel > *:first-child {
+        padding-top: 0px;
+        margin-top: 0px;
+    }
+
+    .amx-stack-panel > *:last-child {
+        padding-bottom: 0px;
+        margin-bottom: 0px;
+    }
+
+.amx-headered-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+/*.amx-headered-grid > div {
+    padding: 5px;
+}*/
+
 a {
     color: #0366d6;
 }

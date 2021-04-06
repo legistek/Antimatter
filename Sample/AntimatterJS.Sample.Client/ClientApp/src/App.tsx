@@ -29,13 +29,14 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     render()
     {
         return (
-            <DataContext Value={this.state.Model}>
-                <DataContext Value={new Binding({ Path: "Company"})}>
-                    <Company />
+            <div>
+                <DataContext Value={this.state.Model}>
+                    <DataContext Value={new Binding({ Path: "Company"})}>
+                        <Company />
+                    </DataContext>
                 </DataContext>
-            </DataContext>
+            </div>
             
-
             //<Layout>
             //    <Route exact path='/' component={Home} />
             //    <Route path='/counter' component={Company} />

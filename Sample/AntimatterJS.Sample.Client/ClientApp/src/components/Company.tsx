@@ -1,6 +1,6 @@
 import { Binding, BindingMode, DataContext, AntimatterComponent, ReactDataContext, ModelObjectReference } from '@antimatterjs/react';
 import * as React from 'react';
-import { List, PrimaryButton, TextField } from '@fluentui/react';
+import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react';
 import { BindableProp } from '@antimatterjs/react/src/BindableProp';
 
 
@@ -47,25 +47,27 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     render()
     {                
         return (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <DataContext Value={this.state.Value}>
-                    <TextBlock Text={new Binding({Path: "FullName"})} />
+            <div className="amx-stack-panel"
+                 style={{ boxShadow: DefaultEffects.elevation8, border: "1px solid #C0C0C0", margin: "5px", padding: "5px" }}>
+                
+                    <DataContext Value={this.state.Value}>
+                        <TextBlock Text={new Binding({Path: "FullName"})} />
 
-                    <h4>Edit Info</h4>
-                    <TextBox Label="First Name" Text={new Binding({ Path: "FirstName" })} />
-                    <TextBox Label="Last Name" Text={new Binding({ Path: "LastName" })} />
-                    <h4>Age</h4>
-                    <TextBlock Text={new Binding({ Path: "Age" })} />
+                        <h4>Edit Info</h4>
+                        <TextBox Label="First Name" Text={new Binding({ Path: "FirstName" })} />
+                        <TextBox Label="Last Name" Text={new Binding({ Path: "LastName" })} />
+                        <h4>Age</h4>
+                        <TextBlock Text={new Binding({ Path: "Age" })} />
 
-                    <ReactDataContext.Consumer>
-                        {(ctx) => (
-                        <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>
-                            INCREASE
-                        </PrimaryButton>
-                        )}
-                    </ReactDataContext.Consumer>
+                        <ReactDataContext.Consumer>
+                            {(ctx) => (
+                            <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>
+                                INCREASE
+                            </PrimaryButton>
+                            )}
+                        </ReactDataContext.Consumer>
 
-                </DataContext>
+                    </DataContext>                
             </div>
         );
     }
@@ -78,7 +80,7 @@ export class TextBlock extends AntimatterComponent<{ Text?: string | Binding }>
     render()
     {
         //console.log("TextBlock rendering");
-        return (<span>{this.state["Text"]}</span>);
+        return (<div>{this.state["Text"]}</div>);
     }
 }
 
@@ -93,26 +95,19 @@ export class Company extends AntimatterComponent
         //this.BindState({ Source: this.state["DataContext"], Path: "Employees" }, "employees");
 
         return (
-            <div>
+            <div className="amx-headered-grid amx-va-stretch">
+                                                    
+                <TextBlock Text={new Binding({ Path: "Name" })} />
                 <div>
-                    <ReactDataContext.Consumer>
-                        {ctx => (
-                            <h1>{this.BindState({ Path: "Name", Source: ctx })}</h1>
-                        )}
-                    </ReactDataContext.Consumer>
-                    
-                    <TextBlock Text={new Binding({ Path: "Name"})}/>
-                </div>                
-
-                <List
-                    items={this.BindState({Path: "Employees"})}
-                    onRenderCell={
-                        (item, index) =>
-                        (                                                
-                            <Employee Value={item}/>                                             
-                        )
-                }/>
-
+                    <List
+                        items={this.BindState({Path: "Employees"})}
+                        onRenderCell={
+                            (item, index) =>
+                            (                                                
+                                <Employee Value={item}/>                                             
+                            )
+                    } />
+                </div>
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}

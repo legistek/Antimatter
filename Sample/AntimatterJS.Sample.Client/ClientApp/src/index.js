@@ -16,9 +16,11 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext 
     const rootElement = document.getElementById('root');
 
     ReactDOM.render(
-        <BrowserRouter basename={baseUrl}>
-            <App Model={appModel} />
-        </BrowserRouter>,
+        <div>
+            <BrowserRouter basename={baseUrl}>
+                <App Model={appModel} />
+            </BrowserRouter>
+        </div>,
         rootElement);
 
     registerServiceWorker();
