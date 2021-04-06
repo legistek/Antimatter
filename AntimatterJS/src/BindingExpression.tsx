@@ -1,5 +1,5 @@
 ﻿import { Antimatter } from "./Antimatter";
-import { BindingParameters } from "./BindingParameters";
+import { BindingMode, BindingParameters } from "./BindingParameters";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
 
@@ -16,6 +16,7 @@ export class BindingExpression
     
     protected _target: any;
     public readonly TargetProperty: string;
+    public readonly ActualMode: BindingMode = BindingMode.OneWay;
 
     private _lastAppliedBindingContext: ModelObjectReference | undefined;
     private _isApplied: boolean = false;
@@ -34,9 +35,20 @@ export class BindingExpression
         this.TargetProperty = targetProperty;
         this.Parameters = args;
         this._target = target;
-
-        if (this.Parameters?.Mode !== undefined)
-            this.Parameters.Mode = args?.Mode;                
+        
+        if (!this.Parameters?.Mode || this.Parameters.Mode == BindingMode.Default)
+        {
+            if (this._target._bindableProps)
+            {
+                var defaultMode = this._target._bindableProps[targetProperty] as BindingMode;
+                if (defaultMode != undefined)
+                    this.ActualMode = defaultMode;
+            }
+        }
+        else
+        {
+            this.ActualMode = this.Parameters.Mode;
+        }
 
         if (args?.AffectsRender === undefined || args?.AffectsRender)
             this._affectsRender = true;        

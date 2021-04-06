@@ -21,9 +21,10 @@ export interface IBoundComponent extends Component
 
 export class ReactClient implements IClient
 {
-    BindCommand(target: any, args?: BindingParameters): () => void
+    BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void
     {
-        const stateVar: string = (args?.Source?.Handle || "dctx") + "." + args?.Path;
+        if (!stateVar)
+            stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
 
         var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
         if (exp &&
@@ -40,11 +41,11 @@ export class ReactClient implements IClient
 
         return target.state[stateVar + "Command"] = (function ()
         {
-            Antimatter.Server.ExecuteICommand(target.state[stateVar]);
+            Antimatter.Server.ExecuteICommand(target.state[stateVar || ""]);
         }).bind(target);
     }
 
-    Bind(target: any, args?: BindingParameters, stateVar?: string): any
+    BindState(target: any, args?: BindingParameters, stateVar?: string): any
     {
         if (!stateVar)
             stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
@@ -82,7 +83,7 @@ export class ReactClient implements IClient
             throw "Components using prop binding must call InitializeComponent in their constructors or extend from AntimatterComponent";
 
         var exp = target.antimatterBindingExps.get(prop);
-        if (exp?.Parameters?.Mode === BindingMode.TwoWay)
+        if (exp?.ActualMode === BindingMode.TwoWay)
         {
             Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
             var newState = {};

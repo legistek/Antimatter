@@ -1,7 +1,9 @@
-import { Antimatter, Binding, BindingMode, BindingParameters, DataContext, ReactClient, AntimatterComponent, ReactDataContext } from '@antimatterjs/react';
+import { Binding, BindingMode, DataContext, AntimatterComponent, ReactDataContext, ModelObjectReference } from '@antimatterjs/react';
 import * as React from 'react';
-import { Component } from 'react';
 import { List, PrimaryButton, TextField } from '@fluentui/react';
+import { BindableProp } from '@antimatterjs/react/src/BindableProp';
+
+
 
 export interface ITextBoxProps
 {
@@ -16,6 +18,11 @@ interface ITextBoxState
 
 export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
 {
+    constructor(props)
+    {
+        super(props, { Text: BindingMode.TwoWay });
+    }
+    
     render()
     {
         return (
@@ -24,12 +31,11 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
                 value={this.state.Text || ''}
                 onChange={(event, newValue) =>                
                     this.OnTargetChanged("Text", newValue)
-                }
-            />);
+                }/>);
     }
 }
 
-export class Employee extends AntimatterComponent<{ num?: number }>
+export class Employee extends AntimatterComponent<{ Value: ModelObjectReference }, { Value: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
@@ -39,21 +45,27 @@ export class Employee extends AntimatterComponent<{ num?: number }>
     }
 
     render()
-    {
-        console.log("Employee " + this.props.num + " rendering");
-        
+    {                
         return (
-            <div style={{ display: "flex", flexDirection: "column" }}>                
-                <TextBlock Text={new Binding({Path: "FullName"})} />
+            <div style={{ display: "flex", flexDirection: "column" }}>
+                <DataContext Value={this.state.Value}>
+                    <TextBlock Text={new Binding({Path: "FullName"})} />
 
-                <h4>Edit Info</h4>
-                <TextBox Label="First Name" Text={new Binding({ Path: "FirstName", Mode: BindingMode.TwoWay })} />
-                <TextBox Label="Last Name" Text={new Binding({ Path: "LastName", Mode: BindingMode.TwoWay })} />
-                <h4>Age</h4>
-                <TextBlock Text={new Binding({ Path: "Age" })} />
-                <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand" })}>
-                    INCREASE
-                </PrimaryButton>
+                    <h4>Edit Info</h4>
+                    <TextBox Label="First Name" Text={new Binding({ Path: "FirstName" })} />
+                    <TextBox Label="Last Name" Text={new Binding({ Path: "LastName" })} />
+                    <h4>Age</h4>
+                    <TextBlock Text={new Binding({ Path: "Age" })} />
+
+                    <ReactDataContext.Consumer>
+                        {(ctx) => (
+                        <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>
+                            INCREASE
+                        </PrimaryButton>
+                        )}
+                    </ReactDataContext.Consumer>
+
+                </DataContext>
             </div>
         );
     }
@@ -78,7 +90,7 @@ export class Company extends AntimatterComponent
         console.log("Company rendering");
 
 
-        this.BindState({ Source: this.state["DataContext"], Path: "Employees" }, "employees");
+        //this.BindState({ Source: this.state["DataContext"], Path: "Employees" }, "employees");
 
         return (
             <div>
@@ -93,13 +105,11 @@ export class Company extends AntimatterComponent
                 </div>                
 
                 <List
-                    items={this.state["employees"]}
+                    items={this.BindState({Path: "Employees"})}
                     onRenderCell={
                         (item, index) =>
-                        (                    
-                            <DataContext Value={item}>
-                                <Employee />
-                            </DataContext>                    
+                        (                                                
+                            <Employee Value={item}/>                                             
                         )
                 }/>
 

@@ -1,12 +1,16 @@
 import { Component } from "react";
 import { Antimatter } from "../Antimatter";
+import { BindableProp } from "../BindableProp";
 import { BindingParameters } from "../BindingParameters";
 
 export class AntimatterComponent<P = {}, S = {}> extends Component<P, S>
 {
-    constructor(props)
+    private _bindableProps: any;
+
+    protected constructor(props, bindableProps?)
     {
         super(props);
+        this._bindableProps = bindableProps || {};
         Antimatter.InitializeComponent(this);
     }
 

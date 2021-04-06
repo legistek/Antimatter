@@ -53,6 +53,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\Antimatter.tsx" />
+    <TypeScriptCompile Include="src\BindableProp.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\React\AntimatterComponent.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>

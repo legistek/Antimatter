@@ -5,7 +5,7 @@ export interface IClient
 {        
     InitializeComponent(target: any);
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean);
-    Bind(target: any, args?: BindingParameters, stateVar?: string): any;
-    BindCommand(target: any, args?: BindingParameters): () => void;
+    BindState(target: any, args?: BindingParameters, stateVar?: string): any;
+    BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void;
     PropChanged(component: Component, prop: string, value: any): void;
 }
