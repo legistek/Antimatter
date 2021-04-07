@@ -92,7 +92,7 @@ export class Company extends AntimatterComponent
         console.log("Company rendering");
 
 
-        this.BindState({ Path: "Employees" }, "employees");
+        //this.BindState({ Path: "Employees" }, "employees");
 
         return (
             <div className="amx-headered-grid">

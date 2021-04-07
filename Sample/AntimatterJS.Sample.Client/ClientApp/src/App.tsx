@@ -7,6 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company } from './components/Company';
 import { createTheme, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
+import { Window } from './components/Window';
 
 import './custom.css'
 
@@ -29,13 +30,13 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     render()
     {
         return (
-            <div className="amx-root" >
+            <Window>
                 <DataContext Value={this.state.Model}>
                     <DataContext Value={new Binding({ Path: "Company"})}>
                         <Company />
                     </DataContext>
                 </DataContext>
-            </div>
+            </Window>
             
             //<Layout>
             //    <Route exact path='/' component={Home} />
