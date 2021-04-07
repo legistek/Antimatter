@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace AntimatterJS.Sample.AppModel
 {
@@ -44,6 +45,23 @@ namespace AntimatterJS.Sample.AppModel
                 }
             }
         }
+        #endregion
+
+        #region IUICommand NewEmployee Command
+
+        private Command _NewEmployeeCommand;
+        public ICommand NewEmployeeCommand
+        {
+            get
+            {
+                return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
+                    (arg) =>
+                    {
+                        this.Employees.Insert(0, new Employee("New", "Employee", 20));
+                    }));
+            }
+        }
+
         #endregion
     }
 }

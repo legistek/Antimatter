@@ -18,9 +18,9 @@ namespace Antimatter.Net.Webassembly
 
         public static readonly ObjectManager Manager = new ObjectManager(null);
 
-        public static void Bind(int netRef, string path, int bxIndex)
+        public static void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
         {
-            Manager.Bind(netRef, path, bxIndex);            
+            Manager.Bind(netRef, path, bxIndex, notifyCollectionChanged);            
         }
 
         public static void UpdateBindingSource(int bxIndex, string valueJson)

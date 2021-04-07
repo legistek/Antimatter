@@ -7,8 +7,8 @@ export class BindingParameters
     Source?: ModelObjectReference;
     Mode?: BindingMode;
     AffectsRender?: boolean;
+    NotifyCollectionChanged?: boolean;
 }
-
 
 export enum BindingMode
 {

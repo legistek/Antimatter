@@ -33,7 +33,12 @@ export class SignalRServer implements IServer
 
     public Bind(netRef: ModelObjectReference, path: string, expression: BindingExpression) 
     {
-        this._connection.invoke("Bind", netRef.Handle, path, expression.Index);
+        this._connection.invoke(
+            "Bind",
+            netRef.Handle,
+            path,
+            expression.Index,
+            expression.Parameters?.NotifyCollectionChanged || false);
     }
 
     public UpdateBindingSource(bxIndex: number, value: ModelValue)

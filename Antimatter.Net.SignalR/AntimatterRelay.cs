@@ -35,9 +35,9 @@ namespace Antimatter.Net.SignalR
             return GetOrCreateReferenceManager().GetRootObject(identifier);
         }
 
-        public void Bind(int netRef, string path, int bxIndex)
+        public void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
         {
-            GetOrCreateReferenceManager().Bind(netRef, path, bxIndex);
+            GetOrCreateReferenceManager().Bind(netRef, path, bxIndex, notifyCollectionChanged);
         }
 
         public void ExecuteICommand(int netRef)

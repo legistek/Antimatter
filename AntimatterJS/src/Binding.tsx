@@ -3,9 +3,12 @@ import { BindingParameters } from "./BindingParameters";
 
 export class Binding
 {
-    constructor(args?: BindingParameters)
-    {        
-        this.Parameters = args;
+    constructor(args?: BindingParameters | string)
+    {
+        if (typeof args === "string")
+            this.Parameters = { Path: args };
+        else
+            this.Parameters = args as BindingParameters;
     }
 
     public readonly IsAntimatterBinding: boolean = true;

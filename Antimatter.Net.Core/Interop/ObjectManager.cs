@@ -78,7 +78,7 @@ namespace Antimatter.Net.Interop
             bx.UpdateSource(value);
         }
 
-        public void Bind(int handle, string path, int bxIndex)
+        public void Bind(int handle, string path, int bxIndex, bool notifyCollectionChanged)
         {
             ObjectReference objRef;
             if (!_dict.TryGetValue(handle, out objRef))
@@ -86,14 +86,14 @@ namespace Antimatter.Net.Interop
 
             var bx = new BindingExpression(this)
             {
-                BXIndex = bxIndex,
-                SourceObjectReference = objRef,
-                Path = path
+                BXIndex = bxIndex,                
+                Path = path,
+                NotifyCollectionChanged = notifyCollectionChanged
             };
 
             this.Bindings[bxIndex] = bx;
 
-            if (!bx.Apply())
+            if (!bx.Apply(objRef))
                 this.Bindings.Remove(bxIndex);
         }
 
@@ -145,7 +145,8 @@ namespace Antimatter.Net.Interop
                     return new DotNetValue
                     {
                         Type = DotNetValueType.Collection,     
-                        Collection = arr
+                        Collection = arr,
+                        ObjectHandle = GetOrCreateReference(obj).Handle,
                     };
                 }
                 else

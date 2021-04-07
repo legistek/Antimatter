@@ -2,6 +2,7 @@ import { Binding, BindingMode, DataContext, AntimatterComponent, ReactDataContex
 import * as React from 'react';
 import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react';
 import { BindableProp } from '@antimatterjs/react/src/BindableProp';
+import { ModernButton } from './ModernButton';
 
 
 
@@ -22,16 +23,16 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
     {
         super(props, { Text: BindingMode.TwoWay });
     }
-    
+
     render()
     {
         return (
             <TextField
                 label={this.state.Label}
                 value={this.state.Text || ''}
-                onChange={(event, newValue) =>                
+                onChange={(event, newValue) =>
                     this.OnTargetChanged("Text", newValue)
-                }/>);
+                } />);
     }
 }
 
@@ -45,29 +46,34 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     }
 
     render()
-    {                
+    {
         return (
             <div className="amx-stack-panel"
-                 style={{ boxShadow: DefaultEffects.elevation8, border: "1px solid #C0C0C0", margin: "5px", padding: "5px" }}>
-                
-                    <DataContext Value={this.state.Value}>
-                        <TextBlock Text={new Binding({Path: "FullName"})} />
+                style={{ boxShadow: DefaultEffects.elevation8, border: "1px solid #C0C0C0", margin: "5px", padding: "5px" }}>
 
-                        <h4>Edit Info</h4>
-                        <TextBox Label="First Name" Text={new Binding({ Path: "FirstName" })} />
-                        <TextBox Label="Last Name" Text={new Binding({ Path: "LastName" })} />
-                        <h4>Age</h4>
-                        <TextBlock Text={new Binding({ Path: "Age" })} />
+                <DataContext Value={this.state.Value}>
+                    <TextBlock Text={new Binding({ Path: "FullName" })} />
 
-                        <ReactDataContext.Consumer>
-                            {(ctx) => (
-                            <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>
-                                INCREASE
-                            </PrimaryButton>
-                            )}
-                        </ReactDataContext.Consumer>
+                    <b>Edit Info</b>
+                    <TextBox        Label="First Name" Text={new Binding("FirstName")} />
+                    <TextBox        Label="Last Name" Text={new Binding("LastName")} />
+                    <h4>Age</h4>
+                    <TextBlock      Text={new Binding("Age")} />
 
-                    </DataContext>                
+                    <ModernButton   Label="INCREASE"
+                                    Command={new Binding("IncreaseAgeCommand")} />
+
+
+
+                    {/*<ReactDataContext.Consumer>*/}
+                    {/*    {(ctx) => (*/}
+                    {/*        <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>*/}
+                    {/*            INCREASE*/}
+                    {/*        </PrimaryButton>*/}
+                    {/*    )}*/}
+                    {/*</ReactDataContext.Consumer>*/}
+
+                </DataContext>
             </div>
         );
     }
@@ -86,7 +92,7 @@ export class TextBlock extends AntimatterComponent<{ Text?: string | Binding }>
 
 export class Company extends AntimatterComponent
 {
-    static displayName = Company.name;    
+    static displayName = Company.name;
     render()
     {
         console.log("Company rendering");
@@ -96,21 +102,25 @@ export class Company extends AntimatterComponent
 
         return (
             <div className="amx-headered-grid">
-                                                    
-                <TextBlock Text={new Binding({ Path: "Name" })} />
+
+                <div className="amx-stack-panel">
+                    <TextBlock Text={new Binding({ Path: "Name" })} />
+                    <ModernButton Label="NEW EMPLOYEE"
+                        Command={new Binding("NewEmployeeCommand")}/>
+                </div>
 
                 {/*className="amx-stack-panel scrollable"*/}
 
-                <div 
-                    style={{display: "block", overflowY: "auto"}} >
+                <div
+                    style={{ display: "block", overflowY: "auto" }} >
                     <List
-                        items={this.BindState({Path: "Employees"})}
+                        items={this.BindState({ Path: "Employees", NotifyCollectionChanged: true })}
                         onRenderCell={
                             (item, index) =>
-                            (                                                
-                                <Employee Value={item}/>                                             
+                            (
+                                <Employee Value={item} />
                             )
-                    } />
+                        } />
                 </div>
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}

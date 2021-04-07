@@ -66,7 +66,7 @@ export class WebassemblyServer implements IServer
                     WebassemblyServer.c_ServerType,
                     "Bind"));
         }
-        this._bindMethod(ref.Handle, path, expression.Index);
+        this._bindMethod(ref.Handle, path, expression.Index, expression.Parameters?.NotifyCollectionChanged || false);
     }
 
     UpdateBindingSource(bxIndex: number, value: ModelValue)

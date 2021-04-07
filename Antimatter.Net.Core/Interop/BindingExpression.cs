@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Antimatter.Net.Interop
         DotNetValue _lastValue;
         ObjectManager _manager;
         bool _suspendPropertyChangeReport;
-
+        
         internal BindingExpression(ObjectManager manager)
         {
             _manager = manager;
@@ -22,7 +23,7 @@ namespace Antimatter.Net.Interop
 
         public int BXIndex { get; set; }
 
-        public ObjectReference SourceObjectReference { get; set; }
+        public bool NotifyCollectionChanged { get; set; }
 
         private WeakReference _resolvedSource;
         public object ResolvedSource
@@ -60,27 +61,27 @@ namespace Antimatter.Net.Interop
             }
         }
 
-        public bool Apply()
+        public bool Apply(ObjectReference sourceRef)
         {
             // Always store this locally to make sure
             // it doesn't get GC'd out from under us
-            var source = this.ResolvedSource = this.SourceObjectReference.Object;
+            var pocoSource = this.ResolvedSource = sourceRef.Object;
 
-            if (source == null)
+            if (pocoSource == null)
                 return false;
 
-            this._pi = source.GetType().GetProperty(this.Path);
+            this._pi = pocoSource.GetType().GetProperty(this.Path);
             if (this._pi == null)
             {
                 Debug.WriteLine(
                     $"Binding Error: Could not find property {Path} " +
-                    $"on type {source.GetType()}. Bindable properties must be public.");
+                    $"on type {pocoSource.GetType()}. Bindable properties must be public.");
                 return false;
             }
 
-            if (source is INotifyPropertyChanged inpc)
+            if (pocoSource is INotifyPropertyChanged inpc)
             {
-                inpc.PropertyChanged += OnSourcePropertyChanged; ;
+                inpc.PropertyChanged += OnSourcePropertyChanged;
             }
 
             // Notify the binding target of the new value just as 
@@ -108,18 +109,39 @@ namespace Antimatter.Net.Interop
                 return;
 
             var value = _pi.GetValue(obj);
+
+            if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
+            {
+                incc.CollectionChanged += OnSourceCollectionChanged;
+            }
+
             var dnv = _manager.GetDotNetValue(value);
 
             // TODO - What if value is unchanged?
 
-            if (_lastValue?.type == DotNetValueType.Object)
+            if (_lastValue?.type == DotNetValueType.Object ||
+                _lastValue?.type == DotNetValueType.Collection)
             {
-                _manager.GetReference(_lastValue.objectHandle)?.Release(this._manager);
-            }
+                var reference = _manager.GetReference(_lastValue.objectHandle);
+                if (reference != null)
+                {
+                    if (reference.Object is INotifyCollectionChanged oldIncc &&
+                        this.NotifyCollectionChanged)
+                    {
+                        oldIncc.CollectionChanged -= OnSourceCollectionChanged;
+                    }
+                    reference.Release(this._manager);
+                }
+            }          
 
             _lastValue = dnv;
 
             Reactor.Client.UpdateBinding(this._manager.ClientID, this.BXIndex, dnv);
+        }
+
+        private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ReportSourcePropertyUpdate();
         }
     }
 }
