@@ -70,18 +70,20 @@ namespace Antimatter.Net.Interop
             if (pocoSource == null)
                 return false;
 
-            this._pi = pocoSource.GetType().GetProperty(this.Path);
-            if (this._pi == null)
+            if (!string.IsNullOrEmpty(this.Path))
             {
-                Debug.WriteLine(
-                    $"Binding Error: Could not find property {Path} " +
-                    $"on type {pocoSource.GetType()}. Bindable properties must be public.");
-                return false;
-            }
-
-            if (pocoSource is INotifyPropertyChanged inpc)
-            {
-                inpc.PropertyChanged += OnSourcePropertyChanged;
+                this._pi = pocoSource.GetType().GetProperty(this.Path);
+                if (this._pi == null)
+                {
+                    Debug.WriteLine(
+                        $"Binding Error: Could not find property {Path} " +
+                        $"on type {pocoSource.GetType()}. Bindable properties must be public.");
+                    return false;
+                }
+                if (pocoSource is INotifyPropertyChanged inpc)
+                {
+                    inpc.PropertyChanged += OnSourcePropertyChanged;
+                }
             }
 
             // Notify the binding target of the new value just as 
@@ -108,7 +110,7 @@ namespace Antimatter.Net.Interop
             if (obj == null)
                 return;
 
-            var value = _pi.GetValue(obj);
+            var value = _pi?.GetValue(obj) ?? obj;
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
             {

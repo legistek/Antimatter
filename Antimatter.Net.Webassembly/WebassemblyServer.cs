@@ -34,9 +34,10 @@ namespace Antimatter.Net.Webassembly
             return Manager.GetRootObject(identifier);
         }
 
-        public static void ExecuteICommand(int netRef)
+        public static void ExecuteICommand(int netRef, string valueJson)
         {
-            Manager.ExecuteICommand(netRef);
+            var value = JsonSerializer.Deserialize<DotNetValue>(valueJson);
+            Manager.ExecuteICommand(netRef, value);
         }
     }
 }

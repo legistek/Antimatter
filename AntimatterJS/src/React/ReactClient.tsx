@@ -163,8 +163,10 @@ export class ReactClient implements IClient
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
         {
-            var sameBindingBase = existingBinding === value;
-            if (sameBindingBase)                
+            //if (value?.IsAntimatterBinding &&
+            //    BindingParameters.Equals(existingBinding.Parameters, value.Parameters))
+            //    return;
+            if (target.props[prop] === value)
                 return;
 
             exp = target.antimatterBindingExps.get(prop);

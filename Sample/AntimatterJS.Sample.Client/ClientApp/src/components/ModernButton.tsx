@@ -2,12 +2,14 @@ import { Component } from 'react';
 import * as React from 'react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
 import { PrimaryButton } from '@fluentui/react';
+import { ModelValue } from '@antimatterjs/react/src/ModelValue';
 
 export interface IModernButtonProps
 {
     Label?: string | Binding,
     Command?: ModelObjectReference | Binding,
-    CommandParameter?: any
+    CommandParameter?: any,
+    className?: string
 }
 interface IModernButtonState
 {
@@ -25,7 +27,8 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
     render()
     {
         return (
-            <PrimaryButton onClick={() => this.onClick()}>
+            <PrimaryButton className={this.props.className}
+                onClick={() => this.onClick()}>
                 {this.state.Label}
             </PrimaryButton>
             );
@@ -34,6 +37,8 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
     private onClick()
     {
         if (this.state.Command)
-            Antimatter.Server.ExecuteICommand(this.state.Command);
+            Antimatter.Server.ExecuteICommand(
+                this.state.Command,
+                ModelValue.Get(this.state.CommandParameter));
     }
 }

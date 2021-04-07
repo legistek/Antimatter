@@ -6,7 +6,7 @@ export interface IServer
 {
     StartupAsync(): Promise<void>;
     GetRootObject(objectid: string): Promise<ModelObjectReference>;
-    ExecuteICommand(netRef: ModelObjectReference): Promise<void>
+    ExecuteICommand(netRef: ModelObjectReference, parameter?: ModelValue): Promise<void>
     Bind(ref: ModelObjectReference, path: string | undefined, expression: BindingExpression);
     UpdateBindingSource(bxIndex: number, value: ModelValue);
 }

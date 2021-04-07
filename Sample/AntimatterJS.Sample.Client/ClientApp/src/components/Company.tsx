@@ -3,6 +3,7 @@ import * as React from 'react';
 import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react';
 import { BindableProp } from '@antimatterjs/react/src/BindableProp';
 import { ModernButton } from './ModernButton';
+import { isJSDocVariadicType } from 'typescript';
 
 
 
@@ -36,7 +37,7 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
     }
 }
 
-export class Employee extends AntimatterComponent<{ Value: ModelObjectReference }, { Value: ModelObjectReference }>
+export class Employee extends AntimatterComponent<{ Value: ModelObjectReference, Company: ModelObjectReference }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
@@ -60,8 +61,14 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <h4>Age</h4>
                     <TextBlock      Text={new Binding("Age")} />
 
-                    <ModernButton   Label="INCREASE"
-                                    Command={new Binding("IncreaseAgeCommand")} />
+                    <div className="amx-stack-panel horizontal">
+                    <ModernButton Label="INCREASE AGE"                        
+                        Command={new Binding("IncreaseAgeCommand")} />
+                    <ModernButton Label="FIRE"
+                        Command={new Binding({ Path: "DeleteEmployeeCommand", Source: this.state.Company })}
+                        CommandParameter={new Binding()}
+                        />
+                    </div>
 
 
 
@@ -118,7 +125,7 @@ export class Company extends AntimatterComponent
                         onRenderCell={
                             (item, index) =>
                             (
-                                <Employee Value={item} />
+                                <Employee Value={item} Company={this.state["DataContext"] } />
                             )
                         } />
                 </div>

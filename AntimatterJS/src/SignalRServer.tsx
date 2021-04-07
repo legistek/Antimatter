@@ -26,9 +26,9 @@ export class SignalRServer implements IServer
         return new ModelObjectReference(handle);
     }
 
-    public ExecuteICommand(netRef: ModelObjectReference): Promise<void>
+    public ExecuteICommand(netRef: ModelObjectReference, parameter?: ModelValue): Promise<void>
     {
-        return this._connection.invoke("ExecuteICommand", netRef.Handle);
+        return this._connection.invoke("ExecuteICommand", netRef.Handle, parameter);
     }
 
     public Bind(netRef: ModelObjectReference, path: string, expression: BindingExpression) 

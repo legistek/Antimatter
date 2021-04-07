@@ -8,6 +8,19 @@ export class BindingParameters
     Mode?: BindingMode;
     AffectsRender?: boolean;
     NotifyCollectionChanged?: boolean;
+
+    public static Equals(p1?: BindingParameters, p2?: BindingParameters)
+    {
+        if (p1 == p2)
+            return true;
+        if (p1 == undefined || p2 == undefined)
+            return false;
+        return p1.Target == p2.Target &&
+            p1.Path == p2.Path &&
+            ModelObjectReference.Equals(p1.Source, p2.Source) &&
+            p1.AffectsRender == p2.AffectsRender &&
+            p1.NotifyCollectionChanged == p2.NotifyCollectionChanged;
+    }
 }
 
 export enum BindingMode

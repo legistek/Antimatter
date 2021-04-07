@@ -63,5 +63,23 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        #region IUICommand DeleteEmployee Command
+
+        private Command _DeleteEmployeeCommand;
+        public ICommand DeleteEmployeeCommand
+        {
+            get
+            {
+                return _DeleteEmployeeCommand ?? (_DeleteEmployeeCommand = new Command(
+                    (arg) =>
+                    {
+                        if (arg is Employee e)
+                            this.Employees.Remove(e);
+                    }));
+            }
+        }
+
+        #endregion
     }
 }

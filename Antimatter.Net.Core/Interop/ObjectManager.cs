@@ -97,9 +97,9 @@ namespace Antimatter.Net.Interop
                 this.Bindings.Remove(bxIndex);
         }
 
-        public void ExecuteICommand(int netRef)
+        public void ExecuteICommand(int netRef, DotNetValue value)
         {
-            (GetReference(netRef)?.Object as ICommand)?.Execute(null);
+            (GetReference(netRef)?.Object as ICommand)?.Execute(value?.ToCSValue(this));
         }
 
         public int GetRootObject(string identifier)

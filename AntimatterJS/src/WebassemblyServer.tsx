@@ -42,7 +42,7 @@ export class WebassemblyServer implements IServer
         return Promise.resolve(new ModelObjectReference(handle));
     }
 
-    ExecuteICommand(netRef: ModelObjectReference) : Promise<void>
+    ExecuteICommand(netRef: ModelObjectReference, parameter?: ModelValue) : Promise<void>
     {
         if (!this._executeICommandMethod)
         {
@@ -52,7 +52,11 @@ export class WebassemblyServer implements IServer
                     WebassemblyServer.c_ServerType,
                     "ExecuteICommand"));
         }
-        this._executeICommandMethod(netRef.Handle);
+        this._executeICommandMethod(
+            netRef.Handle,
+            parameter
+                ? JSON.stringify(parameter)
+                : undefined);
         return Promise.resolve();
     }
 

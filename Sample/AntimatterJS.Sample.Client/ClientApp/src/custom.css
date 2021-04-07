@@ -19,7 +19,7 @@ div {
     border-style: solid;
     border-width: 0px;
     box-shadow: unset;
-    box-sizing: border-box;
+    box-sizing: content-box;
     width: auto;
     left: 0;
     right: 0;
@@ -79,6 +79,11 @@ div {
     right: 0px;
 }*/
 
+.amx-standard-control
+{
+    margin: 5px;
+}
+
 .amx-stack-panel {
     display: block;
     flex-direction: column;
@@ -90,8 +95,8 @@ div {
     }
 
     .amx-stack-panel.horizontal {
-        display: flex;
-        flex-direction: row;
+        /*display: flex;
+        flex-direction: row;*/
         overflow-x: auto;
         overflow-y: hidden;
     }
@@ -101,19 +106,21 @@ div {
         }
 
         .amx-stack-panel.horizontal > * {
-            padding-top: 0px;
-            padding-bottom: 0px;
+            /*padding-top: 0px;
+            padding-bottom: 0px;*/
             margin-left: 5px;
-            margin-right: 5px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-top: 0px;
         }
 
             .amx-stack-panel.horizontal > *:first-child {
-                padding-left: 0px;
+                /*padding-left: 0px;*/
                 margin-left: 0px;
             }
 
             .amx-stack-panel.horizontal > *:last-child {
-                padding-right: 0px;
+                /*padding-right: 0px;*/
                 margin-right: 0px;
             }
 

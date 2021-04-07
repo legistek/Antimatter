@@ -40,9 +40,9 @@ namespace Antimatter.Net.SignalR
             GetOrCreateReferenceManager().Bind(netRef, path, bxIndex, notifyCollectionChanged);
         }
 
-        public void ExecuteICommand(int netRef)
+        public void ExecuteICommand(int netRef, DotNetValue value)
         {
-            GetOrCreateReferenceManager().ExecuteICommand(netRef);
+            GetOrCreateReferenceManager().ExecuteICommand(netRef, value);
         }
 
         public void UpdateBindingSource(int bxIndex, DotNetValue value)
