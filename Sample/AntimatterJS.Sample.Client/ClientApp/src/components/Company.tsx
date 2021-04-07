@@ -92,13 +92,17 @@ export class Company extends AntimatterComponent
         console.log("Company rendering");
 
 
-        //this.BindState({ Source: this.state["DataContext"], Path: "Employees" }, "employees");
+        this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <div className="amx-headered-grid amx-va-stretch">
+            <div className="amx-headered-grid">
                                                     
                 <TextBlock Text={new Binding({ Path: "Name" })} />
-                <div>
+
+                {/*className="amx-stack-panel scrollable"*/}
+
+                <div 
+                    style={{display: "block", overflowY: "auto"}} >
                     <List
                         items={this.BindState({Path: "Employees"})}
                         onRenderCell={
