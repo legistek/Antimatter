@@ -4,6 +4,7 @@ import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react'
 import { BindableProp } from '@antimatterjs/react/src/BindableProp';
 import { ModernButton } from './ModernButton';
 import { isJSDocVariadicType } from 'typescript';
+import { ListView } from './ListView';
 
 
 
@@ -37,7 +38,7 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
     }
 }
 
-export class Employee extends AntimatterComponent<{ Value: ModelObjectReference, Company: ModelObjectReference }, { Value: ModelObjectReference, Company: ModelObjectReference }>
+export class Employee extends AntimatterComponent<{ Value: ModelObjectReference|Binding, Company: ModelObjectReference|Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
@@ -104,7 +105,6 @@ export class Company extends AntimatterComponent
     {
         console.log("Company rendering");
 
-
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
@@ -115,20 +115,12 @@ export class Company extends AntimatterComponent
                     <ModernButton Label="NEW EMPLOYEE"
                         Command={new Binding("NewEmployeeCommand")}/>
                 </div>
-
-                {/*className="amx-stack-panel scrollable"*/}
-
-                <div
-                    style={{ display: "block", overflowY: "auto" }} >
-                    <List
-                        items={this.BindState({ Path: "Employees", NotifyCollectionChanged: true })}
-                        onRenderCell={
-                            (item, index) =>
-                            (
-                                <Employee Value={item} Company={this.state["DataContext"] } />
-                            )
-                        } />
-                </div>
+                                
+                <ListView ItemsSource={new Binding({ Path: "Employees", NotifyCollectionChanged: true })}
+                    ItemTemplate={(item) =>
+                    (                            
+                        <Employee Value={item} Company={this.state["DataContext"]} />
+                    )}/>                
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}
