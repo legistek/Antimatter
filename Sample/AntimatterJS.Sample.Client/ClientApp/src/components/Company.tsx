@@ -1,7 +1,6 @@
-import { Binding, BindingMode, DataContext, AntimatterComponent, ReactDataContext, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react';
-import { BindableProp } from '@antimatterjs/react/src/BindableProp';
+import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/react';
 import { ModernButton } from './ModernButton';
 import { ListView } from './ListView';
 import { TextBlock } from './TextBlock';
@@ -13,21 +12,17 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 {
     static displayName = Employee.name;
 
-    constructor(props)
-    {
-        super(props);
-    }
-
-    componentWillUnmount()
-    {
-
-    }
-
     render()
-    {
+    {        
         return (
-            <div className="amx-stack-panel"
-                style={{ boxShadow: DefaultEffects.elevation8, border: "1px solid #C0C0C0", margin: "5px", padding: "5px" }}>
+            <div className={"amx-stack-panel amx-grow-entrance"}
+                style={{
+                    boxShadow: DefaultEffects.elevation8,
+                    border: "1px solid #C0C0C0",
+                    margin: "5px",
+                    padding: "5px",
+                    /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
+                }}>
 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
@@ -48,14 +43,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             CommandParameter={new Binding()}
                         />
                     </div>
-
-                    {/*<ReactDataContext.Consumer>*/}
-                    {/*    {(ctx) => (*/}
-                    {/*        <PrimaryButton onClick={this.BindCommand({ Path: "IncreaseAgeCommand", Source: ctx })}>*/}
-                    {/*            INCREASE*/}
-                    {/*        </PrimaryButton>*/}
-                    {/*    )}*/}
-                    {/*</ReactDataContext.Consumer>*/}
 
                 </DataContext>
             </div>
@@ -78,18 +65,20 @@ export class Company extends AntimatterComponent
             <div className="amx-headered-grid">
 
                 <div className="amx-stack-panel">
-                    <TextBlock Text={new Binding({ Path: "Name" })} />
+                    <TextBlock Text={new Binding("Name")} />
                     <ModernButton Label="NEW EMPLOYEE"
                         Command={new Binding("NewEmployeeCommand")} />
                 </div>
 
-                <ListView ItemsSource={new Binding({ Path: "Employees", NotifyCollectionChanged: true })}
+                <ListView
+                    ItemsSource={new Binding("Employees")}
                     ItemTemplate={(item) =>
                     (
-                        <Employee
-                            Value={item}
-                            key={item?.IsModelObjectReference ? item.Handle : null}
-                            Company={this.state["DataContext"]} />
+                        <div>
+                            <Employee
+                                Value={item}
+                                Company={this.state["DataContext"]} />
+                        </div>
                     )} />
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}

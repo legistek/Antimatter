@@ -160,3 +160,35 @@ body {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes growFrom0 {
+    0% {
+        max-height: 0px;
+        opacity: 0%;
+    }
+
+    100% {        
+        max-height: 1000px;
+        opacity: 100%;
+    }
+}
+
+.amx-left-entrance {
+    animation: 0.5s 0s 1 slideInFromLeft;
+}
+
+.amx-grow-entrance {
+    animation: 1s 0s 1 growFrom0;
+}

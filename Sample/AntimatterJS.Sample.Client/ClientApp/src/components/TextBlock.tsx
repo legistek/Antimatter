@@ -14,6 +14,12 @@ export class TextBlock extends AntimatterComponent<ITextBlockProps, ITextBlockSt
 {
     static displayName = TextBlock.name;
 
+    public static DefaultBindings = {
+        Text: {
+            FallbackValue: '...'
+        }
+    };
+
     render()
     {
         return (<div className={this.props.className}>{this.state.Text}</div>);

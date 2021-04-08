@@ -5,12 +5,9 @@ import { BindingParameters } from "../BindingParameters";
 
 export class AntimatterComponent<P = {}, S = {}> extends Component<P, S>
 {
-    private _bindableProps: any;
-
-    protected constructor(props, bindableProps?)
+    protected constructor(props)
     {
         super(props);
-        this._bindableProps = bindableProps || {};
         Antimatter.InitializeComponent(this);
     }
 

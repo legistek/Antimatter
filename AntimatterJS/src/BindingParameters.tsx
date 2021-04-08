@@ -8,6 +8,7 @@ export class BindingParameters
     Mode?: BindingMode;
     AffectsRender?: boolean;
     NotifyCollectionChanged?: boolean;
+    FallbackValue?: any;
 
     public static Equals(p1?: BindingParameters, p2?: BindingParameters)
     {
@@ -24,10 +25,9 @@ export class BindingParameters
 }
 
 export enum BindingMode
-{
-    TwoWay = 0,
+{   
     OneWay = 1,
     OneTime = 2,
     OneWayToSource = 3,
-    Default = 4
+    TwoWay = 4,
 }

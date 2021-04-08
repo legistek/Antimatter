@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
+import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, BindingParameters } from '@antimatterjs/react';
 import { List, PrimaryButton } from '@fluentui/react';
 import { ModelValue } from '@antimatterjs/react/src/ModelValue';
 
@@ -15,11 +15,18 @@ export interface IListViewState
 }
 export class ListView extends AntimatterComponent<IListViewProps, IListViewState>
 {
+    public static DefaultBindings = {
+        ItemsSource: {
+            NotifyCollectionChanged: true
+        }
+    };
+
     render()
     {
         return (
             <div style={{ display: "block", overflowY: "auto" }}>
-                <List items={this.state.ItemsSource}
+                <List
+                    items={this.state.ItemsSource}                   
                     getKey={(item, index) => item?.IsModelObjectReference ? item.Handle : null}
                     onRenderCell={(item, index) =>
                         this.props.ItemTemplate(item)} />

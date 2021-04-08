@@ -15,11 +15,12 @@ interface ITextBoxState
 
 export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
 {
-    constructor(props)
-    {
-        super(props, { Text: BindingMode.TwoWay });
-    }
-
+    public static DefaultBindings = {
+        Text: {
+            Mode: BindingMode.TwoWay,
+        }
+    };
+    
     render()
     {
         return (
