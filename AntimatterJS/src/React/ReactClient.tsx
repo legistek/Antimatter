@@ -18,6 +18,7 @@ export interface IBoundComponent extends Component
     antimatterOldRender?: any;
     antimatterLastDataContext?: ModelObjectReference;
     antimatterHasUpdated?: boolean;
+    antimatterOldComponentWillUnmount?: any;
 }
 
 export class ReactClient implements IClient
@@ -133,6 +134,18 @@ export class ReactClient implements IClient
             //    target.antimatterHasUpdated = true;
             return propChanges || target.state !== nextState;
         };
+
+        // Handle final unmounting
+        target.antimatterOldComponentWillUnmount = target.componentWillUnmount;        
+        target.componentWillUnmount = () =>
+        {
+            for (const exp of target.antimatterBindingExps)
+                exp[1].Unapply();
+            target.antimatterBindingExps.clear();
+            target.antimatterBindingBases.clear();
+            if (target.antimatterOldComponentWillUnmount)
+                target.antimatterOldComponentWillUnmount();
+        };                
 
         // Intercept render to provide or consume data context
         target.antimatterOldRender = target.render;

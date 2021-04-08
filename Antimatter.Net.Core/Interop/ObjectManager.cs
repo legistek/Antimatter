@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -88,13 +89,28 @@ namespace Antimatter.Net.Interop
             {
                 BXIndex = bxIndex,                
                 Path = path,
-                NotifyCollectionChanged = notifyCollectionChanged
+                NotifyCollectionChanged = notifyCollectionChanged,
+                SourceReference = objRef
             };
 
             this.Bindings[bxIndex] = bx;
 
             if (!bx.Apply(objRef))
                 this.Bindings.Remove(bxIndex);
+        }
+
+        public void Unbind(int bxIndex)
+        {
+            BindingExpression bx;
+            if (this.Bindings.TryGetValue(bxIndex, out bx))
+            {
+                bx.Unbind();
+                this.Bindings.Remove(bxIndex);
+            }
+            else
+            {
+                Debug.WriteLine($"WARNING: No binding with index {bxIndex} found. Was it already unbound?");
+            }
         }
 
         public void ExecuteICommand(int netRef, DotNetValue value)
@@ -112,12 +128,34 @@ namespace Antimatter.Net.Interop
 
         internal string ClientID { get; }
 
-        internal void Dispose(ObjectReference reference)
+        internal void FinalDispose(ObjectReference reference)
         {
+            //Console.WriteLine($"Disposing {reference.Object?.ToString()}");
             var obj = reference.Object;
             if (obj != null)
                 _references.Remove(obj);
             _dict.Remove(reference.Handle);
+        }
+
+        internal void Release(int objHandle)
+        {
+            var reference = GetReference(objHandle);
+            if (reference != null)
+                reference.Release(this);
+        }
+
+        internal void Release(DotNetValue value)
+        {
+            if (value == null)
+                return;
+            if (value.Type == DotNetValueType.Object)
+                Release(value.ObjectHandle);
+            else if (value.Type == DotNetValueType.Collection)
+            {
+                foreach (var val in value.Collection)
+                    Release(val);
+                value.Collection = null;
+            }
         }
 
         internal ObjectReference GetReference(int index)
@@ -268,6 +306,7 @@ namespace Antimatter.Net.Interop
             ObjectReference reference = null;
             if (!this._references.TryGetValue(obj, out reference))
             {
+                //Console.WriteLine($"Adding {obj?.ToString()}");
                 reference = new ObjectReference
                 {
                     Handle = this._nextHandle,

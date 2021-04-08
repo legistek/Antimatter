@@ -26,7 +26,7 @@ namespace Antimatter.Net.Interop
             _refCount--;
             if (_refCount == 0)
             {
-                mgr.Dispose(this);
+                mgr.FinalDispose(this);
                 this.Object = null; // free for GC
             }
         }

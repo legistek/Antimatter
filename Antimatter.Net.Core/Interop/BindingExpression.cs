@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Antimatter.Net.Interop
 {
@@ -25,6 +22,8 @@ namespace Antimatter.Net.Interop
 
         public bool NotifyCollectionChanged { get; set; }
 
+        public ObjectReference SourceReference { get; set; }
+
         private WeakReference _resolvedSource;
         public object ResolvedSource
         {
@@ -34,14 +33,23 @@ namespace Antimatter.Net.Interop
             }
             set
             {
-                this._resolvedSource = new WeakReference(value);
+                if (value == null)
+                    this._resolvedSource = null;
+                else
+                    this._resolvedSource = new WeakReference(value);
             }
         }
 
         public string Path { get; set; }
 
-        public void Unbind(int index)
+        public void Unbind()
         {
+            if (this.ResolvedSource is INotifyPropertyChanged inpc)
+                inpc.PropertyChanged -= OnSourcePropertyChanged;
+
+            ReleaseLastValue();
+            this.ResolvedSource = null;
+            this.SourceReference = null;
         }
 
         public void UpdateSource(DotNetValue value)
@@ -100,10 +108,6 @@ namespace Antimatter.Net.Interop
             ReportSourcePropertyUpdate();
         }
 
-        private void Unapply()
-        {
-        }
-
         private void ReportSourcePropertyUpdate()
         {
             var obj = this.ResolvedSource;
@@ -113,32 +117,28 @@ namespace Antimatter.Net.Interop
             var value = _pi?.GetValue(obj) ?? obj;
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
-            {
                 incc.CollectionChanged += OnSourceCollectionChanged;
-            }
-
-            var dnv = _manager.GetDotNetValue(value);
 
             // TODO - What if value is unchanged?
+            ReleaseLastValue();
 
+            var dnv = _manager.GetDotNetValue(value);
+            _lastValue = dnv;
+
+            Reactor.Client.UpdateBinding(this._manager.ClientID, this.BXIndex, dnv);
+        }
+
+        private void ReleaseLastValue()
+        {
             if (_lastValue?.type == DotNetValueType.Object ||
                 _lastValue?.type == DotNetValueType.Collection)
             {
                 var reference = _manager.GetReference(_lastValue.objectHandle);
-                if (reference != null)
-                {
-                    if (reference.Object is INotifyCollectionChanged oldIncc &&
-                        this.NotifyCollectionChanged)
-                    {
-                        oldIncc.CollectionChanged -= OnSourceCollectionChanged;
-                    }
-                    reference.Release(this._manager);
-                }
-            }          
-
-            _lastValue = dnv;
-
-            Reactor.Client.UpdateBinding(this._manager.ClientID, this.BXIndex, dnv);
+                if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)
+                    oldIncc.CollectionChanged -= OnSourceCollectionChanged;
+            }
+            _manager.Release(_lastValue);
+            _lastValue = null;
         }
 
         private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

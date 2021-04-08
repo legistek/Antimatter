@@ -104,5 +104,10 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return this.FullName;
+        }
     }
 }

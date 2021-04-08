@@ -87,19 +87,7 @@ export class BindingExpression
 
     public Unapply(): void
     {
-    }
-
-    //public GetSourceValue(): any
-    //{
-    //    if (!this._resolvedSource)
-    //        return null;
-    //    if ((this._resolvedSource.Type & BindingSourceType.POJO) > 0)
-    //        return this._resolvedSource.POJO[this.SourcePath as string];
-    //    return null;
-    //}
-
-    private unsubscribeFromSourcePropertyChanges()
-    {
+        Antimatter.Server.Unbind(this);
     }
 
     protected subscribeToSourcePropertyChanges(): boolean

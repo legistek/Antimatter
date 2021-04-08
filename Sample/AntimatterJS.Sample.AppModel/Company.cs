@@ -81,5 +81,10 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return $"Company: {this.Name}";
+        }
     }
 }

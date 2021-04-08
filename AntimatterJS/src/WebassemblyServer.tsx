@@ -73,6 +73,19 @@ export class WebassemblyServer implements IServer
         this._bindMethod(ref.Handle, path, expression.Index, expression.Parameters?.NotifyCollectionChanged || false);
     }
 
+    Unbind(bx: BindingExpression)
+    {
+        if (!this._unbindMethod)
+        {
+            this._unbindMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "Unbind"));
+        }
+        this._unbindMethod(bx.Index);
+    }
+
     UpdateBindingSource(bxIndex: number, value: ModelValue)
     {
         if (!this._updateSourceValueMethod)
@@ -197,6 +210,7 @@ export class WebassemblyServer implements IServer
     private _bindMethod: any;
     private _executeICommandMethod: any;
     private _updateSourceValueMethod: any;
+    private _unbindMethod: any;
 
     //#endregion
 }

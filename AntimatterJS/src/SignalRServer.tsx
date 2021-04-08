@@ -41,6 +41,11 @@ export class SignalRServer implements IServer
             expression.Parameters?.NotifyCollectionChanged || false);
     }
 
+    public Unbind(bx: BindingExpression)
+    {
+        this._connection.invoke("Unbind", bx.Index);
+    }
+
     public UpdateBindingSource(bxIndex: number, value: ModelValue)
     {
         this._connection.invoke("UpdateBindingSource", bxIndex, value);

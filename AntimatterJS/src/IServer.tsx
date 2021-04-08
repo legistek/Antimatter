@@ -8,5 +8,6 @@ export interface IServer
     GetRootObject(objectid: string): Promise<ModelObjectReference>;
     ExecuteICommand(netRef: ModelObjectReference, parameter?: ModelValue): Promise<void>
     Bind(ref: ModelObjectReference, path: string | undefined, expression: BindingExpression);
+    Unbind(exp: BindingExpression);
     UpdateBindingSource(bxIndex: number, value: ModelValue);
 }

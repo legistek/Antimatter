@@ -18,6 +18,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
         super(props);
     }
 
+    componentWillUnmount()
+    {
+
+    }
+
     render()
     {
         return (

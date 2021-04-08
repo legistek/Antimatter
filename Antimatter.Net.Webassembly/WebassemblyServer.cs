@@ -23,6 +23,11 @@ namespace Antimatter.Net.Webassembly
             Manager.Bind(netRef, path, bxIndex, notifyCollectionChanged);            
         }
 
+        public static void Unbind(int bxIndex)
+        {
+            Manager.Unbind(bxIndex);
+        }
+
         public static void UpdateBindingSource(int bxIndex, string valueJson)
         {
             var value = JsonSerializer.Deserialize<DotNetValue>(valueJson);
