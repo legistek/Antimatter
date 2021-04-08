@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Antimatter.Net.Core\Antimatter.Net.Core.csproj" />
+    <ProjectReference Include="..\Sample\AntimatterJS.Sample.AppModel\AntimatterJS.Sample.AppModel.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -21,8 +21,9 @@ export class ListView extends AntimatterComponent<IListViewProps, IListViewState
             <div style={{ display: "block", overflowY: "auto" }}>
                 <List items={this.state.ItemsSource}
                     onRenderCell={(item, index) =>
-                        this.props.ItemTemplate(item)
-                        } />
+                    (
+                        <React.Fragment key={item?.IsModelObjectReference ? item.Handle : null}>{this.props.ItemTemplate(item)}</React.Fragment>
+                    )} />
             </div>
         )
     }

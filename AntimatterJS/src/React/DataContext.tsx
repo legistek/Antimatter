@@ -7,7 +7,7 @@ import { ReactDataContext } from './ReactClient';
 
 /** Used to change the DataContext of a UI branch. */
 export class DataContext extends Component<{ Value?: Binding | ModelObjectReference }, { Value?: ModelObjectReference }>
-{
+{    
     constructor(props)
     {
         super(props);

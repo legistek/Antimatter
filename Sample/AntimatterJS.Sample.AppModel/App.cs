@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+using Antimatter.Net;
+
 namespace AntimatterJS.Sample.AppModel
 {
+    [AntimatterModel]
     public class App : ObservableObject
     {
         public Company Company { get; } = new Company()

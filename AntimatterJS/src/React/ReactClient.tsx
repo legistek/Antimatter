@@ -17,6 +17,7 @@ export interface IBoundComponent extends Component
     antimatterOldShouldComponentUpdate?: any;
     antimatterOldRender?: any;
     antimatterLastDataContext?: ModelObjectReference;
+    antimatterHasUpdated?: boolean;
 }
 
 export class ReactClient implements IClient
@@ -100,9 +101,16 @@ export class ReactClient implements IClient
             target.state = {};
         if (target.state[targetProperty] != value)
         {
-            target.state[targetProperty] = value;
             if (reRender)
-                target.setState({});
+            {
+                var newState = {};
+                newState[targetProperty] = value;
+                target.setState(newState);
+            }
+            else
+            {
+                target.state[targetProperty] = value;
+            }            
         }
     }
 
@@ -116,10 +124,14 @@ export class ReactClient implements IClient
         target.antimatterOldShouldComponentUpdate = target.shouldComponentUpdate;       
         target.shouldComponentUpdate = (nextProps, nextState) =>
         {
-            this.BindPropsInternal(target, nextProps);            
+            const propChanges: boolean = this.BindPropsInternal(target, nextProps, false)
+                //|| !target.antimatterHasUpdated
+                ;
             if ((target as any).antimatterOldShouldComponentUpdate)
                 return (target as any).antimatterOldShouldComponentUpdate;
-            return true;
+            //if (any)
+            //    target.antimatterHasUpdated = true;
+            return propChanges || target.state !== nextState;
         };
 
         // Intercept render to provide or consume data context
@@ -147,27 +159,34 @@ export class ReactClient implements IClient
         
         if (!target.state)
             target.state = {};
-        this.BindPropsInternal(target, target.props);
+        this.BindPropsInternal(target, target.props, true);
     }
 
-    private BindPropsInternal(target: IBoundComponent, props: Readonly<{}>): void
-    {        
+    private BindPropsInternal(target: IBoundComponent, props: Readonly<{}>, force: boolean): boolean
+    {
+        let any: boolean = false;
         var entries = Object.entries(props);
         for (const entry of entries)
-            this.ProcessPropChange(target, entry[0], entry[1]);
+        {
+            if (this.ProcessPropChange(target, entry[0], entry[1], force))
+                any = true;
+        }
+        return any;
     }
 
-    private ProcessPropChange(target: IBoundComponent, prop: string, value: any)
+    private ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean) : boolean
     {
         let exp: BindingExpression | undefined;
+
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
         {
-            //if (value?.IsAntimatterBinding &&
-            //    BindingParameters.Equals(existingBinding.Parameters, value.Parameters))
-            //    return;
-            if (target.props[prop] === value)
-                return;
+            //if (target.props[prop] === value)
+            //    // already bound 
+            //    return false;
+            if (value?.IsAntimatterBinding &&
+                BindingParameters.Equals(existingBinding.Parameters, value.Parameters))
+                return false;
 
             exp = target.antimatterBindingExps.get(prop);
             if (exp)
@@ -179,6 +198,10 @@ export class ReactClient implements IClient
 
         if (!value || !value.IsAntimatterBinding)
         {
+            if (target.state[prop] === value)
+                // already done
+                return false;
+
             // Plain old value; set the state and continue
             target.state[prop] = value;
             if (exp)
@@ -186,7 +209,7 @@ export class ReactClient implements IClient
                 target.antimatterBindingBases.delete(prop);
                 target.antimatterBindingExps.delete(prop);
             }
-            return;
+            return true;
         }
 
         if (!exp)
@@ -200,6 +223,8 @@ export class ReactClient implements IClient
             // We can apply it now at prop assignment if it's not dctx dependent
             // Otherwise we have to wait for render
             exp.Apply();
+
+        return true;
     }
 
     private CheckReapplyDataContext(target: IBoundComponent, ctx: ModelObjectReference | undefined): boolean

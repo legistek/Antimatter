@@ -3,42 +3,13 @@ import * as React from 'react';
 import { DefaultEffects, List, PrimaryButton, TextField } from '@fluentui/react';
 import { BindableProp } from '@antimatterjs/react/src/BindableProp';
 import { ModernButton } from './ModernButton';
-import { isJSDocVariadicType } from 'typescript';
 import { ListView } from './ListView';
+import { TextBlock } from './TextBlock';
+import { TextBox } from './TextBox';
 
+import * as Model from '../model/Model';
 
-
-export interface ITextBoxProps
-{
-    Text: string | Binding,
-    Label: string | Binding
-}
-interface ITextBoxState
-{
-    Text: string,
-    Label: string
-}
-
-export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
-{
-    constructor(props)
-    {
-        super(props, { Text: BindingMode.TwoWay });
-    }
-
-    render()
-    {
-        return (
-            <TextField
-                label={this.state.Label}
-                value={this.state.Text || ''}
-                onChange={(event, newValue) =>
-                    this.OnTargetChanged("Text", newValue)
-                } />);
-    }
-}
-
-export class Employee extends AntimatterComponent<{ Value: ModelObjectReference|Binding, Company: ModelObjectReference|Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
+export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
@@ -54,24 +25,24 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference|
                 style={{ boxShadow: DefaultEffects.elevation8, border: "1px solid #C0C0C0", margin: "5px", padding: "5px" }}>
 
                 <DataContext Value={this.state.Value}>
-                    <TextBlock Text={new Binding({ Path: "FullName" })} />
+                    <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
 
                     <b>Edit Info</b>
-                    <TextBox        Label="First Name" Text={new Binding("FirstName")} />
-                    <TextBox        Label="Last Name" Text={new Binding("LastName")} />
+                    <TextBox Label="First Name" Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
+                    <TextBox Label="Last Name" Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
                     <h4>Age</h4>
-                    <TextBlock      Text={new Binding("Age")} />
+                    <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
                     <div className="amx-stack-panel horizontal">
-                    <ModernButton Label="INCREASE AGE"                        
-                        Command={new Binding("IncreaseAgeCommand")} />
-                    <ModernButton Label="FIRE"
-                        Command={new Binding({ Path: "DeleteEmployeeCommand", Source: this.state.Company })}
-                        CommandParameter={new Binding()}
+                        <ModernButton
+                            Label="INCREASE AGE"
+                            Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))} />
+                        <ModernButton
+                            Label="FIRE"
+                            Command={new Binding({ Path: nameof<Model.Company>(c => c.DeleteEmployeeCommand), Source: this.state.Company })}
+                            CommandParameter={new Binding()}
                         />
                     </div>
-
-
 
                     {/*<ReactDataContext.Consumer>*/}
                     {/*    {(ctx) => (*/}
@@ -87,16 +58,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference|
     }
 }
 
-export class TextBlock extends AntimatterComponent<{ Text?: string | Binding }>
-{
-    static displayName = TextBlock.name;
 
-    render()
-    {
-        //console.log("TextBlock rendering");
-        return (<div>{this.state["Text"]}</div>);
-    }
-}
 
 export class Company extends AntimatterComponent
 {
@@ -113,14 +75,17 @@ export class Company extends AntimatterComponent
                 <div className="amx-stack-panel">
                     <TextBlock Text={new Binding({ Path: "Name" })} />
                     <ModernButton Label="NEW EMPLOYEE"
-                        Command={new Binding("NewEmployeeCommand")}/>
+                        Command={new Binding("NewEmployeeCommand")} />
                 </div>
-                                
+
                 <ListView ItemsSource={new Binding({ Path: "Employees", NotifyCollectionChanged: true })}
                     ItemTemplate={(item) =>
-                    (                            
-                        <Employee Value={item} Company={this.state["DataContext"]} />
-                    )}/>                
+                    (
+                        <Employee
+                            Value={item}
+                            key={item?.IsModelObjectReference ? item.Handle : null}
+                            Company={this.state["DataContext"]} />
+                    )} />
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}

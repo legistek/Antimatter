@@ -24,6 +24,7 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const tsNameof = require("ts-nameof");
 
 const postcssNormalize = require('postcss-normalize');
 const { appPath } = require('./paths');
@@ -373,6 +374,9 @@ module.exports = function (webpackEnv)
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
                             include: [paths.appSrc, paths.localModuleSrc],
                             loader: require.resolve('awesome-typescript-loader'),
+                            options: {
+                                getCustomTransformers: () => ({ before: [tsNameof] })
+                            }
                         },
 
                         // Process application JS with Babel.
