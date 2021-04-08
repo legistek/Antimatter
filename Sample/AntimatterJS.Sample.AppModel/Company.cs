@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -27,6 +28,25 @@ namespace AntimatterJS.Sample.AppModel
         #endregion
 
         public ObservableCollection<Employee> Employees { get; } = new ObservableCollection<Employee>();
+
+        #region Employee SelectedEmployee property
+        private Employee _SelectedEmployee;
+        public Employee SelectedEmployee
+        {
+            get
+            {
+                return _SelectedEmployee;
+            }
+            set
+            {
+                if (_SelectedEmployee != value)
+                {
+                    _SelectedEmployee = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
 
         #region Employee CEO property
         private Employee _CEO;
@@ -75,7 +95,11 @@ namespace AntimatterJS.Sample.AppModel
                     (arg) =>
                     {
                         if (arg is Employee e)
+                        {                           
                             this.Employees.Remove(e);
+                            if (this.SelectedEmployee == e)
+                                this.SelectedEmployee = this.Employees.FirstOrDefault();
+                        }
                     }));
             }
         }

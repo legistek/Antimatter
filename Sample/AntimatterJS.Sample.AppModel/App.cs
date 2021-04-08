@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace AntimatterJS.Sample.AppModel
                 this.Company.Employees.Add(new Employee("Santa", "Clause", 500));
                 this.Company.Employees.Add(new Employee("Yoda", "Parseghian", 900));
             }
+            this.Company.SelectedEmployee = this.Company.Employees.First();
         }
     }
 }

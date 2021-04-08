@@ -114,7 +114,11 @@ namespace Antimatter.Net.Interop
             if (obj == null)
                 return;
 
-            var value = _pi?.GetValue(obj) ?? obj;
+            object value;
+            if (_pi == null)
+                value = obj;
+            else
+                value = _pi.GetValue(obj);
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
                 incc.CollectionChanged += OnSourceCollectionChanged;

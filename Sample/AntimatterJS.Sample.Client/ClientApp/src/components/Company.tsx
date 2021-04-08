@@ -7,15 +7,17 @@ import { TextBlock } from './TextBlock';
 import { TextBox } from './TextBox';
 
 import * as Model from '../model/Model';
+import { ListBox } from './ListBox';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
     render()
-    {        
+    {
+        // amx-grow-entrance
         return (
-            <div className={"amx-stack-panel amx-grow-entrance"}
+            <div className={"amx-stack-panel "}
                 style={{
                     boxShadow: DefaultEffects.elevation8,
                     border: "1px solid #C0C0C0",
@@ -68,17 +70,18 @@ export class Company extends AntimatterComponent
                     <TextBlock Text={new Binding("Name")} />
                     <ModernButton Label="NEW EMPLOYEE"
                         Command={new Binding("NewEmployeeCommand")} />
+
+                    <TextBlock Text="Employee of the month" />
+                    <Employee Value={new Binding("SelectedEmployee")} Company={this.state["DataContext"]} />
+
                 </div>
 
-                <ListView
+                <ListBox
                     ItemsSource={new Binding("Employees")}
+                    SelectedItem={new Binding("SelectedEmployee")}
                     ItemTemplate={(item) =>
-                    (
-                        <div>
-                            <Employee
-                                Value={item}
-                                Company={this.state["DataContext"]} />
-                        </div>
+                    (                       
+                        <TextBlock Text={new Binding({Path: "FullName", Source:item}) }/>                                                    
                     )} />
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}

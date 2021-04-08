@@ -96,7 +96,13 @@ export class ReactClient implements IClient
 
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
-        if (!target || !target.setState)
+        if (!target)
+            return;
+
+        if (target.OnUpdateTargetValue)
+            target.OnUpdateTargetValue(targetProperty, value);
+        
+        if (!target.setState)
             return;
         if (!target.state)
             target.state = {};
@@ -111,8 +117,8 @@ export class ReactClient implements IClient
             else
             {
                 target.state[targetProperty] = value;
-            }            
-        }
+            }
+        }        
     }
 
     InitializeComponent(component: Component)
