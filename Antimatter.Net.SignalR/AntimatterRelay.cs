@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.SignalR;
-
 using Newtonsoft.Json;
-
-using Antimatter.Net;
-using Antimatter.Net.Interop;
 
 namespace Antimatter.Net.SignalR
 {
-    public delegate Task SessionStartupDelegate(ObjectManager manager);
+    public delegate Task SessionStartupDelegate(Reactor reactor);
 
     public class AntimatterRelay : Hub, IClient
     {
@@ -18,58 +13,64 @@ namespace Antimatter.Net.SignalR
 
         public AntimatterRelay()
         {
-            Reactor.Client = this;
+            Reactor.Initialize(this);
         }
 
+        [AMXClientInvocable]
         public async Task Startup()
         {
             if (StartupSession != null)
             {
-                var mgr = GetOrCreateReferenceManager();
-                await StartupSession.Invoke(mgr);
+                var reactor = GetOrCreateReactor();
+                await StartupSession.Invoke(reactor);
             }
         }
 
+        [AMXClientInvocable]
         public int GetRootObject(string identifier)
         {
-            return GetOrCreateReferenceManager().GetRootObject(identifier);
+            return GetOrCreateReactor().GetRootObject(identifier);
         }
 
+        [AMXClientInvocable]
         public void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
         {
-            GetOrCreateReferenceManager().Bind(netRef, path, bxIndex, notifyCollectionChanged);
+            GetOrCreateReactor().Bind(netRef, path, bxIndex, notifyCollectionChanged);
         }
 
+        [AMXClientInvocable]
         public void Unbind(int bxIndex)
         {
-            GetOrCreateReferenceManager().Unbind(bxIndex);
+            GetOrCreateReactor().Unbind(bxIndex);
         }
 
-        public void ExecuteICommand(int netRef, DotNetValue value)
+        [AMXClientInvocable]
+        public void ExecuteICommand(int netRef, ModelValue value)
         {
-            GetOrCreateReferenceManager().ExecuteICommand(netRef, value);
+            GetOrCreateReactor().ExecuteICommand(netRef, value);
         }
 
-        public void UpdateBindingSource(int bxIndex, DotNetValue value)
+        [AMXClientInvocable]
+        public void UpdateBindingSource(int bxIndex, ModelValue value)
         {
-            GetOrCreateReferenceManager().UpdateBindingSource(bxIndex, value);
+            GetOrCreateReactor().UpdateBindingSource(bxIndex, value);
         }
 
-        void IClient.UpdateBinding(string clientID, int bxIndex, DotNetValue value)
+        void IClient.UpdateBinding(string clientID, int bxIndex, ModelValue value)
         {
             var json = JsonConvert.SerializeObject(value);
             Clients.Client(clientID)?.SendAsync("UpdateBinding", bxIndex, json);
         }
 
-        private ObjectManager GetOrCreateReferenceManager()
+        private Reactor GetOrCreateReactor()
         {
             object mgrObject;
             if (!this.Context.Items.TryGetValue("antimatter", out mgrObject))
             {
-                mgrObject = new ObjectManager(this.Context.ConnectionId);
+                mgrObject = new Reactor(this.Context.ConnectionId);
                 this.Context.Items["antimatter"] = mgrObject;
             }
-            return mgrObject as ObjectManager;            
+            return mgrObject as Reactor;            
         }
     }
 }

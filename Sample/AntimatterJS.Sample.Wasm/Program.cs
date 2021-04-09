@@ -12,7 +12,7 @@ namespace AntimatterJS.Sample.WASM
             Console.WriteLine($"C# WASM Antimatter App Server started!!");            
             var app = new AntimatterJS.Sample.AppModel.App();
             await app.StartAsync();            
-            WebassemblyServer.Manager.RegisterRootObject("app", app);
+            WebassemblyServer.Reactor.RegisterRootObject("app", app);
         }
     }
 }

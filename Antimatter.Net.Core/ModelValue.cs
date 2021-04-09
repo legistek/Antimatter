@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Antimatter.Net.Interop
+namespace Antimatter.Net
 {
     [StructLayout(LayoutKind.Explicit)]
-    public class DotNetValue
+    public class ModelValue
     {
         [FieldOffset(0)]
-        public DotNetValueType type;
-        public DotNetValueType Type
+        private ModelValueType type;
+        public ModelValueType Type
         {
             get => type;
             set => type = value;
         }
 
         [FieldOffset(8)]
-        public string stringValue;
+        private string stringValue;
         public string StringValue
         {
             get => stringValue;
@@ -25,7 +25,7 @@ namespace Antimatter.Net.Interop
         }
 
         [FieldOffset(16)]
-        public int objectHandle;
+        private int objectHandle;
         public int ObjectHandle
         {
             get => objectHandle;
@@ -33,15 +33,15 @@ namespace Antimatter.Net.Interop
         }
 
         [FieldOffset(16)]
-        public float floatValue;
-        public float FlatValue
+        private float floatValue;
+        public float FloatValue
         {
             get => floatValue;
             set => floatValue = value;
         }
 
         [FieldOffset(16)]
-        public double doubleValue;
+        private double doubleValue;
         public double DoubleValue
         {
             get => doubleValue;
@@ -49,7 +49,7 @@ namespace Antimatter.Net.Interop
         }
 
         [FieldOffset(16)]
-        public int intValue;
+        private int intValue;
         public int IntValue
         {
             get => intValue;
@@ -57,7 +57,7 @@ namespace Antimatter.Net.Interop
         }
 
         [FieldOffset(16)]
-        public long longValue;
+        private long longValue;
         public long LongValue
         {
             get => longValue;
@@ -65,30 +65,30 @@ namespace Antimatter.Net.Interop
         }
         
         [FieldOffset(24)]
-        private DotNetValue[] _collection;
-        public DotNetValue[] Collection
+        private ModelValue[] _collection;
+        public ModelValue[] Collection
         {
             get => _collection;
             set => _collection = value;
         }
 
-        public object ToCSValue(ObjectManager mgr)
+        public object ToCSValue(Reactor mgr)
         {
-            switch (this.type)
+            switch (this.Type)
             {
-                case DotNetValueType.Double:
-                    return this.doubleValue;
-                case DotNetValueType.Float:
-                    return this.floatValue;
-                case DotNetValueType.Int:
-                    return this.intValue;
-                case DotNetValueType.Long:
-                    return this.longValue;
-                case DotNetValueType.String:
-                    return this.stringValue;
-                case DotNetValueType.Object:
+                case ModelValueType.Double:
+                    return this.DoubleValue;
+                case ModelValueType.Float:
+                    return this.FloatValue;
+                case ModelValueType.Int:
+                    return this.IntValue;
+                case ModelValueType.Long:
+                    return this.LongValue;
+                case ModelValueType.String:
+                    return this.StringValue;
+                case ModelValueType.Object:
                     return mgr.GetReference(this.objectHandle)?.Object;
-                case DotNetValueType.Collection:
+                case ModelValueType.Collection:
                     return mgr.GetReference(this.objectHandle)?.Object;
             }
             return null;

@@ -68,6 +68,12 @@ export class Company extends AntimatterComponent
 
                 <div className="amx-stack-panel">
                     <TextBlock Text={new Binding("Name")} />
+
+                    <div className="amx-stack-panel horizontal">
+                        <TextBlock Text="Employee Count:" />
+                        <TextBlock Text={new Binding("Employees.Count")} />
+                    </div>
+
                     <ModernButton Label="NEW EMPLOYEE"
                         Command={new Binding("NewEmployeeCommand")} />
 

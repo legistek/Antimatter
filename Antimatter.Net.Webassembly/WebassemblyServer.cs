@@ -5,44 +5,47 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-using Antimatter.Net.Interop;
-
 namespace Antimatter.Net.Webassembly
 {
     public static class WebassemblyServer
     {
         static WebassemblyServer()
         {
-            Reactor.Client = new Client();
+            Reactor.Initialize(new Client());
         }
 
-        public static readonly ObjectManager Manager = new ObjectManager(null);
+        public static readonly Reactor Reactor = new Reactor(null);
 
+        [AMXClientInvocable]
         public static void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
         {
-            Manager.Bind(netRef, path, bxIndex, notifyCollectionChanged);            
+            Reactor.Bind(netRef, path, bxIndex, notifyCollectionChanged);            
         }
 
+        [AMXClientInvocable]
         public static void Unbind(int bxIndex)
         {
-            Manager.Unbind(bxIndex);
+            Reactor.Unbind(bxIndex);
         }
 
+        [AMXClientInvocable]
         public static void UpdateBindingSource(int bxIndex, string valueJson)
         {
-            var value = JsonSerializer.Deserialize<DotNetValue>(valueJson);
-            Manager.UpdateBindingSource(bxIndex, value);
+            var value = JsonSerializer.Deserialize<ModelValue>(valueJson);
+            Reactor.UpdateBindingSource(bxIndex, value);
         }
 
+        [AMXClientInvocable]
         public static int GetRootObject(string identifier)
         {
-            return Manager.GetRootObject(identifier);
+            return Reactor.GetRootObject(identifier);
         }
 
-        public static void ExecuteICommand(int netRef, string valueJson)
+        [AMXClientInvocable]
+        public static void ExecuteICommand(int netRef, string commandParameterJson)
         {
-            var value = JsonSerializer.Deserialize<DotNetValue>(valueJson);
-            Manager.ExecuteICommand(netRef, value);
+            var value = JsonSerializer.Deserialize<ModelValue>(commandParameterJson);
+            Reactor.ExecuteICommand(netRef, value);
         }
     }
 }

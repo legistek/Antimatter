@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Antimatter.Net.Interop
+namespace Antimatter.Net
 {
     // DO NOT CHANGE THESE NUMBERS; ONLY ADD
-    public enum DotNetValueType : int
+    public enum ModelValueType : int
     {
         None = 0,
         Object = 1,

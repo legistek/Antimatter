@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Antimatter.Net.Interop;
+using Antimatter.Net.Internal;
 
 namespace Antimatter.Net.Webassembly
 {
     public class Client : IClient
     {
-        public void UpdateBinding(string clientid, int bxIndex, DotNetValue value)
+        public void UpdateBinding(string clientid, int bxIndex, ModelValue value)
         {
             JS.InvokeUnmarshalled<int, object, object, object>(
                 "window.AntimatterServer.UpdateBinding",

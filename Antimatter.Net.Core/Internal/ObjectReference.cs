@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Antimatter.Net.Interop
+namespace Antimatter.Net.Internal
 {
     internal class ObjectReference
     {
@@ -21,7 +21,7 @@ namespace Antimatter.Net.Interop
             _refCount++;
         }
 
-        public void Release(ObjectManager mgr)
+        public void Release(Reactor mgr)
         {
             _refCount--;
             if (_refCount == 0)
