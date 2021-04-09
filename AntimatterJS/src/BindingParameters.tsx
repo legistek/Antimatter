@@ -9,6 +9,7 @@ export class BindingParameters
     AffectsRender?: boolean;
     NotifyCollectionChanged?: boolean;
     FallbackValue?: any;
+    Converter?: (any) => any;
 
     public static Equals(p1?: BindingParameters, p2?: BindingParameters)
     {

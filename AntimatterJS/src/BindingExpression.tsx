@@ -86,6 +86,9 @@ export class BindingExpression
         if (!exp)
             return;
 
+        if (exp.Parameters.Converter)
+            value = exp.Parameters.Converter(value);
+
         Antimatter.UpdateTargetValue(exp._target, exp.TargetProperty, value, exp._isApplied && exp.AffectsRender);
     }
 

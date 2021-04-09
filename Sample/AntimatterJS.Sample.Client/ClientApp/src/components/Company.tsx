@@ -8,6 +8,7 @@ import { TextBox } from './TextBox';
 
 import * as Model from '../model/Model';
 import { ListBox } from './ListBox';
+import { Orientation, StackPanel } from './StackPanel';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
@@ -17,8 +18,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <div className={"amx-stack-panel "}
-                style={{
+            <StackPanel style={{
                     boxShadow: DefaultEffects.elevation8,
                     border: "1px solid #C0C0C0",
                     margin: "5px",
@@ -35,24 +35,21 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <h4>Age</h4>
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
-                    <div className="amx-stack-panel horizontal">
+                    <StackPanel Orientation={Orientation.Horizontal}>
                         <ModernButton
                             Label="INCREASE AGE"
                             Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))} />
                         <ModernButton
                             Label="FIRE"
                             Command={new Binding({ Path: nameof<Model.Company>(c => c.DeleteEmployeeCommand), Source: this.state.Company })}
-                            CommandParameter={new Binding()}
-                        />
-                    </div>
+                            CommandParameter={new Binding()} />
+                    </StackPanel>
 
                 </DataContext>
-            </div>
+            </StackPanel>
         );
     }
 }
-
-
 
 export class Company extends AntimatterComponent
 {
@@ -66,21 +63,24 @@ export class Company extends AntimatterComponent
         return (
             <div className="amx-headered-grid">
 
-                <div className="amx-stack-panel">
+                <StackPanel>
+                    
                     <TextBlock Text={new Binding("Name")} />
 
-                    <div className="amx-stack-panel horizontal">
+                    <StackPanel Orientation={Orientation.Horizontal}>
                         <TextBlock Text="Employee Count:" />
                         <TextBlock Text={new Binding("Employees.Count")} />
-                    </div>
+                    </StackPanel>
 
-                    <ModernButton Label="NEW EMPLOYEE"
+                    <ModernButton
+                        Label="NEW EMPLOYEE"
+                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct)=>ct < 5 })}
                         Command={new Binding("NewEmployeeCommand")} />
 
                     <TextBlock Text="Employee of the month" />
                     <Employee Value={new Binding("SelectedEmployee")} Company={this.state["DataContext"]} />
 
-                </div>
+                </StackPanel>
 
                 <ListBox
                     ItemsSource={new Binding("Employees")}

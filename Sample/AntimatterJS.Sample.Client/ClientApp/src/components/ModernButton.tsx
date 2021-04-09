@@ -10,12 +10,14 @@ export interface IModernButtonProps
     Command?: ModelObjectReference | Binding,
     CommandParameter?: any,
     className?: string
+    IsEnabled?: boolean | Binding;
 }
 interface IModernButtonState
 {
     Label?: string
     Command?: ModelObjectReference,
     CommandParameter?: any
+    IsEnabled?: boolean;
 }
 export class ModernButton extends AntimatterComponent<IModernButtonProps, IModernButtonState>
 {
@@ -24,10 +26,21 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
         super(props);        
     }
 
+    public static DefaultBindings = {
+        IsEnabled: {
+            FallbackValue: true
+        }
+    };
+
     render()
     {
+        //this.BindState({ Path: "IsVisible", Source: this.state.Command }, "buttonIsVisible");
+        //if (!this.state["buttonIsVisible"])
+        //    return null;
+
         return (
             <PrimaryButton className={this.props.className}
+                disabled={this.state.IsEnabled === undefined ? false : !this.state.IsEnabled}
                 onClick={() => this.onClick()}>
                 {this.state.Label}
             </PrimaryButton>
