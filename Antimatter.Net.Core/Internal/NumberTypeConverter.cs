@@ -40,6 +40,9 @@ namespace Antimatter.Net.Internal
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
+            if (value is string s && s == "")
+                value = "0";
+
             if (_destType == typeof(double))
                 return Convert.ToDouble(value);
             else if (_destType == typeof(int))

@@ -9,6 +9,8 @@ import { TextBox } from './TextBox';
 import * as Model from '../model/Model';
 import { ListBox } from './ListBox';
 import { Orientation, StackPanel } from './StackPanel';
+import { CheckBox } from './CheckBox';
+import { Visibility } from './Visibility';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
@@ -19,22 +21,31 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
         // amx-grow-entrance
         return (
             <StackPanel style={{
-                    boxShadow: DefaultEffects.elevation8,
-                    border: "1px solid #C0C0C0",
-                    margin: "5px",
-                    padding: "5px",
-                    /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
-                }}>
+                boxShadow: DefaultEffects.elevation8,
+                border: "1px solid #C0C0C0",
+                margin: "5px",
+                padding: "5px",
+                /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
+            }}>
 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
 
                     <b>Edit Info</b>
-                    <TextBox Label="First Name" Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
-                    <TextBox Label="Last Name" Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
+                    <TextBox
+                        Label="First Name"
+                        Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
+                    <TextBox
+                        Label="Last Name"
+                        Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
                     <h4>Age</h4>
+                    <CheckBox Label="Bonus Eligible" IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />
+                    <Visibility IsVisible={new Binding("IsBonusEligible")}>
+                        <TextBox
+                            Label="Bonus Amount"
+                            Text={new Binding("BonusAmount")}/>
+                    </Visibility>
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
-
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <ModernButton
                             Label="INCREASE AGE"
@@ -64,8 +75,7 @@ export class Company extends AntimatterComponent
             <div className="amx-headered-grid">
 
                 <StackPanel>
-                    
-                    <TextBlock Text={new Binding("Name")} />
+                    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <TextBlock Text="Employee Count:" />
@@ -74,20 +84,22 @@ export class Company extends AntimatterComponent
 
                     <ModernButton
                         Label="NEW EMPLOYEE"
-                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct)=>ct < 5 })}
-                        Command={new Binding("NewEmployeeCommand")} />
+                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 5 })}
+                        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
 
                     <TextBlock Text="Employee of the month" />
-                    <Employee Value={new Binding("SelectedEmployee")} Company={this.state["DataContext"]} />
 
+                    <Employee
+                        Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                        Company={this.state["DataContext"]} />
                 </StackPanel>
 
                 <ListBox
-                    ItemsSource={new Binding("Employees")}
-                    SelectedItem={new Binding("SelectedEmployee")}
+                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                     ItemTemplate={(item) =>
-                    (                       
-                        <TextBlock Text={new Binding({Path: "FullName", Source:item}) }/>                                                    
+                    (
+                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })} />
                     )} />
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}

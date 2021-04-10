@@ -6,7 +6,7 @@ import { BindingExpression } from '../BindingExpression';
 import { BindingMode, BindingParameters } from '../BindingParameters';
 import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
-import { ModelValue } from '../ModelValue';
+import { ModelValue, ModelValueType } from '../ModelValue';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -78,7 +78,7 @@ export class ReactClient implements IClient
         return target.state[stateVar];  
     }
 
-    public PropChanged(component: Component, prop: string, value: any):void
+    public PropChanged(component: Component, prop: string, value: any, modelType?: ModelValueType): void
     {
         var target = component as IBoundComponent;
         if (!target.antimatterBindingExps)

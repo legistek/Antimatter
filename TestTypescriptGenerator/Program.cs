@@ -11,7 +11,7 @@ namespace TestTypescriptGenerator
     {
         static void Main(string[] args)
         {
-            using (var str = File.Create(@"C:\VSProjects\Antimatter\Sample\AntimatterJS.Sample.Client\ClientApp\src\model\Model.tsx"))
+            using (var str = File.Create(@"C:\VSProjects\Antimatter\Sample\AntimatterJS.Sample.Client\ClientApp\src\model\Model.d.ts"))
             {
                 using (var sw = new StreamWriter(str))
                 {

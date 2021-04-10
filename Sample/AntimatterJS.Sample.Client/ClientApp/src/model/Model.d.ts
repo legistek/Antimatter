@@ -5,12 +5,14 @@ export class App {
 export class Company {
 	public Name?: string;
 	public Employees?: Employee[];
+	public SelectedEmployee?: Employee;
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
 }
 
 export class Employee {
+	public IsBonusEligible?: boolean;
 	public FirstName?: string;
 	public LastName?: string;
 	public FullName?: string;

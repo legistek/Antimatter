@@ -170,7 +170,19 @@ namespace Antimatter.Net.Internal
                 ?.ToArray();
         }
 
-        private void ReportSourcePropertyUpdate(object value)
+        internal void ReportValidationError(string message)
+        {
+            Reactor.Client.UpdateBinding(
+                this._manager.ClientID,
+                this.BXIndex,
+                new ModelValue
+                {
+                    Type = ModelValueType.ValidationError,
+                    StringValue = message
+                });
+        }
+
+        internal void ReportSourcePropertyUpdate(object value)
         {
             if (_suspendPropertyChangeReport)
                 return;

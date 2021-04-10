@@ -361,7 +361,9 @@ namespace Antimatter.Net
         private ConditionalWeakTable<object, ObjectReference> _references =
             new ConditionalWeakTable<object, ObjectReference>();
         private Dictionary<string, ObjectReference> _rootObjects = new Dictionary<string, ObjectReference>();
+
         private static Action<Reactor, ModelValue, object>[] _setters =
+            // This order MUST match the order in hte ModelValueType enum
             new Action<Reactor, ModelValue, object>[]
             {
                 (mgr, dnv, value) => { },
@@ -376,10 +378,13 @@ namespace Antimatter.Net
                     dnv.ObjectHandle = dnr.Handle;
                 },
                 (mgr, dnv, value) => dnv.StringValue = (string)value,
-                (mgr, dnv, value) => dnv.IntValue = (int)value,
-                (mgr, dnv, value) => dnv.LongValue = (long)value,
-                (mgr, dnv, value) => dnv.FloatValue = (float)value,
-                (mgr, dnv, value) => dnv.DoubleValue = (double)value,
+                (mgr, dnv, value) => 
+                    dnv.IntValue = Convert.ToInt32(value),
+                (mgr, dnv, value) => 
+                    dnv.LongValue = Convert.ToInt64(value),
+                (mgr, dnv, value) =>
+                    dnv.FloatValue = Convert.ToSingle(value),
+                null, // (mgr, dnv, value) => dnv.DoubleValue = (double)value,
                 (mgr, dnv, value) =>
                 {
                     var dnr = mgr.GetOrCreateReference(value);
@@ -389,7 +394,12 @@ namespace Antimatter.Net
                         return;
                     }
                     dnv.ObjectHandle = dnr.Handle;
-                }
+                },
+                (mgr, dnv, value) => dnv.BoolValue = (bool)value,
+                (mgr, dnv, value) => dnv.StringValue = ((Guid)value).ToString(),
+                (mgr, dnv, value) => dnv.LongValue = ((DateTime)value).Ticks,
+                (mgr, dnv, value) => dnv.LongValue = ((TimeSpan)value).Ticks,
+                (mgr, dnv, value) => dnv.StringValue = (string)value
             };
         private static Dictionary<Type, ModelValueType> _typeConv = new Dictionary<Type, ModelValueType>
         {
@@ -403,7 +413,11 @@ namespace Antimatter.Net
             { typeof(byte), ModelValueType.Int },
             { typeof(char), ModelValueType.Int },
             { typeof(float), ModelValueType.Float },
-            { typeof(double), ModelValueType.Double },
+            { typeof(double), ModelValueType.Float },
+            { typeof(bool), ModelValueType.Bool },
+            { typeof(Guid), ModelValueType.Guid },
+            { typeof(DateTime), ModelValueType.DateTime },
+            { typeof(TimeSpan), ModelValueType.TimeSpan },
         };
 
         #endregion

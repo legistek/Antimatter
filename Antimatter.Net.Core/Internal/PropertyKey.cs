@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.ComponentModel;
 
 namespace Antimatter.Net.Internal
@@ -11,7 +10,20 @@ namespace Antimatter.Net.Internal
     {
         private string _indexParameter = null;
         private static Dictionary<Type, TypeConverter> _typeConverters = new Dictionary<Type, TypeConverter>();
-        private static Dictionary<Type, object> _defaultValues = new Dictionary<Type, object>();
+        private static Dictionary<Type, object> _defaultValues = new Dictionary<Type, object>()
+        {
+            { typeof(bool), false },
+            { typeof(byte), 0 },
+            { typeof(short), 0 },
+            { typeof(ushort), 0 },
+            { typeof(char), 0 },
+            { typeof(int), 0 },
+            { typeof(uint), 0 },
+            { typeof(float), 0f },
+            { typeof(double), 0d },            
+            { typeof(Guid), Guid.Empty },
+            { typeof(DateTime), new DateTime(0) },
+        };
         private static Dictionary<Type, Dictionary<string, PropertyKey>> _cachedKeys =
             new Dictionary<Type, Dictionary<string, PropertyKey>>();
 
@@ -154,7 +166,7 @@ namespace Antimatter.Net.Internal
                 this.PropertyInfo.SetValue(obj, value);
         }
 
-        internal static TypeConverter GetTypeConverterFor(Type destType)
+        private static TypeConverter GetTypeConverterFor(Type destType)
         {
             TypeConverter conv;
             if (!_typeConverters.TryGetValue(destType, out conv))
@@ -170,7 +182,7 @@ namespace Antimatter.Net.Internal
             return conv;
         }
 
-        internal static object GetDefaultValueFor(Type type)
+        private static object GetDefaultValueFor(Type type)
         {
             object defVal;
             if (!_defaultValues.TryGetValue(type, out defVal))

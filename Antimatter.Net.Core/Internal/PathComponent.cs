@@ -79,8 +79,16 @@ namespace Antimatter.Net.Internal
             object lastPropertySource = this.LastPropertySource;
             if (lastPropertySource != null)
             {
-                Debug.WriteLine($"Property change triggering update for source {this.LastPropertySource}");
-                this.PropertyKey.SetValue(this.LastPropertySource, value);
+                Debug.WriteLine(
+                    $"Property change triggering update for source {this.LastPropertySource}");
+                try
+                {
+                    this.PropertyKey.SetValue(this.LastPropertySource, value);
+                }
+                catch (Exception ex)
+                {
+                    this.Binding.ReportValidationError(ex.Message);
+                }
             }
         }
     }

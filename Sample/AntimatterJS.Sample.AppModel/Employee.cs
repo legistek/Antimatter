@@ -18,6 +18,46 @@ namespace AntimatterJS.Sample.AppModel
             this.Age = age;
         }
 
+        #region double BonusAmount property
+        private double _BonusAmount = 10000.0;
+        public double BonusAmount
+        {
+            get
+            {
+                return _BonusAmount;
+            }
+            set
+            {
+                if (_BonusAmount != value)
+                {
+                    _BonusAmount = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FullName));
+                }
+            }
+        }
+        #endregion
+
+        #region bool IsBonusEligible property
+        private bool _IsBonusEligible;
+        public bool IsBonusEligible
+        {
+            get
+            {
+                return _IsBonusEligible;
+            }
+            set
+            {
+                if (_IsBonusEligible != value)
+                {
+                    _IsBonusEligible = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FullName));
+                }
+            }
+        }
+        #endregion
+
         #region string FirstName property
         private string _FirstName;
         public string FirstName
@@ -63,7 +103,7 @@ namespace AntimatterJS.Sample.AppModel
         {
             get
             {
-                return $"{FirstName} {LastName} (age {Age})";
+                return $"{FirstName} {LastName} (age {Age}) ({(!this.IsBonusEligible ? "not" : this.BonusAmount.ToString())} bonus eligible)";
             }
         }
         #endregion

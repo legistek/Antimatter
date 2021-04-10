@@ -4,9 +4,13 @@ import { ModelObjectReference } from "./ModelObjectReference";
 
 import { IServer } from "./IServer";
 import { ModelValue, ModelValueType } from "./ModelValue";
+import { Utilities } from "./Utilities";
+
+const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
+const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
-{
+{    
     StartupAsync(): Promise<void>
     {
         // just returns a promise that loops until the 
@@ -153,6 +157,36 @@ export class WebassemblyServer implements IServer
         return this.Module.HEAP32[ptr >> 2];
     }
 
+    private getValueGuid(ptr: number)
+    {
+        //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0
+        //    C9 8B 91 35    6D 19    EA 40    97 79    88 9D 79 B7 53 F0
+
+        const guid: string = `${this.Module.HEAP32[ptr + 3].toString(16)}${this.Module.HEAP32[ptr + 2].toString(16)}${this.Module.HEAP32[ptr + 1].toString(16)}${this.Module.HEAP32[ptr + 0].toString(16)}-`
+            + `${this.Module.HEAP32[ptr + 5].toString(16)}${this.Module.HEAP32[ptr + 4].toString(16)}-`
+            + `${this.Module.HEAP32[ptr + 7].toString(16)}${this.Module.HEAP32[ptr + 6].toString(16)}-`
+            + `${this.Module.HEAP32[ptr + 8].toString(16)}${this.Module.HEAP32[ptr + 9].toString(16)}-`
+            + `${this.Module.HEAP32[ptr + 10].toString(16)}${this.Module.HEAP32[ptr + 11].toString(16)}`
+            + `${this.Module.HEAP32[ptr + 12].toString(16)}${this.Module.HEAP32[ptr + 13].toString(16)}`
+            + `${this.Module.HEAP32[ptr + 14].toString(16)}${this.Module.HEAP32[ptr + 15].toString(16)}`
+        
+        return guid;
+    }
+
+    private getValueU64(ptr: number): bigint
+    {
+        // There is no Module.HEAPU64, and Module.getValue(..., 'i64') doesn't work because the implementation
+        // treats 'i64' as being the same as 'i32'. Also we must take care to read both halves as unsigned.
+        const heapU32Index = ptr >> 2;
+        const highPart = BigInt(this.Module.HEAPU32[heapU32Index + 1]);
+        //if (highPart > maxSafeNumberHighPart)
+        //{
+        //    throw new Error(`Cannot read uint64 with high order part ${highPart}, because the result would exceed Number.MAX_SAFE_INTEGER.`);
+        //}
+
+        return (highPart * uint64HighOrderShift) + BigInt(this.Module.HEAPU32[heapU32Index]);
+    }
+
     private getValueFloat(ptr: number)
     {        
         return this.Module.HEAPF32[ptr >> 2];
@@ -189,17 +223,26 @@ export class WebassemblyServer implements IServer
         var type = this.getValueI32(valuePtr) as ModelValueType;
         switch (type)
         {
-            case ModelValueType.None:
+            case ModelValueType.Null:
                 return undefined;
             case ModelValueType.String:
-                return this.getStringValue(valuePtr + 8);
+            case ModelValueType.ValidationError:
+                return this.getStringValue(valuePtr + 8);            
             case ModelValueType.ObjectHandle:
                 var index = this.getValueI32(valuePtr + 16);
                 return new ModelObjectReference(index);
             case ModelValueType.Collection:
                 return this.getArrayValue(valuePtr + 24);
+            case ModelValueType.Float:
+                return this.getValueFloat(valuePtr + 16);
             case ModelValueType.Int:
-                return this.getValueI32(valuePtr + 16);            
+                return this.getValueI32(valuePtr + 16);
+            case ModelValueType.Bool:
+                return this.getValueI32(valuePtr + 16) !== 0;
+            case ModelValueType.Guid:
+                return this.getValueGuid(valuePtr + 16);
+            case ModelValueType.DateTime:
+                return Utilities.DateFromTicks(this.getValueU64(valuePtr + 16));
         }
         return undefined;
     }

@@ -3,6 +3,7 @@ import { IServer } from "./IServer";
 import { BindingExpression } from "./BindingExpression";
 import { ModelObjectReference } from "./ModelObjectReference";
 import { ModelValue, ModelValueType } from './ModelValue';
+import { Utilities } from './Utilities';
 
 export class SignalRServer implements IServer
 {    
@@ -68,12 +69,19 @@ export class SignalRServer implements IServer
     {
         switch (valuePtr.Type)
         {
-            case ModelValueType.None:
+            case ModelValueType.Null:
                 return undefined;
             case ModelValueType.Int:
                 return valuePtr.IntValue;
             case ModelValueType.String:
+            case ModelValueType.ValidationError:
                 return valuePtr.StringValue;
+            case ModelValueType.Float:
+                return valuePtr.FloatValue;
+            case ModelValueType.Bool:
+                return valuePtr.BoolValue;
+            case ModelValueType.DateTime:
+                return Utilities.DateFromTicks(valuePtr.LongValue || BigInt(0));
             case ModelValueType.Collection:
                 return valuePtr.Collection?.map(item => this.getDotNetValue(item));
             case ModelValueType.ObjectHandle:
