@@ -45,7 +45,7 @@ export class CheckBox extends AntimatterComponent<ICheckBoxProps, ICheckBoxState
                 disabled={this.state.IsEnabled === undefined ? false : !this.state.IsEnabled}
                 label={this.state.Label}
                 checked={this.state.IsChecked}
-                indeterminate={this.props.IsIndeterminate}
+                indeterminate={this.props.IsIndeterminate}                
                 onChange={(checked, newValue) =>
                 {
                     this.OnTargetChanged(nameof(this.state.IsChecked), newValue);

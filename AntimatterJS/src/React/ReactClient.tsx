@@ -91,6 +91,11 @@ export class ReactClient implements IClient
             var newState = {};
             newState[prop] = value;
             target.setState(newState);
+            if (exp.HasValidationError)
+            {
+                exp.HasValidationError = false;
+                (target as any).NotifyValidationError();
+            }            
         }
     }
 

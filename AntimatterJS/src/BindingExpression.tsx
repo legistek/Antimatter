@@ -2,9 +2,10 @@
 import { BindingMode, BindingParameters } from "./BindingParameters";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
+import { ModelValueType } from "./ModelValue";
 
 export class BindingExpression
-{    
+{
     public constructor(
         target: any,
         targetProperty: string,
@@ -33,6 +34,8 @@ export class BindingExpression
     public readonly Parameters: BindingParameters;
     public readonly TargetProperty: string;
 
+    public HasValidationError: boolean = false;
+
     public get ActualMode(): BindingMode
     {
         return this.Parameters.Mode || BindingMode.OneWay;
@@ -44,7 +47,7 @@ export class BindingExpression
         if (affects === undefined)
             return true;
         return affects;
-    }   
+    }
 
     public get IsDataContextDependent(): boolean
     {
@@ -64,28 +67,45 @@ export class BindingExpression
 
             if (!dataContext)
                 return false;   // no source provided
-                        
+
             if (ModelObjectReference.Equals(this._lastAppliedBindingContext, dataContext))
                 return false; // no need to reapply
             this._lastAppliedBindingContext = dataContext;
-            this._resolvedSource = new BindingSource(dataContext);            
+            this._resolvedSource = new BindingSource(dataContext);
         }
-        
+
         this._isApplied = this.subscribeToSourcePropertyChanges();
         return this._isApplied;
     }
-    
+
     public Unapply(): void
     {
         Antimatter.Server.Unbind(this);
     }
 
-    public static OnExternalSourceValueChanged(bxIndex: number, value: any): void
+    public static OnExternalSourceValueChanged(bxIndex: number, value: any, type: ModelValueType): void
     {
         var exp = this._globalBindings.get(bxIndex) as BindingExpression;
         if (!exp)
             return;
-
+               
+        if (type === ModelValueType.ValidationError)
+        {
+            if (exp.Parameters.ValidatesOnDataErrors)
+            {
+                if (exp._target?.NotifyValidationError)
+                    exp._target.NotifyValidationError(value);
+                exp.HasValidationError = true;
+            }
+            return;
+        }
+        else if (exp.HasValidationError)
+        {
+            exp.HasValidationError = false;
+            if (exp._target?.NotifyValidationError)
+                exp._target.NotifyValidationError();
+        }
+        
         if (exp.Parameters.Converter)
             value = exp.Parameters.Converter(value);
 

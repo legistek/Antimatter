@@ -114,6 +114,10 @@ namespace Antimatter.Net.Internal
 
             for (int i = pathStart; i < this.PathComponents.Length; i++)
                 this.PathComponents[i].Unsubscribe();
+            if (this.PathComponents.Last().LastPropertySource is INotifyDataErrorInfo oldIndei)
+            {
+                oldIndei.ErrorsChanged -= OnSourceValidationError;
+            }
         }
 
         private void SubscribePropertyChange(int pathStart)
@@ -124,6 +128,10 @@ namespace Antimatter.Net.Internal
             {
                 pathComponent.SubscribePropertyChange(source, false);
             });
+            if (this.PathComponents.Last().LastPropertySource is INotifyDataErrorInfo indei)
+            {
+                indei.ErrorsChanged += OnSourceValidationError;
+            }
         }
 
         private object GetEffectiveValue(int pathStart)
@@ -206,7 +214,7 @@ namespace Antimatter.Net.Internal
             {
                 var reference = _manager.GetReference(_lastValue.ObjectHandle);
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)
-                    oldIncc.CollectionChanged -= OnSourceCollectionChanged;
+                    oldIncc.CollectionChanged -= OnSourceCollectionChanged;                   
             }
             _manager.Release(_lastValue);
             _lastValue = null;
@@ -215,6 +223,18 @@ namespace Antimatter.Net.Internal
         private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ReportSourcePropertyUpdate(sender);
+        }
+
+        private void OnSourceValidationError(object sender, DataErrorsChangedEventArgs e)
+        {
+            if (sender is INotifyDataErrorInfo indei)
+            {
+                var errors = indei.GetErrors(e.PropertyName)?.Cast<String>();
+                if (errors?.Count() > 0)
+                {
+                    this.ReportValidationError(errors.First());
+                }
+            }
         }
 
         private void TraversePath(int start, Action<object, PathComponent> action)

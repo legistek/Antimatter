@@ -109,8 +109,9 @@ export class WebassemblyServer implements IServer
 
     public UpdateBinding(bxIndex: number, valuePtr: number)
     {
-        var value = this.getDotNetValue(valuePtr);        
-        BindingExpression.OnExternalSourceValueChanged(bxIndex, value);
+        var type = this.getValueI32(valuePtr) as ModelValueType;
+        var value = this.getDotNetValue(valuePtr, type);        
+        BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
     }
 
     //#endregion
@@ -206,7 +207,8 @@ export class WebassemblyServer implements IServer
         for (let i: number = 0; i < len; i++)
         {
             var itemPtr = this.getValueI32(ptr + 16 + i * 4);
-            arr[i] = this.getDotNetValue(itemPtr);
+            var type = this.getValueI32(itemPtr) as ModelValueType;
+            arr[i] = this.getDotNetValue(itemPtr, type);
         }
 
         return arr;
@@ -217,10 +219,9 @@ export class WebassemblyServer implements IServer
         return `[${assembly}] ${className}:${methodName}`;
     }
 
-    private getDotNetValue(valuePtr: number): any
+    private getDotNetValue(valuePtr: number, type: ModelValueType): any
     {
-        valuePtr += 8;  // C# class data is 8 bytes off from address
-        var type = this.getValueI32(valuePtr) as ModelValueType;
+        valuePtr += 8;  // C# class data is 8 bytes off from address        
         switch (type)
         {
             case ModelValueType.Null:

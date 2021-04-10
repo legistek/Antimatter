@@ -10,7 +10,8 @@ export interface ITextBoxProps
 interface ITextBoxState
 {
     Text: string,
-    Label: string
+    Label: string,
+    ValidationError?: string
 }
 
 export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
@@ -18,6 +19,7 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
     public static DefaultBindings = {
         Text: {
             Mode: BindingMode.TwoWay,
+            ValidatesOnDataErrors: true
         }
     };
     
@@ -29,6 +31,18 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
                 value={this.state.Text || ''}
                 onChange={(event, newValue) =>
                     this.OnTargetChanged(nameof(this.state.Text), newValue)
-                } />);
+                }
+                onGetErrorMessage={(value: string) => {
+                    return this.state.ValidationError;
+                }}
+            />);
+    }
+
+    NotifyValidationError(error?: string)
+    {
+        if (this.state.ValidationError !== error)
+        {
+            this.setState({ ValidationError: error });
+        }                
     }
 }

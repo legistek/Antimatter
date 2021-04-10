@@ -58,9 +58,9 @@ export class SignalRServer implements IServer
 
     private UpdateBinding(bxIndex: number, valueJson: string)
     {
-        var valueObj = JSON.parse(valueJson);
+        var valueObj = JSON.parse(valueJson) as ModelValue;
         var value = this.getDotNetValue(valueObj);
-        BindingExpression.OnExternalSourceValueChanged(bxIndex, value);
+        BindingExpression.OnExternalSourceValueChanged(bxIndex, value, valueObj.Type || ModelValueType.Null);
     }
 
     //#endregion

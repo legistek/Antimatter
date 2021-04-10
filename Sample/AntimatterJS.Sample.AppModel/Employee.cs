@@ -30,6 +30,11 @@ namespace AntimatterJS.Sample.AppModel
             {
                 if (_BonusAmount != value)
                 {
+                    if (value > 100000)
+                    {
+                        this.ReportValidationError("Bonus must be no more than 100000");
+                        return;
+                    }
                     _BonusAmount = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FullName));
