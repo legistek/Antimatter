@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -87,9 +88,27 @@ namespace Antimatter.Net.Internal
                 }
                 catch (Exception ex)
                 {
+                    this._hasSetterException = true;
                     this.Binding.ReportValidationError(ex.Message);
+                    return;
+                }
+
+                if (this._hasSetterException || this.HasIDEIValidationError)
+                {
+                    this._hasSetterException = false;
+                    string selfValidationError = BindingExpression.GetErrorsForProperty(lastPropertySource, this.ComponentName);
+                    if (string.IsNullOrEmpty(selfValidationError))
+                        this.HasIDEIValidationError = false;
+                    this.Binding.ReportValidationError(selfValidationError);
+                }
+                else
+                {
+                    this.Binding.CheckReportIDEIValidationError();
                 }
             }
-        }
+        }           
+
+        private bool _hasSetterException = false;
+        internal bool HasIDEIValidationError { get; set; }
     }
 }

@@ -109,7 +109,7 @@ export class WebassemblyServer implements IServer
 
     public UpdateBinding(bxIndex: number, valuePtr: number)
     {
-        var type = this.getValueI32(valuePtr) as ModelValueType;
+        var type = this.getValueI32(valuePtr + 8) as ModelValueType;
         var value = this.getDotNetValue(valuePtr, type);        
         BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
     }
@@ -207,7 +207,7 @@ export class WebassemblyServer implements IServer
         for (let i: number = 0; i < len; i++)
         {
             var itemPtr = this.getValueI32(ptr + 16 + i * 4);
-            var type = this.getValueI32(itemPtr) as ModelValueType;
+            var type = this.getValueI32(itemPtr + 8) as ModelValueType;
             arr[i] = this.getDotNetValue(itemPtr, type);
         }
 
@@ -233,7 +233,7 @@ export class WebassemblyServer implements IServer
                 var index = this.getValueI32(valuePtr + 16);
                 return new ModelObjectReference(index);
             case ModelValueType.Collection:
-                return this.getArrayValue(valuePtr + 24);
+                return this.getArrayValue(valuePtr + 32);
             case ModelValueType.Float:
                 return this.getValueFloat(valuePtr + 16);
             case ModelValueType.Int:

@@ -3,16 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace AntimatterJS.Sample.AppModel
 {
-    public class ObservableObject : INotifyPropertyChanged, INotifyDataErrorInfo
+    public class ObservableObject : INotifyPropertyChanged, INotifyDataErrorInfo, IDataErrorInfo
     {
-        public virtual bool HasErrors => false;
-
+        #region INotifyPropertyChanged Implementation
         public event PropertyChangedEventHandler PropertyChanged;
 
+        protected void OnPropertyChanged(
+            [CallerMemberName] string property = null,
+            params string[] otherDependencies)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            if (otherDependencies == null || otherDependencies.Length == 0)
+                return;
+            foreach (var prop in otherDependencies)
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+        #endregion
+
+        #region INotifyDataErrorInfo and IDataErrorInfo Implementation
+
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        bool INotifyDataErrorInfo.HasErrors => this.ValidationErrors.Count > 0;
 
         Dictionary<string, string> _ValidationErrors;
         private Dictionary<string,string> ValidationErrors
@@ -20,7 +36,19 @@ namespace AntimatterJS.Sample.AppModel
             get => _ValidationErrors ?? (_ValidationErrors = new Dictionary<string, string>());
         }
 
-        public virtual IEnumerable GetErrors(string propertyName)
+        string IDataErrorInfo.Error => this.GetError();
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                string err = null;
+                this.ValidationErrors.TryGetValue(columnName, out err);
+                return err;
+            }
+        }
+        
+        IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName)
         {
             string error;
             if (this.ValidationErrors.TryGetValue(propertyName, out error))
@@ -29,6 +57,43 @@ namespace AntimatterJS.Sample.AppModel
                     return new string[] { error };
             }
             return null;
+        }
+
+        private void OnErrorsChanged(string property)
+        {
+            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(property));
+        }
+
+        private string GetError()
+        {
+            if (this.ValidationErrors.Count == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            foreach (var err in this.ValidationErrors.Values)
+            {
+                sb.Append(err);
+            }
+            return sb.ToString();
+        }
+
+        #endregion
+
+        protected void Validate(
+            bool isValid,
+            string errorMessage, 
+            [CallerMemberName]string property = null)
+        {
+            if (isValid)
+            {
+                // value is valid; remove error state if any
+                if (this._ValidationErrors?.Count > 0 && this._ValidationErrors.Remove(property))
+                    OnErrorsChanged(property);
+            }
+            else
+            {
+                this.ValidationErrors[property] = errorMessage;
+                OnErrorsChanged(property);
+            }
         }
 
         protected void ReportValidationError(
@@ -41,18 +106,6 @@ namespace AntimatterJS.Sample.AppModel
             else
                 this.ValidationErrors[property] = error;
             OnErrorsChanged(property);
-        }
-
-        protected void OnPropertyChanged(
-            [CallerMemberName] string property = null,
-            params string[] otherDependencies)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        private void OnErrorsChanged(string property)
-        {
-            this.ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(property));
         }
     }
 }

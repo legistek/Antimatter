@@ -199,12 +199,40 @@ namespace Antimatter.Net.Internal
                 incc.CollectionChanged += OnSourceCollectionChanged;
 
             // TODO - What if value is actually unchanged (but collections?)
-            ReleaseLastValue();
-
-            var dnv = _manager.GetDotNetValue(value);
+            var dnv = _manager.GetDotNetValue(value);   // do this first
+            ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 
             Reactor.Client.UpdateBinding(this._manager.ClientID, this.BXIndex, dnv);
+            CheckReportIDEIValidationError();
+        }
+
+        internal void CheckReportIDEIValidationError()
+        {
+            var pc = this.PathComponents?.LastOrDefault();
+            if (pc == null)
+                return;
+
+            var lastPropertySource = pc.LastPropertySource;
+
+            if (lastPropertySource is IDataErrorInfo && !(lastPropertySource is INotifyDataErrorInfo))
+            {
+                string selfValidationError = GetErrorsForProperty(lastPropertySource, pc.ComponentName);
+                if (!string.IsNullOrEmpty(selfValidationError))
+                {
+                    pc.HasIDEIValidationError = true;
+                    this.ReportValidationError(selfValidationError);
+                }
+            }
+        }
+
+        internal static string GetErrorsForProperty(object source, string property)
+        {
+            if (source is INotifyDataErrorInfo indei)
+                return indei.GetErrors(property)?.Cast<string>()?.FirstOrDefault();
+            else if (source is IDataErrorInfo idei)
+                return idei[property];
+            return null;
         }
 
         private void ReleaseLastValue()
@@ -230,10 +258,7 @@ namespace Antimatter.Net.Internal
             if (sender is INotifyDataErrorInfo indei)
             {
                 var errors = indei.GetErrors(e.PropertyName)?.Cast<String>();
-                if (errors?.Count() > 0)
-                {
-                    this.ReportValidationError(errors.First());
-                }
+                this.ReportValidationError(errors?.FirstOrDefault());
             }
         }
 

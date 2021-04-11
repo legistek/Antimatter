@@ -32,9 +32,7 @@ export class BindingExpression
 
     public readonly Index: number;
     public readonly Parameters: BindingParameters;
-    public readonly TargetProperty: string;
-
-    public HasValidationError: boolean = false;
+    public readonly TargetProperty: string;   
 
     public get ActualMode(): BindingMode
     {
@@ -91,19 +89,9 @@ export class BindingExpression
                
         if (type === ModelValueType.ValidationError)
         {
-            if (exp.Parameters.ValidatesOnDataErrors)
-            {
-                if (exp._target?.NotifyValidationError)
-                    exp._target.NotifyValidationError(value);
-                exp.HasValidationError = true;
-            }
+            if (exp.Parameters.ValidatesOnDataErrors && exp._target?.NotifyValidationError)
+                exp._target.NotifyValidationError(value);
             return;
-        }
-        else if (exp.HasValidationError)
-        {
-            exp.HasValidationError = false;
-            if (exp._target?.NotifyValidationError)
-                exp._target.NotifyValidationError();
         }
         
         if (exp.Parameters.Converter)

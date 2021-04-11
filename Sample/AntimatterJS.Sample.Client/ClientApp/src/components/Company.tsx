@@ -84,7 +84,7 @@ export class Company extends AntimatterComponent
 
                     <ModernButton
                         Label="NEW EMPLOYEE"
-                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 5 })}
+                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}
                         Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
 
                     <TextBlock Text="Employee of the month" />
