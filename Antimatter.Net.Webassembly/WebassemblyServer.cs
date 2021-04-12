@@ -5,12 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+
 namespace Antimatter.Net.Webassembly
 {
     public static class WebassemblyServer
     {
         static WebassemblyServer()
         {
+            WebAssemblyHostBuilder.CreateDefault(); // need this to ensure dlls are included
             Reactor.Initialize(new Client());
         }
 
