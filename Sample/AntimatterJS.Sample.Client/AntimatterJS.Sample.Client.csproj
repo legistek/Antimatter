@@ -24,6 +24,7 @@
   </ItemGroup>
      
   <ItemGroup>    
+    <ProjectReference Include="..\..\..\..\Limine\src\Legistek.Limine.Core\Legistek.Limine.Core.csproj" />    
     <ProjectReference Include="..\..\Antimatter.Net.Core\Antimatter.Net.Core.csproj" />
     <ProjectReference Include="..\..\Antimatter.Net.SignalR\Antimatter.Net.SignalR.csproj" />
     <ProjectReference Include="..\AntimatterJS.Sample.AppModel\AntimatterJS.Sample.AppModel.csproj" />

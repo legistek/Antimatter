@@ -6,11 +6,14 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext } from '@antimatterjs/react';
+import { MainWindow } from './limine/MainWindow';
 
 (async function ()
 {
-    await Antimatter.StartAsync(new WebassemblyServer(), new ReactClient());
+    await Antimatter.StartAsync(new SignalRServer(), new ReactClient());
     var appModel = await Antimatter.Server.GetRootObject("app");
+
+    var limine = await Antimatter.Server.GetRootObject("limine");
 
     const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
     const rootElement = document.getElementById('root');
@@ -18,7 +21,9 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext 
     ReactDOM.render(
         <div>
             <BrowserRouter basename={baseUrl}>
-                <App Model={appModel} />
+                <DataContext Value={limine}>
+                    <MainWindow />
+                </DataContext>
             </BrowserRouter>
         </div>,
         rootElement);

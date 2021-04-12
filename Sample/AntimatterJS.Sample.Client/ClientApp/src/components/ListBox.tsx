@@ -6,9 +6,9 @@ import { ModelValue } from '@antimatterjs/react/src/ModelValue';
 
 export interface IListBoxProps
 {
-    ItemsSource: any[] | Binding,
-    SelectedItem: any | undefined | Binding,
-    ItemTemplate: (item?: any) => JSX.Element
+    ItemsSource: any[] | Binding,    
+    ItemTemplate: (item?: any) => JSX.Element,
+    SelectedItem?: any | undefined | Binding,
 }
 export interface IListBoxState
 {
@@ -39,7 +39,7 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
                     minWidth: 100,
                 }
             ];
-
+        
         this._selection = new Selection({
             getKey: (item, index) =>
             {
@@ -64,12 +64,14 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
         if (property == "SelectedItem")
         {
             this._skipSelectionChangeNotification = true;
-            if (!value)
-                this._selection.setItems([], true);
-            else if (value.IsModelObjectReference)
+            if (value?.IsModelObjectReference)
                 this._selection.setKeySelected(value.Handle, true, false);
-            this._skipSelectionChangeNotification = false;           
-                //this._selection.selectToKey(value.Handle);
+            this._skipSelectionChangeNotification = false;
+            //this._selection.selectToKey(value.Handle);
+        }
+        else if (property == "ItemsSource")
+        {
+            this._selection.setItems(value, !value);
         }
     }
 
@@ -78,12 +80,12 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
         return (
             <div style={{ display: "block", overflowY: "auto", border: "1px black solid" }}>
                 <DetailsList
-                    items={this.state.ItemsSource}
+                    items={this.state.ItemsSource || []}
                     isHeaderVisible={false}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     columns={this._columns}
-                    enableUpdateAnimations={true}
-                    selectionMode={SelectionMode.multiple}
+                    enableUpdateAnimations={true}                    
+                    selectionMode={SelectionMode.multiple}                    
                     selection={this._selection}
                     onRenderItemColumn={(item, index, column) =>
                     {

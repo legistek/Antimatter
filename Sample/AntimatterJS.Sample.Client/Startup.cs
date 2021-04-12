@@ -82,14 +82,29 @@ namespace AntimatterJS.Sample.Client
                  * Antimatter - Add for SignalR Server
                  */
                 endpoints.MapHub<AntimatterRelay>("/interophub");
+
+                Limine.Core.General.Initialize(Legistek.Framework.ClientType.BrowserBased);
+
                 AntimatterRelay.StartupSession += async (mgr) =>
                 {
                     var app = new AntimatterJS.Sample.AppModel.App();
                     await app.StartAsync();
                     mgr.RegisterRootObject("app", app);
+
+                    var limine = new Limine.Core.Session("https://devid.limine.com");
+                    var hs = limine.GetHomeService("https://dev.limine.com/limineapi");
+                    await hs.LoginAsync(new Limine.Core.API.LoginRequest
+                    {
+                        Login = "test@legistek.com",
+                        Password = "Test.1234",
+                        EmbedPassword = true,
+                        Product = Legistek.Framework.API.Product.LimineWeb,
+                    });
+                    limine.UI.LimineSettings.ContentServerURL = "https://dev.limine.com/limineapi";
+
+                    await limine.UI.StartupAsync();
+                    mgr.RegisterRootObject("limine", limine);
                 };
-
-
             });
 
             app.UseSpa(spa =>
