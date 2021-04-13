@@ -8,16 +8,18 @@ import { TextBlock } from '../components/TextBlock';
 
 export class MainAppBar extends AntimatterComponent
 {
-    static theme = getTheme();
+    //static theme = getTheme();
 
     render()
     {
+        const theme = getTheme();
+
         return (
             <div style={{
                 display: "grid",
                 gridTemplateColumns: "auto 1fr auto",
-                background: MainAppBar.theme.palette.themeDarker,
-                color: MainAppBar.theme.palette.themeLighter
+                background: theme.palette.themeDarker,
+                color: theme.palette.themeLighter
             }}>
                 <TextBlock Text="Limine" />
 

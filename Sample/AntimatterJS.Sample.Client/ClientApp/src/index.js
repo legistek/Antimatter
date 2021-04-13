@@ -1,16 +1,49 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
+import { HashRouter } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext } from '@antimatterjs/react';
 import { MainWindow } from './limine/MainWindow';
+import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
+import { initializeIcons } from '@fluentui/react/lib/Icons';
+
+const theme = createTheme({
+    // You can also modify certain other properties such as fontWeight if desired
+    defaultFontStyle: { fontFamily: 'Roboto' },
+    palette: {
+        themePrimary: '#2e70e0',
+        themeLighterAlt: '#f6f9fe',
+        themeLighter: '#dae6fa',
+        themeLight: '#bcd1f6',
+        themeTertiary: '#a1b6e3',
+        themeSecondary: '#2e70e0',
+        themeDarkAlt: '#0056b8',
+        themeDark: '#0056b8',
+        themeDarker: '#1e295b',
+        neutralLighterAlt: '#f0f1f5',
+        neutralLighter: '#f0f1f5',
+        neutralLight: '#d7d9e1',
+        neutralQuaternaryAlt: '#d7d9e1',
+        neutralQuaternary: '#594747',
+        neutralTertiaryAlt: '#494955',
+        neutralTertiary: '#a0a0a0',
+        neutralSecondary: '#606060',
+        neutralPrimaryAlt: '#101010',
+        neutralPrimary: '#101010',
+        neutralDark: '#101010',
+        black: '#000000',
+        white: '#ffffff',
+    }
+});
+
+initializeIcons(/* optional base url */);
+loadTheme(theme);
 
 (async function ()
 {
-    await Antimatter.StartAsync(new SignalRServer(), new ReactClient());
+    await Antimatter.StartAsync(new WebassemblyServer(), new ReactClient());
     var appModel = await Antimatter.Server.GetRootObject("app");
 
     var limine = await Antimatter.Server.GetRootObject("limine");
@@ -20,11 +53,11 @@ import { MainWindow } from './limine/MainWindow';
 
     ReactDOM.render(
         <div>
-            <BrowserRouter basename={baseUrl}>
+            <HashRouter basename={baseUrl}>
                 <DataContext Value={limine}>
                     <MainWindow />
                 </DataContext>
-            </BrowserRouter>
+            </HashRouter>
         </div>,
         rootElement);
 

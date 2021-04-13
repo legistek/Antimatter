@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, BindingParameters, BindingMode } from '@antimatterjs/react';
-import { CheckboxVisibility, DetailsList, DetailsRow, IColumn, IDetailsListProps, IDetailsRowStyles, Selection, List, PrimaryButton, SelectionMode } from '@fluentui/react';
+import { CheckboxVisibility, DetailsList, DetailsRow, IColumn, IDetailsListProps, IDetailsRowStyles, Selection, List, PrimaryButton, SelectionMode, MotionAnimations } from '@fluentui/react';
 import { ModelValue } from '@antimatterjs/react/src/ModelValue';
 
 export interface IListBoxProps
@@ -78,7 +78,10 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
     render()
     {
         return (
-            <div style={{ display: "block", overflowY: "auto", border: "1px black solid" }}>
+            <div style={{
+                display: "block",
+                overflowY: "auto"                                
+            }}>
                 <DetailsList
                     items={this.state.ItemsSource || []}
                     isHeaderVisible={false}

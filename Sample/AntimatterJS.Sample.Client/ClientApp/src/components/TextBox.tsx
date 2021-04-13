@@ -4,8 +4,8 @@ import { TextField } from '@fluentui/react';
 
 export interface ITextBoxProps
 {
-    Text: string | Binding,
-    Label: string | Binding
+    Text?: string | Binding,
+    Label?: string | Binding
 }
 interface ITextBoxState
 {

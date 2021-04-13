@@ -15,14 +15,17 @@ namespace AntimatterJS.Sample.WASM
 
             var limine = new Limine.Core.Session();
             var hs = limine.GetHomeService("https://dev.limine.com/limineapi");
-            await hs.LoginAsync(new Limine.Core.API.LoginRequest
+            var r = await hs.LoginAsync(new Limine.Core.API.LoginRequest
             {
                 Login = "test@legistek.com",
                 Password = "Test.1234",
                 EmbedPassword = true,
                 Product = Legistek.Framework.API.Product.LimineWeb,
             });
-            await limine.UI.StartupAsync();
+            Console.WriteLine($"Log in status: {r.Message}");
+
+            r = await limine.UI.StartupAsync();
+            Console.WriteLine($"Startup status: {r.Message}");
 
             WebassemblyServer.Reactor.RegisterRootObject("app", app);
             WebassemblyServer.Reactor.RegisterRootObject("limine", limine);

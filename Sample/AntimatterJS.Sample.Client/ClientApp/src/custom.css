@@ -24,7 +24,7 @@ div {
     left: 0;
     right: 0;
     max-width: 100%;
-    align-self: stretch;
+    /*align-self: stretch;*/
 }
 
 .amx-root {
@@ -87,7 +87,7 @@ div {
 .amx-stack-panel {
     display: block;
     flex-direction: column;
-    padding: 10px 0px 10px 0px;
+    padding: 10px 10px 10px 10px;
 }
 
     .amx-stack-panel.scrollable {
@@ -130,7 +130,7 @@ div {
     }
 
     .amx-stack-panel > *:last-child {
-        padding-bottom: 0px;
+        /*padding-bottom: 0px;*/
         margin-bottom: 0px;
     }
 
