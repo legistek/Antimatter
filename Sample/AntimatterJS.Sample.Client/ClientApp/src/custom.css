@@ -2,6 +2,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+@font-face {
+    font-family: "IconFont";
+    src: url("/Legistek-Custom.woff") format('woff');
+}
+
 body {
     /*all: unset;*/
     margin: 0px;
@@ -15,7 +20,7 @@ div {
     /* Please think twice and then three times more before changing this */
     overflow: hidden;    
     position: relative;
-    line-height: 1.2rem;
+    /*line-height: 1.2rem;*/
     border-style: solid;
     border-width: 0px;
     box-shadow: unset;
@@ -79,15 +84,29 @@ div {
     right: 0px;
 }*/
 
-.amx-standard-control
+.amx-panel
 {
-    margin: 5px;
+}
+
+.amx-panel > .amx-standard-control {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.amx-panel > .amx-standard-control:first-child {
+    margin-left: 0px;
+    margin-top: 0px;
+}
+
+.amx-panel > .amx-standard-control:last-child {
+    margin-right: 0px;
+    margin-bottom: 0px;
 }
 
 .amx-stack-panel {
     display: block;
     flex-direction: column;
-    padding: 10px 10px 10px 10px;
+    padding: 0px;
 }
 
     .amx-stack-panel.scrollable {
@@ -101,38 +120,37 @@ div {
         overflow-y: hidden;
     }
 
-        .amx-stack-panel.horizontal > div {
+        .amx-stack-panel.horizontal > .amx-standard-control {
             width: auto;
+            margin-bottom: 0px;
         }
 
-        .amx-stack-panel.horizontal > * {
-            /*padding-top: 0px;
-            padding-bottom: 0px;*/
+        /*.amx-stack-panel.horizontal > * {
             margin-left: 5px;
             margin-right: 0px;
             margin-bottom: 0px;
             margin-top: 0px;
         }
 
-            .amx-stack-panel.horizontal > *:first-child {
+            .amx-stack-panel.horizontal > *:first-child {*/
                 /*padding-left: 0px;*/
-                margin-left: 0px;
+                /*margin-left: 0px;
             }
 
-            .amx-stack-panel.horizontal > *:last-child {
+            .amx-stack-panel.horizontal > *:last-child {*/
                 /*padding-right: 0px;*/
-                margin-right: 0px;
-            }
+                /*margin-right: 0px;
+            }*/
 
-    .amx-stack-panel > *:first-child {
+    /*.amx-stack-panel > *:first-child {
         padding-top: 0px;
         margin-top: 0px;
     }
 
-    .amx-stack-panel > *:last-child {
+    .amx-stack-panel > *:last-child {*/
         /*padding-bottom: 0px;*/
-        margin-bottom: 0px;
-    }
+        /*margin-bottom: 0px;
+    }*/
 
 .amx-headered-grid {
     display: grid;

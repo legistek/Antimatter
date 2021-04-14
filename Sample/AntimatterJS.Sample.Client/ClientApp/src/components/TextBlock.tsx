@@ -4,7 +4,9 @@ import * as React from 'react';
 interface ITextBlockProps
 {
     Text: string | Binding,
-    className?: string
+    FontFamily?: string,
+    FontSize?: number,
+    className?: string,    
 }
 interface ITextBlockState
 {
@@ -22,6 +24,11 @@ export class TextBlock extends AntimatterComponent<ITextBlockProps, ITextBlockSt
 
     render()
     {
-        return (<div className={this.props.className}>{this.state.Text}</div>);
+        return (<div
+            style={{
+                fontFamily: this.props.FontFamily,
+                fontSize: this.props.FontSize
+            }}
+            className={"amx-standard-control " + this.props.className}>{this.state.Text}</div>);
     }
 }

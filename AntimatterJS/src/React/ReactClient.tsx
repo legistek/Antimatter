@@ -194,24 +194,23 @@ export class ReactClient implements IClient
     }
 
     private ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean) : boolean
-    {
-        let exp: BindingExpression | undefined;
-
+    {        
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
         {
-            //if (target.props[prop] === value)
-            //    // already bound 
-            //    return false;
             if (value?.IsAntimatterBinding &&
                 BindingParameters.Equals(existingBinding.Parameters, value.Parameters))
+                // Same binding parameters = nothing to do
                 return false;
 
-            exp = target.antimatterBindingExps.get(prop);
+            var exp = target.antimatterBindingExps.get(prop);
             if (exp)
             {
-                // Different binding base requires unapplying the old binding
+                // Different binding params requires unapplying 
+                // and deleting the old binding
                 exp?.Unapply();
+                target.antimatterBindingExps.delete(prop);
+                target.antimatterBindingBases.delete(prop);
             }
         }
 
@@ -223,25 +222,17 @@ export class ReactClient implements IClient
 
             // Plain old value; set the state and continue
             target.state[prop] = value;
-            if (exp)
-            {
-                target.antimatterBindingBases.delete(prop);
-                target.antimatterBindingExps.delete(prop);
-            }
             return true;
         }
-
-        if (!exp)
-        {
-            exp = (value as Binding).CreateBindingExpression(target, prop);
-            target.antimatterBindingBases.set(prop, value);
-            target.antimatterBindingExps.set(prop, exp);
-        }
-
-        if (!exp.IsDataContextDependent)
+        
+        var newExp = (value as Binding).CreateBindingExpression(target, prop);
+        target.antimatterBindingBases.set(prop, value);
+        target.antimatterBindingExps.set(prop, newExp);
+        
+        if (!newExp.IsDataContextDependent)
             // We can apply it now at prop assignment if it's not dctx dependent
             // Otherwise we have to wait for render
-            exp.Apply();
+            newExp.Apply();
 
         return true;
     }

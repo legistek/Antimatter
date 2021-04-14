@@ -12,7 +12,7 @@ export class StackPanel extends Component<{ Orientation?: Orientation, style?: R
     render()
     {
         return (
-            <div className={this.CSSClass} style={this.props.style}>
+            <div className={"amx-panel " + this.CSSClass} style={this.props.style}>
                 {this.props.children}
             </div>
         );

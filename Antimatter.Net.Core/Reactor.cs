@@ -211,7 +211,15 @@ namespace Antimatter.Net
             ModelValueType t = ModelValueType.None;
             if (!_typeConv.TryGetValue(type, out t))
             {
-                if (obj is IEnumerable<object> ienum)
+                if (obj is Enum en)
+                {
+                    return new ModelValue
+                    {
+                        Type = ModelValueType.Int,
+                        IntValue = System.Convert.ToInt32(en)
+                    };
+                }
+                else if (obj is IEnumerable<object> ienum)
                 {
                     var arr = ienum.Select(item => GetDotNetValue(item)).ToArray();
                     return new ModelValue

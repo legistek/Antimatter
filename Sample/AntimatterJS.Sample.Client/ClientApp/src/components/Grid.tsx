@@ -8,7 +8,8 @@ export interface IGridProps
 {
     ColumnDefinitions?: string,
     RowDefinitions?: string,
-    Background?: string
+    Background?: string,
+    GridGap?: number 
 }
 
 export class Grid extends AntimatterComponent<IGridProps>
@@ -16,12 +17,14 @@ export class Grid extends AntimatterComponent<IGridProps>
     render()
     {
         return (
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: this.props.ColumnDefinitions,
-                gridTemplateRows: this.props.RowDefinitions,
-                background: this.props.Background
-            }}>
+            <div className="amx-panel"
+                style={{
+                    display: "grid",
+                    gridGap: (this.props.GridGap || 5) + "px",
+                    gridTemplateColumns: this.props.ColumnDefinitions,
+                    gridTemplateRows: this.props.RowDefinitions,
+                    background: this.props.Background
+                }}>
                 {this.props.children}
             </div>
             );

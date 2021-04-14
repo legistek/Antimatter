@@ -3,6 +3,9 @@ import * as React from 'react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
 import { PrimaryButton } from '@fluentui/react';
 import { ModelValue } from '@antimatterjs/react/src/ModelValue';
+import { Grid } from './Grid';
+import { TextBlock } from './TextBlock';
+import { Orientation, StackPanel } from './StackPanel';
 
 export interface IModernButtonProps
 {
@@ -39,10 +42,20 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
         //    return null;
 
         return (
-            <PrimaryButton className={this.props.className}
-                disabled={this.state.IsEnabled === undefined ? false : !this.state.IsEnabled}
+            <PrimaryButton className={"amx-standard-control " + this.props.className}
+                disabled={this.BindState({ Path: "IsEnabled", Source: this.state.Command, Converter: e => !e })}
                 onClick={() => this.onClick()}>
-                {this.state.Label}
+
+                <StackPanel Orientation={Orientation.Horizontal}>
+                    <TextBlock
+                        FontFamily="IconFont" Text={
+                            new Binding({
+                                Path: "Icon", Source: this.state.Command,
+                                Converter: (iconNo: number) =>
+                                    String.fromCharCode(iconNo)
+                            })} />
+                    <TextBlock Text={new Binding({ Path: "Name", Source: this.state.Command })} />
+                </StackPanel>
             </PrimaryButton>
             );
     }

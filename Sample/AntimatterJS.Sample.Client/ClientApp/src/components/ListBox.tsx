@@ -78,10 +78,11 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
     render()
     {
         return (
-            <div style={{
-                display: "block",
-                overflowY: "auto"                                
-            }}>
+            <div className="amx-standard-control"
+                style={{
+                    display: "block",
+                    overflowY: "auto"
+                }}>
                 <DetailsList
                     items={this.state.ItemsSource || []}
                     isHeaderVisible={false}

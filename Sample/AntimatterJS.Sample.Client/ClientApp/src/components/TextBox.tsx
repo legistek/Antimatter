@@ -27,6 +27,7 @@ export class TextBox extends AntimatterComponent<ITextBoxProps, ITextBoxState>
     {
         return (
             <TextField
+                className="amx-standard-control "
                 label={this.state.Label}
                 value={this.state.Text || ''}
                 onChange={(event, newValue) =>

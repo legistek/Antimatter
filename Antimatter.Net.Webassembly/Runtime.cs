@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.JSInterop;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -7,11 +8,29 @@ using WebAssembly.JSInterop;
 
 namespace Antimatter.Net.Webassembly
 {    
-    internal static class JS
-    {
-        public static void InvokeJS(string jsCode)
+    public static class JS
+    {        
+        public static string InvokeJS(string identifier, string? argsJson
+            //, JSCallResultType resultType, long targetInstanceId
+            )
         {
-            WebAssembly.Runtime.InvokeJS(jsCode);
+            var callInfo = new JSCallInfo
+            {
+                FunctionIdentifier = identifier,
+                TargetInstanceId = 0,
+                ResultType = JSCallResultType.Default,
+                MarshalledCallArgsJson = argsJson ?? "[]",
+                MarshalledCallAsyncHandle = default
+            };
+
+            var result = InternalCalls.InvokeJS<object, object, object, string>(out var exception, ref callInfo, null, null, null);
+
+            if (exception != null)
+            {
+                Console.WriteLine($"exception {exception}");
+            }
+
+            return result;
         }
 
         public static void InvokeUnmarshalled(string identifier)
