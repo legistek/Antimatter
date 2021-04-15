@@ -16,19 +16,24 @@ body {
     user-select: none;
 }
 
+.amx-root div {
+    overflow: hidden;
+    width: auto;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+}
+
 div {
     /* Please think twice and then three times more before changing this */
-    overflow: hidden;    
+
     position: relative;
     /*line-height: 1.2rem;*/
     border-style: solid;
     border-width: 0px;
     box-shadow: unset;
     box-sizing: content-box;
-    width: auto;
-    left: 0;
-    right: 0;
-    max-width: 100%;
+
     /*align-self: stretch;*/
 }
 
@@ -40,6 +45,11 @@ div {
     bottom: 0px;
     display: flex;
     position: fixed;
+    overflow: hidden;
+    width: auto;
+    left: 0;
+    right: 0;
+    max-width: 100%;
 }
 
 .amx-ha-right {

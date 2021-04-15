@@ -10,6 +10,7 @@ export class BindingParameters
     NotifyCollectionChanged?: boolean;
     FallbackValue?: any;
     Converter?: (any) => any;
+    ConverterBack?: (any) => any;
     ValidatesOnDataErrors?: boolean;
 
     public static Equals(p1?: BindingParameters, p2?: BindingParameters)

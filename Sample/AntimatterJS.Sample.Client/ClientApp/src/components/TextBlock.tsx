@@ -1,4 +1,5 @@
 import { Binding, AntimatterComponent } from '@antimatterjs/react';
+import { IFontWeight } from '@fluentui/merge-styles';
 import * as React from 'react';
 
 interface ITextBlockProps
@@ -6,7 +7,8 @@ interface ITextBlockProps
     Text: string | Binding,
     FontFamily?: string,
     FontSize?: number,
-    className?: string,    
+    className?: string,
+    FontWeight?: undefined | "bold" | "normal"
 }
 interface ITextBlockState
 {
@@ -27,7 +29,8 @@ export class TextBlock extends AntimatterComponent<ITextBlockProps, ITextBlockSt
         return (<div
             style={{
                 fontFamily: this.props.FontFamily,
-                fontSize: this.props.FontSize
+                fontSize: this.props.FontSize,
+                fontWeight: this.props.FontWeight
             }}
             className={"amx-standard-control " + this.props.className}>{this.state.Text}</div>);
     }

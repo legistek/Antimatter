@@ -87,6 +87,8 @@ export class ReactClient implements IClient
         var exp = target.antimatterBindingExps.get(prop);
         if (exp?.ActualMode === BindingMode.TwoWay)
         {
+            if (exp.Parameters.ConverterBack)
+                value = exp.Parameters.ConverterBack(value);
             Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
             var newState = {};
             newState[prop] = value;
