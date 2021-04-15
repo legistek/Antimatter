@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext } from '@antimatterjs/react';
@@ -53,11 +53,11 @@ loadTheme(theme);
 
     ReactDOM.render(
         <div>
-            <HashRouter basename={baseUrl}>
+            <BrowserRouter basename={baseUrl}>
                 <DataContext Value={limine}>
                     <MainWindow />
                 </DataContext>
-            </HashRouter>
+            </BrowserRouter>
         </div>,
         rootElement);
 

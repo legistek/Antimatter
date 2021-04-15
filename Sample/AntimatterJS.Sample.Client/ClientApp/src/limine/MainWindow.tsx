@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { Route } from 'react-router';
+import { Route, withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { createTheme, getTheme, INavLinkGroup, INavState, INavStyles, loadTheme, Nav } from '@fluentui/react';
+//import { withRouter } from "react-router";
+import { useLocation, Switch } from 'react-router-dom';
+import { createTheme, getTheme, Icon, INavLinkGroup, INavState, INavStyles, loadTheme, Nav } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
 import { Window } from '../components/Window';
 import { MainAppBar } from './MainAppBar';
@@ -21,6 +22,7 @@ import { AccountSettingsPanel } from './AccountSettingsPanel';
 import { NavigationBar } from '../components/NavigationBar';
 import { Tab } from 'bootstrap';
 
+@withRouter     // need this so Nav gets updates on route changes - TODO - sub-class that out
 export class MainWindow extends AntimatterComponent<{ Session: ModelObjectReference }, { selectedKey: string }>
 {
     static theme = getTheme();
@@ -43,18 +45,18 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
             links: [
                 {
                     name: "Open",
-                    url: "#/open",
-                    key: "open",
+                    url: "/open",
+                    key: "key1",
                 },
                 {
                     name: "New",
-                    url: "#/new",
-                    key: "new"
+                    url: "/new",
+                    key: "key2"
                 },
                 {
                     name: "Account",
-                    url: "#/account",
-                    key: "account"
+                    url: "/account",
+                    key: "key3"
                 }
             ]
         }
@@ -66,8 +68,9 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
 
         /**/
         // background: theme.semanticColors.disabledBackground
-        return (
+        return (            
             <Window Background={theme.palette.neutralLighter}>
+                
                 <Grid RowDefinitions="auto 1fr">
 
                     <MainAppBar />
@@ -75,66 +78,29 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
                     <Grid ColumnDefinitions="auto 1fr">
                         <div style={{ marginLeft: "10px" }}>
                             <Nav groups={MainWindow.navLinkGroups}
-                                styles={MainWindow.navStyles}/>
+                                styles={MainWindow.navStyles}                                
+                                linkAs={(props) =>                                
+                                (
+                                    <Link className={props.className} style={{ color: 'inherit', boxSizing: 'border-box' }} to={props.href}>
+                                        <span style={{ display: 'flex' }}>
+                                            {!!props.iconProps && <Icon style={{ margin: '0 4px' }} {...props.iconProps} />}
+                                            {props.children}
+                                        </span>
+                                    </Link>
+                                )}
+                            />
                         </div>
-
+                       
                         <div>
                             <Route path='/open' component={OpenMatterPanel} />
                             <Route path='/new' component={NewMatterPanel} />
                             <Route path='/account' component={AccountSettingsPanel} />
                         </div>
+                        
                     </Grid>
-
                 </Grid>
             </Window>
         );
     }
 }
 
-
-/*
- * 
- * 
- *SelectedTabName=
-                                {
-                                    new Binding({
-                                        Path: "UI.CurrentAppMenuTab",
-                                        Converter: tab =>
-                                        {
-                                            switch (tab as number)
-                                            {
-                                                case 0:
-                                                    return "NewMatter";
-                                                case 1:
-                                                    return "OpenMatter";
-                                                case 2:
-                                                    return "MatterSettings";
-                                                case 3:
-                                                    return "ServerAdmin";
-                                                case 4:
-                                                    return "AccountSettings";
-                                                default:
-                                                    return "";
-                                            }
-                                        },
-                                        ConverterBack: tab =>
-                                        {
-                                            switch (tab as string)
-                                            {
-                                                case "NewMatter":
-                                                    return 0;
-                                                case "OpenMatter":
-                                                    return 1;
-                                                case "MatterSettings":
-                                                    return 2;
-                                                case "ServerAdmin":
-                                                    return 3;
-                                                case "AccountSettings":
-                                                    return 4;
-                                                default:
-                                                    return 0;
-                                            }
-                                        }
-                                    })
-                                }
- * */

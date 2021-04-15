@@ -76,10 +76,10 @@ export class MainAppBar extends AntimatterComponent<{}, { isProfileCalloutOpen: 
                                     secondaryText={this.BindState({ Path: "Identity.Email" })} />
                                 <Separator />
                                 <div>
-                                    <Link href="#/account">Account Settings</Link>
+                                    <RouterLink to="/account">Account Settings</RouterLink>
                                 </div>
                                 <div>
-                                    <Link href="/">Logout</Link>
+                                    <RouterLink to="/">Logout</RouterLink>
                                 </div>
                             </StackPanel>
                             {/*<TextBlock Text={new Binding("Identity.DisplayName")} />*/}
