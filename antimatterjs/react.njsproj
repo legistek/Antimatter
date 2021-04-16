@@ -2,7 +2,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>AntimatterJS</Name>
+    <Name>react</Name>
     <RootNamespace>AntimatterJS</RootNamespace>
     <EnableTypeScript>true</EnableTypeScript>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
@@ -14,7 +14,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f78362a3-0eef-4851-a840-62d70db8d177</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
+    <ProjectHome>
+    </ProjectHome>
     <StartupFile>start</StartupFile>
     <SearchPath>
     </SearchPath>
@@ -37,12 +38,15 @@
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\positron\positron.css" />
     <Content Include="tsconfig.json">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\positron\" />
+    <Folder Include="src\positron\Controls\" />
     <Folder Include="src\ReactMVVM\" />
     <Folder Include="src\ReactMVVM\Controls\" />
     <Folder Include="src\React\" />
@@ -56,6 +60,15 @@
     <TypeScriptCompile Include="src\BindableProp.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\positron\Controls\Control.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\Grid.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\GroupBox.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\Panel.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\StackPanel.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\TextBlock.tsx" />
+    <TypeScriptCompile Include="src\positron\Controls\Window.tsx" />
+    <TypeScriptCompile Include="src\positron\Enums.tsx" />
+    <TypeScriptCompile Include="src\positron\FrameworkElement.tsx" />
     <TypeScriptCompile Include="src\React\AntimatterComponent.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>

@@ -2,34 +2,37 @@ import { Component } from 'react';
 import * as React from 'react';
 import { Route, withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-//import { withRouter } from "react-router";
 import { useLocation, Switch } from 'react-router-dom';
 import { createTheme, getTheme, Icon, INavLinkGroup, INavState, INavStyles, loadTheme, Nav } from '@fluentui/react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from '../components/Window';
+import
+    {
+        Window,
+        ModelObjectReference, Grid, 
+        HorizontalAlignment, VerticalAlignment, IWindowProps
+    } from '@antimatterjs/react';
 import { MainAppBar } from './MainAppBar';
-import { ListBox } from '../components/ListBox';
-import { TextBlock } from '../components/TextBlock';
-import { Tabs, TabItem } from '@fluentui/react-tabs';
 
-import '../custom.css'
-import { Grid } from '../components/Grid';
-import { GroupBox } from '../components/GroupBox';
 import { OpenMatterPanel } from './OpenMatterPanel';
-import { Orientation, StackPanel } from '../components/StackPanel';
 import { NewMatterPanel } from './NewMatterPanel';
 import { AccountSettingsPanel } from './AccountSettingsPanel';
 import { NavigationBar } from '../components/NavigationBar';
-import { Tab } from 'bootstrap';
 
+import '../custom.css'
 
-export class MainWindow extends AntimatterComponent<{ Session: ModelObjectReference }, { selectedKey: string }>
+interface IMainWindowProps extends IWindowProps
+{
+    Session: ModelObjectReference,
+}
+
+export class MainWindow extends Window<IMainWindowProps, {}>
 {
     static theme = getTheme();
 
     constructor(props)
     {
         super(props);
+        const theme = getTheme();
+        (this.state as any).Background = theme.palette.neutralLighter;
     }
 
     static navStyles: Partial<INavStyles> = {
@@ -62,44 +65,43 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
         }
     ];
 
-    render()
+    renderElement()
     {
-        const theme = getTheme();
-
         /**/
         // background: theme.semanticColors.disabledBackground
-        return (            
-            <Window Background={theme.palette.neutralLighter}>
-                
-                <Grid RowDefinitions="auto 1fr">
+        return (
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                HorizontalAlignment={HorizontalAlignment.Stretch}
+                VerticalAlignment={VerticalAlignment.Stretch}>
 
-                    <MainAppBar />
+                <MainAppBar />
 
-                    <Grid ColumnDefinitions="auto 1fr">
-                        <div style={{ marginLeft: "10px" }}>
-                            <NavigationBar groups={MainWindow.navLinkGroups}
-                                styles={MainWindow.navStyles}
-                                linkAs={(props) =>                                
-                                (
-                                    <Link className={props.className} style={{ color: 'inherit', boxSizing: 'border-box' }} to={props.href}>
-                                        <span style={{ display: 'flex' }}>
-                                            {!!props.iconProps && <Icon style={{ margin: '0 4px' }} {...props.iconProps} />}
-                                            {props.children}
-                                        </span>
-                                    </Link>
-                                )}
-                            />
-                        </div>
-                       
-                        <div>
-                            <Route path='/open' component={OpenMatterPanel} />
-                            <Route path='/new' component={NewMatterPanel} />
-                            <Route path='/account' component={AccountSettingsPanel} />
-                        </div>
-                        
-                    </Grid>
+
+                <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
+                    <div style={{ marginLeft: "10px" }}>
+                        <NavigationBar groups={MainWindow.navLinkGroups}
+                            styles={MainWindow.navStyles}
+                            linkAs={(props) =>
+                            (
+                                <Link className={props.className} style={{ color: 'inherit', boxSizing: 'border-box' }} to={props.href}>
+                                    <span style={{ display: 'flex' }}>
+                                        {!!props.iconProps && <Icon style={{ margin: '0 4px' }} {...props.iconProps} />}
+                                        {props.children}
+                                    </span>
+                                </Link>
+                            )}
+                        />
+                    </div>
+
+                    <div>
+                        <Route path='/open' component={OpenMatterPanel} />
+                        <Route path='/new' component={NewMatterPanel} />
+                        <Route path='/account' component={AccountSettingsPanel} />
+                    </div>
+
                 </Grid>
-            </Window>
+            </Grid>
+
         );
     }
 }

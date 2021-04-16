@@ -1,5 +1,4 @@
 import { Antimatter } from '../Antimatter';
-import { BindingMode } from '../Binding';
 import { BindingExpression } from '../BindingExpression';
 import { ReactClient } from '../React/ReactClient';
 import { DependencyBindingExpression } from './DependencyBindingExpression';

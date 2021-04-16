@@ -1,10 +1,9 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
+import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, TextBlock } from '@antimatterjs/react';
 import { PrimaryButton } from '@fluentui/react';
 import { ModelValue } from '@antimatterjs/react/src/ModelValue';
 import { Grid } from './Grid';
-import { TextBlock } from './TextBlock';
 import { Orientation, StackPanel } from './StackPanel';
 
 export interface IModernButtonProps

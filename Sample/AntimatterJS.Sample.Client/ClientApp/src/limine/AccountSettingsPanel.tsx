@@ -1,17 +1,8 @@
-import { Component } from 'react';
 import * as React from 'react';
-import { Route } from 'react-router';
-import { createTheme, getTheme, INavLinkGroup, INavState, INavStyles, Label, loadTheme, MotionAnimations, Nav } from '@fluentui/react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from '../components/Window';
-import { MainAppBar } from './MainAppBar';
-import { ListBox } from '../components/ListBox';
-import { TextBlock } from '../components/TextBlock';
-import { GroupBox } from '../components/GroupBox';
-import { TextBox } from '../components/TextBox';
-import { ModernButton } from '../components/ModernButton';
-import { Orientation, StackPanel } from '../components/StackPanel';
-import { Grid } from '../components/Grid';
+import
+    {
+        Binding, AntimatterComponent, Grid, TextBlock, GroupBox, StackPanel, Orientation
+    } from '@antimatterjs/react';
 
 export class AccountSettingsPanel extends AntimatterComponent
 {
@@ -19,8 +10,8 @@ export class AccountSettingsPanel extends AntimatterComponent
     {
         return (
             <GroupBox Header="Account Settings">
-                <Grid ColumnDefinitions="150px 1fr"
-                    RowDefinitions="1fr 1fr 1fr 1fr 1fr 1fr">
+                <Grid ColumnDefinitions={[Grid.ColumnDefinition(150), Grid.ColumnDefinition(1, true)]}
+                    RowDefinitions={[Grid.RowDefinition(1, true)]}>
                     <TextBlock Text="Login" FontWeight="bold"/>
                     <TextBlock Text={new Binding("Identity.Login")} />
 

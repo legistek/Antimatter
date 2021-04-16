@@ -2,15 +2,10 @@ import { Component } from 'react';
 import * as React from 'react';
 import { Route } from 'react-router';
 import { createTheme, getTheme, INavLinkGroup, INavState, INavStyles, Label, loadTheme, MotionAnimations, Nav } from '@fluentui/react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from '../components/Window';
-import { MainAppBar } from './MainAppBar';
+import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, GroupBox, TextBlock, StackPanel } from '@antimatterjs/react';
 import { ListBox } from '../components/ListBox';
-import { TextBlock } from '../components/TextBlock';
-import { GroupBox } from '../components/GroupBox';
 import { TextBox } from '../components/TextBox';
 import { ModernButton } from '../components/ModernButton';
-import { StackPanel } from '../components/StackPanel';
 
 export class NewMatterPanel extends AntimatterComponent
 {

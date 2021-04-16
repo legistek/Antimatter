@@ -17,14 +17,14 @@ interface INavigationBarState
     SelectedTabName?: string
 }
 
-@withRouter     // need this so Nav gets updates on route changes - TODO - sub-class that out
+//@withRouter     // need this so Nav gets updates on route changes - TODO - sub-class that out
 export class NavigationBar extends AntimatterComponent<INavigationBarProps, INavigationBarState>
 {
-    public static DefaultBindings = {
-        SelectedTabName: {
-            Mode: BindingMode.TwoWay,            
-        }
-    };
+    //public static DefaultBindings = {
+    //    SelectedTabName: {
+    //        Mode: BindingMode.TwoWay,            
+    //    }
+    //};
 
     render()
     {

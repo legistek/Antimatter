@@ -1,14 +1,11 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, TextBlock, StackPanel, Orientation } from '@antimatterjs/react';
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/react';
 import { ModernButton } from './ModernButton';
-import { ListView } from './ListView';
-import { TextBlock } from './TextBlock';
 import { TextBox } from './TextBox';
 
 import * as Model from '../model/Model';
 import { ListBox } from './ListBox';
-import { Orientation, StackPanel } from './StackPanel';
 import { CheckBox } from './CheckBox';
 import { Visibility } from './Visibility';
 
@@ -20,13 +17,14 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <StackPanel style={{
-                boxShadow: DefaultEffects.elevation8,
-                border: "1px solid #C0C0C0",
-                margin: "5px",
-                padding: "5px",
+            <StackPanel
+                BoxShadow={DefaultEffects.elevation8}
+                BorderBrush="#C0C0C0"
+                BorderThickness="1px"
+                Margin="5px"
+                Padding="5px"
                 /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
-            }}>
+            >
 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />

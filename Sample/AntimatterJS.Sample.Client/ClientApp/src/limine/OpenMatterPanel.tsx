@@ -2,16 +2,9 @@ import { Component } from 'react';
 import * as React from 'react';
 import { Route } from 'react-router';
 import { CommandBar, createTheme, getTheme, INavLinkGroup, INavState, INavStyles, loadTheme, MotionAnimations, Nav } from '@fluentui/react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from '../components/Window';
-import { MainAppBar } from './MainAppBar';
+import { Antimatter, TextBlock, DataContext, Binding, ModelObjectReference, AntimatterComponent, Grid, GroupBox, StackPanel, Orientation} from '@antimatterjs/react';
 import { ListBox } from '../components/ListBox';
-import { TextBlock } from '../components/TextBlock';
-import { Tabs, TabItem } from '@fluentui/react-tabs';
-import { GroupBox } from '../components/GroupBox';
-import { Grid } from '../components/Grid';
 import { ModernButton } from '../components/ModernButton';
-import { Orientation, StackPanel } from '../components/StackPanel';
 
 export class OpenMatterPanel extends AntimatterComponent
 {
@@ -23,7 +16,7 @@ export class OpenMatterPanel extends AntimatterComponent
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }}>
                 <GroupBox Header="Open Existing Matter">
-                    <Grid RowDefinitions="auto 1fr">
+                    <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
 
                         <ListBox
                             ItemsSource={new Binding("UI.OnlineLimineFiles")}
