@@ -23,7 +23,16 @@ body {
     right: 0;
     max-width: 100%;
 }
+/*
+.amx-listbox .cell-94 {
+    padding: 0px;
+    min-height: 0px;
+}
 
+.amx-listbox .ms-List-cell {
+    min-height: 0px;
+}
+*/
 div {
     /* Please think twice and then three times more before changing this */
 

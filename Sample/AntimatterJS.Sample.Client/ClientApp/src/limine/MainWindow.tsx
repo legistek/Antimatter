@@ -22,7 +22,7 @@ import { AccountSettingsPanel } from './AccountSettingsPanel';
 import { NavigationBar } from '../components/NavigationBar';
 import { Tab } from 'bootstrap';
 
-@withRouter     // need this so Nav gets updates on route changes - TODO - sub-class that out
+
 export class MainWindow extends AntimatterComponent<{ Session: ModelObjectReference }, { selectedKey: string }>
 {
     static theme = getTheme();
@@ -46,7 +46,7 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
                 {
                     name: "Open",
                     url: "/open",
-                    key: "key1",
+                    key: "key1"
                 },
                 {
                     name: "New",
@@ -77,8 +77,8 @@ export class MainWindow extends AntimatterComponent<{ Session: ModelObjectRefere
 
                     <Grid ColumnDefinitions="auto 1fr">
                         <div style={{ marginLeft: "10px" }}>
-                            <Nav groups={MainWindow.navLinkGroups}
-                                styles={MainWindow.navStyles}                                
+                            <NavigationBar groups={MainWindow.navLinkGroups}
+                                styles={MainWindow.navStyles}
                                 linkAs={(props) =>                                
                                 (
                                     <Link className={props.className} style={{ color: 'inherit', boxSizing: 'border-box' }} to={props.href}>

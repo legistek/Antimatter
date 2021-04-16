@@ -37,6 +37,11 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
                     key: "column",
                     name: "column",
                     minWidth: 100,
+                    isPadded: false,
+                    //onRender: (item, index, column) =>
+                    //{
+
+                    //}
                 }
             ];
         
@@ -78,7 +83,7 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
     render()
     {
         return (
-            <div className="amx-standard-control"
+            <div className="amx-standard-control amx-listbox"
                 style={{
                     display: "block",
                     overflowY: "auto"
@@ -86,8 +91,15 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
                 <DetailsList
                     items={this.state.ItemsSource || []}
                     isHeaderVisible={false}
+                    cellStyleProps={{
+                        cellExtraRightPadding: 0,
+                        cellLeftPadding: 5,
+                        cellRightPadding: 5
+                    }}
                     checkboxVisibility={CheckboxVisibility.hidden}
                     columns={this._columns}
+                    onRenderRow={this._onRenderRow}
+                    compact={true}
                     enableUpdateAnimations={true}                    
                     selectionMode={SelectionMode.multiple}                    
                     selection={this._selection}
@@ -107,13 +119,21 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
         const customStyles: Partial<IDetailsRowStyles> = {};
         if (props)
         {
-            if (props.itemIndex % 2 === 0)
+            // if (props.itemIndex % 2 === 0)
             {
                 // Every other row renders with a different background color
-                customStyles.root = { backgroundColor: "#800000" };
+                customStyles.root = {
+                    //backgroundColor: "#800000",
+                    border: "none",
+                    minHeight: 0,
+                    padding: 0,
+                    margin: 0,
+                };
             }
 
-            return <DetailsRow {...props} styles={customStyles} checkboxVisibility={CheckboxVisibility.hidden} />;
+            return <DetailsRow {...props}
+                styles={customStyles}
+                checkboxVisibility={CheckboxVisibility.hidden} />;
         }
         return null;
     };

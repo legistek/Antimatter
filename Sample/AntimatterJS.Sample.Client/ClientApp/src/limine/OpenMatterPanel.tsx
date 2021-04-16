@@ -30,7 +30,7 @@ export class OpenMatterPanel extends AntimatterComponent
                             SelectedItem={new Binding("UI.OpenMatterPanel.SelectedOnlineMatter")}
                             ItemTemplate={(item) => (
                                 <TextBlock
-                                    FontSize={theme.fonts.mediumPlus.fontSize as number}
+                                    FontSize={theme.fonts.medium.fontSize as number}
                                     Text={new Binding({ Path: "Name", Source: item })} />
                                 )} />
                     </Grid>
