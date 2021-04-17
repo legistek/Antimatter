@@ -4,13 +4,9 @@ import { Route, withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useLocation, Switch } from 'react-router-dom';
 import { createTheme, getTheme, Icon, INavLinkGroup, INavState, INavStyles, loadTheme, Nav } from '@fluentui/react';
-import
-    {
-        Window,
-        ModelObjectReference, Grid, 
-        HorizontalAlignment, VerticalAlignment, IWindowProps
-    } from '@antimatterjs/react';
+import { ModelObjectReference } from '@antimatterjs/react';
 import { MainAppBar } from './MainAppBar';
+import { Window, Grid, HorizontalAlignment, VerticalAlignment, IWindowProps } from '@antimatterjs/positron'
 
 import { OpenMatterPanel } from './OpenMatterPanel';
 import { NewMatterPanel } from './NewMatterPanel';

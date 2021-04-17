@@ -1,8 +1,6 @@
 import * as React from 'react';
-import
-    {
-        Binding, AntimatterComponent, Grid, TextBlock, GroupBox, StackPanel, Orientation
-    } from '@antimatterjs/react';
+import { Binding, AntimatterComponent } from '@antimatterjs/react';
+import { Grid, TextBlock, GroupBox, StackPanel, Orientation } from '@antimatterjs/positron'
 
 export class AccountSettingsPanel extends AntimatterComponent
 {

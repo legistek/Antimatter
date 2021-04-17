@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "@antimatterjs/react": "file:antimatterjs",
+    "@antimatterjs/react": "file:node_modules/@antimatterjs/react",
+	"@antimatterjs/positron": "file:node_modules/@antimatterjs/positron",
     "@babel/core": "^7.9.0",
     "@fluentui/react": "^8.8.0",
     "@fluentui/react-tabs": "1.0.0-beta.80",

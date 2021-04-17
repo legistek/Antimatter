@@ -1,8 +1,6 @@
-import { Component } from 'react';
 import * as React from 'react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, BindingParameters, BindingMode } from '@antimatterjs/react';
-import { CheckboxVisibility, DetailsList, DetailsRow, IColumn, IDetailsListProps, IDetailsRowStyles, Selection, List, PrimaryButton, SelectionMode, MotionAnimations } from '@fluentui/react';
-import { ModelValue } from '@antimatterjs/react/src/ModelValue';
+import { Binding, AntimatterComponent, BindingMode } from '@antimatterjs/react';
+import { CheckboxVisibility, DetailsList, DetailsRow, IColumn, IDetailsListProps, IDetailsRowStyles, Selection, SelectionMode } from '@fluentui/react';
 
 export interface IListBoxProps
 {

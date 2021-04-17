@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Binding, ModelObjectReference, AntimatterComponent, Antimatter, BindingMode } from '@antimatterjs/react';
-import { Checkbox as FluentCheckBox } from '@fluentui/react'
-import { ModelValue } from '@antimatterjs/react/src/ModelValue';
+import { Binding, AntimatterComponent } from '@antimatterjs/react';
 
 export interface IVisibilityProps
 {

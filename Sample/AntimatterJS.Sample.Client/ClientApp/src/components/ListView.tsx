@@ -1,8 +1,6 @@
-import { Component } from 'react';
 import * as React from 'react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, BindingParameters } from '@antimatterjs/react';
-import { List, PrimaryButton } from '@fluentui/react';
-import { ModelValue } from '@antimatterjs/react/src/ModelValue';
+import { Binding, AntimatterComponent } from '@antimatterjs/react';
+import { List } from '@fluentui/react';
 
 export interface IListViewProps
 {

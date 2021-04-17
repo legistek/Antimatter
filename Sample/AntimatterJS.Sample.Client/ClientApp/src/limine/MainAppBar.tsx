@@ -4,7 +4,8 @@ import { Route } from 'react-router';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 import { Link as RouterLink } from 'react-router-dom';
 import { ActionButton, Button, Callout, createTheme, getTheme, IconButton, IconType, loadTheme, Persona, Separator, Link } from '@fluentui/react';
-import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent, StackPanel, TextBlock } from '@antimatterjs/react';
+import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
+import { StackPanel, TextBlock } from '@antimatterjs/positron'
 
 export class MainAppBar extends AntimatterComponent<{}, { isProfileCalloutOpen: boolean }>
 {
