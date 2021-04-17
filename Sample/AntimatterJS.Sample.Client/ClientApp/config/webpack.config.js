@@ -348,7 +348,7 @@ module.exports = function (webpackEnv)
                         },
                     ],
                     include: [
-                        //paths.localModuleSrc,
+                        paths.localModuleSrc,
                         paths.appSrc
                     ],
                 },

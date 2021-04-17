@@ -2,14 +2,12 @@ import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/react';
 import { ModernButton } from './ModernButton';
-import { TextBox } from './TextBox';
 
 import * as Model from '../model/Model';
 import { ListBox } from './ListBox';
-import { CheckBox } from './CheckBox';
 import { Visibility } from './Visibility';
 
-import { TextBlock, StackPanel, Orientation } from '@antimatterjs/positron'
+import { TextBlock, TextBox, StackPanel, Orientation, CheckBox } from '@antimatterjs/positron'
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {

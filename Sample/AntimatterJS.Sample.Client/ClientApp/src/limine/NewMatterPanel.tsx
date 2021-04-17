@@ -4,9 +4,8 @@ import { Route } from 'react-router';
 import { createTheme, getTheme, INavLinkGroup, INavState, INavStyles, Label, loadTheme, MotionAnimations, Nav } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
 import { ListBox } from '../components/ListBox';
-import { TextBox } from '../components/TextBox';
 import { ModernButton } from '../components/ModernButton';
-import { GroupBox, TextBlock, StackPanel } from '@antimatterjs/positron'
+import { GroupBox, TextBlock, StackPanel, CheckBox, HorizontalAlignment, TextBox } from '@antimatterjs/positron'
 
 export class NewMatterPanel extends AntimatterComponent
 {
@@ -20,7 +19,9 @@ export class NewMatterPanel extends AntimatterComponent
             }}>
 
                 <GroupBox Header="Create a New Matter">
-                    <TextBox Label="Name" Text={new Binding("UI.NewMatterPanel.NewMatterName")} />
+                    <TextBox Label="Name"
+                        Text={new Binding("UI.NewMatterPanel.NewMatterName")}
+                    />
 
                     <Label>Templates</Label>
                     <TextBlock Text={"You may optionally select a template in order to pre-populate the new matter with commonly used folders, fields, tags, and other content (all of which may be subsequently customized). Otherwise, leave \"Empty Matter\" selected to create a completely blank matter."} />
@@ -36,7 +37,7 @@ export class NewMatterPanel extends AntimatterComponent
                                     Text={new Binding({ Path: "Creator", Source: item })} />
                             </StackPanel>
                         )} />
-                    
+
                 </GroupBox>
 
                 <div style={{marginLeft: "10px"}}>
