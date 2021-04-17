@@ -33,7 +33,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Limine.Core.Shared", "..\..
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@antimatterjs", "@antimatterjs", "{B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}"
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "react", "antimatterjs\react.njsproj", "{F78362A3-0EEF-4851-A840-62D70DB8D177}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "react", "node_modules\@antimatterjs\react\react.njsproj", "{F78362A3-0EEF-4851-A840-62D70DB8D177}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
