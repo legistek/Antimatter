@@ -1,0 +1,40 @@
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import * as React from 'react';
+import { Binding } from '../../Binding';
+
+export interface IPanelProps extends IFrameworkElementProps
+{
+    Background?: string|Binding,
+    BorderBrush?: string|Binding,
+    BorderThickness?: string | Binding,
+    Padding?: string,
+    BoxShadow?: string
+}
+
+export interface IPanelState extends IFrameworkElementState
+{
+    Background?: string,
+    BorderBrush?: string,
+    BorderThickness?: string 
+}
+
+export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P,S>
+{
+    protected /* override */ getCSSStyles() : React.CSSProperties | undefined
+    {
+        return {
+            background: this.state.Background,
+            borderColor: this.state.BorderBrush,
+            borderWidth: this.state.BorderThickness,
+            borderStyle: "solid",
+            boxShadow: this.props.BoxShadow,
+            padding: this.props.Padding
+        };
+    }
+
+    protected /* override */ constructClasses() : string
+    {
+        return "amx-ptn-panel " + super.constructClasses();
+    }
+}
+
