@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace AntimatterJS.Sample.AppModel
+namespace Antimatter.Net.Model
 {
     public class ObservableObject : INotifyPropertyChanged, INotifyDataErrorInfo, IDataErrorInfo
     {
@@ -77,6 +77,11 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        public virtual string GetKey()
+        {
+            return this.GetHashCode().ToString();
+        }
 
         protected void Validate(
             bool isValid,

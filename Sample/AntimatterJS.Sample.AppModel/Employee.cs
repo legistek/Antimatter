@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
+using Antimatter.Net.Model;
+
 namespace AntimatterJS.Sample.AppModel
 {
     public class Employee : ObservableObject
@@ -140,11 +142,19 @@ namespace AntimatterJS.Sample.AppModel
                     (obj) =>
                     {
                         this.Age++;
-                    }));
+                    })
+                {
+                    Name = "Increase Age"
+                });
             }
         }
 
         #endregion
+
+        public override string GetKey()
+        {
+            return $"{FirstName} {LastName}";
+        }
 
         public override string ToString()
         {

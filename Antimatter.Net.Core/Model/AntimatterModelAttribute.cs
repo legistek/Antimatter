@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Antimatter.Net
+namespace Antimatter.Net.Model
 {
     [AttributeUsage(AttributeTargets.Class|AttributeTargets.Property, Inherited = true)]
     public class AntimatterModelAttribute : Attribute

@@ -234,6 +234,9 @@ namespace Antimatter.Net
                     return new ModelValue
                     {
                         Type = ModelValueType.Object,
+                        KeyValue = (obj is Model.ObservableObject oo) 
+                            ? oo.GetKey() 
+                            : obj.GetHashCode().ToString(),
                         ObjectHandle = GetOrCreateReference(obj).Handle,
                     };
                 }

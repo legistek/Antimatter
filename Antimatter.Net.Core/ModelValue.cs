@@ -24,6 +24,14 @@ namespace Antimatter.Net
             set => stringValue = value;
         }
 
+        [FieldOffset(8)]
+        private string keyValue;
+        public string KeyValue
+        {
+            get => keyValue;
+            set => keyValue = value;
+        }
+
         [FieldOffset(16)]
         private int objectHandle;
         public int ObjectHandle

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.ComponentModel;
+using Antimatter.Net.Model;
 
 namespace AntimatterJS.Sample.AppModel
 {
@@ -79,7 +79,10 @@ namespace AntimatterJS.Sample.AppModel
                     (arg) =>
                     {
                         this.Employees.Insert(0, new Employee("New", "Employee", 20));
-                    }));
+                    })
+                {
+                    Name = "New Employee"
+                });
             }
         }
 
@@ -96,7 +99,7 @@ namespace AntimatterJS.Sample.AppModel
                     (arg) =>
                     {
                         if (arg is Employee e)
-                        {                           
+                        {
                             this.Employees.Remove(e);
                             if (this.SelectedEmployee == e)
                                 this.SelectedEmployee = this.Employees.FirstOrDefault();

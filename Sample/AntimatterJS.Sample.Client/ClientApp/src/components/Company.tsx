@@ -4,10 +4,10 @@ import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/rea
 import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
-import { ListBox } from './ListBox';
+import { ListBox } from '@antimatterjs/positron';
 import { Visibility } from './Visibility';
 
-import { TextBlock, TextBox, StackPanel, Orientation, CheckBox } from '@antimatterjs/positron'
+import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
 {
@@ -70,8 +70,8 @@ export class Company extends AntimatterComponent
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <div className="amx-headered-grid">
-
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+            
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -113,7 +113,7 @@ export class Company extends AntimatterComponent
                 {/*        )}*/}
                 {/*    </ReactDataContext.Consumer>*/}
                 {/*</DataContext>*/}
-            </div>
+            </Grid>
         );
     }
 }

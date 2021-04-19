@@ -8,6 +8,7 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext 
 import { MainWindow } from './limine/MainWindow';
 import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
+import App from './App';
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
@@ -54,9 +55,11 @@ loadTheme(theme);
     ReactDOM.render(
         <div>
             <BrowserRouter basename={baseUrl}>
-                <DataContext Value={limine}>
-                    <MainWindow />
-                </DataContext>
+                <App Model={appModel}/>
+
+                {/*<DataContext Value={limine}>*/}
+                {/*    <MainWindow />*/}
+                {/*</DataContext>*/}
             </BrowserRouter>
         </div>,
         rootElement);

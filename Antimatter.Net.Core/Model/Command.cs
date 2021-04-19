@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace AntimatterJS.Sample.AppModel
+namespace Antimatter.Net.Model
 {
     public class Command : ICommand
     {
         private Action<object> _action;
 
         public event EventHandler CanExecuteChanged;
+
+        public string Name { get; set; }
+
+        public bool IsEnabled { get; set; } = true;
 
         public Command(Action<object> action)
         {

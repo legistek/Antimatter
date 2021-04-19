@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+using Antimatter.Net.Model;
+
 namespace Antimatter.Net
 {
     public class TypescriptGenerator

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using Antimatter.Net;
+using Antimatter.Net.Model;
 
 namespace AntimatterJS.Sample.AppModel
 {
