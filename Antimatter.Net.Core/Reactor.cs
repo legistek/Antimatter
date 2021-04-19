@@ -231,13 +231,14 @@ namespace Antimatter.Net
                 }
                 else
                 {
+                    var handle = GetOrCreateReference(obj).Handle;
                     return new ModelValue
                     {
                         Type = ModelValueType.Object,
                         KeyValue = (obj is Model.ObservableObject oo) 
-                            ? oo.GetKey() 
+                            ? oo.GetKey() ?? obj.GetHashCode().ToString()
                             : obj.GetHashCode().ToString(),
-                        ObjectHandle = GetOrCreateReference(obj).Handle,
+                        ObjectHandle = handle,
                     };
                 }
             }

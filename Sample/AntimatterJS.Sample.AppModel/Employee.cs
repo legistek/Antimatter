@@ -151,11 +151,6 @@ namespace AntimatterJS.Sample.AppModel
 
         #endregion
 
-        public override string GetKey()
-        {
-            return $"{FirstName} {LastName}";
-        }
-
         public override string ToString()
         {
             return this.FullName;

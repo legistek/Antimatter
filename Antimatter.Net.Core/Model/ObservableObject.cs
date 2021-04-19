@@ -80,7 +80,7 @@ namespace Antimatter.Net.Model
 
         public virtual string GetKey()
         {
-            return this.GetHashCode().ToString();
+            return null;
         }
 
         protected void Validate(

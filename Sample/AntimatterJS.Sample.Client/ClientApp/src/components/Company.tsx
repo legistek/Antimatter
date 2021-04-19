@@ -4,7 +4,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/rea
 import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
-import { ListBox } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel } from '@antimatterjs/positron';
 import { Visibility } from './Visibility';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -64,7 +64,7 @@ export class Company extends AntimatterComponent
 {
     static displayName = Company.name;
     render()
-    {
+    {        
         console.log("Company rendering");
 
         //this.BindState({ Path: "Employees" }, "employees");
@@ -93,6 +93,16 @@ export class Company extends AntimatterComponent
                 </StackPanel>
 
                 <ListBox
+                    BorderBrush="#000000"
+                    SelectionMode={SelectionMode.Single}
+                    BorderThickness="1px"
+                    Margin="5px"
+                    ItemsPanel={ItemsStackPanel}
+                    ItemContainerStyle={
+                        {
+                            //SelectedBackground: "green"
+                        } as IListBoxItemProps
+                    }
                     ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                     SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                     ItemTemplate={(item) =>
