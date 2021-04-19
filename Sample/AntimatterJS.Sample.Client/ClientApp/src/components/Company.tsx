@@ -92,7 +92,7 @@ export class Company extends AntimatterComponent
                         Company={this.state["DataContext"]} />
                 </StackPanel>
 
-                <ListBox
+                <ListBox                    
                     BorderBrush="#000000"
                     SelectionMode={SelectionMode.Single}
                     BorderThickness="1px"
