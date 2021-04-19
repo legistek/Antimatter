@@ -93,16 +93,8 @@ export class Company extends AntimatterComponent
                 </StackPanel>
 
                 <ListBox                    
-                    BorderBrush="#000000"
-                    SelectionMode={SelectionMode.Single}
-                    BorderThickness="1px"
-                    Margin="5px"
+                    SelectionMode={SelectionMode.Single}                    
                     ItemsPanel={ItemsStackPanel}
-                    ItemContainerStyle={
-                        {
-                            //SelectedBackground: "green"
-                        } as IListBoxItemProps
-                    }
                     ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                     SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                     ItemTemplate={(item) =>
