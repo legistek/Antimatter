@@ -4,7 +4,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/rea
 import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel, GroupBox } from '@antimatterjs/positron';
 import { Visibility } from './Visibility';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -17,12 +17,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <StackPanel
-                BoxShadow={DefaultEffects.elevation8}
-                BorderBrush="#C0C0C0"
-                BorderThickness="1px"
-                Margin="5px"
-                Padding="5px"
+            <GroupBox Header="Employee of the Month"
                 /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
             >
 
@@ -55,7 +50,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     </StackPanel>
 
                 </DataContext>
-            </StackPanel>
+            </GroupBox>
         );
     }
 }
@@ -84,9 +79,7 @@ export class Company extends AntimatterComponent
                         Label="NEW EMPLOYEE"
                         IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}
                         Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
-
-                    <TextBlock Text="Employee of the month" />
-
+                   
                     <Employee
                         Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                         Company={this.state["DataContext"]} />

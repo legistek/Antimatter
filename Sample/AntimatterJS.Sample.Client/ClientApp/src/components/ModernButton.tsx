@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react';
 import { Antimatter, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { PrimaryButton } from '@fluentui/react';
+import { Icon, PrimaryButton } from '@fluentui/react';
 import { ModelValue } from '@antimatterjs/react';
 import { Grid, Orientation, StackPanel, TextBlock } from '@antimatterjs/positron';
 
@@ -45,13 +45,14 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
                 onClick={() => this.onClick()}>
 
                 <StackPanel Orientation={Orientation.Horizontal}>
-                    <TextBlock
-                        FontFamily="IconFont" Text={
-                            new Binding({
-                                Path: "Icon", Source: this.state.Command,
-                                Converter: (iconNo: number) =>
-                                    String.fromCharCode(iconNo)
-                            })} />
+                    {/*<TextBlock*/}
+                    {/*    FontFamily="IconFont" Text={*/}
+                    {/*        new Binding({*/}
+                    {/*            Path: "Icon", Source: this.state.Command,*/}
+                    {/*            Converter: (iconNo: number) =>*/}
+                    {/*                String.fromCharCode(iconNo)*/}
+                    {/*        })} />*/}
+                    <Icon iconName="Pulse" style={{color: "#800000"}} />
                     <TextBlock Text={new Binding({ Path: "Name", Source: this.state.Command })} />
                 </StackPanel>
             </PrimaryButton>

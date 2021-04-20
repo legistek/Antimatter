@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company } from './components/Company';
 import { createTheme, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from './components/Window';
+import { Window } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'

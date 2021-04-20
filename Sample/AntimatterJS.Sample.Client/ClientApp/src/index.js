@@ -8,6 +8,7 @@ import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext 
 import { MainWindow } from './limine/MainWindow';
 import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
+import { registerIcons } from '@fluentui/react/lib/Styling';
 import App from './App';
 
 const theme = createTheme({
@@ -39,7 +40,18 @@ const theme = createTheme({
     }
 });
 
-initializeIcons(/* optional base url */);
+registerIcons(
+    {
+        fontFace: {
+            fontFamily: "IconFont",
+        },
+        icons: {
+            'ThumbsUp': '\uE902',
+            'ThumbsDown': '\uE901',
+            'Pulse': '\uE90D',
+        }
+    })
+//initializeIcons();
 loadTheme(theme);
 
 (async function ()
