@@ -52,7 +52,7 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
                     {/*            Converter: (iconNo: number) =>*/}
                     {/*                String.fromCharCode(iconNo)*/}
                     {/*        })} />*/}
-                    <Icon iconName="Pulse" style={{color: "#800000"}} />
+                    <Icon iconName="Pulse" style={{color: "#FF8080"}} />
                     <TextBlock Text={new Binding({ Path: "Name", Source: this.state.Command })} />
                 </StackPanel>
             </PrimaryButton>

@@ -92,7 +92,9 @@ export class Company extends AntimatterComponent
                     SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                     ItemTemplate={(item) =>
                     (
-                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })} />
+                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+                            Margin="10px"
+                        />
                     )} />
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
