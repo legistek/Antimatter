@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluentui/react';
 import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
@@ -49,7 +49,24 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             CommandParameter={new Binding()} />
                     </StackPanel>
 
+                    <Modal isOpen={this.BindState({ Path: "IsBonusEligible", Source: this.state.Value })}
+                        styles={{
+                            main: {
+                                animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
+                            }
+                            }}>
+                        
+                        <StackPanel>
+                            <TextBlock Text="Hobo!" />
+                            <CheckBox Label="Bonus Eligible" IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />
+                        </StackPanel>
+
+                    </Modal>
+
                 </DataContext>
+
+
+
             </GroupBox>
         );
     }
