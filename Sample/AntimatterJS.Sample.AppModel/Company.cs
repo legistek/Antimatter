@@ -105,7 +105,12 @@ namespace AntimatterJS.Sample.AppModel
                             if (this.SelectedEmployee == e)
                                 this.SelectedEmployee = this.Employees.FirstOrDefault();
                         }
-                    }));
+                    })
+                {
+                    Name = "Fire",
+                    ToolTip = "Fire this bum",
+                    Icon = 0xE959
+                });
             }
         }
 

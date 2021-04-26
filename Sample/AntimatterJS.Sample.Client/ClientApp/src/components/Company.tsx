@@ -1,11 +1,9 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluentui/react';
-import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel, GroupBox, CommandButton } from '@antimatterjs/positron';
-import { Visibility } from './Visibility';
+import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
@@ -32,19 +30,20 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Label="Last Name"
                         Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
                     <h4>Age</h4>
-                    <CheckBox Label="Bonus Eligible" IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />
-                    <Visibility IsVisible={new Binding("IsBonusEligible")}>
-                        <TextBox
-                            Label="Bonus Amount"
-                            Text={new Binding("BonusAmount")}/>
-                    </Visibility>
+                    <CheckBox
+                        Label="Bonus Eligible"
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />                   
+                    <TextBox
+                        IsVisible={new Binding("IsBonusEligible")}
+                        Label="Bonus Amount"
+                        Text={new Binding("BonusAmount")}/>
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
                     <StackPanel Orientation={Orientation.Horizontal}>
-                        <ModernButton
-                            Label="INCREASE AGE"
-                            Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))} />
-                        <ModernButton
-                            Label="FIRE"
+                        <CommandButton
+                            Style={CommandButton.IconButtonStyle}
+                            Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>
+                        <CommandButton
+                            Style={CommandButton.CommandBarButtonStyle}
                             Command={new Binding({ Path: nameof<Model.Company>(c => c.DeleteEmployeeCommand), Source: this.state.Company })}
                             CommandParameter={new Binding()} />
                     </StackPanel>
@@ -92,7 +91,8 @@ export class Company extends AntimatterComponent
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
 
-                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}/>
+                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                        Style={CommandButton.CommandBarButtonStyle}/>
 
                     {/*<ModernButton*/}
                     {/*    Label="NEW EMPLOYEE"*/}
