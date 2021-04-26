@@ -13,6 +13,8 @@ namespace Antimatter.Net.Model
 
         public bool IsEnabled { get; set; } = true;
 
+        public ushort Icon { get; set; }
+
         public Command(Action<object> action)
         {
             this._action = action;

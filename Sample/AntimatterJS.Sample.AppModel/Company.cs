@@ -81,7 +81,8 @@ namespace AntimatterJS.Sample.AppModel
                         this.Employees.Insert(0, new Employee("New", "Employee", 20));
                     })
                 {
-                    Name = "New Employee"
+                    Name = "New Employee",
+                    Icon = 0xE911
                 });
             }
         }

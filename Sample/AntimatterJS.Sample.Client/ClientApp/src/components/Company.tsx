@@ -4,7 +4,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluen
 import { ModernButton } from './ModernButton';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel, GroupBox } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, IListBoxItemProps, ItemsStackPanel, GroupBox, CommandButton } from '@antimatterjs/positron';
 import { Visibility } from './Visibility';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -92,10 +92,12 @@ export class Company extends AntimatterComponent
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
 
-                    <ModernButton
-                        Label="NEW EMPLOYEE"
-                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}
-                        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
+                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}/>
+
+                    {/*<ModernButton*/}
+                    {/*    Label="NEW EMPLOYEE"*/}
+                    {/*    IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
+                    {/*    Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
                    
                     <Employee
                         Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}

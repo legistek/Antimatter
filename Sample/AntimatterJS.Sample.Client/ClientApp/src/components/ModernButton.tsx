@@ -40,21 +40,30 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
         //    return null;
 
         return (
-            <PrimaryButton className={"amx-standard-control " + this.props.className}
+            <PrimaryButton
+                styles={{
+                    label: {
+                        display: "flex"
+                    }
+                }}
+                className={"amx-standard-control " + this.props.className}
+                iconProps={{ iconName: 'EA12' }}
                 disabled={this.BindState({ Path: "IsEnabled", Source: this.state.Command, Converter: e => !e })}
                 onClick={() => this.onClick()}>
 
-                <StackPanel Orientation={Orientation.Horizontal}>
-                    {/*<TextBlock*/}
-                    {/*    FontFamily="IconFont" Text={*/}
-                    {/*        new Binding({*/}
-                    {/*            Path: "Icon", Source: this.state.Command,*/}
-                    {/*            Converter: (iconNo: number) =>*/}
-                    {/*                String.fromCharCode(iconNo)*/}
-                    {/*        })} />*/}
-                    <Icon iconName="Pulse" style={{color: "#FF8080"}} />
-                    <TextBlock Text={new Binding({ Path: "Name", Source: this.state.Command })} />
-                </StackPanel>
+                {this.BindState({ Path: "Name", Source: this.state.Command, Converter: s => s?.toUpperCase() })}
+                {/*<TextBlock Text={new Binding({ Path: "Name", Source: this.state.Command })} />*/}
+
+                {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                {/*    */}{/*<TextBlock*/}
+                {/*    */}{/*    FontFamily="IconFont" Text={*/}
+                {/*    */}{/*        new Binding({*/}
+                {/*    */}{/*            Path: "Icon", Source: this.state.Command,*/}
+                {/*    */}{/*            Converter: (iconNo: number) =>*/}
+                {/*    */}{/*                String.fromCharCode(iconNo)*/}
+                {/*    */}{/*        })} />*/}{/*                    */}
+                {/*    */}
+                {/*</StackPanel>*/}
             </PrimaryButton>
             );
     }

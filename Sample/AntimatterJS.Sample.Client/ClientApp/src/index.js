@@ -9,11 +9,14 @@ import { MainWindow } from './limine/MainWindow';
 import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
+
+import { Style } from '@antimatterjs/positron';
+
 import App from './App';
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
-    defaultFontStyle: { fontFamily: 'Roboto' },
+    //defaultFontStyle: { fontFamily: 'Roboto' },
     palette: {
         themePrimary: '#2e70e0',
         themeLighterAlt: '#f6f9fe',
@@ -45,11 +48,12 @@ registerIcons(
         fontFace: {
             fontFamily: "IconFont",
         },
-        icons: {
-            'ThumbsUp': '\uE902',
-            'ThumbsDown': '\uE901',
-            'Pulse': '\uE90D',
-        }
+        icons: Style.CreateIconSet(0xE900, 0xEA15)
+        //{
+        //    'ThumbsUp': '\uE902',
+        //    'ThumbsDown': '\uE901',
+        //    'E90D': '\uE90D',
+        //}
     })
 //initializeIcons();
 loadTheme(theme);

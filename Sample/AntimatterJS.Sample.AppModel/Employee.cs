@@ -144,7 +144,7 @@ namespace AntimatterJS.Sample.AppModel
                         this.Age++;
                     })
                 {
-                    Name = "Increase Age"
+                    Name = "Increase Age",                    
                 });
             }
         }
