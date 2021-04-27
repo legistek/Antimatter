@@ -28,7 +28,8 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-        public ObservableCollection<Employee> Employees { get; } = new ObservableCollection<Employee>();
+        public ObservableCollection<Employee> Employees { get; } = 
+            new ObservableCollection<Employee>();
 
         #region Employee SelectedEmployee property
         private Employee _SelectedEmployee;
@@ -77,7 +78,7 @@ namespace AntimatterJS.Sample.AppModel
             {
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
-                    {
+                    {                        
                         this.Employees.Insert(0, new Employee("New", "Employee", 20));
                     })
                 {

@@ -56,7 +56,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     render()
     {
         return (
-            <Window>
+            <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
                 <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
                     <Company />
                 </DataContext>

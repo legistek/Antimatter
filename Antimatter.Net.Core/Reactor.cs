@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Linq;
 
 using Antimatter.Net.Internal;
+using System.Threading;
 
 namespace Antimatter.Net
 {
@@ -73,6 +74,13 @@ namespace Antimatter.Net
             _rootObjects[$"{referenceName}"] = GetOrCreateReference(obj);
         }
 
+        public void RegisterSessionContext(object sessionContextObject)
+        {
+            _sessionContextObject = sessionContextObject;
+        }
+                
+        public static object SessionContext => _currentSessionContext.Value;
+
         #endregion
 
         #region Client-Invocable Methods
@@ -86,6 +94,7 @@ namespace Antimatter.Net
             BindingExpression bx;
             if (!this.Bindings.TryGetValue(bxIndex, out bx))
                 return;
+            _currentSessionContext.Value = _sessionContextObject;
             bx.UpdateSource(newValue);
         }
 
@@ -138,6 +147,7 @@ namespace Antimatter.Net
         [AMXClientInvocable]
         public void ExecuteICommand(int netRef, ModelValue commandParameter)
         {
+            _currentSessionContext.Value = _sessionContextObject;
             (GetReference(netRef)?.Object as ICommand)?.Execute(commandParameter?.ToCSValue(this));
         }
 
@@ -373,6 +383,8 @@ namespace Antimatter.Net
         private ConditionalWeakTable<object, ObjectReference> _references =
             new ConditionalWeakTable<object, ObjectReference>();
         private Dictionary<string, ObjectReference> _rootObjects = new Dictionary<string, ObjectReference>();
+        private object _sessionContextObject;
+        private static AsyncLocal<object> _currentSessionContext = new AsyncLocal<object>();
 
         private static Action<Reactor, ModelValue, object>[] _setters =
             // This order MUST match the order in hte ModelValueType enum

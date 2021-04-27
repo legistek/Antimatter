@@ -131,6 +131,28 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        #region IUICommand Edit Command
+
+        private Command _EditCommand;
+        public ICommand EditCommand
+        {
+            get
+            {
+                return _EditCommand ?? (_EditCommand = new Command(
+                    async (arg) =>
+                    {
+                        await new EmployeeDialog().ShowDialogAsync();
+                    })
+                {
+                    Name = "Edit",
+                    ToolTip = "",
+                    Icon = 0xE9B1,
+                });
+            }
+        }
+
+        #endregion
+
         #region IUICommand IncreaseAge Command
 
         private Command _IncreaseAgeCommand;

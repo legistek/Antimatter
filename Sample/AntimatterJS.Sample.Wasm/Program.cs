@@ -52,6 +52,7 @@ namespace AntimatterJS.Sample.WASM
             Console.WriteLine($"Startup status: {r.InnerResult.LongMessageDebug}");
 
             WebassemblyServer.Reactor.RegisterRootObject("app", app);
+            WebassemblyServer.Reactor.RegisterSessionContext(app);
             WebassemblyServer.Reactor.RegisterRootObject("limine", limine);
         }
     }

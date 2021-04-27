@@ -41,6 +41,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <CommandButton
                             Style={CommandButton.IconButtonStyle}
+                            Command={new Binding("EditCommand")} />
+                        <CommandButton
+                            Style={CommandButton.IconButtonStyle}
                             Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>
                         <CommandButton
                             Style={CommandButton.CommandBarButtonStyle}

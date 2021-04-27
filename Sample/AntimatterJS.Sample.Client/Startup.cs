@@ -87,9 +87,10 @@ namespace AntimatterJS.Sample.Client
 
                 AntimatterRelay.StartupSession += async (mgr) =>
                 {
-                    var app = new AntimatterJS.Sample.AppModel.App();
+                    var app = new AppModel.App();
                     await app.StartAsync();
                     mgr.RegisterRootObject("app", app);
+                    mgr.RegisterSessionContext(app);
 
                     var limine = new Limine.Core.Session("https://devid.limine.com");
                     var hs = limine.GetHomeService("https://dev.limine.com/limineapi");
