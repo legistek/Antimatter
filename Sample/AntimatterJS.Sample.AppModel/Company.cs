@@ -79,7 +79,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
                     {                        
-                        this.Employees.Insert(0, new Employee("New", "Employee", 20));
+                        this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
                     })
                 {
                     Name = "New Employee",

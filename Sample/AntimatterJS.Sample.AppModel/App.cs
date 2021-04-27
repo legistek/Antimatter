@@ -28,7 +28,7 @@ namespace AntimatterJS.Sample.AppModel
 
         public async Task StartAsync()
         {
-            this.Company.CEO = new Employee
+            this.Company.CEO = new Employee(this.Company)
             {
                 FirstName = "Thomas",
                 LastName = "Edison",
@@ -37,9 +37,9 @@ namespace AntimatterJS.Sample.AppModel
             this.Company.Employees.Add(this.Company.CEO);
             for (int i = 0; i < 1; i++)
             {
-                this.Company.Employees.Add(new Employee("Mickey", "Mouse", 100));
-                this.Company.Employees.Add(new Employee("Santa", "Clause", 500));
-                this.Company.Employees.Add(new Employee("Yoda", "Parseghian", 900));
+                this.Company.Employees.Add(new Employee(this.Company, "Mickey", "Mouse", 100));
+                this.Company.Employees.Add(new Employee(this.Company, "Santa", "Clause", 500));
+                this.Company.Employees.Add(new Employee(this.Company, "Yoda", "Parseghian", 900));
             }
             this.Company.SelectedEmployee = this.Company.Employees.First();
         }

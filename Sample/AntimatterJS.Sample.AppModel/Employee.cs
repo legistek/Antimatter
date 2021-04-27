@@ -9,11 +9,31 @@ namespace AntimatterJS.Sample.AppModel
 {
     public class Employee : ObservableObject
     {
-        public Employee()
+        public Employee(Company company)
         {
+            this.Company = company;
         }
 
-        public Employee(string firstName, string lastName, int age)
+        #region Company Company property
+        private Company _Company;
+        public Company Company
+        {
+            get
+            {
+                return _Company;
+            }
+            set
+            {
+                if (_Company != value)
+                {
+                    _Company = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        public Employee(Company company, string firstName, string lastName, int age) : this(company)
         {
             this.FirstName = firstName;
             this.LastName = lastName;
@@ -141,7 +161,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _EditCommand ?? (_EditCommand = new Command(
                     async (arg) =>
                     {
-                        await new EmployeeDialog().ShowDialogAsync();
+                        await new EmployeeDialog(this).ShowDialogAsync();
                     })
                 {
                     Name = "Edit",
@@ -166,7 +186,7 @@ namespace AntimatterJS.Sample.AppModel
                         this.Age++;
                     })
                 {
-                    Name = "Increase Age",            
+                    Name = "Increase Age",
                     Icon = 0xE983,
                 });
             }

@@ -7,7 +7,7 @@ import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton } from
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
-export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding, Company: ModelObjectReference | Binding }, { Value: ModelObjectReference, Company: ModelObjectReference }>
+export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
     static displayName = Employee.name;
 
@@ -15,7 +15,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <GroupBox Header="Employee of the Month"
+            <GroupBox 
                 /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
             >
 
@@ -47,23 +47,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>
                         <CommandButton
                             Style={CommandButton.CommandBarButtonStyle}
-                            Command={new Binding({ Path: nameof<Model.Company>(c => c.DeleteEmployeeCommand), Source: this.state.Company })}
+                            Command={new Binding("Company.DeleteEmployeeCommand")}
                             CommandParameter={new Binding()} />
                     </StackPanel>
-
-                    <Modal isOpen={this.BindState({ Path: "IsBonusEligible", Source: this.state.Value })}
-                        styles={{
-                            main: {
-                                animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-                            }
-                            }}>
-                        
-                        <StackPanel>
-                            <TextBlock Text="Hobo!" />
-                            <CheckBox Label="Bonus Eligible" IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />
-                        </StackPanel>
-
-                    </Modal>
 
                 </DataContext>
 
@@ -102,9 +88,7 @@ export class Company extends AntimatterComponent
                     {/*    IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
                     {/*    Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
                    
-                    <Employee
-                        Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
-                        Company={this.state["DataContext"]} />
+                    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
                 <ListBox                    

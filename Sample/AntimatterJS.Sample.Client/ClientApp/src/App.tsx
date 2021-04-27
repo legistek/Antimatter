@@ -4,13 +4,14 @@ import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
-import { Company } from './components/Company';
+import { Company, Employee } from './components/Company';
 import { createTheme, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { Window } from '@antimatterjs/positron';
+import { DialogBox, StackPanel, Window } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
+
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
@@ -50,7 +51,19 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
 
     constructor(props)
     {
-        super(props);         
+        super(props);
+        this.RegisterDialogs();
+    }
+
+    private RegisterDialogs()
+    {
+        DialogBox.RegisterTemplate(
+            "EmployeeDialog",
+            (vm) =>
+            (
+                <Employee Value={new Binding({ Path: "Employee", Source: vm })} />
+            )
+        )
     }
 
     render()
