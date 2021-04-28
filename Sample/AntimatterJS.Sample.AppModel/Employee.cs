@@ -154,7 +154,7 @@ namespace AntimatterJS.Sample.AppModel
         #region IUICommand Edit Command
 
         private Command _EditCommand;
-        public ICommand EditCommand
+        public Command EditCommand
         {
             get
             {
@@ -173,21 +173,125 @@ namespace AntimatterJS.Sample.AppModel
 
         #endregion
 
+        #region CommandCollection Commands property
+        private CommandCollection _Commands;
+        public CommandCollection Commands
+        {
+            get
+            {
+                return _Commands ?? (_Commands = new CommandCollection
+                {
+                    MakeBonusEligibleCommand,
+                    DoSomethingElseCommand,
+                    EditCommand,
+                    IncreaseAgeCommand,
+                    DecreaseAgeCommand,
+                    FireCommand,                    
+                });
+            }
+        }
+        #endregion
+
         #region IUICommand IncreaseAge Command
 
         private Command _IncreaseAgeCommand;
-        public ICommand IncreaseAgeCommand
+        public Command IncreaseAgeCommand
         {
             get
             {
                 return _IncreaseAgeCommand ?? (_IncreaseAgeCommand = new Command(
-                    (obj) =>
+                    (arg) =>
                     {
                         this.Age++;
                     })
                 {
                     Name = "Increase Age",
                     Icon = 0xE983,
+                });
+            }
+        }
+
+        #endregion
+
+        #region Command DecreaseAge Command
+
+        private Command _DecreaseAgeCommand;
+        public Command DecreaseAgeCommand
+        {
+            get
+            {
+                return _DecreaseAgeCommand ?? (_DecreaseAgeCommand = new Command(
+                    (arg) =>
+                    {
+                        this.Age--;
+                    })
+                {
+                    Name = "Decrease Age",
+                    Icon = 0xE982,
+                });
+            }
+        }
+
+        #endregion
+
+        #region IUICommand Fire Command
+
+        private Command _FireCommand;
+        public Command FireCommand
+        {
+            get
+            {
+                return _FireCommand ?? (_FireCommand = new Command(
+                    (arg) =>
+                    {
+                        this.Company.DeleteEmployeeCommand.Execute(this);
+                    })
+                {
+                    Name = "Fire",
+                    Icon = 0xE959
+                });
+            }
+        }
+
+        #endregion
+
+        #region Command MakeBonusEligible Command
+
+        private Command _MakeBonusEligibleCommand;
+        public Command MakeBonusEligibleCommand
+        {
+            get
+            {
+                return _MakeBonusEligibleCommand ?? (_MakeBonusEligibleCommand = new Command(
+                    (arg) =>
+                    {
+                        this.IsBonusEligible = true;
+                    })
+                {
+                    Name = "Make Bonus Eligible",
+                    Icon = 0,
+                });
+            }
+        }
+
+        #endregion
+
+        #region IUICommand DoSomethingElse Command
+
+        private Command _DoSomethingElseCommand;
+        public Command DoSomethingElseCommand
+        {
+            get
+            {
+                return _DoSomethingElseCommand ?? (_DoSomethingElseCommand = new Command(
+                    (arg) =>
+                    {
+                        
+                    })
+                {
+                    Name = "Do Something Else",
+                    ToolTip = "",
+                    Icon = 0xE900
                 });
             }
         }

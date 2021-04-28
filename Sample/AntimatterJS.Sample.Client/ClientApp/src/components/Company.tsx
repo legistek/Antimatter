@@ -3,7 +3,7 @@ import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluentui/react';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
@@ -38,18 +38,21 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Label="Bonus Amount"
                         Text={new Binding("BonusAmount")}/>
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
-                    <StackPanel Orientation={Orientation.Horizontal}>
-                        <CommandButton
-                            Style={CommandButton.IconButtonStyle}
-                            Command={new Binding("EditCommand")} />
-                        <CommandButton
-                            Style={CommandButton.IconButtonStyle}
-                            Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>
-                        <CommandButton
-                            Style={CommandButton.CommandBarButtonStyle}
-                            Command={new Binding("Company.DeleteEmployeeCommand")}
-                            CommandParameter={new Binding()} />
-                    </StackPanel>
+
+                    <CommandBar ItemsSource={new Binding("Commands")}/>
+
+                    {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.IconButtonStyle}*/}
+                    {/*        Command={new Binding("EditCommand")} />*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.IconButtonStyle}*/}
+                    {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.CommandBarButtonStyle}*/}
+                    {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
+                    {/*        CommandParameter={new Binding()} />*/}
+                    {/*</StackPanel>*/}
 
                 </DataContext>
 

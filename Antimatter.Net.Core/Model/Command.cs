@@ -11,7 +11,19 @@ namespace Antimatter.Net.Model
 
         public string Name { get; set; }
 
-        public bool IsEnabled { get; set; } = true;
+        private bool _isEnabled = true;
+        public bool IsEnabled 
+        {
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled != value)
+                {
+                    this._isEnabled = value;
+                    this.CanExecuteChanged?.Invoke(this, new EventArgs());
+                }
+            }
+        }
 
         public string ToolTip { get; set; }
 
@@ -22,13 +34,15 @@ namespace Antimatter.Net.Model
             this._action = action;
         }
 
-        public bool CanExecute(object parameter)
+        public virtual bool CanExecute(object parameter)
         {
             return true;
         }
 
         public void Execute(object parameter)
         {
+            if (!CanExecute(parameter))
+                return;
             this._action?.Invoke(parameter);
         }
     }
