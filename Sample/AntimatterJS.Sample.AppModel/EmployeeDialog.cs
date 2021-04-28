@@ -21,5 +21,25 @@ namespace AntimatterJS.Sample.AppModel
         public override ushort Icon => 0xE913;
 
         public Employee Employee { get; }
+
+        #region Command Back Command
+
+        private Command _BackCommand;
+        public Command BackCommand
+        {
+            get
+            {
+                return _BackCommand ?? (_BackCommand = new Command(
+                    (args) =>
+                    {
+                    })
+                {
+                    Name = "Back",
+                    Icon = 0
+                });
+            }
+        }
+
+        #endregion
     }
 }

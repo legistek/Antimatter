@@ -16,8 +16,7 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
     {
         this.AssembleCommandItems();
         return (
-            <FluentCommandBar
-                
+            <FluentCommandBar               
                 items={this._commandItems}
                 styles={{
                     root: {

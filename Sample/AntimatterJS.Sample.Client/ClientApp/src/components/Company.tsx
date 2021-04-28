@@ -23,7 +23,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
 
                     <b>Edit Info</b>
-                    <TextBox
+                    <TextBox                        
                         Label="First Name"
                         Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
                     <TextBox

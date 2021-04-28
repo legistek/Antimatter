@@ -49,6 +49,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                     styles={{
                         main: {
                             minHeight: "50px",
+                            minWidth: "50vw",
                             borderRadius: "5px",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
                         }}}>
@@ -96,9 +97,9 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 
                             {/*Body*/}
                             {
-                                DialogBox._templates.get(
-                                    templatedParent.BindState({ Path: "Template", Source: templatedParent.state.ViewModel })
-                                )
+                                DialogBox
+                                    ._templates
+                                    .get(templatedParent.BindState({ Path: "Template", Source: templatedParent.state.ViewModel }))
                                     ?.call(templatedParent, templatedParent.state.ViewModel)
                             }
 
@@ -112,21 +113,15 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 
                             {/*Buttons*/}
                             <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
-                                Margin="0px 10px 0px 10px"
-
-                            >
-                                {/* Secondary Buttons */}
-                                {/*<ItemsControl ItemsSource={new Binding("SecondaryCommands")}*/}
-                                {/*    ItemTemplate={(item) => (<div></div>)}>*/}
-                                {/*</ItemsControl>*/}
-
-                                <div></div>
+                                Margin="0px 10px 0px 10px">
+                                <CommandBar ItemsSource={new Binding("SecondaryCommands")}
+                                    HorizontalAlignment={HorizontalAlignment.Left}
+                                    ItemContainerStyle={CommandButton.DialogButtonStyle}/>                                
 
                                 {/* Primary Buttons */}
                                 <CommandBar ItemsSource={new Binding("PrimaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Right}
-                                    ItemContainerStyle={CommandButton.DialogButtonStyle}
-                                />
+                                    ItemContainerStyle={CommandButton.DialogButtonStyle}/>
                             </Grid>
                         
                         </Grid>

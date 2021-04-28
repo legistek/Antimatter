@@ -15,7 +15,14 @@ interface IFrameworkElementCommon
     VerticalAlignment?: VerticalAlignment,
     OnClick?: (event: MouseEvent) => void,
     OnPointerDown?: (event: MouseEvent) => void,
-    OnPointerMove?: (event: MouseEvent) => void
+    OnPointerMove?: (event: MouseEvent) => void,
+    Grid?: {
+        Column?: number,
+        ColumnSpan?: number,
+        Row?: number,
+        RowSpan?: number
+    },
+    Overlaps?: boolean
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -101,9 +108,14 @@ export class FrameworkElement<
 
     protected /* virtual */ getCSSStyles(): React.CSSProperties
     {
-        return {
+        let styles: React.CSSProperties = {
             margin: this.state.Margin
         };
+        if (this.state.Grid?.Column)
+            styles.gridColumn = this.state.Grid.Column + 1;
+        if (this.state.Grid?.Row)
+            styles.gridRow = this.state.Grid.Row + 1;
+        return styles;
     }
 
     protected /* virtual */ OnPropertyChanged(property: string, value: any)
@@ -147,6 +159,9 @@ export class FrameworkElement<
                 cls += "amx-ptn-va-stretch ";
                 break;
         }
+
+        if (this.state.Overlaps)
+            cls += "amx-ptn-overlaps ";       
 
         return cls;
     }

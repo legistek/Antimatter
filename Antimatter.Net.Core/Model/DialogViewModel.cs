@@ -78,15 +78,25 @@ namespace Antimatter.Net.Model
                 return _PrimaryCommands ?? (_PrimaryCommands = new CommandCollection
                 {
                     OKCommand,
-                    CancelCommand,                    
+                    CancelCommand,
                 });
+            }
+        }
+        #endregion
+
+        #region CommandCollection SecondaryCommands property
+        public virtual CommandCollection SecondaryCommands
+        {
+            get
+            {
+                return null;
             }
         }
         #endregion
 
         public virtual bool CanSubmit()
         {
-            return true;            
+            return true;
         }
 
         public virtual bool CanCancel()
