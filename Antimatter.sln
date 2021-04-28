@@ -25,22 +25,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestTypescriptGenerator", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Limine", "Limine", "{FAC779C3-D7F0-4EAC-BDC7-A2F55830263F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legistek.Framework.Core", "..\..\Limine\src\Legistek.Framework.Core\Legistek.Framework.Core.csproj", "{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legistek.Framework.Core", "..\Limine\src\Legistek.Framework.Core\Legistek.Framework.Core.csproj", "{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legistek.Limine.Core", "..\..\Limine\src\Legistek.Limine.Core\Legistek.Limine.Core.csproj", "{6BB41355-99A7-4194-A4E5-68976A170ECE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Legistek.Limine.Core", "..\Limine\src\Legistek.Limine.Core\Legistek.Limine.Core.csproj", "{6BB41355-99A7-4194-A4E5-68976A170ECE}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Limine.Core.Shared", "..\..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.shproj", "{0B34546E-DA8A-408A-8CB5-21E9B3BE22A7}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Limine.Core.Shared", "..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.shproj", "{0B34546E-DA8A-408A-8CB5-21E9B3BE22A7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "@antimatterjs", "@antimatterjs", "{B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "positron", "node_modules\@antimatterjs\positron\positron.csproj", "{BB792E46-50A6-42CC-8AA8-2B59B436E011}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "react", "@antimatterjs\react\react.csproj", "{6E54C964-745E-4CFC-AC66-8109C7AD2952}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "react", "node_modules\@antimatterjs\react\react.csproj", "{C86EFFFB-6536-4814-A843-DD027E6EF404}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "positron", "@antimatterjs\positron\positron.csproj", "{7723247F-095D-4849-B28D-67CBEAEC3136}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.projitems*{0b34546e-da8a-408a-8cb5-21e9b3be22a7}*SharedItemsImports = 13
-		..\..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.projitems*{6bb41355-99a7-4194-a4e5-68976a170ece}*SharedItemsImports = 5
+		..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.projitems*{0b34546e-da8a-408a-8cb5-21e9b3be22a7}*SharedItemsImports = 13
+		..\Limine\src\Limine.Core.Shared\Limine.Core.Shared.projitems*{6bb41355-99a7-4194-a4e5-68976a170ece}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,36 +105,34 @@ Global
 		{0295052F-505A-4765-978D-13C27CA3D3E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0295052F-505A-4765-978D-13C27CA3D3E3}.Release|x86.ActiveCfg = Release|Any CPU
 		{0295052F-505A-4765-978D-13C27CA3D3E3}.Release|x86.Build.0 = Release|Any CPU
-		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|Any CPU.ActiveCfg = WASMDebug|Any CPU
-		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|Any CPU.Build.0 = WASMDebug|Any CPU
+		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Debug|x86.Build.0 = Debug|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Release|x86.ActiveCfg = Release|Any CPU
 		{16909BA4-2ED3-4196-A99C-28DA4B6E3E9F}.Release|x86.Build.0 = Release|Any CPU
-		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|Any CPU.ActiveCfg = WASMDebug|Any CPU
-		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|Any CPU.Build.0 = WASMDebug|Any CPU
+		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Debug|x86.Build.0 = Debug|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Release|x86.ActiveCfg = Release|Any CPU
 		{6BB41355-99A7-4194-A4E5-68976A170ECE}.Release|x86.Build.0 = Release|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Debug|x86.Build.0 = Debug|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Release|x86.ActiveCfg = Release|Any CPU
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011}.Release|x86.Build.0 = Release|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Debug|x86.Build.0 = Debug|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Release|x86.ActiveCfg = Release|Any CPU
-		{C86EFFFB-6536-4814-A843-DD027E6EF404}.Release|x86.Build.0 = Release|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Debug|x86.Build.0 = Debug|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Release|x86.ActiveCfg = Release|Any CPU
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952}.Release|x86.Build.0 = Release|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Debug|x86.Build.0 = Debug|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Release|x86.ActiveCfg = Release|Any CPU
+		{7723247F-095D-4849-B28D-67CBEAEC3136}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,8 +152,8 @@ Global
 		{6BB41355-99A7-4194-A4E5-68976A170ECE} = {FAC779C3-D7F0-4EAC-BDC7-A2F55830263F}
 		{0B34546E-DA8A-408A-8CB5-21E9B3BE22A7} = {FAC779C3-D7F0-4EAC-BDC7-A2F55830263F}
 		{B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF} = {0209AEF6-3C50-4CFD-9D47-804B4D253BB3}
-		{BB792E46-50A6-42CC-8AA8-2B59B436E011} = {B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}
-		{C86EFFFB-6536-4814-A843-DD027E6EF404} = {B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}
+		{6E54C964-745E-4CFC-AC66-8109C7AD2952} = {B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}
+		{7723247F-095D-4849-B28D-67CBEAEC3136} = {B0422AE1-F6DA-4521-BAF3-F72E6D7A54EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ED676F4-3AF2-4353-82A9-B3D3070B7499}

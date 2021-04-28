@@ -83,7 +83,7 @@ namespace AntimatterJS.Sample.Client
                  */
                 endpoints.MapHub<AntimatterRelay>("/interophub");
 
-                Limine.Core.General.Initialize(Legistek.Framework.ClientType.BrowserBased);
+                //Limine.Core.General.Initialize(Legistek.Framework.ClientType.BrowserBased);
 
                 AntimatterRelay.StartupSession += async (mgr) =>
                 {
@@ -92,19 +92,19 @@ namespace AntimatterJS.Sample.Client
                     mgr.RegisterRootObject("app", app);
                     mgr.RegisterSessionContext(app);
 
-                    var limine = new Limine.Core.Session("https://devid.limine.com");
-                    var hs = limine.GetHomeService("https://dev.limine.com/limineapi");
-                    await hs.LoginAsync(new Limine.Core.API.LoginRequest
-                    {
-                        Login = "test@legistek.com",
-                        Password = "Test.1234",
-                        EmbedPassword = true,
-                        Product = Legistek.Framework.API.Product.LimineWeb,
-                    });
-                    limine.UI.LimineSettings.ContentServerURL = "https://dev.limine.com/limineapi";
+                    //var limine = new Limine.Core.Session("https://devid.limine.com");
+                    //var hs = limine.GetHomeService("https://dev.limine.com/limineapi");
+                    //await hs.LoginAsync(new Limine.Core.API.LoginRequest
+                    //{
+                    //    Login = "test@legistek.com",
+                    //    Password = "Test.1234",
+                    //    EmbedPassword = true,
+                    //    Product = Legistek.Framework.API.Product.LimineWeb,
+                    //});
+                    //limine.UI.LimineSettings.ContentServerURL = "https://dev.limine.com/limineapi";
 
-                    await limine.UI.StartupAsync();
-                    mgr.RegisterRootObject("limine", limine);
+                    //await limine.UI.StartupAsync();
+                    //mgr.RegisterRootObject("limine", limine);
                 };
             });
 

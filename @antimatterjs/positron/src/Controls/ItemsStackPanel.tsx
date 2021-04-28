@@ -1,0 +1,42 @@
+import * as React from 'react';
+import { List } from '@fluentui/react';
+import { Binding, ModelObjectReference } from '@antimatterjs/react';
+
+import { IPanelProps, IPanelState, Panel } from './Panel';
+
+export interface IItemsStackPanelProps extends IPanelProps
+{
+}
+
+interface IItemsStackPanelState extends IPanelState
+{
+    version?: any
+}
+
+export class ItemsStackPanel extends Panel<IItemsStackPanelProps, IItemsStackPanelState>
+{
+    private _version: any = {};
+
+    renderElement()
+    {
+        return (
+            <List
+                items={this.props.ItemsParent?.state.ItemsSource}
+                style={{
+                    display: 'block',
+                    overflowY: 'auto'
+                }}
+                getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
+                onRenderCell={(item, index) =>
+                    this.props.ItemsParent?.OnRenderItem(item)}
+                version={this._version}
+                />
+        );
+    }
+
+    protected /* override */ OnInvalidateRender()
+    {
+        this._version = {};
+    }
+}
+
