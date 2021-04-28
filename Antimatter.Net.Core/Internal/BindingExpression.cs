@@ -3,19 +3,18 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 
 namespace Antimatter.Net.Internal
 {
     internal class BindingExpression
     {        
         ModelValue _lastValue;
-        Reactor _manager;
+        Reactor _reactor;
         bool _suspendPropertyChangeReport;
         
         internal BindingExpression(Reactor manager, string path)
         {
-            _manager = manager;
+            _reactor = manager;
             this.Path = path;
             this.ParsePath();
         }
@@ -61,7 +60,7 @@ namespace Antimatter.Net.Internal
                     // No two-way binding if no path
                     return;
                 this.PathComponents.Last()
-                    .OnTargetPropertyChanged(value.ToCSValue(this._manager));                
+                    .OnTargetPropertyChanged(value, _reactor);                
             }
             finally
             {
@@ -181,7 +180,7 @@ namespace Antimatter.Net.Internal
         internal void ReportValidationError(string message)
         {
             Reactor.Client.UpdateBinding(
-                this._manager.ClientID,
+                this._reactor.ClientID,
                 this.BXIndex,
                 new ModelValue
                 {
@@ -199,11 +198,11 @@ namespace Antimatter.Net.Internal
                 incc.CollectionChanged += OnSourceCollectionChanged;
 
             // TODO - What if value is actually unchanged (but collections?)
-            var dnv = _manager.GetDotNetValue(value);   // do this first
+            var dnv = _reactor.GetModelValue(value);   // do this first
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 
-            Reactor.Client.UpdateBinding(this._manager.ClientID, this.BXIndex, dnv);
+            Reactor.Client.UpdateBinding(this._reactor.ClientID, this.BXIndex, dnv);
             CheckReportIDEIValidationError();
         }
 
@@ -240,11 +239,11 @@ namespace Antimatter.Net.Internal
             if (_lastValue?.Type == ModelValueType.Object ||
                 _lastValue?.Type == ModelValueType.Collection)
             {
-                var reference = _manager.GetReference(_lastValue.ObjectHandle);
+                var reference = _reactor.GetReference(_lastValue.ObjectHandle);
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)
                     oldIncc.CollectionChanged -= OnSourceCollectionChanged;                   
             }
-            _manager.Release(_lastValue);
+            _reactor.Release(_lastValue);
             _lastValue = null;
         }
 

@@ -8,6 +8,11 @@ namespace Antimatter.Net
     [StructLayout(LayoutKind.Explicit)]
     public class ModelValue
     {
+        public static readonly ModelValue Null = new ModelValue
+        {
+            Type = ModelValueType.None
+        };
+
         [FieldOffset(0)]
         private ModelValueType type;
         public ModelValueType Type
@@ -96,7 +101,7 @@ namespace Antimatter.Net
             set => _collection = value;
         }
 
-        public object ToCSValue(Reactor mgr)
+        internal object ToCSValue(Reactor mgr)
         {
             switch (this.Type)
             {                

@@ -15,7 +15,9 @@ namespace Antimatter.Net
     /// releasing trendous power in the process.
     /// </summary>
     public class Reactor
-    {        
+    {
+        #region Static Methods
+
         /// <summary>
         /// Initializes the entire platform. Must be called exactly once
         /// by any Model Server at startup, regardless whether the server is
@@ -30,6 +32,13 @@ namespace Antimatter.Net
         {
             Client = client;
         }
+
+        public static void RegisterConverter(Type modelObjectType, IModelValueConverter converter)
+        {
+            _customConverters[modelObjectType] = converter;
+        }
+
+        #endregion
 
         #region Model Server-Invocable Methods
 
@@ -209,7 +218,7 @@ namespace Antimatter.Net
             return dnor;
         }
 
-        internal ModelValue GetDotNetValue(object obj)
+        internal ModelValue GetModelValue(object obj)
         {
             if (obj == null)
                 return new ModelValue
@@ -231,13 +240,17 @@ namespace Antimatter.Net
                 }
                 else if (obj is IEnumerable<object> ienum)
                 {
-                    var arr = ienum.Select(item => GetDotNetValue(item)).ToArray();
+                    var arr = ienum.Select(item => GetModelValue(item)).ToArray();
                     return new ModelValue
                     {
                         Type = ModelValueType.Collection,     
                         Collection = arr,
                         ObjectHandle = GetOrCreateReference(obj).Handle,
                     };
+                }
+                else if (_customConverters.TryGetValue(type, out IModelValueConverter converter))
+                {
+                    return converter.ConvertTo(obj);
                 }
                 else
                 {
@@ -443,6 +456,8 @@ namespace Antimatter.Net
             { typeof(DateTime), ModelValueType.DateTime },
             { typeof(TimeSpan), ModelValueType.TimeSpan },
         };
+        internal static Dictionary<Type, IModelValueConverter> _customConverters = 
+            new Dictionary<Type, IModelValueConverter>();
 
         #endregion
     }

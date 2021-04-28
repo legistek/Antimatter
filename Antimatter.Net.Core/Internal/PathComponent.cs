@@ -75,11 +75,18 @@ namespace Antimatter.Net.Internal
             this.Binding?.SetEffectiveValue(this.Index);
         }
 
-        internal void OnTargetPropertyChanged(object value)
+        internal void OnTargetPropertyChanged(ModelValue modelValue, Reactor reactor)
         {
             object lastPropertySource = this.LastPropertySource;
             if (lastPropertySource != null)
             {
+                object value;
+                var targetPropType = this.PropertyKey.PropertyInfo.PropertyType;
+                if (Reactor._customConverters.TryGetValue(targetPropType, out IModelValueConverter converter))
+                    value = converter.ConvertFrom(modelValue);
+                else
+                    value = modelValue.ToCSValue(reactor);
+                
                 Debug.WriteLine(
                     $"Property change triggering update for source {this.LastPropertySource}");
                 try
