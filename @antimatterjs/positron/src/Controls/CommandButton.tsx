@@ -31,24 +31,45 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         Icon: new Binding({ Path: "Icon", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })
+        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })        
     };
 
-    /** For main action buttons (dialog OK, etc.) */
+    public static DialogButtonStyle = new Style<ICommandButtonProps>(
+        Object.assign(
+            Object.assign({}, CommandButton.BaseCommandButtonProps),
+            {
+                IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
+                Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                    templatedParent.state.IsDefault
+                        ? (<PrimaryButton
+                            style={{ minWidth: "90px" }}
+                            onClick={(e) => templatedParent.OnClick()}
+                            disabled={!templatedParent.state.IsEnabled}>
+                            {templatedParent.state.Label}
+                          </PrimaryButton>)
+                        : (<DefaultButton
+                            style={{ minWidth: "90px" }}
+                            onClick={(e) => templatedParent.OnClick()}
+                            disabled={!templatedParent.state.IsEnabled}>
+                            {templatedParent.state.Label}
+                        </DefaultButton>)
+            }
+        ));
+    
     public static PrimaryButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
                 Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
-                    <DefaultButton
+                    <PrimaryButton
                         onClick={(e) => templatedParent.OnClick()}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
                         disabled={!templatedParent.state.IsEnabled}>
                         {templatedParent.state.Label}
-                    </DefaultButton>
+                    </PrimaryButton>
                 )
             }
         ));
@@ -56,7 +77,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     public static CommandBarButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
-            {
+            {                
                 Padding: "8px 0px 8px 0px",
                 Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (

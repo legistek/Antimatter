@@ -10,7 +10,6 @@ import { IPanelProps, IPanelState, Panel } from './Panel';
 
 class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 {
-    private _version: any = {};
     private _commandItems: ICommandBarItemProps[] = [];
 
     protected /* override */ renderElement(): JSX.Element | null
@@ -18,6 +17,7 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
         this.AssembleCommandItems();
         return (
             <FluentCommandBar
+                
                 items={this._commandItems}
                 styles={{
                     root: {
@@ -27,11 +27,6 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
                 }}
             />
         );
-    }
-
-    protected /* override */ OnInvalidateRender()
-    {
-        this._version = {};
     }
 
     private AssembleCommandItems(): void

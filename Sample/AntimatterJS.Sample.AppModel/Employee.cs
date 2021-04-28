@@ -207,6 +207,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Increase Age",
                     Icon = 0xE983,
+                    ToolTip = "Increase this person's age"
                 });
             }
         }
@@ -227,6 +228,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Decrease Age",
+                    ToolTip = "Decrease this person's age",
                     Icon = 0xE982,
                 });
             }
@@ -248,6 +250,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Fire",
+                    ToolTip = "Throw the bum out",
                     Icon = 0xE959
                 });
             }

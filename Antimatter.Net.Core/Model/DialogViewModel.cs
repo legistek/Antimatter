@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Input;
 
 namespace Antimatter.Net.Model
@@ -16,18 +15,37 @@ namespace Antimatter.Net.Model
 
         public virtual ushort Icon { get; }
 
-        public async Task ShowDialogAsync()
+        #region Command OK Command
+
+        private Command _OKCommand;
+        public Command OKCommand
         {
-            var ctx = (Reactor.SessionContext as IDialogContainer);
-            if (ctx == null)
-                return;
-            ctx.Dialogs.Add(this);
+            get
+            {
+                return _OKCommand ?? (_OKCommand = new Command(
+                    async (arg) =>
+                    {
+                        var ctx = (Reactor.SessionContext as IDialogContainer);
+                        if (ctx == null)
+                            return;
+                        if (await this.OnSubmitAsync())
+                            ctx.Dialogs.Remove(this);
+                    })
+                {
+                    Name = "OK",
+                    Icon = 0,
+                    IsDefault = true,
+                    GetIsEnabled = CanSubmit
+                });
+            }
         }
 
-        #region IUICommand Cancel Command
+        #endregion
+
+        #region Command Cancel Command
 
         private Command _CancelCommand;
-        public ICommand CancelCommand
+        public Command CancelCommand
         {
             get
             {
@@ -37,17 +55,61 @@ namespace Antimatter.Net.Model
                         var ctx = (Reactor.SessionContext as IDialogContainer);
                         if (ctx == null)
                             return;
-                        ctx.Dialogs.Remove(this);
+                        if (await this.OnCancelAsync())
+                            ctx.Dialogs.Remove(this);
                     })
                 {
                     Name = "Cancel",
-                    ToolTip = "",
-                    Icon = 0xE921
+                    ToolTip = "Cancel the operation and close this window.",
+                    Icon = 0xE921,
+                    GetIsEnabled = CanCancel
                 });
             }
         }
 
         #endregion
 
+        #region CommandCollection PrimaryCommands
+        CommandCollection _PrimaryCommands;
+        public virtual CommandCollection PrimaryCommands
+        {
+            get
+            {
+                return _PrimaryCommands ?? (_PrimaryCommands = new CommandCollection
+                {
+                    OKCommand,
+                    CancelCommand,                    
+                });
+            }
+        }
+        #endregion
+
+        public virtual bool CanSubmit()
+        {
+            return true;            
+        }
+
+        public virtual bool CanCancel()
+        {
+            return true;
+        }
+
+        public virtual async Task<bool> OnSubmitAsync()
+        {
+            return true;
+        }
+
+        public virtual async Task<bool> OnCancelAsync()
+        {
+            return true;
+        }
+
+        public async Task ShowDialogAsync()
+        {
+            var ctx = (Reactor.SessionContext as IDialogContainer);
+            if (ctx == null)
+                return;
+            ctx.Dialogs.Add(this);
+        }
     }
 }

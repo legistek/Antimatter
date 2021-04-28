@@ -10,8 +10,9 @@ import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { CommandButton } from './CommandButton';
-import { VerticalAlignment } from '@antimatterjs/positron/src/Enums';
+import { HorizontalAlignment, VerticalAlignment } from '@antimatterjs/positron/src/Enums';
 import { template } from '@babel/core';
+import { CommandBar } from './CommandBar';
 
 interface IDialogBoxCommon
 {    
@@ -102,19 +103,30 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             }
 
                             {/*Separator*/}
-                            <Separator />
+                            <Separator styles={{
+                                root: {
+                                    lineHeight: "0",
+                                    padding: "0px"
+                                },
+                            }} />
 
                             {/*Buttons*/}
-                            <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(1, true)]}>
+                            <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
+                                Margin="0px 10px 0px 10px"
+
+                            >
                                 {/* Secondary Buttons */}
-                                <ItemsControl ItemsSource={new Binding("SecondaryCommands")}
-                                    ItemTemplate={(item) => (<div></div>)}>
-                                </ItemsControl>
+                                {/*<ItemsControl ItemsSource={new Binding("SecondaryCommands")}*/}
+                                {/*    ItemTemplate={(item) => (<div></div>)}>*/}
+                                {/*</ItemsControl>*/}
+
+                                <div></div>
 
                                 {/* Primary Buttons */}
-                                <ItemsControl ItemsSource={new Binding("PrimaryCommands")}
-                                    ItemTemplate={(item) => (<div></div>)}>
-                                </ItemsControl>
+                                <CommandBar ItemsSource={new Binding("PrimaryCommands")}
+                                    HorizontalAlignment={HorizontalAlignment.Right}
+                                    ItemContainerStyle={CommandButton.DialogButtonStyle}
+                                />
                             </Grid>
                         
                         </Grid>

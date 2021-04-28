@@ -1,7 +1,8 @@
-import { INotifyPropertyChanged } from '@antimatterjs/react/src/INotifyPropertyChanged';
-import { PropertyChangedEventArgs } from '@antimatterjs/react/src/PropertyChangedEventArgs';
 import * as React from 'react';
 import { Component } from 'react';
+
+import { INotifyPropertyChanged } from '../INotifyPropertyChanged';
+import { PropertyChangedEventArgs } from '../PropertyChangedEventArgs';
 import { Antimatter } from '../Antimatter';
 import { Binding } from '../Binding';
 import { BindingExpression } from '../BindingExpression';

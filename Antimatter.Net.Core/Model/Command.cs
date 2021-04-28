@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Antimatter.Net.Model
 {
-    public class Command : ICommand
+    public class Command : ObservableObject, ICommand
     {
         private Action<object> _action;
 
@@ -11,19 +11,29 @@ namespace Antimatter.Net.Model
 
         public string Name { get; set; }
 
+        public Func<bool> GetIsEnabled { get; set; }
+
+        public void IsEnabledChanged()
+        {
+            this.IsEnabled = GetIsEnabled?.Invoke() ?? true;
+        }
+
         private bool _isEnabled = true;
         public bool IsEnabled 
         {
             get => _isEnabled;
-            set
+            private set
             {
                 if (_isEnabled != value)
                 {
                     this._isEnabled = value;
+                    OnPropertyChanged();
                     this.CanExecuteChanged?.Invoke(this, new EventArgs());
                 }
             }
         }
+
+        public bool IsDefault { get; set; }
 
         public string ToolTip { get; set; }
 
