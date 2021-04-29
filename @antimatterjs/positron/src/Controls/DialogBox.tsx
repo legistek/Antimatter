@@ -93,7 +93,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             {
                                 DialogBox
                                     ._templates
-                                    .get(templatedParent.BindState({ Path: "Template", Source: templatedParent.state.ViewModel }))
+                                    .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
                                     ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
                             }
 

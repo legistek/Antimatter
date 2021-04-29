@@ -28,6 +28,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     static BaseCommandButtonProps: ICommandButtonProps = {
         HorizontalAlignment: HorizontalAlignment.Left,
         Margin: "5px",
+        IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         Icon: new Binding({ Path: "Icon", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
