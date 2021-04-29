@@ -23,7 +23,7 @@ export class ToggleButton<P extends IToggleButtonProps = {},
         }
     };
 
-    protected /* override */ OnClick()
+    /* override */ OnClick()
     {
         let newValue: boolean | undefined = undefined;
         if (this.props.IsThreeState)

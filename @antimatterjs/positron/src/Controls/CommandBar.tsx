@@ -10,9 +10,9 @@ import { IPanelProps, IPanelState, Panel } from './Panel';
 
 class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 {
-    private _commandItems: ICommandBarItemProps[] = [];
+    _commandItems: ICommandBarItemProps[] = [];
 
-    protected /* override */ renderElement(): JSX.Element | null
+    /* override */ renderElement(): JSX.Element | null
     {
         this.AssembleCommandItems();
         return (
@@ -28,7 +28,7 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
         );
     }
 
-    private AssembleCommandItems(): void
+    AssembleCommandItems(): void
     {
         this._commandItems = [];
         var itemsParent = this.state.ItemsParent;
@@ -69,7 +69,7 @@ export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlSt
         ItemContainerStyle: CommandButton.CommandBarButtonStyle
     });
 
-    protected /* override */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return CommandButton;
     }

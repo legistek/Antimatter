@@ -56,7 +56,7 @@ export class SignalRServer implements IServer
 
     //#region Server-Invocable Methods
 
-    private UpdateBinding(bxIndex: number, valueJson: string)
+    UpdateBinding(bxIndex: number, valueJson: string)
     {
         var valueObj = JSON.parse(valueJson) as ModelValue;
         var value = this.getDotNetValue(valueObj);
@@ -65,7 +65,7 @@ export class SignalRServer implements IServer
 
     //#endregion
 
-    private getDotNetValue(valuePtr: ModelValue): any
+    getDotNetValue(valuePtr: ModelValue): any
     {
         switch (valuePtr.Type)
         {

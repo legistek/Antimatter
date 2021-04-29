@@ -25,7 +25,7 @@ export interface ICommandButtonState extends IButtonBaseState, ICommandButtonCom
 export class CommandButton<P extends ICommandButtonProps = {}, S extends ICommandButtonState = {}>
     extends ButtonBase<P, S>
 {
-    private static BaseCommandButtonProps: ICommandButtonProps = {
+    static BaseCommandButtonProps: ICommandButtonProps = {
         HorizontalAlignment: HorizontalAlignment.Left,
         Margin: "5px",
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),

@@ -9,11 +9,11 @@ const ParentContext = React.createContext<any>(null);
 
 export abstract class DependencyObject<P> extends Component<P> implements IDependencyObject
 {
-    private _bindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();
-    private _localValues: Map<number, any> = new Map<number, any>();
-    private _isRendering: boolean = false;
-    private _isMounted: boolean = false;
-    private _setBindings: boolean = false;
+    _bindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();
+    _localValues: Map<number, any> = new Map<number, any>();
+    _isRendering: boolean = false;
+    _isMounted: boolean = false;
+    _setBindings: boolean = false;
 
     constructor(props: P)
     {
@@ -120,7 +120,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
         this.OnDependencyPropertyActualValueChange(changedArgs);
     }
 
-    private OnDependencyPropertyActualValueChange(e: DependencyPropertyChangedEventArgs): void
+    OnDependencyPropertyActualValueChange(e: DependencyPropertyChangedEventArgs): void
     {
         if (e.Property.PropertyChangedCallback)
             e.Property.PropertyChangedCallback(this, e);
@@ -134,7 +134,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
             this.setState({});
     }
 
-    private processProps(props: P)
+    processProps(props: P)
     {
         this._setBindings = true;
         var entries = Object.entries(props);
@@ -162,9 +162,9 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
         return render;
     }
 
-    protected abstract renderElement(): JSX.Element;
+    abstract renderElement(): JSX.Element;
 
-    private setParent(parent: IDependencyObject, isRendering: boolean)
+    setParent(parent: IDependencyObject, isRendering: boolean)
     {
         if (this.Parent === parent)
             return;
@@ -182,7 +182,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
             this.ReapplyDataContextDependentBindings();
     }
 
-    private ReapplyDataContextDependentBindings()
+    ReapplyDataContextDependentBindings()
     {        
         var bindings = Object.entries(this._bindings);
         for (const binding of bindings)
@@ -194,7 +194,7 @@ export abstract class DependencyObject<P> extends Component<P> implements IDepen
         }
     }
 
-    private OnParentInheritablePropertyChanged(sender: any, e: DependencyPropertyChangedEventArgs)
+    OnParentInheritablePropertyChanged(sender: any, e: DependencyPropertyChangedEventArgs)
     {
         this.OnDependencyPropertyActualValueChange(e);
     }

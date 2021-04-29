@@ -21,7 +21,7 @@ export class MainAppBar extends AntimatterComponent<{}, { isProfileCalloutOpen: 
         };
     }
 
-    private toggleIsProfileVisible()
+    toggleIsProfileVisible()
     {
         this.setState({ isProfileCalloutOpen: !this.state.isProfileCalloutOpen });
     }

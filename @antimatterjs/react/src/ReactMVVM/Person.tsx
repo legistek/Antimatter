@@ -2,7 +2,7 @@
 
 export class Person extends ObservableObject {
     // #region firstName property
-    private _firstName: string = '';
+    _firstName: string = '';
     public get firstName(): string {
         return this._firstName;
     }
@@ -14,7 +14,7 @@ export class Person extends ObservableObject {
     }
     // #endregion
 
-    private _age: number = 0;
+    _age: number = 0;
     public get age(): number {
         return this._age;
     }

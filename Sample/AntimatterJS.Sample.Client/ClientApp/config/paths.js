@@ -61,7 +61,7 @@ module.exports = {
 
   // This has to be the actual hard drive path, not the module path
   // created by npm link
-  localModuleSrc: resolveApp('../../../node_modules/@antimatterjs'),
+  localModuleSrc: resolveApp('../../../@antimatterjs'),
   
   appTsConfig: resolveApp('tsconfig.json'),
   appJsConfig: resolveApp('jsconfig.json'),

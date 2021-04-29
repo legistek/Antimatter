@@ -16,14 +16,14 @@ export interface IStackPanelState extends IPanelState
 export class StackPanel<P extends IStackPanelProps = {}, S extends IStackPanelState = {}>
     extends Panel<P, S>
 {
-    protected /* override */ constructClasses(): string
+    /* override */ constructClasses(): string
     {        
         return "amx-ptn-stack-panel amx-ptn-panel "
             + (this.state.Orientation === Orientation.Horizontal ? "horizontal " : "")
             + super.constructClasses();
     }
 
-    protected /* override */ renderElement(): JSX.Element
+    /* override */ renderElement(): JSX.Element
     {
         if (this.state.ItemsParent)
         {

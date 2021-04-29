@@ -15,7 +15,7 @@ interface IItemsStackPanelState extends IPanelState
 
 export class ItemsStackPanel extends Panel<IItemsStackPanelProps, IItemsStackPanelState>
 {
-    private _version: any = {};
+    _version: any = {};
 
     renderElement()
     {
@@ -34,7 +34,7 @@ export class ItemsStackPanel extends Panel<IItemsStackPanelProps, IItemsStackPan
         );
     }
 
-    protected /* override */ OnInvalidateRender()
+    /* override */ OnInvalidateRender()
     {
         this._version = {};
     }

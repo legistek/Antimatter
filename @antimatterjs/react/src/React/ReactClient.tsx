@@ -192,7 +192,7 @@ export class ReactClient implements IClient
         this.BindPropsInternal(target, target.props, true);
     }
 
-    private BindPropsInternal(target: IBoundComponent, props: Readonly<{}>, force: boolean): boolean
+    BindPropsInternal(target: IBoundComponent, props: Readonly<{}>, force: boolean): boolean
     {
         let any: boolean = false;
         var entries = Object.entries(props);
@@ -204,7 +204,7 @@ export class ReactClient implements IClient
         return any;
     }
 
-    private ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean) : boolean
+    ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean) : boolean
     {        
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
@@ -253,7 +253,7 @@ export class ReactClient implements IClient
         return true;
     }
 
-    private CheckReapplyDataContext(target: IBoundComponent, ctx: ModelObjectReference | undefined): boolean
+    CheckReapplyDataContext(target: IBoundComponent, ctx: ModelObjectReference | undefined): boolean
     {
         if (ModelObjectReference.Equals(target.antimatterLastDataContext, ctx))            
             return false;

@@ -2,23 +2,23 @@
 
 export class DependencyProperty
 {
-    private static _lastIndex: number = 0;
-    private _metadata: PropertyMetadata;
+    static _lastIndex: number = 0;
+    _metadata: PropertyMetadata;
 
-    private constructor(name: string, index: number, metadata: PropertyMetadata)
+    constructor(name: string, index: number, metadata: PropertyMetadata)
     {
         this._name = name;
         this._globalIndex = index;
         this._metadata = metadata;
     }
 
-    private _name: string;
+    _name: string;
     public get Name(): string
     {
         return this._name;
     }
 
-    private _globalIndex: number;
+    _globalIndex: number;
     public get GlobalIndex(): number
     {
         return this._globalIndex;

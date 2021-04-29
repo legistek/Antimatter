@@ -48,7 +48,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
         }
     );
 
-    protected /* override */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return ListBoxItem;
     }
@@ -125,7 +125,7 @@ class ListBoxItem<P extends IListBoxItemProps = {}, S extends IListBoxItemState 
         }
     );
 
-    protected /* override */ constructClasses()
+    /* override */ constructClasses()
     {        
         return super.constructClasses() +
             "listboxitem " +

@@ -92,21 +92,21 @@ export class FrameworkElement<
         return Antimatter.BindState(this, parameters, stateVar);
     }
 
-    protected /* virtual */ OnInvalidateRender()
+    /* virtual */ OnInvalidateRender()
     {
     }
     
-    protected SetValue(property: string, newValue: any): void
+    SetValue(property: string, newValue: any): void
     {
         Antimatter.TargetChanged(this, property, newValue);
     }
 
-    protected /* virtual */ renderElement(): JSX.Element | null
+    /* virtual */ renderElement(): JSX.Element | null
     {
         return null;
     }
 
-    protected /* virtual */ getCSSStyles(): React.CSSProperties
+    /* virtual */ getCSSStyles(): React.CSSProperties
     {
         let styles: React.CSSProperties = {
             margin: this.state.Margin
@@ -118,11 +118,11 @@ export class FrameworkElement<
         return styles;
     }
 
-    protected /* virtual */ OnPropertyChanged(property: string, value: any)
+    /* virtual */ OnPropertyChanged(property: string, value: any)
     {
     }
 
-    protected constructClasses(): string
+    constructClasses(): string
     {
         let cls: string = 'amx-ptn-fe ';
 
@@ -166,7 +166,7 @@ export class FrameworkElement<
         return cls;
     }
 
-    private ApplyStyle()
+    ApplyStyle()
     {
         var style = this.props.Style ||
             (this.constructor as any).DefaultStyle

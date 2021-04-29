@@ -38,7 +38,7 @@ export abstract class Panel<P extends IPanelProps = {}, S extends IPanelState = 
             props.ItemsParent.ItemsPanelInstance = this;        
     }
 
-    protected /* override */ getCSSStyles() : React.CSSProperties
+    /* override */ getCSSStyles() : React.CSSProperties
     {
         var styles = {
             background: this.state.Background,
@@ -53,17 +53,17 @@ export abstract class Panel<P extends IPanelProps = {}, S extends IPanelState = 
         return Object.assign(super.getCSSStyles(), styles);
     }
 
-    protected /* override */ constructClasses() : string
+    /* override */ constructClasses() : string
     {
         return "amx-ptn-panel " + super.constructClasses();
     }
 
-    protected /* override */ renderElement(): JSX.Element | null
+    /* override */ renderElement(): JSX.Element | null
     {
         return (<>{this.props.children}</>);
     }
 
-    private static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
+    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
     {
         switch (v)
         {            
