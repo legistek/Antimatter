@@ -1,6 +1,7 @@
 export * from './src/Enums';
 export * from './src/FrameworkElement';
 export * from './src/Style';
+export * from './src/DialogTemplate';
 export * from './src/Controls/TextBlock';
 export * from './src/Controls/Grid';
 export * from './src/Controls/Window';

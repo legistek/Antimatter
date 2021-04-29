@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
-
-import { DefaultEffects, Dialog, getTheme, Icon, Modal, MotionAnimations, Separator } from '@fluentui/react';
-
+import { DefaultEffects, Dialog, getTheme, Icon, Modal, MotionAnimations } from '@fluentui/react';
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
@@ -13,6 +11,7 @@ import { CommandButton } from './CommandButton';
 import { HorizontalAlignment, VerticalAlignment } from '@antimatterjs/positron/src/Enums';
 import { template } from '@babel/core';
 import { CommandBar } from './CommandBar';
+import { Separator } from './Separator';
 
 interface IDialogBoxCommon
 {    
@@ -30,12 +29,12 @@ export interface IDialogBoxState extends IControlState, IDialogBoxCommon
 
 export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 {
-    private static _templates: Map<string, (viewModel: ModelObjectReference | undefined) => JSX.Element> =
-        new Map<string, (viewModel: ModelObjectReference | undefined) => JSX.Element>();
+    private static _templates: Map<string, (viewModel: ModelObjectReference) => JSX.Element> =
+        new Map<string, (viewModel: ModelObjectReference) => JSX.Element>();
 
     public static RegisterTemplate(
         templateName: string,
-        template: ((viewModel: ModelObjectReference | undefined) => JSX.Element))
+        template: ((viewModel: ModelObjectReference) => JSX.Element))
     {
         DialogBox._templates.set(templateName, template);
     }
@@ -88,28 +87,18 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             </Grid>
 
                             {/*Separator*/}
-                            <Separator styles={{
-                                root: {
-                                    lineHeight: "0",
-                                    padding: "0px"
-                                },
-                            }}/>
+                            <Separator />
 
                             {/*Body*/}
                             {
                                 DialogBox
                                     ._templates
                                     .get(templatedParent.BindState({ Path: "Template", Source: templatedParent.state.ViewModel }))
-                                    ?.call(templatedParent, templatedParent.state.ViewModel)
+                                    ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
                             }
 
                             {/*Separator*/}
-                            <Separator styles={{
-                                root: {
-                                    lineHeight: "0",
-                                    padding: "0px"
-                                },
-                            }} />
+                            <Separator />
 
                             {/*Buttons*/}
                             <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}

@@ -4,14 +4,18 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Autofill, TextField } from '@fluentui/react';
 import { Style } from '../Style';
 
-export interface ITextBoxProps extends IControlProps
+interface ITextBoxCommon
+{
+    IsPassword?: boolean
+}
+
+export interface ITextBoxProps extends IControlProps, ITextBoxCommon
 {
     Text?: string | Binding,
     Label?: string | Binding,
-    IconName?: string | Binding
+    IconName?: string | Binding,
 }
-
-interface ITextBoxState extends IControlState
+export interface ITextBoxState extends IControlState, ITextBoxCommon
 {
     Text?: string,
     Label?: string,
@@ -32,6 +36,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             Template: (templatedParent: TextBox) =>
             (
                 <TextField
+                    type={templatedParent.state.IsPassword ? "password" : undefined}
                     iconProps={
                         {
                             iconName: templatedParent.state.IconName
