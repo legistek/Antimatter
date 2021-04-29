@@ -68,7 +68,7 @@ export class ModernButton extends AntimatterComponent<IModernButtonProps, IModer
             );
     }
 
-    private onClick()
+    onClick()
     {
         if (this.state.Command)
             Antimatter.Server.ExecuteICommand(

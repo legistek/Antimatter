@@ -1,5 +1,5 @@
 ﻿export class Event<T> {    
-    private _handlers: ((sender: any, e: T) => void)[] = [];
+    _handlers: ((sender: any, e: T) => void)[] = [];
 
     public subscribe(handler: (sender: any, e: T) => void) {
         this._handlers.push(handler);

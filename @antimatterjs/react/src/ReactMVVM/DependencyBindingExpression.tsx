@@ -3,7 +3,7 @@ import { BindingSource } from "../BindingSource";
 
 export class DependencyBindingExpression extends BindingExpression
 {
-    protected /* override */ ApplyInternal(): void
+    /* override */ ApplyInternal(): void
     {
         //console.log("Dependency Binding Applied");
         //if (!this._source)

@@ -18,7 +18,7 @@ export abstract class ButtonBase<
     S extends IButtonBaseState = {}>
     extends Control<P, S>
 {
-    protected /* virtual */ OnClick(): void
+    /* virtual */ OnClick(): void
     {
         if (this.state.Command)
             Antimatter.Server.ExecuteICommand(

@@ -123,7 +123,7 @@ export class BindingExpression
             exp._isApplied && exp.AffectsRender);        
     }
 
-    private SubscribeToSourcePropertyChanges(): boolean
+    SubscribeToSourcePropertyChanges(): boolean
     {
         if (this.Parameters.FallbackValue !== undefined)
             this._target.state[this.TargetProperty] = this.Parameters.FallbackValue;
@@ -144,7 +144,7 @@ export class BindingExpression
         return false;
     }
 
-    private OnTargetPropertyChanged(sender: any, e: PropertyChangedEventArgs)
+    OnTargetPropertyChanged(sender: any, e: PropertyChangedEventArgs)
     {
         if (this.ActualRelativeSourceMode == RelativeSourceMode.Self &&
             this.Parameters.RelativeSource === e.propertyName)
@@ -153,7 +153,7 @@ export class BindingExpression
         }
     }
 
-    private ApplyNewSelfRelativeSourceValue(): boolean
+    ApplyNewSelfRelativeSourceValue(): boolean
     {
         this.Unapply();
         (this._target as INotifyPropertyChanged)?.PropertyChanged?.subscribe(this.OnTargetPropertyChanged);
@@ -166,10 +166,10 @@ export class BindingExpression
         return false;
     }
 
-    private static _globalIndex: number = 0;
-    private static _globalBindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();
-    private _resolvedSource?: BindingSource;
-    private _target: any;
-    private _lastAppliedBindingContext: ModelObjectReference | undefined;
-    private _isApplied: boolean = false;
+    static _globalIndex: number = 0;
+    static _globalBindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();
+    _resolvedSource?: BindingSource;
+    _target: any;
+    _lastAppliedBindingContext: ModelObjectReference | undefined;
+    _isApplied: boolean = false;
 }

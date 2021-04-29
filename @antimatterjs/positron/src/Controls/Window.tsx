@@ -27,12 +27,12 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         (this.state as any)["VerticalAlignment"] = VerticalAlignment.Stretch;
     }
 
-    protected /* override */ constructClasses() : string
+    /* override */ constructClasses() : string
     {
         return super.constructClasses() + "amx-ptn-root ";
     }
 
-    protected /* override */ renderElement(): JSX.Element | null
+    /* override */ renderElement(): JSX.Element | null
     {
         return (
             <>

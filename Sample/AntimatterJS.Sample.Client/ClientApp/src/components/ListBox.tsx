@@ -112,7 +112,7 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
             );
     }
 
-    private _onRenderRow: IDetailsListProps['onRenderRow'] = props =>
+    _onRenderRow: IDetailsListProps['onRenderRow'] = props =>
     {
         const customStyles: Partial<IDetailsRowStyles> = {};
         if (props)
@@ -136,7 +136,7 @@ export class ListBox extends AntimatterComponent<IListBoxProps, IListBoxState>
         return null;
     };
 
-    private _selection: Selection;
-    private _columns: IColumn[];
-    private _skipSelectionChangeNotification: boolean = false;
+    _selection: Selection;
+    _columns: IColumn[];
+    _skipSelectionChangeNotification: boolean = false;
 }

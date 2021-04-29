@@ -38,9 +38,9 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
     S extends ISelectorState = { ItemsSource: [], SelectedItems: [] }>
     extends ItemsControl<P, S>
 {
-    private _selectedIndex: number = -1;
-    private _lastClickedOrSelected: number = -1;
-    private _currentSelectionAnchor: number = -1;
+    _selectedIndex: number = -1;
+    _lastClickedOrSelected: number = -1;
+    _currentSelectionAnchor: number = -1;
 
     constructor(props)
     {
@@ -59,7 +59,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         return super.OnRenderItem(item, props);
     }
 
-    protected IsItemSelected(item: any): boolean
+    IsItemSelected(item: any): boolean
     {
         if (this.state.IsSelectAll)
             return true;
@@ -76,29 +76,29 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         }
     }
 
-    protected OnItemPointerDown(event: MouseEvent, item: any): void
+    OnItemPointerDown(event: MouseEvent, item: any): void
     {
         this.ProcessSelectionPointerAction(event, item, false, this.IsItemSelected(item));
     }
 
-    protected OnItemClick(event: MouseEvent, item: any): void
+    OnItemClick(event: MouseEvent, item: any): void
     {
         this.ProcessSelectionPointerAction(event, item, true, this.IsItemSelected(item));
     }
 
-    private get SelectionMode(): SelectionMode
+    get SelectionMode(): SelectionMode
     {
         return this.props.SelectionMode === undefined
             ? SelectionMode.Single
             : this.props.SelectionMode as SelectionMode;
     }
 
-    private get CanSelect(): boolean
+    get CanSelect(): boolean
     {
         return this.state.CanSelect !== false;
     }
 
-    private ProcessSelectionPointerAction(event: MouseEvent, item: any, fullClick: boolean, isCurrentlySelected: boolean)
+    ProcessSelectionPointerAction(event: MouseEvent, item: any, fullClick: boolean, isCurrentlySelected: boolean)
     {
         if (!this.CanSelect)
             return;
@@ -183,7 +183,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this.ItemsPanelInstance?.InvalidateRender();
     }
 
-    private ChangeSingleItemSelectionState(item: any, select: boolean)
+    ChangeSingleItemSelectionState(item: any, select: boolean)
     {
         if (select)
         {
@@ -199,7 +199,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this.SetValue(nameof(this.state.SelectedItems), this.state.SelectedItems);
     }
 
-    private SetSingleItemSelection(index: number)
+    SetSingleItemSelection(index: number)
     {
         if (this.SelectionMode !== SelectionMode.Single)
         {

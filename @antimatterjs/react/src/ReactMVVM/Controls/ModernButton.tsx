@@ -44,7 +44,7 @@ export class ModernButton extends DependencyObject<ModernButtonProps>
         this.SetValue(ModernButton.LabelProperty, value);
     }
 
-    protected /* override */ renderElement() : JSX.Element
+    /* override */ renderElement() : JSX.Element
     {
         return (
             <button className="btn btn-primary"
@@ -54,7 +54,7 @@ export class ModernButton extends DependencyObject<ModernButtonProps>
         )
     }
 
-    private async onClick()
+    async onClick()
     {
         if (!this.Command)
             return;

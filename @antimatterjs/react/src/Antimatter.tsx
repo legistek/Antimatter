@@ -6,7 +6,7 @@ import { IServer } from "./IServer";
 
 export class Antimatter
 {
-    private static _client: IClient;
+    static _client: IClient;
 
     public static Server: IServer;   
 

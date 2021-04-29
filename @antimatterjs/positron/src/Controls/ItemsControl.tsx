@@ -66,19 +66,19 @@ export class ItemsControl<
             } as IPanelProps);
     }
 
-    protected /* override */ OnPropertyChanged(property: string, value: any)
+    /* override */ OnPropertyChanged(property: string, value: any)
     {
         if (property === nameof(this.state.ItemsSource))
             this.ItemsPanelInstance?.InvalidateRender();
         super.OnPropertyChanged(property, value);
     }
 
-    protected /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return StackPanel;
     }
 
-    protected GetTemplateForItem(item?: any): (item?: any) => JSX.Element
+    GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
         if (this.props.ItemTemplate)
             return this.props.ItemTemplate as (item?: any) => JSX.Element;
@@ -86,7 +86,7 @@ export class ItemsControl<
             return ItemsControl.GetDefaultTemplateForItem(item);
     }
 
-    private static GetDefaultTemplateForItem(item?: any): (item?: any) => JSX.Element
+    static GetDefaultTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
         return (i?: any) => (
             <>

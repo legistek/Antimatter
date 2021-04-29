@@ -30,7 +30,7 @@ export interface IDialogBoxState extends IControlState, IDialogBoxCommon
 
 export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 {
-    private static _templates: Map<string, (viewModel: ModelObjectReference | undefined) => JSX.Element> =
+    static _templates: Map<string, (viewModel: ModelObjectReference | undefined) => JSX.Element> =
         new Map<string, (viewModel: ModelObjectReference | undefined) => JSX.Element>();
 
     public static RegisterTemplate(

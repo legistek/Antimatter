@@ -118,7 +118,7 @@ export class WebassemblyServer implements IServer
 
     //#region Private Members
 
-    private CallStaticMethod(assembly: string, className: string, methodName: string, ...parameters: any[]): any
+    CallStaticMethod(assembly: string, className: string, methodName: string, ...parameters: any[]): any
     {
         const methodKey = this.MakeMethodKey(assembly, className, methodName);
         let method: any = this._cachedMethods.get(methodKey);
@@ -131,12 +131,12 @@ export class WebassemblyServer implements IServer
         return method(...parameters);
     }
 
-    private get Module(): any
+    get Module(): any
     {
         return (window as any).Module;
     }
 
-    private getStringValue(ptr: number): string
+    getStringValue(ptr: number): string
     {
         const fieldValue = this.getValueI32(ptr);
 
@@ -148,17 +148,17 @@ export class WebassemblyServer implements IServer
         return (window as any).BINDING.conv_string(fieldValue) as string;
     }
 
-    private getValueI16(ptr: number)
+    getValueI16(ptr: number)
     {
         return this.Module.HEAP16[ptr >> 1];
     }
 
-    private getValueI32(ptr: number)
+    getValueI32(ptr: number)
     {
         return this.Module.HEAP32[ptr >> 2];
     }
 
-    private getValueGuid(ptr: number)
+    getValueGuid(ptr: number)
     {
         //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0
         //    C9 8B 91 35    6D 19    EA 40    97 79    88 9D 79 B7 53 F0
@@ -174,7 +174,7 @@ export class WebassemblyServer implements IServer
         return guid;
     }
 
-    private getValueU64(ptr: number): bigint
+    getValueU64(ptr: number): bigint
     {
         // There is no Module.HEAPU64, and Module.getValue(..., 'i64') doesn't work because the implementation
         // treats 'i64' as being the same as 'i32'. Also we must take care to read both halves as unsigned.
@@ -188,12 +188,12 @@ export class WebassemblyServer implements IServer
         return (highPart * uint64HighOrderShift) + BigInt(this.Module.HEAPU32[heapU32Index]);
     }
 
-    private getValueFloat(ptr: number)
+    getValueFloat(ptr: number)
     {        
         return this.Module.HEAPF32[ptr >> 2];
     }
 
-    private getArrayValue(ptrptr: number)
+    getArrayValue(ptrptr: number)
     {
         // Where the array's actual data is
         var ptr = this.getValueI32(ptrptr);
@@ -214,12 +214,12 @@ export class WebassemblyServer implements IServer
         return arr;
     }
 
-    private MakeMethodKey(assembly: string, className: string, methodName: string): string
+    MakeMethodKey(assembly: string, className: string, methodName: string): string
     {
         return `[${assembly}] ${className}:${methodName}`;
     }
 
-    private getModelValue(valuePtr: number, type: ModelValueType): any
+    getModelValue(valuePtr: number, type: ModelValueType): any
     {
         valuePtr += 8;  // C# class data is 8 bytes off from address        
         switch (type)
@@ -249,13 +249,13 @@ export class WebassemblyServer implements IServer
         return undefined;
     }
 
-    private static readonly c_ServerAssembly: string = "Antimatter.Net.Webassembly";
-    private static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyServer";
-    private _cachedMethods: Map<string, any> = new Map<string, any>();
-    private _bindMethod: any;
-    private _executeICommandMethod: any;
-    private _updateSourceValueMethod: any;
-    private _unbindMethod: any;
+    static readonly c_ServerAssembly: string = "Antimatter.Net.Webassembly";
+    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyServer";
+    _cachedMethods: Map<string, any> = new Map<string, any>();
+    _bindMethod: any;
+    _executeICommandMethod: any;
+    _updateSourceValueMethod: any;
+    _unbindMethod: any;
 
     //#endregion
 }

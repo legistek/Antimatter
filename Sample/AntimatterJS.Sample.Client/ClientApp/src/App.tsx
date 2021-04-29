@@ -55,7 +55,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         this.RegisterDialogs();
     }
 
-    private RegisterDialogs()
+    RegisterDialogs()
     {
         DialogBox.RegisterTemplate(
             "EmployeeDialog",

@@ -3,7 +3,7 @@
         this._propertyName = propertyName;
     }
 
-    private _propertyName: string;
+    _propertyName: string;
     public get propertyName(): string {
         return this._propertyName;
     }

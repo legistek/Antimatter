@@ -35,12 +35,12 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         }
     };
 
-    protected /* override */ renderElement()
+    /* override */ renderElement()
     {
         return (<>{this.state.Text}</>);
     }
 
-    protected /* override */ getCSSStyles()
+    /* override */ getCSSStyles()
     {
         return Object.assign(
             super.getCSSStyles(),

@@ -61,7 +61,7 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
         };
     }
 
-    protected /* override */ getCSSStyles(): React.CSSProperties
+    /* override */ getCSSStyles(): React.CSSProperties
     {
         var styles = super.getCSSStyles();
         styles.display = "grid";
@@ -70,7 +70,7 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
         return styles;
     }
 
-    private ConstructGridRowTemplate(): string | undefined
+    ConstructGridRowTemplate(): string | undefined
     {
         if (!this.state.RowDefinitions || this.state.RowDefinitions.length === 0)
             return undefined;
@@ -93,7 +93,7 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
         return rowTemplate;
     }
 
-    private ConstructGridColumnTemplate(): string|undefined
+    ConstructGridColumnTemplate(): string|undefined
     {
         if (!this.props.ColumnDefinitions || this.props.ColumnDefinitions.length === 0)
             return undefined;

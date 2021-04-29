@@ -8,12 +8,12 @@ export interface ICSSClass
 
 export class Style<T>
 {    
-    private static _lastStyleID: number = 0;
-    private static _kebabRegex: RegExp = new RegExp(/[A-Z]/g);
-    private static _cssKeys: Map<string, string> = new Map<string, string>();
-    private _styleID: number;
-    private _applied: boolean = false;
-    private readonly _classes: ICSSClass[];
+    static _lastStyleID: number = 0;
+    static _kebabRegex: RegExp = new RegExp(/[A-Z]/g);
+    static _cssKeys: Map<string, string> = new Map<string, string>();
+    _styleID: number;
+    _applied: boolean = false;
+    readonly _classes: ICSSClass[];
 
     constructor(props: T, ...css: ICSSClass[])
     {
@@ -44,7 +44,7 @@ export class Style<T>
         return set;
     }
 
-    private CreateCSSClasses(): string
+    CreateCSSClasses(): string
     {
         let s: string[] = [];
         for (const cssClass of this._classes)
@@ -62,12 +62,12 @@ export class Style<T>
         return "".concat(...s);
     }
 
-    private GetClassName()
+    GetClassName()
     {
         return `ptnst${this._styleID}`;
     }
 
-    private GetCSSKey(style: string)
+    GetCSSKey(style: string)
     {
         let cssKey: string | undefined = Style._cssKeys.get(style);
         if (!cssKey)

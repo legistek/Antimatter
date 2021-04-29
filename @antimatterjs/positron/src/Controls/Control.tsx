@@ -33,7 +33,7 @@ export interface IControlState extends IFrameworkElementState, IControlCommon
 export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     extends FrameworkElement<P,S>
 {
-    protected /* override sealed */ renderElement(): JSX.Element | null
+    /* override sealed */ renderElement(): JSX.Element | null
     {
         if (!this.state.Template)
             return null;
