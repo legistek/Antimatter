@@ -42,19 +42,20 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             iconName: templatedParent.state.IconName
                         }
                     }
-                    styles={{
+                    deferredValidationTime={1000}
+                    styles={{                        
                         field: {
                             fontFamily: templatedParent.state.FontFamily,
                             fontSize: templatedParent.state.FontSize,
                             fontWeight: templatedParent.state.FontWeight,
-                            padding: 0,
-                            margin: 0
+                            margin: 0,
+                            padding: templatedParent.state.Padding || "5px"
                         },
                         fieldGroup: {
                             height: "auto",
-                            padding: templatedParent.state.Padding || "5px"
+                            
                         }
-                    }}
+                    }}                    
                     autoAdjustHeight={true}
                     label={templatedParent.state.Label}
                     value={templatedParent.state.Text || ''}
