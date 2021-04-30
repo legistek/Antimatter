@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
 import { INotifyPropertyChanged } from '../INotifyPropertyChanged';
 import { PropertyChangedEventArgs } from '../PropertyChangedEventArgs';
@@ -29,12 +29,21 @@ export interface IBoundComponent extends Component
 
 export class ReactClient implements IClient
 {
-    NavigateTo(route: string)
+    _root?: Component;
+
+    RegisterRoot(root: any)
     {
-        //window.history.pushState(null, "", route);
-        const history = createHistory();
-        // Use push, replace, and go to navigate around.
-        history.push(route);
+        this._root = root as Component;
+    }
+
+    NavigateTo(route: string)
+    {        
+        (this._root?.props as any)?.history?.push(route);
+
+        ////window.history.pushState(null, "", route);
+        //const history = createHistory();
+        //// Use push, replace, and go to navigate around.
+        //history.push(route);
     }
 
     BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void

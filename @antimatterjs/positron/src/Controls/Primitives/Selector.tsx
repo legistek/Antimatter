@@ -103,8 +103,8 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         if (!this.CanSelect)
             return;
 
-        var itemIndex = this.state.ItemsSource.findIndex(it => it == item);
-        this._lastClickedOrSelected = itemIndex;
+        var itemIndex = this.state.ItemsSource?.findIndex(it => it == item) || -1;
+        this._lastClickedOrSelected = itemIndex || -1;
 
         // Screwy-looking logic to try to replicate Windows Explorer behavior.
         if (this.SelectionMode === SelectionMode.Single)
@@ -131,7 +131,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             var first = this.state.SelectedItems.length > 0 ? this.state.SelectedItems[0] : null;
             if (first)
             {
-                currentSelStart = this.state.ItemsSource.findIndex(it => it == first);
+                currentSelStart = this.state.ItemsSource?.findIndex(it => it == first) || -1;
                 if (currentSelStart == -1)
                     currentSelStart = 0;
             }
@@ -142,7 +142,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
                     ? this.state.SelectedItems[this.state.SelectedItems.length - 1]
                     : null;
                 if (last)
-                    currentSelEnd = this.state.ItemsSource.findIndex(it => it == last);
+                    currentSelEnd = this.state.ItemsSource?.findIndex(it => it == last) || -1;
                 if (currentSelEnd == -1)
                     currentSelEnd = 0;
             }
@@ -169,7 +169,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
             this.SetValue(
                 nameof(this.state.SelectedItems),
-                this.state.ItemsSource.slice(newSelStart, newSelEnd + 1));                        
+                this.state.ItemsSource?.slice(newSelStart, newSelEnd + 1));
         }
         else
         {
@@ -201,13 +201,18 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
     SetSingleItemSelection(index: number)
     {
+        var item = this.state.ItemsSource
+            ? this.state.ItemsSource[index]
+            : undefined;
+        if (!item)
+            return;
         if (this.SelectionMode !== SelectionMode.Single)
         {
-            this.SetValue(nameof(this.state.SelectedItems), [this.state.ItemsSource[index]]);                        
+            this.SetValue(nameof(this.state.SelectedItems), [item]);                        
         }
         else
         {
-            this.SetValue(nameof(this.state.SelectedItem), this.state.ItemsSource[index]);            
+            this.SetValue(nameof(this.state.SelectedItem), item);
         }
         this._lastClickedOrSelected = index;
     }

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Binding, ModelObjectReference } from '@antimatterjs/react';
+import { Route, withRouter } from 'react-router-dom';
+import { Antimatter, Binding, ModelObjectReference } from '@antimatterjs/react';
 
 import { IPanelProps, IPanelState, Panel } from './Panel';
 import { HorizontalAlignment, VerticalAlignment } from '../Enums';
@@ -16,13 +17,13 @@ export interface IWindowState extends IPanelState
     Dialogs?: ModelObjectReference[];
 }
 
+
 export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> extends Panel<IWindowProps, IWindowState>
 {
-
-
     constructor(props)
     {
         super(props);
+        Antimatter._client.RegisterRoot(this);
         (this.state as any)["HorizontalAlignment"] = HorizontalAlignment.Stretch;
         (this.state as any)["VerticalAlignment"] = VerticalAlignment.Stretch;
     }

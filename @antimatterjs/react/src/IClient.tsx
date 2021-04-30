@@ -3,6 +3,7 @@ import { BindingParameters } from "./BindingParameters";
 
 export interface IClient
 {        
+    RegisterRoot(root: any);
     InitializeComponent(target: any);
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean);
     BindState(target: any, args?: BindingParameters, stateVar?: string): any;

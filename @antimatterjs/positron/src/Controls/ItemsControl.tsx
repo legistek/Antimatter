@@ -10,7 +10,7 @@ import { Style } from '../Style';
 
 export interface IItemsControlProps extends IControlProps
 {
-    ItemsSource: any[] | Binding,
+    ItemsSource?: any[] | Binding,
     ItemTemplate?: (item?: any) => JSX.Element,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
@@ -18,7 +18,7 @@ export interface IItemsControlProps extends IControlProps
 
 export interface IItemsControlState extends IControlState
 {
-    ItemsSource: any[],
+    ItemsSource?: any[],
     ItemTemplate?: (item?: any) => JSX.Element,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
@@ -28,8 +28,8 @@ export interface IItemsControlState extends IControlState
  * does not render its own items directly but it and its sub-classes
  * handle the control logic. Items are always rendered inside an items panel.  **/
 export class ItemsControl<
-    P extends IItemsControlProps = { ItemsSource: [] },
-    S extends IItemsControlState = { ItemsSource: [] }>
+    P extends IItemsControlProps = {},
+    S extends IItemsControlState = {}>
     extends Control<P, S>
 {
     public ItemsPanelInstance: Panel | undefined | null;
@@ -71,6 +71,12 @@ export class ItemsControl<
         if (property === nameof(this.state.ItemsSource))
             this.ItemsPanelInstance?.InvalidateRender();
         super.OnPropertyChanged(property, value);
+    }
+
+    /* override */ OnInvalidateRender(): void
+    {
+        this.ItemsPanelInstance?.InvalidateRender();
+        super.OnInvalidateRender();
     }
 
     /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement

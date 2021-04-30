@@ -12,7 +12,8 @@
     "module": "ESNext",
     "jsx": "react",
     "listFiles": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "exclude": [

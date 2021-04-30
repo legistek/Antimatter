@@ -37,5 +37,5 @@ export class StackPanel<P extends IStackPanelProps = {}, S extends IStackPanelSt
         {
             return (<>{ this.props.children }</>);
         }
-    }
+    }    
 }
