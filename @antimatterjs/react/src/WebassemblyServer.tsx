@@ -120,6 +120,11 @@ export class WebassemblyServer implements IServer
         BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
     }
 
+    public NavigateTo(route: string)
+    {
+        Antimatter._client.NavigateTo(route);
+    }
+
     //#endregion
 
     //#region Private Members

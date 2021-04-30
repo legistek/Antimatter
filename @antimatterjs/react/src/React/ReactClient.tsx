@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { INotifyPropertyChanged } from '../INotifyPropertyChanged';
 import { PropertyChangedEventArgs } from '../PropertyChangedEventArgs';
@@ -10,6 +11,8 @@ import { BindingMode, BindingParameters } from '../BindingParameters';
 import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue, ModelValueType } from '../ModelValue';
+
+import createHistory from "history/createBrowserHistory"
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -26,6 +29,14 @@ export interface IBoundComponent extends Component
 
 export class ReactClient implements IClient
 {
+    NavigateTo(route: string)
+    {
+        //window.history.pushState(null, "", route);
+        const history = createHistory();
+        // Use push, replace, and go to navigate around.
+        history.push(route);
+    }
+
     BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void
     {
         if (!stateVar)

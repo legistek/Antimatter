@@ -39,7 +39,16 @@ export class TabControl<P extends ITabControlProps = {Tabs: []}, S extends ITabC
             (
                 <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1,true)]}>
                     <Nav groups={templatedParent._groups}
-                        styles={{ root: {width: "fit-content"}}}
+                        styles={
+                            {
+                                root: {
+                                    width: "fit-content",
+                                    margin: "0px 0px 0px 10px"                                },
+                                link: {
+                                    padding: "0px 45px 0px 10px",                                    
+                                }
+                            }
+                        }
                         linkAs={(props) =>
                         (
                             <Link className={props.className} style={{ color: 'inherit', boxSizing: 'border-box' }} to={props.href}>
@@ -55,6 +64,7 @@ export class TabControl<P extends ITabControlProps = {Tabs: []}, S extends ITabC
                             <Route path={tab.Route} component={()=>
                             (
                                 <div style={{
+                                    padding: "10px",
                                     animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
                                 }}>
                                     {tab.Content}                                        
@@ -101,7 +111,6 @@ export class TabControl<P extends ITabControlProps = {Tabs: []}, S extends ITabC
         if (typeof (item.IsVisible) == 'boolean')
             return item.IsVisible;
 
-        // Otherwise bind
         return this.BindState(item.IsVisible as BindingParameters, item.Key + "_visible");
     }
 

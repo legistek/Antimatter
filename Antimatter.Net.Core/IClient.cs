@@ -22,6 +22,11 @@ namespace Antimatter.Net
         void UpdateBinding(string clientID, int bxIndex, ModelValue value);
 
         /// <summary>
+        /// Navigate to an application route (e.g. URL).
+        /// </summary>
+        void NavigateTo(string clientID, string route);
+
+        /// <summary>
         /// Marshals a model object to an object directly consumable by
         /// a UI client without having to bind to primitive properties. 
         /// ** Use sparingly. **

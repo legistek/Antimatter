@@ -72,6 +72,11 @@ namespace Antimatter.Net.SignalR
             }
         }
 
+        void IClient.NavigateTo(string clientID, string route)
+        {
+            Clients.Client(clientID)?.SendAsync("NavigateTo", route);
+        }
+
         void IClient.UpdateBinding(string clientID, int bxIndex, ModelValue value)
         {
             var json = JsonConvert.SerializeObject(value);

@@ -21,6 +21,13 @@ namespace Antimatter.Net.Webassembly
                 null);
         }
 
+        public void NavigateTo(string clientid, string route)
+        {
+            JS.InvokeJS(
+                "window.AntimatterServer.NavigateTo",
+                $"[\"{route}\"]");
+        }
+
         public ModelValue MarshalObject(object obj)
         {
             try

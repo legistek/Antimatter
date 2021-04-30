@@ -87,6 +87,16 @@ namespace Antimatter.Net
         {
             _sessionContextObject = sessionContextObject;
         }
+
+        /// <summary>
+        /// Invoked by model servers to set the application route for 
+        /// browser or browser-like applications. This can but need not
+        /// be a URL. 
+        /// </summary>        
+        public void NavigateTo(string route)
+        {
+            Reactor.Client.NavigateTo(this.ClientID, route);
+        }
                 
         public static object SessionContext => _currentSessionContext.Value;
 
