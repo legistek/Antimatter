@@ -14,7 +14,7 @@ namespace AntimatterJS.Sample.AppModel
             this.Employee = employee;
         }
 
-        public override string Template => "EmployeeDialog";
+        public override string DialogTemplate => "EmployeeDialog";
 
         public override string Title => "Edit Employee";
 

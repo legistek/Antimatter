@@ -9,7 +9,7 @@ namespace Antimatter.Net.Model
 {
     public abstract class DialogViewModel : ObservableObject
     {
-        public abstract string Template { get; }
+        public abstract string DialogTemplate { get; }
 
         public virtual string Title { get; }
 
