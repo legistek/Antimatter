@@ -112,7 +112,12 @@ namespace Antimatter.Net
         /// properties.
         /// </summary>
         [AMXClientInvocable]
-        public void Bind(int handle, string path, int bxIndex, bool notifyCollectionChanged)
+        public void Bind(
+            int handle, 
+            string path, 
+            int bxIndex, 
+            bool notifyCollectionChanged,
+            bool marshalValue)
         {
             ObjectReference objRef;
             if (!_dict.TryGetValue(handle, out objRef))
@@ -122,7 +127,8 @@ namespace Antimatter.Net
             {
                 BXIndex = bxIndex,                
                 NotifyCollectionChanged = notifyCollectionChanged,
-                SourceReference = objRef
+                SourceReference = objRef,
+                MarshalValue = marshalValue
             };
 
             this.Bindings[bxIndex] = bx;
@@ -172,7 +178,7 @@ namespace Antimatter.Net
                 return objRef.Handle;
             return -1;
         }
-
+        
         #endregion
 
         #region Internals
@@ -218,7 +224,7 @@ namespace Antimatter.Net
             return dnor;
         }
 
-        internal ModelValue GetModelValue(object obj)
+        internal ModelValue GetModelValue(object obj, bool marshalled = false)
         {
             if (obj == null)
                 return new ModelValue
@@ -252,8 +258,11 @@ namespace Antimatter.Net
                 {
                     return converter.ConvertTo(obj);
                 }
-                else
+                else if (marshalled)
                 {
+                    return Reactor.Client.MarshalObject(obj);
+                }    
+                else {
                     var handle = GetOrCreateReference(obj).Handle;
                     return new ModelValue
                     {

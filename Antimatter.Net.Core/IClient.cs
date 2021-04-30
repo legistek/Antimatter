@@ -20,5 +20,18 @@ namespace Antimatter.Net
         /// model server scenarios. Otherwise <c>null</c>.
         /// </param>
         void UpdateBinding(string clientID, int bxIndex, ModelValue value);
+
+        /// <summary>
+        /// Marshals a model object to an object directly consumable by
+        /// a UI client without having to bind to primitive properties. 
+        /// ** Use sparingly. **
+        /// </summary>
+        /// <param name="obj">The object to marshal.</param>
+        /// <returns>A <see cref="ModelValue"/>. The <see cref="ModelValue.Type"/>
+        /// member must be <see cref="ModelValueType.MarshalledObject"/>. The
+        /// rest is up to the implementation. For example, a Web/Javascript client
+        /// would marshal to a JSON string.
+        /// </returns>
+        ModelValue MarshalObject(object obj);
     }
 }

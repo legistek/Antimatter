@@ -115,6 +115,7 @@ export enum ModelValueType
     Guid = 9,
     DateTime = 10,
     TimeSpan = 11,
+    MarshalledObject = 12,
 
 
     ValidationError = 2147483647

@@ -74,7 +74,13 @@ export class WebassemblyServer implements IServer
                     WebassemblyServer.c_ServerType,
                     "Bind"));
         }
-        this._bindMethod(ref.Handle, path, expression.Index, expression.Parameters?.NotifyCollectionChanged || false);
+        this._bindMethod(
+            ref.Handle,
+            path,
+            expression.Index,
+            expression.Parameters?.NotifyCollectionChanged || false,
+            expression.Parameters?.MarshalValue || false
+        );
     }
 
     Unbind(bx: BindingExpression)
@@ -228,7 +234,10 @@ export class WebassemblyServer implements IServer
                 return undefined;
             case ModelValueType.String:
             case ModelValueType.ValidationError:
-                return this.getStringValue(valuePtr + 8);            
+                return this.getStringValue(valuePtr + 8);
+            case ModelValueType.MarshalledObject:
+                let s: string = this.getStringValue(valuePtr + 8);
+                return JSON.parse(s);
             case ModelValueType.ObjectHandle:
                 var index = this.getValueI32(valuePtr + 16);
                 var key = this.getStringValue(valuePtr + 8);

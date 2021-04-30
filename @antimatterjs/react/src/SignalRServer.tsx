@@ -39,7 +39,8 @@ export class SignalRServer implements IServer
             netRef.Handle,
             path,
             expression.Index,
-            expression.Parameters?.NotifyCollectionChanged || false);
+            expression.Parameters?.NotifyCollectionChanged || false,
+            expression.Parameters?.MarshalValue || false);
     }
 
     public Unbind(bx: BindingExpression)

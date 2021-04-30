@@ -33,9 +33,9 @@ namespace Antimatter.Net.SignalR
         }
 
         [AMXClientInvocable]
-        public void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
+        public void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged, bool marshalledObject)
         {
-            GetOrCreateReactor().Bind(netRef, path, bxIndex, notifyCollectionChanged);
+            GetOrCreateReactor().Bind(netRef, path, bxIndex, notifyCollectionChanged, marshalledObject);
         }
 
         [AMXClientInvocable]
@@ -54,6 +54,22 @@ namespace Antimatter.Net.SignalR
         public void UpdateBindingSource(int bxIndex, ModelValue value)
         {
             GetOrCreateReactor().UpdateBindingSource(bxIndex, value);
+        }
+
+        public ModelValue MarshalObject(object obj)
+        {
+            try
+            {
+                return new ModelValue
+                {
+                    Type = ModelValueType.MarshalledObject,
+                    StringValue = JsonConvert.SerializeObject(obj)
+                };
+            }
+            catch
+            {
+                return ModelValue.Null;
+            }
         }
 
         void IClient.UpdateBinding(string clientID, int bxIndex, ModelValue value)

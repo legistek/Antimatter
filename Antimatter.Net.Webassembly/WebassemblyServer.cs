@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -20,9 +20,9 @@ namespace Antimatter.Net.Webassembly
         public static readonly Reactor Reactor = new Reactor(null);
 
         [AMXClientInvocable]
-        public static void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged)
+        public static void Bind(int netRef, string path, int bxIndex, bool notifyCollectionChanged, bool marshalValue)
         {
-            Reactor.Bind(netRef, path, bxIndex, notifyCollectionChanged);            
+            Reactor.Bind(netRef, path, bxIndex, notifyCollectionChanged, marshalValue);
         }
 
         [AMXClientInvocable]
@@ -34,7 +34,7 @@ namespace Antimatter.Net.Webassembly
         [AMXClientInvocable]
         public static void UpdateBindingSource(int bxIndex, string valueJson)
         {
-            var value = JsonSerializer.Deserialize<ModelValue>(valueJson);
+            var value = JsonConvert.DeserializeObject<ModelValue>(valueJson);
             Reactor.UpdateBindingSource(bxIndex, value);
         }
 
@@ -47,7 +47,7 @@ namespace Antimatter.Net.Webassembly
         [AMXClientInvocable]
         public static void ExecuteICommand(int netRef, string commandParameterJson)
         {
-            var value = JsonSerializer.Deserialize<ModelValue>(commandParameterJson);
+            var value = JsonConvert.DeserializeObject<ModelValue>(commandParameterJson);
             Reactor.ExecuteICommand(netRef, value);
         }
     }

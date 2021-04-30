@@ -84,7 +84,8 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                 (
                     <CommandBarButton
                         style={{
-                            padding: templatedParent.state.Padding
+                            padding: templatedParent.state.Padding,
+                            backgroundColor: 'transparent'
                         }}
                         onClick={(e) => templatedParent.OnClick()}
                         iconProps={{

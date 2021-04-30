@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event } from '@antimatterjs/react';
+import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference } from '@antimatterjs/react';
 
 import { HorizontalAlignment, VerticalAlignment } from './Enums';
 
@@ -34,7 +34,8 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
     IsVisible?: boolean,
-    ToolTip?: string | JSX.Element
+    ToolTip?: string | JSX.Element,
+    DataContext?: ModelObjectReference
 }
 
 export class FrameworkElement<

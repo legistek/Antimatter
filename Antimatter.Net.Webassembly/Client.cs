@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using Antimatter.Net.Internal;
 
 namespace Antimatter.Net.Webassembly
@@ -17,6 +19,22 @@ namespace Antimatter.Net.Webassembly
                 bxIndex,
                 value,
                 null);
+        }
+
+        public ModelValue MarshalObject(object obj)
+        {
+            try
+            {
+                return new ModelValue
+                {
+                    Type = ModelValueType.MarshalledObject,
+                    StringValue = JsonConvert.SerializeObject(obj)
+                };
+            }
+            catch (Exception ex)
+            {
+                return ModelValue.Null;
+            }
         }
     }
 }

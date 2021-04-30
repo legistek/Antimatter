@@ -90,12 +90,16 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             <Separator />
 
                             {/*Body*/}
+                            
+                            <div style={{ margin: "10px" }}>
                             {
                                 DialogBox
                                     ._templates
                                     .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
                                     ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
                             }
+                            </div>
+                            
 
                             {/*Separator*/}
                             <Separator />

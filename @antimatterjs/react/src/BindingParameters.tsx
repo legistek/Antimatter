@@ -14,6 +14,7 @@ export class BindingParameters
     ValidatesOnDataErrors?: boolean;
     RelativeSource?: string | any;
     RelativeSourceMode?: RelativeSourceMode;
+    MarshalValue?: boolean;
 
     public static Equals(p1?: BindingParameters, p2?: BindingParameters)
     {
@@ -26,7 +27,8 @@ export class BindingParameters
             p1.RelativeSourceMode == p2.RelativeSourceMode &&
             ModelObjectReference.Equals(p1.Source, p2.Source) &&
             p1.AffectsRender == p2.AffectsRender &&
-            p1.NotifyCollectionChanged == p2.NotifyCollectionChanged;
+            p1.NotifyCollectionChanged == p2.NotifyCollectionChanged &&
+            p1.MarshalValue == p2.MarshalValue;
     }
 }
 

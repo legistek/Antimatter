@@ -21,6 +21,8 @@ namespace Antimatter.Net.Internal
 
         public int BXIndex { get; set; }
 
+        public bool MarshalValue { get; set; }
+
         public bool NotifyCollectionChanged { get; set; }
 
         public ObjectReference SourceReference { get; set; }
@@ -198,7 +200,7 @@ namespace Antimatter.Net.Internal
                 incc.CollectionChanged += OnSourceCollectionChanged;
 
             // TODO - What if value is actually unchanged (but collections?)
-            var dnv = _reactor.GetModelValue(value);   // do this first
+            var dnv = _reactor.GetModelValue(value, this.MarshalValue);   // do this first
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 
