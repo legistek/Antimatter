@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 
 import { HorizontalAlignment, VerticalAlignment } from './Enums';
 
@@ -28,14 +28,16 @@ interface IFrameworkElementCommon
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {    
     IsVisible?: boolean | Binding,
-    ToolTip?: string | JSX.Element | Binding
+    ToolTip?: string | JSX.Element | Binding,
+    LoadedCommand?: ModelObjectReference | Binding,    
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
     IsVisible?: boolean,
     ToolTip?: string | JSX.Element,
-    DataContext?: ModelObjectReference
+    DataContext?: ModelObjectReference,
+    LoadedCommand?: ModelObjectReference,    
 }
 
 export class FrameworkElement<
@@ -44,20 +46,25 @@ export class FrameworkElement<
     extends React.Component<P, S>
     implements INotifyPropertyChanged
 {
+    _calledLoaded: boolean = false;
+
     constructor(props)
     {
         super(props);        
         Antimatter.InitializeComponent(this);
         this.ApplyStyle();
-    }
 
+        if (this.state.LoadedCommand)
+            this.callLoadedCommand();        
+    }    
+    
     render()
     {
         if (this.state.IsVisible === false)
             return null;
 
         return (
-            <div
+            <div  
                 style={this.getCSSStyles()}
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
@@ -68,7 +75,7 @@ export class FrameworkElement<
                 onMouseDown={this.state.OnPointerDown
                     ? (event) => this.state.OnPointerDown?.call(this, event.nativeEvent)
                     : undefined}
-                className={(this.state.Style?.Class() || "") + " " + this.constructClasses()}>
+                className={this.constructor.name + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {
                     this.state.ToolTip
                         ? (<TooltipHost content={this.state.ToolTip}>
@@ -96,6 +103,10 @@ export class FrameworkElement<
     /* virtual */ OnInvalidateRender()
     {
     }
+
+    /* virtual */ OnLoaded()
+    {
+    }
     
     SetValue(property: string, newValue: any): void
     {
@@ -121,11 +132,26 @@ export class FrameworkElement<
 
     /* virtual */ OnPropertyChanged(property: string, value: any)
     {
+        if (!this._calledLoaded && value && property === nameof(this.state.LoadedCommand))
+            this.callLoadedCommand();       
+    }
+
+    /* virtual */ GetLoadedCommandParameter(): any
+    {
+    }
+
+    async callLoadedCommand()
+    {
+        this._calledLoaded = true;
+        await Antimatter.Server.ExecuteICommand(
+            this.state.LoadedCommand as ModelObjectReference,
+            ModelValue.Get(this.GetLoadedCommandParameter()));        
+        this.OnLoaded();
     }
 
     constructClasses(): string
     {
-        let cls: string = 'amx-ptn-fe ';
+        let cls: string = ' amx-ptn-fe ';
 
         switch (this.state.HorizontalAlignment)
         {

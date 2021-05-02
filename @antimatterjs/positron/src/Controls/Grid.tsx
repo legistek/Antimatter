@@ -82,7 +82,7 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
             for (const row of this.state.RowDefinitions as Array<IRowDefinition>)
             {
                 if (row.Height.GridUnitType === GridUnitType.Auto)
-                    rowTemplate += "auto ";
+                    rowTemplate += "max-content ";
                 else if (row.Height.GridUnitType === GridUnitType.Pixel)
                     rowTemplate += `${row.Height.Value}px `;
                 else

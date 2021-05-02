@@ -161,6 +161,7 @@ class TabPanel extends FrameworkElement<ITabPanelProps, ITabPanelState>
     {
         return (
             <div
+                className="amx-ptn-ha-stretch amx-ptn-va-stretch"
                 key={this.state.TabItem?.Key}
                 style={{
                     padding: "10px",

@@ -19,3 +19,4 @@ export * from './src/Controls/DialogBox';
 export * from './src/Controls/CommandButton';
 export * from './src/Controls/CommandBar';
 export * from './src/Controls/TabControl';
+export * from './src/Controls/ProgressRing';

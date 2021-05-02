@@ -39,6 +39,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
             <>
                 {super.renderElement()}
                 <ItemsControl ItemsSource={this.state.Dialogs || []}
+                    VerticalAlignment={VerticalAlignment.Bottom}
                     ItemTemplate={(item) =>
                     (
                         <DialogBox ViewModel={item}/>                        

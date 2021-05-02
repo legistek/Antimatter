@@ -140,7 +140,6 @@ export class ReactClient implements IClient
             target.state[targetProperty] = value;
         }      
 
-        // Shouldn't this be after change?
         if (target.OnPropertyChanged)
             target.OnPropertyChanged(targetProperty, value);
 
