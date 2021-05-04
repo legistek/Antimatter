@@ -48,25 +48,27 @@ export class ItemsControl<
             ? (item as ModelObjectReference).Handle.toString()
             : item?.toString();
 
-        return (
-            <DataContext Value={item}>
-                {React.createElement(
-                    this.GetContainerForItemOverride(),
-                    itemProps,
-                    templ(item))}
-            </DataContext>);        
+        return React.createElement(
+            this.GetContainerForItemOverride(),
+            itemProps,
+            templ(item));       
     }
 
-    public /* override */ renderElement(): JSX.Element
+    public /* override */ renderElement(): JSX.Element | null
     {
-        return React.createElement(
-            (this.state.ItemsPanel || StackPanel),
-            {
-                BorderThickness: this.state.BorderThickness,
-                BorderBrush: this.state.BorderBrush,
-                ItemsParent: this,
-                VerticalScrollBarVisibility: ScrollBarVisibility.Auto
-            } as IPanelProps);
+        if (this.state.Template)
+            return super.renderElement();
+        else
+        {
+            return React.createElement(
+                (this.state.ItemsPanel || StackPanel),
+                {
+                    BorderThickness: this.state.BorderThickness,
+                    BorderBrush: this.state.BorderBrush,
+                    ItemsParent: this,
+                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+                } as IPanelProps);
+        }
     }
 
     /* override */ OnPropertyChanged(property: string, value: any)

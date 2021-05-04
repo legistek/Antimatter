@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
 
@@ -39,6 +40,18 @@ namespace AntimatterJS.Sample.AppModel
             this.LastName = lastName;
             this.Age = age;
         }
+
+        #region ObservableCollection Underlings property
+        private ObservableCollection<Employee> _Underlings;
+        public ObservableCollection<Employee> Underlings
+        {
+            get
+            {
+                return _Underlings ?? (_Underlings = new ObservableCollection<Employee>());
+            }
+        }
+        #endregion
+
 
         #region double BonusAmount property
         private double _BonusAmount = 10000.0;
@@ -186,7 +199,7 @@ namespace AntimatterJS.Sample.AppModel
                     EditCommand,
                     IncreaseAgeCommand,
                     DecreaseAgeCommand,
-                    FireCommand,                    
+                    FireCommand,
                 });
             }
         }
@@ -289,7 +302,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _DoSomethingElseCommand ?? (_DoSomethingElseCommand = new Command(
                     (arg) =>
                     {
-                        
+
                     })
                 {
                     Name = "Do Something Else",
@@ -300,6 +313,27 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+
+        #region bool IsExpanded property
+        private bool _IsExpanded;
+        public bool IsExpanded
+        {
+            get
+            {
+                return _IsExpanded = true;
+            }
+            set
+            {
+                if (_IsExpanded != value)
+                {
+                    _IsExpanded = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
 
         public override string ToString()
         {

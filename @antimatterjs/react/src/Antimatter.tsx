@@ -33,7 +33,7 @@ export class Antimatter
     }
 
     public static BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void
-    {
+    {        
         return Antimatter._client.BindCommand(target, args, stateVar);
     }
 

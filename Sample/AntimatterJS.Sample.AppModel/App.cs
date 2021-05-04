@@ -35,13 +35,23 @@ namespace AntimatterJS.Sample.AppModel
                 Age = 50
             };
             this.Company.Employees.Add(this.Company.CEO);
-            for (int i = 0; i < 1; i++)
-            {
-                this.Company.Employees.Add(new Employee(this.Company, "Mickey", "Mouse", 100));
-                this.Company.Employees.Add(new Employee(this.Company, "Santa", "Clause", 500));
-                this.Company.Employees.Add(new Employee(this.Company, "Yoda", "Parseghian", 900));
-            }
+            AddUnderlings(this.Company.CEO, 6);
             this.Company.SelectedEmployee = this.Company.Employees.First();
+        }
+
+        private void AddUnderlings(Employee e, int levels)
+        {
+            if (levels == 0)
+                return;
+
+            e.Underlings.Add(new Employee(this.Company, "Mickey", $"Mouse {levels}", 100));
+            e.Underlings.Add(new Employee(this.Company, "Santa", $"Clause {levels}", 500));
+            e.Underlings.Add(new Employee(this.Company, "Yoda", $"Parseghian {levels}", 900));
+            foreach (var underling in e.Underlings)
+            {
+                this.Company.Employees.Add(underling);
+                AddUnderlings(underling, levels - 1);
+            }
         }
     }
 }

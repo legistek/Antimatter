@@ -37,14 +37,16 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
     {
         return (
             <>
-                {super.renderElement()}
-                <ItemsControl ItemsSource={this.state.Dialogs || []}
+                <ItemsControl
+                    ItemsSource={this.state.Dialogs || []}
                     VerticalAlignment={VerticalAlignment.Bottom}
+                    Overlaps={true}
                     ItemTemplate={(item) =>
                     (
                         <DialogBox ViewModel={item}/>                        
                     )}>
                 </ItemsControl>
+                {super.renderElement()}
             </>
         );
     }

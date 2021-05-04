@@ -35,6 +35,8 @@ namespace Antimatter.Net.Model
 
         public bool IsDefault { get; set; }
 
+        public bool Visibility { get; set; } = true;
+
         public string ToolTip { get; set; }
 
         public ushort Icon { get; set; }        

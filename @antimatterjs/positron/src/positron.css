@@ -91,7 +91,7 @@ div {
 
 .amx-ptn-va-stretch {
     max-height: 100%;
-    display: grid;
+    /*display: grid;*/
     /*height: 100%;*/
     overflow: hidden;
     flex-direction: column;
