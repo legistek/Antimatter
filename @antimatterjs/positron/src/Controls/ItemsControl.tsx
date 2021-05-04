@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
 
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
@@ -48,10 +48,13 @@ export class ItemsControl<
             ? (item as ModelObjectReference).Handle.toString()
             : item?.toString();
 
-        return React.createElement(
-            this.GetContainerForItemOverride(),
-            itemProps,
-            templ(item));
+        return (
+            <DataContext Value={item}>
+                {React.createElement(
+                    this.GetContainerForItemOverride(),
+                    itemProps,
+                    templ(item))}
+            </DataContext>);        
     }
 
     public /* override */ renderElement(): JSX.Element
