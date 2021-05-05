@@ -7,7 +7,7 @@ import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
-import { Icon } from '@fluentui/react';
+import { Icon, MotionAnimations } from '@fluentui/react';
 
 export interface ITreeViewCommon
 {
@@ -94,8 +94,7 @@ class TreeViewItem<
         {
             Template: (templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
-                <Grid
-                    Margin="0px 0px 0px 15px"
+                <Grid                    
                     ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
                     RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition()]}>
 
@@ -116,6 +115,7 @@ class TreeViewItem<
 
                     {/* Children */}
                     <StackPanel
+                        Margin="0px 0px 0px 15px"
                         ref={r => templatedParent.ItemsPanelInstance = r}
                         ItemsParent={templatedParent}
                         Grid={{ Row: 1, Column: 1 }}
@@ -124,6 +124,13 @@ class TreeViewItem<
                         HorizontalScrollBarVisibility={ScrollBarVisibility.Hidden} />
                 </Grid>
             )
+        },
+        {
+            Selector: "@",
+            Rules:
+            {
+                animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
+            }
         },
         {
             Selector: "@ .expander",
