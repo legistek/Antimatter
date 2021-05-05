@@ -3,6 +3,7 @@ export * from './src/FrameworkElement';
 export * from './src/Style';
 export * from './src/DialogTemplate';
 export * from './src/Controls/TextBlock';
+export * from './src/Controls/Glyph';
 export * from './src/Controls/Grid';
 export * from './src/Controls/Window';
 export * from './src/Controls/Panel';

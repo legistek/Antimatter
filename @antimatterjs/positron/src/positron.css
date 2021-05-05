@@ -135,7 +135,7 @@ div {
 
     .amx-ptn-panel > .amx-ptn-fe:first-child {
         margin-left: 0px;
-        margin-top: 0px;
+        /*margin-top: 0px;*/
     }
 
     .amx-ptn-panel > .amx-ptn-fe:last-child {
@@ -172,7 +172,7 @@ div {
 
         .amx-ptn-stack-panel.horizontal > .amx-ptn-fe {
             width: auto;
-            margin-bottom: 0px;
+            /*margin-bottom: 0px;*/
         }
 
 /*.amx-ptn-stack-panel.horizontal > * {
