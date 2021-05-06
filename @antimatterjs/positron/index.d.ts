@@ -24,3 +24,4 @@ export * from './src/Controls/CommandBar';
 export * from './src/Controls/TabControl';
 export * from './src/Controls/ProgressRing';
 export * from './src/Controls/TreeView';
+export * from './src/Controls/LoadingShimmer';

@@ -22,7 +22,8 @@ interface IFrameworkElementCommon
         Row?: number,
         RowSpan?: number
     },
-    Overlaps?: boolean
+    Overlaps?: boolean,
+    LoadingTemplate?: () => JSX.Element
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -30,6 +31,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     IsVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
+    IsLoading?: boolean | Binding
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -38,6 +40,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
+    IsLoading?: boolean,
 }
 
 export class FrameworkElement<
@@ -77,11 +80,13 @@ export class FrameworkElement<
                     : undefined}
                 className={this.constructor.name + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {
-                    this.state.ToolTip
-                        ? (<TooltipHost content={this.state.ToolTip}>
-                                {this.renderElement()}
-                            </TooltipHost>)
-                        : this.renderElement()
+                    this.state.IsLoading && this.state.LoadingTemplate
+                        ? this.state.LoadingTemplate()
+                        : (this.state.ToolTip
+                            ? (<TooltipHost content={this.state.ToolTip}>
+                                    { this.renderElement()}
+                                </TooltipHost>)
+                            : this.renderElement())
                 }
             </div>
         );
