@@ -10,6 +10,7 @@ export interface IPanelProps extends IFrameworkElementProps
     Background?: string|Binding,
     BorderBrush?: string|Binding,
     BorderThickness?: string | Binding,
+    Foreground?: string | Binding,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControl<IItemsControlProps, IItemsControlState>,
@@ -22,6 +23,7 @@ export interface IPanelState extends IFrameworkElementState
     Background?: string,
     BorderBrush?: string,
     BorderThickness?: string,
+    Foreground?: string,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControl<IItemsControlProps, IItemsControlState>,
@@ -41,6 +43,7 @@ export abstract class Panel<P extends IPanelProps = {}, S extends IPanelState = 
     /* override */ getCSSStyles() : React.CSSProperties
     {
         var styles = {
+            color: this.state.Foreground,
             background: this.state.Background,
             borderColor: this.state.BorderBrush,
             borderWidth: this.state.BorderThickness,
