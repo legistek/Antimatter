@@ -61,10 +61,14 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
         };
     }
 
+    /* override */ constructClasses(): string
+    {
+        return super.constructClasses() + " amx-ptn-grid";
+    }
+
     /* override */ getCSSStyles(): React.CSSProperties
     {
-        var styles = super.getCSSStyles();
-        styles.display = "grid";
+        var styles = super.getCSSStyles();     
         styles.gridTemplateColumns = this.ConstructGridColumnTemplate();
         styles.gridTemplateRows = this.ConstructGridRowTemplate();
         return styles;

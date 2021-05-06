@@ -21,6 +21,10 @@ body {
     bottom: 0px;
 }
 
+.amx-ptn-grid {
+    display: grid;
+}
+
 /*
 .amx-ptn-listbox .cell-94 {
     padding: 0px;
@@ -39,7 +43,7 @@ div {
     border-style: solid;
     border-width: 0px;
     box-shadow: unset;
-    box-sizing: content-box;
+    box-sizing: border-box;
     /*align-self: stretch;*/
 }
 
@@ -98,6 +102,15 @@ div {
     top: 0px;
     bottom: 0px;
     /*display: flex;*/
+}
+
+.amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
+    height: auto;
+}
+
+.amx-ptn-va-stretch.amx-ptn-panel:not(.amx-ptn-grid > *):not(.amx-ptn-stack-panel:not(.horizontal) > *)
+{
+    height: 100%;
 }
 
 .amx-ptn-va-bottom {
