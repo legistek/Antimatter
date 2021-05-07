@@ -8,6 +8,6 @@ export interface IClient
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean);
     BindState(target: any, args?: BindingParameters, stateVar?: string): any;
     BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void;
-    TargetChanged(component: Component, prop: string, value: any): void; 
+    TargetChanged(component: Component, prop: string, value: any, reRender?: boolean): void; 
     NavigateTo(route: string);
 }

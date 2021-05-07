@@ -7,27 +7,32 @@ import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
-import { Icon, MotionAnimations } from '@fluentui/react';
+import { getTheme, Icon, MotionAnimations } from '@fluentui/react';
 
 export interface ITreeViewCommon
 {
     ChildrenPath?: string,
     IsContentEnabledPath?: string,
-    IsExpandedPath?: string
+    IsExpandedPath?: string,
+    IsSelectedPath?: string
 }
 export interface ITreeViewProps extends IItemsControlProps, ITreeViewCommon
 {
-    SelectionChangedCommand?: ModelObjectReference | Binding
+    SelectionChangedCommand?: ModelObjectReference | Binding,
+    SelectedItem?: ModelObjectReference | Binding,
 }
 export interface ITreeViewState extends IItemsControlState, ITreeViewCommon
 {
-    SelectionChangedCommand?: ModelObjectReference
+    SelectionChangedCommand?: ModelObjectReference,
+    SelectedItem?: ModelObjectReference
 }
 export class TreeView<
     P extends ITreeViewProps = {},
     S extends ITreeViewState = {}>
     extends ItemsControl<P, S>
 {
+    /* private */ _selectedTVI?: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>;
+
     public static DefaultBindings = {
         ItemsSource: {
             NotifyCollectionChanged: true
@@ -57,9 +62,54 @@ export class TreeView<
         if (this.state.IsExpandedPath)
             props.IsExpanded = new Binding({
                 Path: this.state.IsExpandedPath,
-                Source: item});
+                Source: item
+            });
+        if (this.state.IsSelectedPath)
+            props.IsSelected = new Binding({
+                Path: this.state.IsSelectedPath,
+                Source: item
+            });
         
         return super.OnRenderItem(item, props);
+    }
+
+    // Called by a TVI on a click or a binding-based selection
+    // We assume the new TVI has NOT set its own state
+    /* private */ SetSelectedItem(tvi: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>)
+    {
+        var oldTVI = this._selectedTVI;        
+        this._selectedTVI = tvi;
+        this.SetValue(nameof(this.state.SelectedItem), tvi.props.Item, false);
+        tvi.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), true);
+        oldTVI?.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), false);
+    }
+
+    // Invoked by an external binding changing the selected item
+    // Usually this requires a total re-render of the tree so that's
+    // not ideal.
+    /* private */ OnPropertyChanged(prop: string, value: any)
+    {
+        if (prop === nameof(this.state.SelectedItem))
+        {
+            if (this._selectedTVI?.state?.Item === value)
+            {
+                // this really shouldn't happen but if it does
+                // it's a no op
+            }
+            else
+            {
+                // We just have to re-render the whole tree;
+                // during the render, the tree items will ask
+                // the parent if they're the lucky winner, and
+                // if so set their own state (and possibly bound)
+                // model property.
+                this.InvalidateRender();
+            }
+        }
+        else
+        {
+            super.OnPropertyChanged(prop, value);
+        }
     }
 }
 
@@ -71,18 +121,25 @@ interface ITreeViewItemCommon
 interface ITreeViewItemProps extends IItemsControlProps, ITreeViewItemCommon
 {
     IsExpanded?: boolean | Binding,
+    IsSelected?: boolean | Binding
 }
 interface ITreeViewItemState extends IItemsControlState, ITreeViewItemCommon
 {
-    IsExpanded?: boolean
+    IsExpanded?: boolean,
+    IsSelected?: boolean
 }
 class TreeViewItem<
     P extends ITreeViewItemProps = {},
     S extends ITreeViewItemState = {}>
     extends ItemsControl<P, S>
 {
+    static theme = getTheme();
+
     public static DefaultBindings = {
         IsExpanded: {
+            Mode: BindingMode.TwoWay
+        },
+        IsSelected: {
             Mode: BindingMode.TwoWay
         },
         ItemsSource: {
@@ -94,7 +151,7 @@ class TreeViewItem<
         {
             Template: (templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
-                <Grid                    
+                <Grid
                     ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
                     RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition()]}>
 
@@ -104,12 +161,16 @@ class TreeViewItem<
                         className={templatedParent.GetExpanderClasses()}
                         iconName="e9e1" />
 
+
+                                            {/*IsEnabled={new Binding({*/}
+                                            {/*    Path: templatedParent.state.TreeViewParent?.state.IsContentEnabledPath,*/}
+                                            {/*    Source: templatedParent.state.Item*/}
+                                            {/*})}*/}
                     {/*This Item*/}
-                    <Grid Grid={{ Column: 1, Row: 0 }}
-                        IsEnabled={new Binding({
-                            Path: templatedParent.state.TreeViewParent?.state.IsContentEnabledPath,
-                            Source: templatedParent.state.Item
-                        })}>
+                    <Grid
+                        ClassName={templatedParent.GetItemClassName()}
+                        Grid={{ Column: 1, Row: 0 }}
+                        OnClick={(e) => templatedParent.state.TreeViewParent?.SetSelectedItem(templatedParent)}>
                         {templatedParent.props.children}
                     </Grid>
 
@@ -144,6 +205,12 @@ class TreeViewItem<
             }
         },
         {
+            Selector: "@ .selected",
+            Rules: {
+                background: TreeViewItem.theme.semanticColors.listItemBackgroundChecked
+            }
+        },
+        {
             Selector: "@ .expander.nochildren",
             Rules:
             {
@@ -158,6 +225,17 @@ class TreeViewItem<
             }
         });
 
+    /* private */ GetItemClassName(): string
+    {
+        if (this.state.Item === this.state.TreeViewParent?.state?.SelectedItem)
+        {
+            this.SetValue("IsSelected", true, false);
+            return "selected";
+        }
+
+        return "";        
+    }
+
     /* private */ ToggleIsExpanded()
     {
         this.SetValue("IsExpanded", this.state.IsExpanded === false);
@@ -171,12 +249,8 @@ class TreeViewItem<
             classes += "nochildren ";
         if (this.state.IsExpanded !== false)
             classes += "expanded ";
-        return classes;            
-    }
 
-    /* override */ renderElement()
-    {
-        return super.renderElement();
+        return classes;            
     }
 
     /* override */ GetContainerForItemOverride()
@@ -199,6 +273,11 @@ class TreeViewItem<
             props.IsExpanded = new Binding({
                 Path: this.state.TreeViewParent.state.IsExpandedPath,
                 Source: item,
+            });
+        if (this.state.TreeViewParent?.state.IsSelectedPath)
+            props.IsSelected = new Binding({
+                Path: this.state.TreeViewParent.state.IsSelectedPath,
+                Source: item
             });
 
         return super.OnRenderItem(item, props);

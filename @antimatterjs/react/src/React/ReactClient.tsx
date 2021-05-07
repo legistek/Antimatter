@@ -101,7 +101,11 @@ export class ReactClient implements IClient
         return target.state[stateVar];  
     }
 
-    public TargetChanged(component: Component, prop: string, value: any, modelType?: ModelValueType): void
+    public TargetChanged(
+        component: Component,
+        prop: string,
+        value: any,
+        reRender?: boolean): void
     {
         var target = component as IBoundComponent;
         if (!target.antimatterBindingExps)
@@ -115,9 +119,19 @@ export class ReactClient implements IClient
                 newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
             Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(newSourceValue));
         }
-        var newState = {};
-        newState[prop] = value;
-        target.setState(newState);  
+        if (reRender !== false)
+        {
+            var newState = {};
+            newState[prop] = value;
+            target.setState(newState);
+        }
+        else
+        {
+            // deliberately change the state without
+            // telling React because we have no desire
+            // to rerender
+            target.state[prop] = value;
+        }
     }
 
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)

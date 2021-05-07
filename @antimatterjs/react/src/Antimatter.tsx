@@ -37,8 +37,12 @@ export class Antimatter
         return Antimatter._client.BindCommand(target, args, stateVar);
     }
 
-    public static TargetChanged(component: Component, prop: string, value: any): void
+    public static TargetChanged(
+        component: Component,
+        prop: string,
+        value: any,
+        reRender?: boolean): void
     {
-        return Antimatter._client.TargetChanged(component, prop, value);
+        return Antimatter._client.TargetChanged(component, prop, value, reRender);
     }
 }

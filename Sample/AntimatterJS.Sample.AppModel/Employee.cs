@@ -52,6 +52,24 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        #region bool IsSelected property
+        private bool _IsSelected;
+        public bool IsSelected
+        {
+            get
+            {
+                return _IsSelected;
+            }
+            set
+            {
+                if (_IsSelected != value)
+                {
+                    _IsSelected = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
 
         #region double BonusAmount property
         private double _BonusAmount = 10000.0;
@@ -313,6 +331,7 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
 
 
         #region bool IsExpanded property

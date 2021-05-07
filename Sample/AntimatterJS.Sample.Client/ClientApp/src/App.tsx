@@ -77,6 +77,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                             ChildrenPath="Underlings"
                             Background="Green"
                             IsExpandedPath="IsExpanded"
+                            IsSelectedPath="IsSelected"
                             ItemTemplate={
                                 (item) =>
                                 (<StackPanel Orientation={Orientation.Horizontal}>

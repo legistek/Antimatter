@@ -9,6 +9,8 @@ import { TooltipHost } from '@fluentui/react';
 
 interface IFrameworkElementCommon
 {
+    // Use only for control development; never use for cross-platform views
+    ClassName?: string,
     Style?: Style<any>,    
     Margin?: string,    
     HorizontalAlignment?: HorizontalAlignment,
@@ -78,7 +80,7 @@ export class FrameworkElement<
                 onMouseDown={this.state.OnPointerDown
                     ? (event) => this.state.OnPointerDown?.call(this, event.nativeEvent)
                     : undefined}
-                className={this.constructor.name + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
+                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {
                     this.state.IsLoading && this.state.LoadingTemplate
                         ? this.state.LoadingTemplate()
@@ -112,10 +114,20 @@ export class FrameworkElement<
     /* virtual */ OnLoaded()
     {
     }
-    
-    SetValue(property: string, newValue: any): void
+
+    /**
+     * Sets a state property value for the element, updating any
+     * two-way binding targets, and optionally forces a re-render
+     * of the element. Use instead of Component.setState.
+     * @param property
+     * @param newValue
+     * @param reRender
+     */
+    /* protected */ SetValue(property: string, newValue: any, reRender?: boolean): void
     {
-        Antimatter.TargetChanged(this, property, newValue);
+        if (this.state[property] === newValue)
+            return;
+        Antimatter.TargetChanged(this, property, newValue, reRender);
     }
 
     /* virtual */ renderElement(): JSX.Element | null
