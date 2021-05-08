@@ -74,7 +74,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(400), Grid.ColumnDefinition(1, true)]}>
                         <TreeView
                             ItemsSource={new Binding("CEO.Underlings")}
+                            SelectedItem={new Binding("SelectedEmployee")}
                             ChildrenPath="Underlings"
+                            SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
                             Background="Green"
                             IsExpandedPath="IsExpanded"
                             IsSelectedPath="IsSelected"

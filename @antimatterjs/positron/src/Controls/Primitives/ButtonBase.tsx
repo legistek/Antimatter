@@ -1,4 +1,4 @@
-import { Antimatter, Binding, ModelObjectReference, ModelValue } from "@antimatterjs/react";
+    import { Antimatter, Binding, ModelObjectReference, ModelValue } from "@antimatterjs/react";
 import { Control, IControlProps, IControlState } from "../Control";
 
 export interface IButtonBaseProps extends IControlProps

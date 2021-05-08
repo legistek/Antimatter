@@ -28,7 +28,7 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-        public ObservableCollection<Employee> Employees { get; } = 
+        public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
         #region Employee SelectedEmployee property
@@ -78,7 +78,7 @@ namespace AntimatterJS.Sample.AppModel
             {
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
-                    {                        
+                    {
                         this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
                     })
                 {
@@ -116,6 +116,27 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+
+        #region IUICommand SelectedEmployeeChanged Command
+
+        private Command _SelectedEmployeeChangedCommand;
+        public Command SelectedEmployeeChangedCommand
+        {
+            get
+            {
+                return _SelectedEmployeeChangedCommand ?? (_SelectedEmployeeChangedCommand = new Command(
+                    (arg) =>
+                    {
+                        ;
+                    })
+                {
+                });
+            }
+        }
+
+        #endregion
+
 
         public override string ToString()
         {

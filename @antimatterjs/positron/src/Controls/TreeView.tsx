@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { Style } from '../Style';
@@ -36,6 +36,9 @@ export class TreeView<
     public static DefaultBindings = {
         ItemsSource: {
             NotifyCollectionChanged: true
+        },
+        SelectedItem: {
+            Mode: BindingMode.TwoWay
         }
     };
 
@@ -82,6 +85,10 @@ export class TreeView<
         this.SetValue(nameof(this.state.SelectedItem), tvi.props.Item, false);
         tvi.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), true);
         oldTVI?.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), false);
+        if (this.state.SelectionChangedCommand)
+            Antimatter.Server.ExecuteICommand(
+                this.state.SelectionChangedCommand as ModelObjectReference,
+                ModelValue.Get(this.state.SelectedItem));
     }
 
     // Invoked by an external binding changing the selected item
@@ -227,7 +234,9 @@ class TreeViewItem<
 
     /* private */ GetItemClassName(): string
     {
-        if (this.state.Item === this.state.TreeViewParent?.state?.SelectedItem)
+        if (ModelObjectReference.Equals(
+            this.state.Item,
+            this.state.TreeViewParent?.state?.SelectedItem))
         {
             this.SetValue("IsSelected", true, false);
             return "selected";
