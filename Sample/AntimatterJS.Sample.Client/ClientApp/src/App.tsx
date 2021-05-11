@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, Orientation, StackPanel, TextBlock, TreeView, Window } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
@@ -71,29 +71,30 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
                 <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(400), Grid.ColumnDefinition(1, true)]}>
-                        <TreeView
-                            ItemsSource={new Binding("CEO.Underlings")}
-                            SelectedItem={new Binding("SelectedEmployee")}
-                            ChildrenPath="Underlings"
-                            SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                            Background="Green"
-                            IsExpandedPath="IsExpanded"
-                            IsSelectedPath="IsSelected"
-                            ItemTemplate={
-                                (item) =>
-                                (<StackPanel Orientation={Orientation.Horizontal}>
-                                    <Icon iconName="e96a"
-                                        style={{                                                                                        
-                                            alignSelf: "center",
-                                            margin: "0px 5px 0px 0px"
-                                        }}
-                                    />
-                                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
-                                </StackPanel>
-                                )}>
-                        </TreeView>
-                    
+                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
+                        <ResizePanel Size={600} ResizerSide={Side.Right} Background="green" HorizontalAlignment={HorizontalAlignment.Left}>
+                            <TreeView
+                                ItemsSource={new Binding("CEO.Underlings")}
+                                SelectedItem={new Binding("SelectedEmployee")}
+                                ChildrenPath="Underlings"
+                                SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
+                                Background="Green"
+                                IsExpandedPath="IsExpanded"
+                                IsSelectedPath="IsSelected"
+                                ItemTemplate={
+                                    (item) =>
+                                    (<StackPanel Orientation={Orientation.Horizontal}>
+                                        <Icon iconName="e96a"
+                                            style={{                                                                                        
+                                                alignSelf: "center",
+                                                margin: "0px 5px 0px 0px"
+                                            }}
+                                        />
+                                        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                                    </StackPanel>
+                                    )}>
+                            </TreeView>
+                        </ResizePanel>
                         <Company />
                     </Grid>
                 </DataContext>

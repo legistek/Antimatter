@@ -6,6 +6,7 @@ import { HorizontalAlignment, VerticalAlignment } from './Enums';
 import './positron.css';
 import { Style } from '@antimatterjs/positron/src/Style';
 import { TooltipHost } from '@fluentui/react';
+import { IGridChildPosition } from './Controls/Grid';
 
 interface IFrameworkElementCommon
 {
@@ -16,14 +17,11 @@ interface IFrameworkElementCommon
     HorizontalAlignment?: HorizontalAlignment,
     VerticalAlignment?: VerticalAlignment,
     OnClick?: (event: MouseEvent) => void,
-    OnPointerDown?: (event: MouseEvent) => void,
-    OnPointerMove?: (event: MouseEvent) => void,
-    Grid?: {
-        Column?: number,
-        ColumnSpan?: number,
-        Row?: number,
-        RowSpan?: number
-    },
+    OnPointerDown?: (event: PointerEvent) => void,
+    OnPointerMove?: (event: PointerEvent) => void,
+    OnPointerUp?: (event: PointerEvent) => void,
+    OnLostPointerCapture?: (event: PointerEvent)=> void,
+    Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element
 }
@@ -69,16 +67,22 @@ export class FrameworkElement<
             return null;
 
         return (
-            <div  
+            <div
                 style={this.getCSSStyles()}
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
-                onMouseMove={this.state.OnPointerMove
+                onPointerMove={this.state.OnPointerMove
                     ? (event) => this.state.OnPointerMove?.call(this, event.nativeEvent)
                     : undefined}
-                onMouseDown={this.state.OnPointerDown
+                onPointerDown={this.state.OnPointerDown
                     ? (event) => this.state.OnPointerDown?.call(this, event.nativeEvent)
+                    : undefined}
+                onPointerUp={this.state.OnPointerUp
+                    ? (event) => this.state.OnPointerUp?.call(this, event.nativeEvent)
+                    : undefined}
+                onLostPointerCapture={this.state.OnLostPointerCapture
+                    ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
                     : undefined}
                 className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {
@@ -140,9 +144,9 @@ export class FrameworkElement<
         let styles: React.CSSProperties = {
             margin: this.state.Margin
         };
-        if (this.state.Grid?.Column)
+        if (this.state.Grid?.Column !== undefined)
             styles.gridColumn = this.state.Grid.Column + 1;
-        if (this.state.Grid?.Row)
+        if (this.state.Grid?.Row !== undefined)
             styles.gridRow = this.state.Grid.Row + 1;
         return styles;
     }

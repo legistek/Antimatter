@@ -12,6 +12,14 @@ export interface IGridState extends IPanelState
     RowDefinitions?: IRowDefinition[]
 }
 
+export interface IGridChildPosition 
+{
+    Column?: number,
+    ColumnSpan?: number,
+    Row?: number,
+    RowSpan?: number
+}
+
 export enum GridUnitType
 {
     Auto = 0,

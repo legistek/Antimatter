@@ -31,7 +31,7 @@ export interface IPanelState extends IFrameworkElementState
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
 
-export abstract class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P,S>
+export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P,S>
 {
     constructor(props: IPanelProps)
     {        

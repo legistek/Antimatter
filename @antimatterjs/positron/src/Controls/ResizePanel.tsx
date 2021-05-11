@@ -2,21 +2,21 @@ import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
-import { Grid, IGridDefinition, IGridProps, IGridState } from './Grid';
-import { HorizontalAlignment, Orientation, VerticalAlignment } from '../Enums';
+import { Grid, IColumNDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
+import { HorizontalAlignment, Orientation, Side, VerticalAlignment } from '../Enums';
+import { Panel } from './Panel';
+import { sizeBoolean } from '@fluentui/react';
 
 export interface IResizePanelProps extends IControlProps
 {
-    GridParent?: Grid<IGridProps, IGridState>,
-    TargetRowOrColumn?: number,
-    Orientation?: Orientation,
+    ResizerSide?: Side,
+    Size?: number | Binding,            
     Thickness?: number
 }
 export interface IResizePanelState extends IControlState
 {
-    GridParent?: Grid<IGridProps, IGridState>,
-    TargetRowOrColumn?: number,
-    Orientation?: Orientation,
+    ResizerSide?: Side,
+    Size?: number,
     Thickness?: number
 }
 
@@ -27,39 +27,42 @@ export class ResizePanel<P extends IResizePanelProps = {},
     /* private */ _isDragging: boolean = false;
     /* private */ _element: HTMLElement | null = null;
     /* private */ _capturedPointerID?: number;
-    /* private */ _dragStartOffset?: number;
+    /* private */ _dragStartSize?: number;
     /* private */ _activeGridElement?: IGridDefinition;
 
-    public static VerticalStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
+    public static DefaultStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
         {
-            VerticalAlignment: VerticalAlignment.Stretch,
-            HorizontalAlignment: HorizontalAlignment.Center,
+            Thickness: 5,
             Template: (templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>) => 
             (
-                <div
-                    ref={r => templatedParent._element = r}
-                    style={{
-                        background: templatedParent.state.Background,
-                        width: templatedParent.state.Thickness,
-                    }}
-                    onPointerDown={e => templatedParent.OnPointerDown(e.nativeEvent)}
-                    onPointerMove={e => templatedParent.OnPointerMove(e.nativeEvent)}
-                    onPointerUp={e => templatedParent.OnPointerUp(e.nativeEvent)}
-                    onLostPointerCapture={e => templatedParent.OnPointerUp(e.nativeEvent)}>
+                <Grid
+                    ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
+                    RowDefinitions={templatedParent.ComputeRowDefinitions()}> 
 
-                </div>
+                    <Grid Grid={templatedParent.ComputeChildGridPosition()}>
+                        {templatedParent.props.children}
+                    </Grid>
+                    <Grid
+                        ClassName={"sizer " + (templatedParent._isDragging ? "resizing" : "")}
+                        Grid={templatedParent.ComputeResizerGridPosition()}
+                        Background={templatedParent.state.Background}
+                        OnPointerDown={e => templatedParent.OnPointerDown(e)}
+                        OnPointerUp={e => templatedParent.OnPointerUp(e)}
+                        OnLostPointerCapture={e => templatedParent.OnPointerUp(e)}
+                        OnPointerMove={e => templatedParent.OnPointerMove(e)} />
+
+                </Grid>
             ),
-            Orientation: Orientation.Vertical,
         },
         {            
-            Selector: "@ .resizing",
+            Selector: "@ .sizer.resizing",
             Rules:
             {
                 background: "black"
             }
         },
         {
-            Selector: "@",
+            Selector: "@ .sizer",
             Rules:
             {
                 cursor: "col-resize"
@@ -69,44 +72,39 @@ export class ResizePanel<P extends IResizePanelProps = {},
 
     /* private */ OnPointerDown(e: PointerEvent)
     {
-        if (this._isDragging ||
-            !this._element)
+        if (this._isDragging)
             return; // should be impossible
+
+        this._element = e.target as HTMLElement;
+        if (!this._element)
+            return;
+
         this._element?.setPointerCapture(e.pointerId);
         this._capturedPointerID = e.pointerId;
+        this._dragStartSize = this.state.Size;
 
-        if (this.state.Orientation === Orientation.Horizontal)
+        switch (this.state.ResizerSide)
         {
-            if (!this.state.GridParent?.state?.RowDefinitions || 
-                !this.state.Grid?.Row)
-                return;
-            if (this.state.VerticalAlignment === VerticalAlignment.Top)
-            {
-                this._dragStartOffset = this._element.offsetTop;
-                this._activeGridElement = this.state.GridParent
-                    .state
-                    .RowDefinitions[this.state.Grid.Row - 1];
-            }
-            else
-            {
-                this._dragStartOffset = this._element.offsetTop + this._element.clientHeight;
-                this._activeGridElement = this.state.GridParent
-                    .state
-                    .RowDefinitions[this.state.Grid.Row + 1];
-            }
+            case Side.Top:
+                break;
+            case Side.Bottom:
+                break;
+            case Side.Left:
+                break;
+            case Side.Right:
+                break;
         }
-        else
+
+        switch (this.state.ResizerSide)
         {
-            if (!this.state.GridParent?.state?.ColumnDefinitions ||
-                !this.state.Grid?.Column)
-                return;
-            if (this.state.HorizontalAlignment === HorizontalAlignment.Left)
-            {
-                this._dragStartOffset = this._element.offsetLeft;
-                this._activeGridElement = this.state.GridParent
-                    .state
-                    .ColumnDefinitions[this.state.Grid.Column - 1];
-            }
+            case Side.Top:
+                break;
+            case Side.Bottom:
+                break;
+            case Side.Left:
+                break;
+            case Side.Right:
+                break;
         }
     }
 
@@ -125,6 +123,74 @@ export class ResizePanel<P extends IResizePanelProps = {},
         this._element?.releasePointerCapture(this._capturedPointerID);
         this._isDragging = false;
         this._capturedPointerID = undefined;
+    }
+
+    /* private */ ComputeColumnDefinitions(): IColumNDefinition[]
+    {
+        if (this.state.ResizerSide === Side.Left)
+            return [Grid.ColumnDefinition(this.state.Thickness), Grid.ColumnDefinition(this.state.Size)];
+        else if (this.state.ResizerSide === Side.Right)
+            return [Grid.ColumnDefinition(this.state.Size), Grid.ColumnDefinition(this.state.Thickness)];
+        else
+            return [];
+    }
+
+    /* private */ ComputeRowDefinitions(): IRowDefinition[]
+    {
+        if (this.state.ResizerSide === Side.Top)
+            return [Grid.RowDefinition(this.state.Thickness), Grid.RowDefinition(this.state.Size)];
+        else if (this.state.ResizerSide === Side.Bottom)
+            return [Grid.RowDefinition(this.state.Size), Grid.RowDefinition(this.state.Thickness)];
+        else
+            return [];
+    }
+
+    /* private */ ComputeResizerGridPosition(): IGridChildPosition       
+    {
+        switch (this.state.ResizerSide)
+        {
+            default:
+            case Side.Top:
+                return {
+                    Row: 0
+                };
+            case Side.Bottom:
+                return {
+                    Row: 1
+                };
+            case Side.Left:
+                return {
+                    Column: 0
+                };
+            case Side.Right:
+                return {
+                    Column: 1
+                };
+        }
+    }
+
+    /* private */ ComputeChildGridPosition(): IGridChildPosition
+    {
+        switch (this.state.ResizerSide)
+        {
+            default:
+            case Side.Top:
+                return {
+                    Row: 1
+                };
+            case Side.Bottom:
+                return {
+                    Row: 0
+                };
+            case Side.Left:
+                return {
+                    Column: 1
+                };
+            case Side.Right:
+                return {
+                    Column: 0
+                };
+        }
     }
 }
 

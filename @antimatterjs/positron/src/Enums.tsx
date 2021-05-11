@@ -36,3 +36,11 @@ export enum ScrollBarVisibility
     Hidden = 2,
     Visible = 3,
 }
+
+export enum Side
+{
+    Top = 0,
+    Right = 1,
+    Bottom = 2,
+    Left = 3
+}

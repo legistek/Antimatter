@@ -25,3 +25,4 @@ export * from './src/Controls/TabControl';
 export * from './src/Controls/ProgressRing';
 export * from './src/Controls/TreeView';
 export * from './src/Controls/LoadingShimmer';
+export * from './src/Controls/ResizePanel';

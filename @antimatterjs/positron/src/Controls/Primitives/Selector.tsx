@@ -54,7 +54,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         var props: ISelectableItemProps = {
             IsSelected: this.IsItemSelected(item),
             OnClick: (event: MouseEvent) => this.OnItemClick(event, item),
-            OnPointerDown: (event: MouseEvent) => this.OnItemPointerDown(event, item)
+            OnPointerDown: (event: PointerEvent) => this.OnItemPointerDown(event, item)
         };
         return super.OnRenderItem(item, props);
     }
