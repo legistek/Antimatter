@@ -71,8 +71,11 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
                 <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
-                        <ResizePanel Size={600} ResizerSide={Side.Right} Background="green" HorizontalAlignment={HorizontalAlignment.Left}>
+                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
+                        <Company />
+                        <ResizePanel Size={new Binding("UnderlingPanelWidth")}
+                            Background={"blue"}
+                            ResizerSide={Side.Left}>
                             <TreeView
                                 ItemsSource={new Binding("CEO.Underlings")}
                                 SelectedItem={new Binding("SelectedEmployee")}
@@ -95,7 +98,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     )}>
                             </TreeView>
                         </ResizePanel>
-                        <Company />
+
                     </Grid>
                 </DataContext>
             </Window>

@@ -69,6 +69,25 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        #region int UnderlingPanelWidth property
+        private int _UnderlingPanelWidth = 400;
+        public int UnderlingPanelWidth
+        {
+            get
+            {
+                return _UnderlingPanelWidth;
+            }
+            set
+            {
+                if (_UnderlingPanelWidth != value)
+                {
+                    _UnderlingPanelWidth = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #region IUICommand NewEmployee Command
 
         private Command _NewEmployeeCommand;
@@ -116,7 +135,6 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
-
 
         #region IUICommand SelectedEmployeeChanged Command
 
