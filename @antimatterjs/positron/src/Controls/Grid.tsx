@@ -26,14 +26,19 @@ export interface IGridLength
     Value?: number
 }
 
-export interface IColumNDefinition
+export interface IGridDefinition
+{
+    CoercedSize?: number
+}
+
+export interface IColumNDefinition extends IGridDefinition
 {
     Width: IGridLength,
 }
 
-export interface IRowDefinition
+export interface IRowDefinition extends IGridDefinition
 {
-    Height: IGridLength    
+    Height: IGridLength,
 }
 
 export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends Panel<P,S>
@@ -85,7 +90,9 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
         {            
             for (const row of this.state.RowDefinitions as Array<IRowDefinition>)
             {
-                if (row.Height.GridUnitType === GridUnitType.Auto)
+                if (row.CoercedSize)
+                    rowTemplate += `${row.CoercedSize}px `;
+                else if (row.Height.GridUnitType === GridUnitType.Auto)
                     rowTemplate += "max-content ";
                 else if (row.Height.GridUnitType === GridUnitType.Pixel)
                     rowTemplate += `${row.Height.Value}px `;
@@ -106,7 +113,9 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
 
         for (const column of this.state.ColumnDefinitions as Array<IColumNDefinition>)
         {
-            if (column.Width.GridUnitType === GridUnitType.Auto)
+            if (column.CoercedSize)
+                columnTemplate += `${column.CoercedSize}px `;
+            else if (column.Width.GridUnitType === GridUnitType.Auto)
                 columnTemplate += "auto ";
             else if (column.Width.GridUnitType === GridUnitType.Pixel)
                 columnTemplate += `${column.Width.Value}px `;

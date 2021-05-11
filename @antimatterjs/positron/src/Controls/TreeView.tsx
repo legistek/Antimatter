@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { Style } from '../Style';
@@ -32,6 +32,7 @@ export class TreeView<
     extends ItemsControl<P, S>
 {
     /* private */ _selectedTVI?: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>;
+    /* internal */ _dataMap: Map<number, TreeViewItem> = new Map<number, TreeViewItem>();
 
     public static DefaultBindings = {
         ItemsSource: {
@@ -234,7 +235,7 @@ class TreeViewItem<
 
     /* private */ GetItemClassName(): string
     {
-        if (ModelObjectReference.Equals(
+        if (Utilities.SmartEquals(
             this.state.Item,
             this.state.TreeViewParent?.state?.SelectedItem))
         {
