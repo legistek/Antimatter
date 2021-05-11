@@ -1,4 +1,5 @@
-﻿import { ModelObjectReference } from "./ModelObjectReference";
+﻿import { release } from "os";
+import { ModelObjectReference } from "./ModelObjectReference";
 
 const unixTime0Ticks: bigint =
     BigInt(621355968) * BigInt(1000000000);
@@ -11,6 +12,15 @@ export class Utilities
             (item1 as ModelObjectReference).Handle === (item2 as ModelObjectReference).Handle)
             return true;
         return item1 == item2;
+    }
+
+    public static SmartGetKey(item): any
+    {
+        if (!item)
+            return "";
+        else if (item?.IsModelObjectReference)
+            return (item as ModelObjectReference).Key;
+        return item;
     }
 
     public static SleepAsync(ms): Promise<any>

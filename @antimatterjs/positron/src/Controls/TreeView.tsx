@@ -32,7 +32,7 @@ export class TreeView<
     extends ItemsControl<P, S>
 {
     /* private */ _selectedTVI?: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>;
-    /* internal */ _dataMap: Map<number, TreeViewItem> = new Map<number, TreeViewItem>();
+    /* internal */ _dataMap: Map<any, TreeViewItem> = new Map<any, TreeViewItem>();
 
     public static DefaultBindings = {
         ItemsSource: {
@@ -73,7 +73,7 @@ export class TreeView<
                 Path: this.state.IsSelectedPath,
                 Source: item
             });
-        
+                
         return super.OnRenderItem(item, props);
     }
 
@@ -93,8 +93,6 @@ export class TreeView<
     }
 
     // Invoked by an external binding changing the selected item
-    // Usually this requires a total re-render of the tree so that's
-    // not ideal.
     /* private */ OnPropertyChanged(prop: string, value: any)
     {
         if (prop === nameof(this.state.SelectedItem))
@@ -106,12 +104,12 @@ export class TreeView<
             }
             else
             {
-                // We just have to re-render the whole tree;
-                // during the render, the tree items will ask
-                // the parent if they're the lucky winner, and
-                // if so set their own state (and possibly bound)
-                // model property.
-                this.InvalidateRender();
+                this._selectedTVI?.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), false);
+                var newItemKey = Utilities.SmartGetKey(value);
+                var newTVI = this._dataMap.get(newItemKey);
+                newTVI?.SetValue(nameof<ITreeViewItemState>(s => s.IsSelected), true);
+                this._selectedTVI = newTVI;
+                //this.InvalidateRender();
             }
         }
         else
@@ -141,6 +139,16 @@ class TreeViewItem<
     S extends ITreeViewItemState = {}>
     extends ItemsControl<P, S>
 {
+    constructor(props)
+    {
+        super(props);
+        if (this.state.TreeViewParent?._dataMap)
+        {
+            var key = Utilities.SmartGetKey(this.state.Item);
+            this.state.TreeViewParent._dataMap.set(key, this);
+        }
+    }
+
     static theme = getTheme();
 
     public static DefaultBindings = {

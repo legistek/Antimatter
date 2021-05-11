@@ -35,8 +35,8 @@
                     val.BoolValue = jsValue;
                     break;
                 case "number":
-                    val.Type = ModelValueType.Long;
-                    val.IntValue = jsValue;
+                    val.Type = ModelValueType.Float;
+                    val.FloatValue = jsValue;
                     break;
                 case "string":
                     val.Type = ModelValueType.String;

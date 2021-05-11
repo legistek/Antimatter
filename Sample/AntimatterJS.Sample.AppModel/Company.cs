@@ -69,9 +69,9 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-        #region int UnderlingPanelWidth property
-        private int _UnderlingPanelWidth = 400;
-        public int UnderlingPanelWidth
+        #region double UnderlingPanelWidth property
+        private double _UnderlingPanelWidth = 200;
+        public double UnderlingPanelWidth
         {
             get
             {
@@ -154,7 +154,6 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
-
 
         public override string ToString()
         {

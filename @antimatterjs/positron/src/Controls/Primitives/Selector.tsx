@@ -216,4 +216,16 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         }
         this._lastClickedOrSelected = index;
     }
+    
+    /* private */ OnPropertyChanged(prop: string, value: any)
+    {
+        if (prop === nameof(this.state.SelectedItem))
+        {
+            this.InvalidateRender();
+        }
+        else
+        {
+            super.OnPropertyChanged(prop, value);
+        }
+    }
 }
