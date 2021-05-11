@@ -5,14 +5,14 @@ import { Style } from '../Style';
 import { Grid, IGridDefinition, IGridProps, IGridState } from './Grid';
 import { HorizontalAlignment, Orientation, VerticalAlignment } from '../Enums';
 
-export interface ISizerProps extends IControlProps
+export interface IResizePanelProps extends IControlProps
 {
     GridParent?: Grid<IGridProps, IGridState>,
     TargetRowOrColumn?: number,
     Orientation?: Orientation,
     Thickness?: number
 }
-export interface ISizerState extends IControlState
+export interface IResizePanelState extends IControlState
 {
     GridParent?: Grid<IGridProps, IGridState>,
     TargetRowOrColumn?: number,
@@ -20,8 +20,8 @@ export interface ISizerState extends IControlState
     Thickness?: number
 }
 
-export class Sizer<P extends ISizerProps = {},
-    S extends ISizerState = {}>
+export class ResizePanel<P extends IResizePanelProps = {},
+    S extends IResizePanelState = {}>
     extends Control<P,S>
 {
     /* private */ _isDragging: boolean = false;
@@ -30,11 +30,11 @@ export class Sizer<P extends ISizerProps = {},
     /* private */ _dragStartOffset?: number;
     /* private */ _activeGridElement?: IGridDefinition;
 
-    public static VerticalStyle: Style<ISizerProps> = new Style<ISizerProps>(
+    public static VerticalStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
         {
             VerticalAlignment: VerticalAlignment.Stretch,
             HorizontalAlignment: HorizontalAlignment.Center,
-            Template: (templatedParent: Sizer<ISizerProps, ISizerState>) => 
+            Template: (templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>) => 
             (
                 <div
                     ref={r => templatedParent._element = r}

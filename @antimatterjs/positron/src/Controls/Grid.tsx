@@ -5,7 +5,6 @@ export interface IGridProps extends IPanelProps
 {
     ColumnDefinitions?: IColumNDefinition[],
     RowDefinitions?: IRowDefinition[],
-    hobo?: string
 }
 export interface IGridState extends IPanelState
 {
