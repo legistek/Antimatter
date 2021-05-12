@@ -11,6 +11,12 @@ namespace Antimatter.Net
 {
     public class TypescriptGenerator
     {
+        public static void Generate(Type rootType, StreamWriter sw)
+        {
+            GenerateTS(rootType, sw);
+            GenerateDependencies(sw);
+        }
+
         public static void Generate(Assembly asm, StreamWriter sw)
         {
             var tsTypes = asm.GetTypes().Where(t => t.GetCustomAttribute<AntimatterModelAttribute>() != null);
@@ -51,13 +57,20 @@ namespace Antimatter.Net
 
             // get every property and field
             var allProps = type.GetRuntimeProperties();
-            var fields = type.GetRuntimeFields();
-                       
+            //var fields = type.GetRuntimeFields();
+
+            HashSet<string> names = new HashSet<string>();
+
             foreach (var prop in allProps)
             {                    
                 if (!(prop.GetAccessors(false)?.Length > 0))
                     continue;   // no public getters
+                if (prop.PropertyType.IsGenericType)
+                    continue;   // we don't do generics yet
+                if (names.Contains(prop.Name))
+                    continue;
                 sw.WriteLine($"\tpublic {prop.Name}?: {CSTypeToTSType(prop.PropertyType)};");
+                names.Add(prop.Name);
             }            
             
             sw.WriteLine("}\r\n");
