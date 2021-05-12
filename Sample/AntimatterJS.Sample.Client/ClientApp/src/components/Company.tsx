@@ -3,7 +3,7 @@ import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluentui/react';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar, DataGrid } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
@@ -94,17 +94,30 @@ export class Company extends AntimatterComponent
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
-                <ListBox                    
-                    SelectionMode={SelectionMode.Single}                    
-                    ItemsPanel={ItemsStackPanel}
-                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
-                    ItemTemplate={(item) =>
-                    (
-                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
-                            Margin="10px"
-                        />
-                    )} />
+                <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                    Columns={[
+                        {
+                            Header: "First Name",   
+                            Key: "FirstName",
+                            Template: (item) => (<TextBlock />)
+                            
+                            
+                        }
+                    ]}
+
+                />
+
+                {/*<ListBox                    */}
+                {/*    SelectionMode={SelectionMode.Single}                    */}
+                {/*    ItemsPanel={ItemsStackPanel}*/}
+                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
+                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
+                {/*    ItemTemplate={(item) =>*/}
+                {/*    (*/}
+                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
+                {/*            Margin="10px"*/}
+                {/*        />*/}
+                {/*    )} />*/}
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}
