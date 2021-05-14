@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Binding } from '@antimatterjs/react';
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { DetailsList, DetailsListLayoutMode, IColumn, IDetailsHeaderProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
-import { DetailsList, IColumn } from '@fluentui/react';
+import { ContentPresenter } from './ContentPresenter';
 
 interface IDataGridCommon
 {
@@ -35,9 +34,19 @@ export class DataGrid<
     public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
         {
             Template: (templatedParent: DataGrid<IDataGridProps, IDataGridState>) => (
-                <DetailsList
-                    items={templatedParent.state.ItemsSource || []}
-                    columns={templatedParent.ConstructColumns()}/>
+                <ScrollablePane>
+                    <DetailsList
+                        onRenderDetailsHeader={
+                            // tslint:disable-next-line:jsx-no-lambda
+                            (detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => (
+                                <Sticky>
+                                    {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
+                                </Sticky>
+                            )}
+                        layoutMode={DetailsListLayoutMode.fixedColumns}
+                        items={templatedParent.state.ItemsSource || []}
+                        columns={templatedParent.ConstructColumns()} />
+                </ScrollablePane>
             )
         }
     );
@@ -54,6 +63,7 @@ export class DataGrid<
                 key: col.Key,
                 minWidth: 100,
                 data: col,
+                isResizable: true,
                 onRender: (item, index, column) =>
                 (
                     <DataGridCell
@@ -82,5 +92,11 @@ class DataGridCell<
     S extends IDataGridCellState = {}>
     extends Control<P, S>
 {
-
+    public static DefaultStyle: Style<IDataGridCellProps> = new Style<IDataGridCellProps>(
+        {
+            Template: (templatedParent: DataGridCell<IDataGridCellProps, IDataGridCellState>) =>
+            (<ContentPresenter
+                Content={templatedParent.state.Item}
+                ContentTemplate={templatedParent.state.Column?.Template} />)
+        });
 }

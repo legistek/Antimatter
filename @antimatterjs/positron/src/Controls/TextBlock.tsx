@@ -6,14 +6,14 @@ import { getTheme } from '@fluentui/react';
 
 interface ITextBlockProps extends IFrameworkElementProps
 {
-    Text: string | Binding | undefined,
+    Text?: string | Binding | undefined,
     FontFamily?: string,
     FontSize?: number,
     FontWeight?: undefined | "bold" | "normal"
 }
 interface ITextBlockState extends IFrameworkElementState
 {
-    Text: string | undefined,
+    Text?: string | undefined,
     FontFamily?: string,
     FontSize?: number,
     FontWeight?: undefined | "bold" | "normal"
@@ -22,6 +22,16 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 {
     static theme = getTheme();
     static displayName = TextBlock.name;
+
+    public static DefaultStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+        {
+        },
+        {
+            Selector: "@",
+            Rules: {
+                fontFamily: TextBlock.theme.fonts.medium.fontFamily,
+            }
+        });
 
     public static DialogHeaderStyle = new Style(
         {

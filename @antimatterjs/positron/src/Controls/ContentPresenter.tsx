@@ -19,7 +19,7 @@ export class ContentPresenter extends FrameworkElement<IContentPresenterProps, I
     {
         return (
             <DataContext Value={this.state.Content}>
-                {this.state.ContentTemplate?.call(this, this.state.Content)}
+                {this.state.ContentTemplate ? this.state.ContentTemplate(this.state.Content) : (<></>)}
             </DataContext>);
     }
 }

@@ -332,15 +332,13 @@ namespace AntimatterJS.Sample.AppModel
 
         #endregion
 
-
-
         #region bool IsExpanded property
         private bool _IsExpanded;
         public bool IsExpanded
         {
             get
             {
-                return _IsExpanded = true;
+                return _IsExpanded;
             }
             set
             {
@@ -352,7 +350,6 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
-
 
         public override string ToString()
         {

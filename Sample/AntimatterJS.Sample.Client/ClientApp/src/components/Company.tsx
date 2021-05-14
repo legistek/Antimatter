@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar, DataGrid } from '@antimatterjs/positron';
@@ -21,15 +21,16 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
-
-                    <b>Edit Info</b>
+                    <TextBlock Text="Edit Info" FontWeight="bold"/>                    
                     <TextBox                        
                         Label="First Name"
                         Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
                     <TextBox
                         Label="Last Name"
                         Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
-                    <h4>Age</h4>
+
+                    <TextBlock Text="Age"/>
+
                     <CheckBox
                         Label="Bonus Eligible"
                         IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />                   
@@ -97,11 +98,19 @@ export class Company extends AntimatterComponent
                 <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                     Columns={[
                         {
-                            Header: "First Name",   
+                            Header: "First Name",
                             Key: "FirstName",
-                            Template: (item) => (<TextBlock />)
-                            
-                            
+                            Template: (item) => (<TextBlock Text={new Binding("FirstName")}/>)                                                        
+                        },
+                        {
+                            Header: "Last Name",
+                            Key: "LastName",
+                            Template: (item) => (<TextBlock Text={new Binding("LastName")} />)
+                        },
+                        {
+                            Header: "Age",
+                            Key: "Age",
+                            Template: (item) => (<TextBlock Text={new Binding("Age")} />)
                         }
                     ]}
 
