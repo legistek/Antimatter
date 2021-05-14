@@ -8,6 +8,12 @@ body {
     user-select: none;
 }
 
+/* For some reason this is necessary for MS DetailsList resizing and
+    any other Layer's to work I guess. */
+.ms-Layer > .ms-Layer-content {
+    height: 100%;
+}
+
 .amx-ptn-fe {
     overflow: hidden;
     width: auto;

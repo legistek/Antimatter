@@ -99,17 +99,17 @@ export class Company extends AntimatterComponent
                     Columns={[
                         {
                             Header: "First Name",
-                            Key: "FirstName",
+                            Key: "firstName",
                             Template: (item) => (<TextBlock Text={new Binding("FirstName")}/>)                                                        
                         },
                         {
                             Header: "Last Name",
-                            Key: "LastName",
+                            Key: "lastName",
                             Template: (item) => (<TextBlock Text={new Binding("LastName")} />)
                         },
                         {
                             Header: "Age",
-                            Key: "Age",
+                            Key: "age",
                             Template: (item) => (<TextBlock Text={new Binding("Age")} />)
                         }
                     ]}

@@ -73,16 +73,20 @@ export class FrameworkElement<
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
                 onPointerMove={this.state.OnPointerMove
-                    ? (event) => this.state.OnPointerMove?.call(this, event.nativeEvent)
+                    ? (event) =>
+                        this.state.OnPointerMove?.call(this, event.nativeEvent)
                     : undefined}
                 onPointerDown={this.state.OnPointerDown
-                    ? (event) => this.state.OnPointerDown?.call(this, event.nativeEvent)
+                    ? (event) =>
+                        this.state.OnPointerDown?.call(this, event.nativeEvent)
                     : undefined}
                 onPointerUp={this.state.OnPointerUp
-                    ? (event) => this.state.OnPointerUp?.call(this, event.nativeEvent)
+                    ? (event) =>
+                        this.state.OnPointerUp?.call(this, event.nativeEvent)
                     : undefined}
                 onLostPointerCapture={this.state.OnLostPointerCapture
-                    ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
+                    ? (event) =>
+                        this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
                     : undefined}
                 className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {

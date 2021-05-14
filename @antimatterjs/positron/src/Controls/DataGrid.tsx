@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DetailsList, DetailsListLayoutMode, IColumn, IDetailsHeaderProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
+import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode, IColumn, IDetailsHeaderProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
@@ -43,6 +43,7 @@ export class DataGrid<
                                     {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
                                 </Sticky>
                             )}
+                        constrainMode={ConstrainMode.unconstrained}
                         layoutMode={DetailsListLayoutMode.fixedColumns}
                         items={templatedParent.state.ItemsSource || []}
                         columns={templatedParent.ConstructColumns()} />
@@ -61,9 +62,18 @@ export class DataGrid<
             cols.push({
                 name: col.Header,
                 key: col.Key,
-                minWidth: 100,
+                minWidth: 50,
+                maxWidth: 300,
+                calculatedWidth: 75,
+                currentWidth: 50,
                 data: col,
                 isResizable: true,
+                columnActionsMode: ColumnActionsMode.clickable,
+                isPadded: true,
+                onColumnResize: (width) =>
+                {
+
+                },
                 onRender: (item, index, column) =>
                 (
                     <DataGridCell
