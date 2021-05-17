@@ -3,7 +3,7 @@ import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar, DataGrid } from '@antimatterjs/positron';
+import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar, DataGrid, VerticalAlignment } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
@@ -96,21 +96,22 @@ export class Company extends AntimatterComponent
                 </StackPanel>
 
                 <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                    RowHeight={48}
                     Columns={[
                         {
                             Header: "First Name",
                             Key: "firstName",
-                            Template: (item) => (<TextBlock Text={new Binding("FirstName")} />)                                                        
+                            Template: (item) => (<TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />)                                                        
                         },
                         {
                             Header: "Last Name",
                             Key: "lastName",
-                            Template: (item) => (<TextBlock Text={new Binding("LastName")} />)
+                            Template: (item) => (<TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />)
                         },
                         {
                             Header: "Age",
                             Key: "age",
-                            Template: (item) => (<TextBlock Text={new Binding("Age")} />)
+                            Template: (item) => (<TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />)
                         }
                     ]}
 

@@ -95,12 +95,22 @@ body {
 .amx-ptn-va-center {
     align-self: center;
     height: fit-content;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
-.amx-ptn-fe > .amx-ptn-va-stretch.amx-ptn-grid {
+/* Children of grids set to vertical stretch don't need to have stretch height themselves */
+.amx-ptn-grid > .amx-ptn-va-stretch.amx-ptn-grid {
     height: auto;
+}
+
+.amx-ptn-datagridcell {
+    display: flex;
+    height: 100%;
+}
+
+.amx-ptn-datagridcell > .amx-ptn-ha-stretch {
+    width: 100%;
 }
 
 .amx-ptn-fe > .amx-ptn-va-stretch {
@@ -114,11 +124,6 @@ body {
 
 .amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
     height: auto;
-}
-
-.amx-ptn-va-stretch.amx-ptn-panel:not(.amx-ptn-grid > *):not(.amx-ptn-stack-panel:not(.horizontal) > *)
-{
-    height: 100%;
 }
 
 .amx-ptn-va-bottom {
