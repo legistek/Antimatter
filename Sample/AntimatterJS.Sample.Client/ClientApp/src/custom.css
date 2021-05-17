@@ -4,10 +4,10 @@
     font-family: "IconFont";
     src: url("/Legistek-Custom.woff") format('woff');
 }
-
-body {
+/*
+body {*/
     /*all: unset;*/
-    margin: 0px;
+    /*margin: 0px;
     font-size: 14px;
     -webkit-user-drag: none;
     user-select: none;
@@ -19,7 +19,7 @@ body {
     left: 0;
     right: 0;
     max-width: 100%;
-}
+}*/
 /*
 .amx-listbox .cell-94 {
     padding: 0px;
@@ -30,18 +30,18 @@ body {
     min-height: 0px;
 }
 */
-div {
+/*div {*/
     /* Please think twice and then three times more before changing this */
 
-    position: relative;
+    /*position: relative;*/
     /*line-height: 1.2rem;*/
-    border-style: solid;
+    /*border-style: solid;
     border-width: 0px;
     box-shadow: unset;
-    box-sizing: content-box;
+    box-sizing: content-box;*/
 
     /*align-self: stretch;*/
-}
+/*}
 
 .amx-root {
     max-height: 100%;
@@ -88,7 +88,7 @@ div {
 }
 
 .amx-border {
-}
+}*/
 
 /*:not(.amx-ha-left):not(.amx-ha-center):not(.amx-ha-right).amx-border {*/
     /* amx-border relies on margin, not padding, which is ordinarily fine as
@@ -100,7 +100,7 @@ div {
     right: 0px;
 }*/
 
-.amx-panel
+/*.amx-panel
 {
 }
 
@@ -139,7 +139,7 @@ div {
         .amx-stack-panel.horizontal > .amx-standard-control {
             width: auto;
             margin-bottom: 0px;
-        }
+        }*/
 
         /*.amx-stack-panel.horizontal > * {
             margin-left: 5px;
@@ -168,16 +168,16 @@ div {
         /*margin-bottom: 0px;
     }*/
 
-.amx-headered-grid {
+/*.amx-headered-grid {
     display: grid;
     grid-template-rows: auto 1fr;
-}
+}*/
 
 /*.amx-headered-grid > div {
     padding: 5px;
 }*/
 
-a {
+/*a {
     color: #0366d6;
 }
 
@@ -221,4 +221,4 @@ code {
 
 .amx-grow-entrance {
     animation: 1s 0s 1 growFrom0;
-}
+}*/

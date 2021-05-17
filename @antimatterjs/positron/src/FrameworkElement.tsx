@@ -93,7 +93,7 @@ export class FrameworkElement<
                     this.state.IsLoading && this.state.LoadingTemplate
                         ? this.state.LoadingTemplate()
                         : (this.state.ToolTip
-                            ? (<TooltipHost content={this.state.ToolTip}>
+                            ? (<TooltipHost content={this.state.ToolTip} closeDelay={60000}>
                                     { this.renderElement()}
                                 </TooltipHost>)
                             : this.renderElement())
