@@ -100,7 +100,7 @@ export class Company extends AntimatterComponent
                         {
                             Header: "First Name",
                             Key: "firstName",
-                            Template: (item) => (<TextBlock Text={new Binding("FirstName")}/>)                                                        
+                            Template: (item) => (<TextBlock Text={new Binding("FirstName")} />)                                                        
                         },
                         {
                             Header: "Last Name",

@@ -10,8 +10,12 @@ body {
 
 /* For some reason this is necessary for MS DetailsList resizing and
     any other Layer's to work I guess. */
-.ms-Layer > .ms-Layer-content {
-    height: 100%;
+.ms-Fabric.ms-Layer-content {
+    /*height: 100%;*/
+}
+.amx-ptn-fe .ms-List-cell 
+{
+    min-height: 0px;
 }
 
 .amx-ptn-fe {

@@ -53,7 +53,7 @@ namespace Antimatter.Net
                 return;
             }
 
-            sw.WriteLine($"export class {type.Name} {{");
+            sw.WriteLine($"export class {type.Name.Replace('`', '_')} {{");
 
             // get every property and field
             var allProps = type.GetRuntimeProperties();
@@ -62,17 +62,22 @@ namespace Antimatter.Net
             HashSet<string> names = new HashSet<string>();
 
             foreach (var prop in allProps)
-            {                    
+            {
                 if (!(prop.GetAccessors(false)?.Length > 0))
                     continue;   // no public getters
-                if (prop.PropertyType.IsGenericType)
+                if (prop.PropertyType.IsGenericType &&
+                    !typeof(IEnumerable).IsAssignableFrom(prop.PropertyType))
                     continue;   // we don't do generics yet
+                if (prop.PropertyType.Name.Contains("Tuple"))
+                    ;
+                if (typeof(Tuple).IsAssignableFrom(prop.PropertyType))
+                    continue;
                 if (names.Contains(prop.Name))
                     continue;
                 sw.WriteLine($"\tpublic {prop.Name}?: {CSTypeToTSType(prop.PropertyType)};");
                 names.Add(prop.Name);
-            }            
-            
+            }
+
             sw.WriteLine("}\r\n");
 
             _doneTypes.Add(type);
@@ -127,6 +132,8 @@ namespace Antimatter.Net
                 if (!_doneTypes.Contains(csType))
                     _needTypes.Add(csType);
             }
+
+            baseType = baseType.Replace('`', '_');
 
             if (array)
                 return baseType + "[]";

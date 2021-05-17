@@ -5,7 +5,7 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 export interface IContentPresenterProps extends IFrameworkElementProps
 {
     Content?: ModelObjectReference | Binding
-    ContentTemplate?: (content: ModelObjectReference) => JSX.Element;
+    ContentTemplate?: (content?: ModelObjectReference) => JSX.Element;
 }
 export interface IContentPresenterState extends IFrameworkElementState
 {
@@ -13,7 +13,10 @@ export interface IContentPresenterState extends IFrameworkElementState
     ContentTemplate?: (content?: ModelObjectReference) => JSX.Element;
 }
 
-export class ContentPresenter extends FrameworkElement<IContentPresenterProps, IContentPresenterState>
+export class ContentPresenter<
+    P extends IContentPresenterProps = {},
+    S extends IContentPresenterState = {}>
+    extends FrameworkElement<P, S>
 {    
     /* override */ renderElement(): JSX.Element
     {
