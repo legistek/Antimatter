@@ -1,14 +1,10 @@
 import * as React from 'react';
-import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode, DetailsRow, getTheme, IColumn, IDetailsHeaderProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
+import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode, DetailsRow, getTheme, IColumn, IDetailsHeaderProps, IDetailsListProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding } from '@antimatterjs/react';
-import { CheckBox } from './CheckBox';
-import { Panel } from './Panel';
-import { HorizontalAlignment } from '../Enums';
-import { Glyph } from './Glyph';
 
 interface IDataGridCellCommon
 {
@@ -84,24 +80,8 @@ export class DataGrid<
                             cellRightPadding: 0,
                             cellExtraRightPadding: 0,
                         }}
-                        checkboxCellClassName="hobo"
                         useReducedRowRenderer={true}
                         compact={true}
-                        onRenderCheckbox={(props, defaultRender) =>
-                        {
-                            if (props?.checked)
-                            {
-                                return (
-                                    <div style={{height: templatedParent.state.RowHeight || 32}}>
-                                        <Glyph Icon={0xE9A4} />
-                                    </div>
-                                );
-                            }
-                            else
-                            {
-                                return (<></>);
-                            }
-                        }}
                         onRenderDetailsHeader={
                             // tslint:disable-next-line:jsx-no-lambda
                             (detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => (
@@ -109,11 +89,6 @@ export class DataGrid<
                                     {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
                                 </Sticky>
                             )}
-                        styles={{
-                            root: {
-                                minHeight: 0
-                            },                           
-                        }}
                         onRenderRow={(props, defaultRender) =>
                         {
                             if (!props)
@@ -129,34 +104,15 @@ export class DataGrid<
                                 root: {
                                     height: templatedParent.state.RowHeight || 32,
                                     minHeight: 0,
+                                    // Draw your own grid lines here
                                     borderColor: DataGrid.theme.semanticColors.bodyDivider,
                                     borderWidth: "0px 0px 1px 0px",
                                     borderStyle: "solid"
                                 },
-                                cellMeasurer: {
-                                    height: templatedParent.state.RowHeight || 32,
-                                    minHeight: 0
-                                },
-                                cellUnpadded: {
-                                    height: templatedParent.state.RowHeight || 32,
-                                    minHeight: 0
-                                },
-                                cellPadded: {
-                                    height: templatedParent.state.RowHeight || 32,
-                                    minHeight: 0
-                                },
                                 checkCell: {
                                     height: templatedParent.state.RowHeight || 32,
                                     minHeight: 0
-                                },
-                                check: {
-                                    height: templatedParent.state.RowHeight || 32,
-                                    minHeight: 0
-                                },
-                                checkCover: {
-                                    height: templatedParent.state.RowHeight || 32,
-                                    minHeight: 0
-                                },
+                                },                                
                             };
                             return defaultRender ? defaultRender(props) : (<></>);
                         }}
@@ -189,7 +145,6 @@ export class DataGrid<
                 isPadded: true,
                 onColumnResize: (width) =>
                 {
-
                 },
                 onRender: (item, index, column) =>
                 (

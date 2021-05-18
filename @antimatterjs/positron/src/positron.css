@@ -104,6 +104,10 @@ body {
     height: auto;
 }
 
+.ms-DetailsRow-check.ms-Check-checkHost {
+    height: 100%;
+}
+
 .amx-ptn-datagridcell {
     display: flex;
     height: 100%;
