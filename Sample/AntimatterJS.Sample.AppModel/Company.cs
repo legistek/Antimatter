@@ -31,6 +31,48 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
+
+
+        #region Employee[] SelectedEmployees property
+        private Employee[] _SelectedEmployees;
+        public Employee[] SelectedEmployees
+        {
+            get
+            {
+                return _SelectedEmployees;
+            }
+            set
+            {
+                if (_SelectedEmployees != value)
+                {
+                    _SelectedEmployees = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+
+        #region bool IsAllSelected property
+        private bool _IsAllSelected;
+        public bool IsAllSelected
+        {
+            get
+            {
+                return _IsAllSelected;
+            }
+            set
+            {
+                if (_IsAllSelected != value)
+                {
+                    _IsAllSelected = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+
         #region Employee SelectedEmployee property
         private Employee _SelectedEmployee;
         public Employee SelectedEmployee
@@ -154,6 +196,8 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+
 
         public override string ToString()
         {

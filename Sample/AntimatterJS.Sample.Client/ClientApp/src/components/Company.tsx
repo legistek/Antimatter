@@ -97,6 +97,8 @@ export class Company extends AntimatterComponent
 
                 <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                     RowHeight={44}
+                    SelectedItems={new Binding("SelectedEmployees")}
+                    IsSelectAll={new Binding("IsAllSelected")}
                     Columns={[
                         {
                             Header: "First Name",

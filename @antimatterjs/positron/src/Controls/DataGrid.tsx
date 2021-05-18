@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { ColumnActionsMode, ConstrainMode, DetailsList, DetailsListLayoutMode, DetailsRow, getTheme, IColumn, IDetailsHeaderProps, IDetailsListProps, IRenderFunction, ScrollablePane, Sticky } from '@fluentui/react';
+import * as Fluent from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
-import { Binding } from '@antimatterjs/react';
+import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { SelectionMode } from '../Enums';
 
 interface IDataGridCellCommon
 {
@@ -42,15 +43,22 @@ export class DataGridCell<
 
 interface IDataGridCommon
 {
-    Columns?: IDataGridColumn[]
+    Columns?: IDataGridColumn[],
+    SelectionMode?: SelectionMode
 }
 export interface IDataGridProps extends IItemsControlProps, IDataGridCommon
 {
-    RowHeight?: number | Binding
+    RowHeight?: number | Binding,    
+    CanSelect?: boolean | Binding,
+    IsSelectAll?: boolean | Binding,
+    SelectedItems?: any[] | Binding,
 }
 export interface IDataGridState extends IItemsControlState, IDataGridCommon
 {
-    RowHeight?: number
+    RowHeight?: number,
+    CanSelect?: boolean,
+    IsSelectAll?: boolean,
+    SelectedItems?: any[],
 }
 
 export interface IDataGridColumn
@@ -68,27 +76,70 @@ export class DataGrid<
     S extends IDataGridState = {}>
     extends ItemsControl<P, S>
 {
-    public static theme = getTheme();
+    /* private */ _selection: Fluent.Selection;
+
+    public static DefaultBindings = {
+        SelectedItems: {
+            Mode: BindingMode.TwoWay
+        },
+        IsSelectAll: {
+            Mode: BindingMode.TwoWay
+        },
+        ItemsSource: {
+            NotifyCollectionChanged: true
+        }
+    };
+
+    constructor(props)
+    {
+        super(props);
+        this._selection = new Fluent.Selection(
+            {
+                onSelectionChanged: this.OnSelectionChanged.bind(this)
+            });
+    }
+
+    /* private */ OnSelectionChanged()
+    {
+        const isAll = this._selection.isAllSelected();
+        if (isAll !== this.state.IsSelectAll)
+            this.SetValue(nameof(this.state.IsSelectAll), this._selection.isAllSelected(), false);
+        if (isAll)
+            return;
+
+        var sel = this._selection.getSelection();
+        this.SetValue(nameof(this.state.SelectedItems), sel, false);
+    }
+
+    public static theme = Fluent.getTheme();
 
     public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
         {
             Template: (templatedParent: DataGrid<IDataGridProps, IDataGridState>) => (
-                <ScrollablePane>
-                    <DetailsList
+                <Fluent.ScrollablePane>
+                    <Fluent.DetailsList
                         cellStyleProps={{
                             cellLeftPadding: 0,
                             cellRightPadding: 0,
                             cellExtraRightPadding: 0,
                         }}
+                        selection={templatedParent._selection}
+                        selectionMode={
+                            templatedParent.state.CanSelect === false ? Fluent.SelectionMode.none :
+                                (templatedParent.state.SelectionMode === SelectionMode.Single
+                                ? Fluent.SelectionMode.single
+                                : Fluent.SelectionMode.multiple)}
                         useReducedRowRenderer={true}
                         compact={true}
                         onRenderDetailsHeader={
                             // tslint:disable-next-line:jsx-no-lambda
-                            (detailsHeaderProps?: IDetailsHeaderProps, defaultRender?: IRenderFunction<IDetailsHeaderProps>) => (
-                                <Sticky>
+                            (detailsHeaderProps?: Fluent.IDetailsHeaderProps, defaultRender?: Fluent.IRenderFunction<Fluent.IDetailsHeaderProps>) => (
+                                <Fluent.Sticky>
                                     {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
-                                </Sticky>
+                                </Fluent.Sticky>
                             )}
+                        
+                        getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
                         onRenderRow={(props, defaultRender) =>
                         {
                             if (!props)
@@ -116,20 +167,20 @@ export class DataGrid<
                             };
                             return defaultRender ? defaultRender(props) : (<></>);
                         }}
-                        constrainMode={ConstrainMode.unconstrained}
-                        layoutMode={DetailsListLayoutMode.justified}
+                        constrainMode={Fluent.ConstrainMode.unconstrained}
+                        layoutMode={Fluent.DetailsListLayoutMode.justified}
                         items={templatedParent.state.ItemsSource || []}
                         columns={templatedParent.ConstructColumns()} />
-                </ScrollablePane>
+                </Fluent.ScrollablePane>
             )
         }
     );
 
-    /* private */ ConstructColumns(): IColumn[]
+    /* private */ ConstructColumns(): Fluent.IColumn[]
     {
         if (!this.state.Columns || this.state.Columns.length === 0)
             return [];
-        let cols: IColumn[] = [];
+        let cols: Fluent.IColumn[] = [];
         for (const col of this.state.Columns as IDataGridColumn[])
         {
             cols.push({
@@ -141,7 +192,7 @@ export class DataGrid<
                 currentWidth: 50,
                 data: col,
                 isResizable: true,
-                columnActionsMode: ColumnActionsMode.clickable,
+                columnActionsMode: Fluent.ColumnActionsMode.clickable,
                 isPadded: true,
                 onColumnResize: (width) =>
                 {

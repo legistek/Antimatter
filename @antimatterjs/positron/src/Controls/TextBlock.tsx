@@ -47,7 +47,7 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 
     /* override */ renderElement()
     {
-        return (<>{this.state.Text}</>);
+        return (<>{this.state.Text?.toString() || ""}</>);
     }
 
     /* override */ getCSSStyles()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Linq;
 
 namespace Antimatter.Net
 {
@@ -101,7 +102,7 @@ namespace Antimatter.Net
             set => _collection = value;
         }
 
-        internal object ToCSValue(Reactor mgr)
+        internal object ToCSValue(Reactor mgr, Type desiredType = null)
         {
             switch (this.Type)
             {                
@@ -128,9 +129,21 @@ namespace Antimatter.Net
                     return new DateTime(this.LongValue, DateTimeKind.Utc);
                 case ModelValueType.TimeSpan:
                     return new TimeSpan(this.LongValue);
-                case ModelValueType.Object:
-                case ModelValueType.Collection:
+                case ModelValueType.Object:                
                     return mgr.GetReference(this.objectHandle)?.Object;
+                case ModelValueType.Collection:             
+                    if (desiredType.IsArray)
+                    {
+                        Array arr = Array.CreateInstance(desiredType.GetElementType(), this.Collection.Length);
+                        for (int i = 0; i < this.Collection.Length; i++)
+                            arr.SetValue(this.Collection[i].ToCSValue(mgr), i);
+                        return arr;
+                    }
+                    else
+                    {
+                        // TODO!
+                    }
+                    break;
             }
             return null;
         }
