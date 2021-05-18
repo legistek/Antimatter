@@ -96,7 +96,7 @@ export class Company extends AntimatterComponent
                 </StackPanel>
 
                 <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                    RowHeight={48}
+                    RowHeight={44}
                     Columns={[
                         {
                             Header: "First Name",
