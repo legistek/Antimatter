@@ -196,11 +196,16 @@ namespace Antimatter.Net.Internal
             if (_suspendPropertyChangeReport)
                 return;
 
+            // TODO - What if value is actually unchanged (but collections?)
+            var dnv = _reactor.GetModelValue(value, this.MarshalValue);   // do this first
+            if (dnv.Type != ModelValueType.Collection && dnv.Equals(_lastValue))
+                return;
+
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
                 incc.CollectionChanged += OnSourceCollectionChanged;
 
-            // TODO - What if value is actually unchanged (but collections?)
-            var dnv = _reactor.GetModelValue(value, this.MarshalValue);   // do this first
+
+            
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 

@@ -124,6 +124,7 @@ export class DataGridBase<
                             cellRightPadding: 0,
                             cellExtraRightPadding: 0,
                         }}
+                        selectionPreservedOnEmptyClick={false}
                         selection={templatedParent._selection}
                         selectionMode={
                             templatedParent.state.CanSelect === false ? Fluent.SelectionMode.none :

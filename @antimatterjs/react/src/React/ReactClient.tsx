@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
 import { Component } from 'react';
 import { useHistory } from 'react-router';
 
@@ -117,7 +118,11 @@ export class ReactClient implements IClient
             var newSourceValue = value;
             if (exp.Parameters.ConverterBack)
                 newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
-            Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(newSourceValue));
+            var index = exp.Index;
+            unstable_batchedUpdates(() =>
+            {            
+                Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
+            });
         }
         if (reRender !== false)
         {
@@ -137,12 +142,12 @@ export class ReactClient implements IClient
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
         if (!target)
-            return;
-       
+            return;      
         if (!target.setState)
             return;
         if (!target.state)
             target.state = {};
+
         if (target.state[targetProperty] != value)
         {
             if (reRender)
@@ -152,10 +157,9 @@ export class ReactClient implements IClient
                 target.setState(newState);
             }
             target.state[targetProperty] = value;
+            if (target.OnPropertyChanged)
+                target.OnPropertyChanged(targetProperty, value);
         }      
-
-        if (target.OnPropertyChanged)
-            target.OnPropertyChanged(targetProperty, value);
 
         var inpc = (target as INotifyPropertyChanged);
         if (inpc?.PropertyChanged)

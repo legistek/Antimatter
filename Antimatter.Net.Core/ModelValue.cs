@@ -15,6 +15,14 @@ namespace Antimatter.Net
             Type = ModelValueType.None
         };
 
+        public override bool Equals(object obj)
+        {
+            return obj is ModelValue mv &&
+                mv.Type == this.Type &&
+                mv.StringValue == this.StringValue &&
+                mv.ObjectHandle == this.ObjectHandle;
+        }
+
         [FieldOffset(0)]
         private ModelValueType type;
         public ModelValueType Type

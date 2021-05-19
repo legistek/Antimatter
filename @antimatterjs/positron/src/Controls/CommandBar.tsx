@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ModelObjectReference } from '@antimatterjs/react';
-import { CommandBar as FluentCommandBar, ICommandBarItemProps } from '@fluentui/react';
+import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } from '@fluentui/react';
 
 import { Style } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
@@ -11,13 +11,16 @@ import { IPanelProps, IPanelState, Panel } from './Panel';
 class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 {
     _commandItems: ICommandBarItemProps[] = [];
+    _bar?: ICommandBar | null;
+    _renderIter: number = 0;
 
     /* override */ renderElement(): JSX.Element | null
     {
         this.AssembleCommandItems();
         return (
-            <FluentCommandBar               
+            <FluentCommandBar
                 items={this._commandItems}
+                componentRef={r => this._bar = r}
                 styles={{
                     root: {
                         padding: "0px",
@@ -27,6 +30,12 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
                 }}
             />
         );
+    }
+
+    /* override */ OnInvalidateRender()
+    {
+        //this._bar?.remeasure();
+        this._renderIter++;
     }
 
     AssembleCommandItems(): void
@@ -47,14 +56,16 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
                 continue;
 
             const cmdProps: ICommandBarItemProps = {
-                key: cmd.Handle.toString(),
+                key: cmd.Handle.toString(),// + "-" + this._renderIter,
                 data: cmd,
-                renderedInOverflow: true,
+                cacheKey: cmd.Handle.toString() + "-" + this._renderIter,
                 onRender: (item, dismissMenu) =>
-                    itemsParent?.OnRenderItem(item.data,
+                {
+                    return itemsParent?.OnRenderItem(item.data,
                         {
                             Command: item.data
-                        }),
+                        });
+                },
             };
 
             this._commandItems.push(cmdProps);
@@ -74,5 +85,22 @@ export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlSt
     /* override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return CommandButton;
+    }
+
+    /* override */ OnRenderItem(item: any, props?: any): JSX.Element | null
+    {
+        props = props || {};
+        props.ItemsParent = this;
+        return super.OnRenderItem(item, props);
+    }
+
+    /* override */ OnPropertyChanged(property: string, value: any)
+    {
+        if (property === nameof(this.state.ItemsSource))
+        {
+            let a: number = 5;
+            this.ItemsPanelInstance?.InvalidateRender();
+        }
+        super.OnPropertyChanged(property, value);
     }
 }

@@ -7,6 +7,7 @@ import './positron.css';
 import { Style } from '@antimatterjs/positron/src/Style';
 import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
+import { ItemsControl } from './Controls/ItemsControl';
 
 interface IFrameworkElementCommon
 {
@@ -23,7 +24,8 @@ interface IFrameworkElementCommon
     OnLostPointerCapture?: (event: PointerEvent)=> void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element
+    LoadingTemplate?: () => JSX.Element,
+    ItemsParent?: ItemsControl
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -50,6 +52,7 @@ export class FrameworkElement<
     implements INotifyPropertyChanged
 {
     _calledLoaded: boolean = false;
+    _isRenderValid: boolean = false;
 
     constructor(props)
     {
@@ -65,6 +68,8 @@ export class FrameworkElement<
     {
         if (this.state.IsVisible === false)
             return null;
+
+        this._isRenderValid = true;
 
         return (
             <div
@@ -104,8 +109,14 @@ export class FrameworkElement<
 
     public InvalidateRender()
     {
+        if (!this._isRenderValid)
+            return;
+        this._isRenderValid = false;
         this.OnInvalidateRender();
-        this.setState({});        
+        this.setState((state, props) => 
+        {
+            return {};
+        });
     }
 
     public BindState(parameters: BindingParameters, stateVar?: string): any
@@ -158,7 +169,9 @@ export class FrameworkElement<
     /* virtual */ OnPropertyChanged(property: string, value: any)
     {
         if (!this._calledLoaded && value && property === nameof(this.state.LoadedCommand))
-            this.callLoadedCommand();       
+            this.callLoadedCommand();
+        if (this.state.ItemsParent && property === nameof(this.state.IsVisible))
+            this.state.ItemsParent.InvalidateRender();
     }
 
     /* virtual */ GetLoadedCommandParameter(): any
