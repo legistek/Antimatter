@@ -48,7 +48,8 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 
             const cmdProps: ICommandBarItemProps = {
                 key: cmd.Handle.toString(),
-                data: cmd,                
+                data: cmd,
+                renderedInOverflow: true,
                 onRender: (item, dismissMenu) =>
                     itemsParent?.OnRenderItem(item.data,
                         {

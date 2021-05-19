@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Linq;
+using System.Collections;
 
 namespace Antimatter.Net
 {
@@ -31,11 +32,11 @@ namespace Antimatter.Net
         }
 
         [FieldOffset(8)]
-        private string keyValue;
-        public string KeyValue
+        private string key;
+        public string Key
         {
-            get => keyValue;
-            set => keyValue = value;
+            get => key;
+            set => key = value;
         }
 
         [FieldOffset(16)]
@@ -134,14 +135,19 @@ namespace Antimatter.Net
                 case ModelValueType.Collection:             
                     if (desiredType.IsArray)
                     {
-                        Array arr = Array.CreateInstance(desiredType.GetElementType(), this.Collection.Length);
+                        Type elementType = desiredType.GetElementType();
+                        Array arr = Array.CreateInstance(elementType, this.Collection.Length);
                         for (int i = 0; i < this.Collection.Length; i++)
-                            arr.SetValue(this.Collection[i].ToCSValue(mgr), i);
+                            arr.SetValue(this.Collection[i].ToCSValue(mgr, elementType), i);
                         return arr;
                     }
-                    else
+                    else if (desiredType.IsGenericType && typeof(IList).IsAssignableFrom(desiredType))
                     {
-                        // TODO!
+                        var coll = Activator.CreateInstance(desiredType) as IList;
+                        Type elementType = desiredType.GetGenericArguments()[0];
+                        for (int i = 0; i < this.Collection.Length; i++)
+                            coll.Add(this.Collection[i].ToCSValue(mgr, elementType));
+                        return coll;
                     }
                     break;
             }

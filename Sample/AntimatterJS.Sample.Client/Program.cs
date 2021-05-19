@@ -1,4 +1,6 @@
+using Antimatter.Net.SignalR;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,7 +15,10 @@ namespace AntimatterJS.Sample.Client
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            AntimatterRelay.Instance = host.Services
+                .GetService(typeof(IHubContext<AntimatterRelay>)) as IHubContext<AntimatterRelay>;
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

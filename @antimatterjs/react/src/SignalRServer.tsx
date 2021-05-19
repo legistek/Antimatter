@@ -4,6 +4,7 @@ import { BindingExpression } from "./BindingExpression";
 import { ModelObjectReference } from "./ModelObjectReference";
 import { ModelValue, ModelValueType } from './ModelValue';
 import { Utilities } from './Utilities';
+import { Antimatter } from './Antimatter';
 
 export class SignalRServer implements IServer
 {    
@@ -17,6 +18,7 @@ export class SignalRServer implements IServer
     public async StartupAsync(): Promise<void>
     {
         this._connection.on("UpdateBinding", this.UpdateBinding.bind(this));
+        this._connection.on("NavigateTo", this.NavigateTo.bind(this));
         await this._connection.start();
         await this._connection.invoke("Startup");
     }
@@ -62,6 +64,11 @@ export class SignalRServer implements IServer
         var valueObj = JSON.parse(valueJson) as ModelValue;
         var value = this.getDotNetValue(valueObj);
         BindingExpression.OnExternalSourceValueChanged(bxIndex, value, valueObj.Type || ModelValueType.Null);
+    }
+
+    NavigateTo(route: string)
+    {
+        Antimatter._client.NavigateTo(route);
     }
 
     //#endregion

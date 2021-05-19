@@ -44,7 +44,7 @@ export class DataGridCell<
 interface IDataGridCommon
 {
     Columns?: IDataGridColumn[],
-    SelectionMode?: SelectionMode
+    SelectionMode?: SelectionMode,
 }
 export interface IDataGridProps extends IItemsControlProps, IDataGridCommon
 {
@@ -66,12 +66,13 @@ export interface IDataGridColumn
     Template: (item: any) => JSX.Element;    
     Header: string;
     Key: string;
-
+    Width?: number,
+    CanResize?: boolean,
     EditTemplate?: (item: any) => JSX.Element;
     Data?: any;
 }
 
-export class DataGrid<
+export class DataGridBase<
     P extends IDataGridProps = {},
     S extends IDataGridState = {}>
     extends ItemsControl<P, S>
@@ -115,7 +116,7 @@ export class DataGrid<
 
     public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
         {
-            Template: (templatedParent: DataGrid<IDataGridProps, IDataGridState>) => (
+            Template: (templatedParent: DataGridBase<IDataGridProps, IDataGridState>) => (
                 <Fluent.ScrollablePane>
                     <Fluent.DetailsList
                         cellStyleProps={{
@@ -158,7 +159,8 @@ export class DataGrid<
                                     // Draw your own grid lines here
                                     borderColor: DataGrid.theme.semanticColors.bodyDivider,
                                     borderWidth: "0px 0px 1px 0px",
-                                    borderStyle: "solid"
+                                    borderStyle: "solid",
+                                    width: "100%"
                                 },
                                 checkCell: {
                                     height: templatedParent.state.RowHeight || 32,
@@ -168,7 +170,7 @@ export class DataGrid<
                             return defaultRender ? defaultRender(props) : (<></>);
                         }}
                         constrainMode={Fluent.ConstrainMode.unconstrained}
-                        layoutMode={Fluent.DetailsListLayoutMode.justified}
+                        layoutMode={Fluent.DetailsListLayoutMode.fixedColumns}
                         items={templatedParent.state.ItemsSource || []}
                         columns={templatedParent.ConstructColumns()} />
                 </Fluent.ScrollablePane>
@@ -186,14 +188,14 @@ export class DataGrid<
             cols.push({
                 name: col.Header,
                 key: col.Key,
-                minWidth: 50,
+                minWidth: 25,
                 maxWidth: 300,
-                calculatedWidth: 75,
-                currentWidth: 50,
+                calculatedWidth: col.Width,
+                currentWidth: col.Width,
                 data: col,
-                isResizable: true,
-                columnActionsMode: Fluent.ColumnActionsMode.clickable,
-                isPadded: true,
+                isResizable: col.CanResize === undefined ? true : col.CanResize,
+                columnActionsMode: col.CanResize !== false ? Fluent.ColumnActionsMode.clickable : Fluent.ColumnActionsMode.disabled,
+                isPadded: false,
                 onColumnResize: (width) =>
                 {
                 },
@@ -208,4 +210,8 @@ export class DataGrid<
         }
         return cols;
     }
+}
+
+export class DataGrid extends DataGridBase<IDataGridProps, IDataGridState>
+{
 }

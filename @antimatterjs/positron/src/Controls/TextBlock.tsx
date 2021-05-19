@@ -8,14 +8,14 @@ interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
     FontFamily?: string,
-    FontSize?: number,
+    FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal"
 }
 interface ITextBlockState extends IFrameworkElementState
 {
     Text?: string | undefined,
     FontFamily?: string,
-    FontSize?: number,
+    FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal"
 }
 export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState>

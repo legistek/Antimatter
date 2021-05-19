@@ -91,10 +91,7 @@ namespace Antimatter.Net.Internal
                 Debug.WriteLine(
                     $"Property change triggering update for source {this.LastPropertySource}");
                 try
-                {
-                    if (value is IEnumerable ie) ;
-
-                        
+                {                      
                     this.PropertyKey.SetValue(this.LastPropertySource, value);
                 }
                 catch (Exception ex)

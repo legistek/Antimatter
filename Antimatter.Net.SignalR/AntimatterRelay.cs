@@ -11,9 +11,15 @@ namespace Antimatter.Net.SignalR
     {
         public static event SessionStartupDelegate StartupSession;
 
+        public static IHubContext<AntimatterRelay> Instance { get; set; }
+
         public AntimatterRelay()
         {
-            Reactor.Initialize(this);
+            Reactor.Initialize(this);            
+        }
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
         }
 
         [AMXClientInvocable]
@@ -74,13 +80,13 @@ namespace Antimatter.Net.SignalR
 
         void IClient.NavigateTo(string clientID, string route)
         {
-            Clients.Client(clientID)?.SendAsync("NavigateTo", route);
+            Instance.Clients.Client(clientID)?.SendAsync("NavigateTo", route);
         }
 
         void IClient.UpdateBinding(string clientID, int bxIndex, ModelValue value)
         {
             var json = JsonConvert.SerializeObject(value);
-            Clients.Client(clientID)?.SendAsync("UpdateBinding", bxIndex, json);
+            Instance.Clients.Client(clientID)?.SendAsync("UpdateBinding", bxIndex, json);
         }
 
         private Reactor GetOrCreateReactor()
