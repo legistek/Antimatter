@@ -4,7 +4,7 @@ import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react'
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
 import { Panel, IPanelProps } from './Panel';
-import { StackPanel } from './StackPanel';
+import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style } from '../Style';
 
@@ -86,7 +86,7 @@ export class ItemsControl<
 
     /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return StackPanel;
+        return StackPanelBase;
     }
 
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element

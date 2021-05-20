@@ -13,12 +13,12 @@ export interface IStackPanelState extends IPanelState
     Orientation?: Orientation
 }
 
-export class StackPanel<P extends IStackPanelProps = {}, S extends IStackPanelState = {}>
+export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPanelState = {}>
     extends Panel<P, S>
 {
     /* override */ constructClasses(): string
     {        
-        return "amx-ptn-stack-panel amx-ptn-panel "
+        return "amx-ptn-stack-panel "
             + (this.state.Orientation === Orientation.Horizontal ? "horizontal " : "")
             + super.constructClasses();
     }
@@ -38,4 +38,8 @@ export class StackPanel<P extends IStackPanelProps = {}, S extends IStackPanelSt
             return (<>{ this.props.children }</>);
         }
     }    
+}
+
+export class StackPanel extends StackPanelBase<IStackPanelProps, IStackPanelState>
+{
 }

@@ -119,8 +119,7 @@ body {
 
 .amx-ptn-fe > .amx-ptn-va-stretch {
     max-height: 100%;
-    overflow: hidden;
-    flex-direction: column;
+    overflow: hidden;   
     top: 0px;
     bottom: 0px;
     height: 100%;
@@ -202,32 +201,10 @@ body {
             /*margin-bottom: 0px;*/
         }
 
-/*.amx-ptn-stack-panel.horizontal > * {
-            margin-left: 5px;
-            margin-right: 0px;
-            margin-bottom: 0px;
-            margin-top: 0px;
-        }
-
-            .amx-ptn-stack-panel.horizontal > *:first-child {*/
-/*padding-left: 0px;*/
-/*margin-left: 0px;
-            }
-
-            .amx-ptn-stack-panel.horizontal > *:last-child {*/
-/*padding-right: 0px;*/
-/*margin-right: 0px;
-            }*/
-
-/*.amx-ptn-stack-panel > *:first-child {
-        padding-top: 0px;
-        margin-top: 0px;
-    }
-
-    .amx-ptn-stack-panel > *:last-child {*/
-/*padding-bottom: 0px;*/
-/*margin-bottom: 0px;
-    }*/
+.amx-ptn-wrap-panel {
+    display: flex;
+    flex-wrap: wrap;
+}
 
 .amx-ptn-headered-grid {
     display: grid;

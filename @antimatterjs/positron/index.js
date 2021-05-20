@@ -10,6 +10,7 @@ export * from './src/Controls/Grid';
 export * from './src/Controls/Window';
 export * from './src/Controls/Panel';
 export * from './src/Controls/StackPanel';
+export * from './src/Controls/WrapPanel';
 export * from './src/Controls/GroupBox';
 export * from './src/Controls/Primitives/ButtonBase';
 export * from './src/Controls/Primitives/ToggleButton';
