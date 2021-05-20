@@ -53,7 +53,7 @@ namespace Antimatter.Net.Internal
             this.SourceReference = null;
         }
 
-        public void UpdateSource(ModelValue value)
+        public void UpdateSource(ModelValue modelValue)
         {
             this._suspendPropertyChangeReport = true;
             try
@@ -61,8 +61,12 @@ namespace Antimatter.Net.Internal
                 if (!(this.PathComponents.Length > 0))
                     // No two-way binding if no path
                     return;
+
+                ReleaseLastValue();
+                _lastValue = modelValue;
+
                 this.PathComponents.Last()
-                    .OnTargetPropertyChanged(value, _reactor);                
+                    .OnTargetPropertyChanged(modelValue, _reactor);                
             }
             finally
             {
@@ -203,9 +207,7 @@ namespace Antimatter.Net.Internal
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
                 incc.CollectionChanged += OnSourceCollectionChanged;
-
-
-            
+                        
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 

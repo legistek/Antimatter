@@ -44,13 +44,13 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                     templatedParent.state.IsDefault
                         ? (<PrimaryButton
                             style={{ minWidth: "90px" }}
-                            onClick={(e) => templatedParent.OnClick()}
+                            onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}>
                             {templatedParent.state.Label}
                           </PrimaryButton>)
                         : (<DefaultButton
                             style={{ minWidth: "90px" }}
-                            onClick={(e) => templatedParent.OnClick()}
+                            onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}>
                             {templatedParent.state.Label}
                         </DefaultButton>)
@@ -64,7 +64,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                 Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <PrimaryButton
-                        onClick={(e) => templatedParent.OnClick()}
+                        onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
@@ -88,7 +88,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                             padding: templatedParent.state.Padding,
                             backgroundColor: 'transparent'
                         }}
-                        onClick={(e) => templatedParent.OnClick()}
+                        onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
@@ -123,7 +123,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                                 margin: "0px"
                             }
                         }}
-                        onClick={(e) => templatedParent.OnClick()}
+                        onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}

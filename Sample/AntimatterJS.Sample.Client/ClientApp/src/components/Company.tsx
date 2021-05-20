@@ -3,13 +3,23 @@ import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
-import { ListBox, SelectionMode, ItemsStackPanel, GroupBox, CommandButton, CommandBar, DataGrid, VerticalAlignment } from '@antimatterjs/positron';
+import
+    {
+        ListBox, SelectionMode,
+        ItemsStackPanel, GroupBox, CommandButton,
+        CommandBar, DataGrid, VerticalAlignment,
+        Popup,
+        PlacementMode,
+        FrameworkElement
+    } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
     static displayName = Employee.name;
+
+    private _cb?: CheckBox|null;
 
     render()
     {
@@ -32,15 +42,35 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <TextBlock Text="Age"/>
 
                     <CheckBox
+                        ref={
+                            r =>
+                            {
+                                this._cb = r;
+                            }
+                        }
                         Label="Bonus Eligible"
-                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))} />                   
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
+                    </CheckBox>
+
+                    <Popup IsOpen={new Binding("IsBonusEligible")}
+                        Background="rgba(255,255,255,.5)"
+                        Blur={10}
+                        Target={
+                            (() =>
+                                this._cb)
+                                .bind(this)
+                        }>
+                        <TextBlock Text="Really Nice bonus"/>
+                    </Popup>
+
                     <TextBox
                         IsVisible={new Binding("IsBonusEligible")}
                         Label="Bonus Amount"
                         Text={new Binding("BonusAmount")}/>
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
-                    <CommandBar ItemsSource={new Binding("Commands")}/>
+                    <CommandBar ItemsSource={new Binding("Commands")} />
+
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}

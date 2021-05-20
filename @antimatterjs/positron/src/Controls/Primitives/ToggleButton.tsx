@@ -23,7 +23,7 @@ export class ToggleButton<P extends IToggleButtonProps = {},
         }
     };
 
-    /* override */ OnClick()
+    /* override */ OnClick(e?: MouseEvent)
     {
         let newValue: boolean | undefined = undefined;
         if (this.props.IsThreeState)
@@ -39,7 +39,7 @@ export class ToggleButton<P extends IToggleButtonProps = {},
         {
             newValue = this.state.IsChecked ? false : true;
         }
-        super.OnClick();
+        super.OnClick(e);
         this.SetValue(nameof(this.state.IsChecked), newValue);
     }
 }

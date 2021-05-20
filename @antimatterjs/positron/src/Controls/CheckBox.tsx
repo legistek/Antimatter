@@ -43,7 +43,9 @@ export class CheckBox extends ToggleButton<ICheckBoxProps, ICheckBoxState>
                     checked={templatedParent.state.IsChecked}
                     indeterminate={templatedParent.state.IsThreeState}
                     onChange={(checked, newValue) =>
-                        templatedParent.OnClick()}
+                    {
+                        templatedParent.OnClick(checked?.nativeEvent as MouseEvent);
+                    }}
                 />
             )
         }

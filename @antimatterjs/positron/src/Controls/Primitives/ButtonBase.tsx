@@ -18,8 +18,11 @@ export abstract class ButtonBase<
     S extends IButtonBaseState = {}>
     extends Control<P, S>
 {
-    /* virtual */ OnClick(): void
+    public static LastMouseEvent?: MouseEvent;
+
+    /* virtual */ OnClick(e?: MouseEvent): void
     {
+        ButtonBase.LastMouseEvent = e;
         if (this.state.Command)
             Antimatter.Server.ExecuteICommand(
                 this.state.Command as ModelObjectReference,

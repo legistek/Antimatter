@@ -27,3 +27,4 @@ export * from './src/Controls/TreeView';
 export * from './src/Controls/LoadingShimmer';
 export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
+export * from './src/Controls/Popup';

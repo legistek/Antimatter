@@ -24,7 +24,7 @@ interface IFrameworkElementCommon
     OnLostPointerCapture?: (event: PointerEvent)=> void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element
+    LoadingTemplate?: () => JSX.Element,
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -54,6 +54,8 @@ export class FrameworkElement<
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
 
+    public Container: any;
+
     constructor(props)
     {
         super(props);        
@@ -73,6 +75,7 @@ export class FrameworkElement<
 
         return (
             <div
+                ref={r => this.Container = r}
                 style={this.getCSSStyles()}
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
