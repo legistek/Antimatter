@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, RelativeSourceMode } from '@antimatterjs/react';
-import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton } from '@fluentui/react'
+import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps } from '@fluentui/react'
 
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
@@ -80,6 +80,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {                
                 Padding: "8px 0px 8px 0px",
+                IsVisible: true,
                 Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <CommandBarButton
@@ -138,4 +139,11 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     {
         return (!icon) ? undefined : icon.toString(16);
     }
+
+    constructor(props)
+    {
+        super(props);
+    }
+
+
 }

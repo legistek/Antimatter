@@ -93,7 +93,7 @@ export class TreeView<
     }
 
     // Invoked by an external binding changing the selected item
-    /* private */ OnPropertyChanged(prop: string, value: any)
+    /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
         if (prop === nameof(this.state.SelectedItem))
         {
@@ -114,7 +114,7 @@ export class TreeView<
         }
         else
         {
-            super.OnPropertyChanged(prop, value);
+            super.OnPropertyChanged(prop, value, oldValue);
         }
     }
 }

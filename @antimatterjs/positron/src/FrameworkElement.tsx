@@ -24,8 +24,7 @@ interface IFrameworkElementCommon
     OnLostPointerCapture?: (event: PointerEvent)=> void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element,
-    ItemsParent?: ItemsControl
+    LoadingTemplate?: () => JSX.Element
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -53,6 +52,7 @@ export class FrameworkElement<
 {
     _calledLoaded: boolean = false;
     _isRenderValid: boolean = false;
+    _isMeasureValid: boolean = false;
 
     constructor(props)
     {
@@ -166,12 +166,10 @@ export class FrameworkElement<
         return styles;
     }
 
-    /* virtual */ OnPropertyChanged(property: string, value: any)
+    /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (!this._calledLoaded && value && property === nameof(this.state.LoadedCommand))
             this.callLoadedCommand();
-        if (this.state.ItemsParent && property === nameof(this.state.IsVisible))
-            this.state.ItemsParent.InvalidateRender();
     }
 
     /* virtual */ GetLoadedCommandParameter(): any

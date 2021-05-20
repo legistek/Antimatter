@@ -217,7 +217,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this._lastClickedOrSelected = index;
     }
     
-    /* private */ OnPropertyChanged(prop: string, value: any)
+    /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
         if (prop === nameof(this.state.SelectedItem))
         {
@@ -225,7 +225,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         }
         else
         {
-            super.OnPropertyChanged(prop, value);
+            super.OnPropertyChanged(prop, value, oldValue);
         }
     }
 }

@@ -71,11 +71,11 @@ export class ItemsControl<
         }
     }
 
-    /* override */ OnPropertyChanged(property: string, value: any)
+    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.ItemsSource))
             this.ItemsPanelInstance?.InvalidateRender();
-        super.OnPropertyChanged(property, value);
+        super.OnPropertyChanged(property, value, oldValue);
     }
 
     /* override */ OnInvalidateRender(): void

@@ -10,16 +10,17 @@ import { IPanelProps, IPanelState, Panel } from './Panel';
 
 class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 {
-    _commandItems: ICommandBarItemProps[] = [];
+    _allCommandItems?: ICommandBarItemProps[];
+    _visibleCommandItems?: ICommandBarItemProps[];
     _bar?: ICommandBar | null;
-    _renderIter: number = 0;
-
+        
     /* override */ renderElement(): JSX.Element | null
     {
-        this.AssembleCommandItems();
+        this.AssembleActualCommandItems();
+        this._bar?.remeasure();
         return (
             <FluentCommandBar
-                items={this._commandItems}
+                items={this._visibleCommandItems || []}
                 componentRef={r => this._bar = r}
                 styles={{
                     root: {
@@ -32,15 +33,9 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
         );
     }
 
-    /* override */ OnInvalidateRender()
-    {
-        //this._bar?.remeasure();
-        this._renderIter++;
-    }
-
     AssembleCommandItems(): void
     {
-        this._commandItems = [];
+        this._allCommandItems = [];
         var itemsParent = this.state.ItemsParent;
         if (!itemsParent)
             return;
@@ -48,7 +43,7 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
         var items = itemsParent?.state.ItemsSource;
         if (!items || items.length === 0)
             return;
-
+        
         for (const item of items)
         {
             var cmd = item as ModelObjectReference;
@@ -56,19 +51,45 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
                 continue;
 
             const cmdProps: ICommandBarItemProps = {
-                key: cmd.Handle.toString(),// + "-" + this._renderIter,
+                key: cmd.Handle.toString(),
                 data: cmd,
-                cacheKey: cmd.Handle.toString() + "-" + this._renderIter,
-                onRender: (item, dismissMenu) =>
+                onRender: (item: ICommandBarItemProps, dismissMenu) =>
                 {
-                    return itemsParent?.OnRenderItem(item.data,
+                    return itemsParent?.OnRenderItem(
+                        item.data,
                         {
-                            Command: item.data
-                        });
+                            Command: item.data,
+                        }) || <></>;
                 },
             };
 
-            this._commandItems.push(cmdProps);
+            // We have to go through some hoops here because this control won't
+            // remeasure for overflow if the buttons merely change their visibility
+            // so instead we bind to each command's visibility directly and
+            // assemble the command list accordingly. Note CommandBarButtonStyle
+            // always has IsVisible = true for this reason.
+            this.BindState(
+                {
+                    Source: cmd,
+                    Path: "Visibility"
+                }, cmd.Handle.toString() + "IsVisible");
+            
+            this._allCommandItems.push(cmdProps);            
+        }        
+    }
+
+    AssembleActualCommandItems(): void
+    {
+        if (!this._allCommandItems)
+            this.AssembleCommandItems();
+        if (!this._allCommandItems)
+            return;
+
+        this._visibleCommandItems = [];
+        for (const item of this._allCommandItems)
+        {
+            if (this.state[item.key + "IsVisible"])
+                this._visibleCommandItems.push(item);
         }
     }
 }
@@ -87,20 +108,12 @@ export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlSt
         return CommandButton;
     }
 
-    /* override */ OnRenderItem(item: any, props?: any): JSX.Element | null
-    {
-        props = props || {};
-        props.ItemsParent = this;
-        return super.OnRenderItem(item, props);
-    }
-
-    /* override */ OnPropertyChanged(property: string, value: any)
+    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.ItemsSource))
         {
-            let a: number = 5;
-            this.ItemsPanelInstance?.InvalidateRender();
+            (this.ItemsPanelInstance as CommandBarPanel)?.AssembleCommandItems();
         }
-        super.OnPropertyChanged(property, value);
+        super.OnPropertyChanged(property, value, oldValue);
     }
 }

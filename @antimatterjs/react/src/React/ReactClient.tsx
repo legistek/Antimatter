@@ -148,8 +148,9 @@ export class ReactClient implements IClient
         if (!target.state)
             target.state = {};
 
-        if (target.state[targetProperty] != value)
-        {
+        var oldValue = target.state[targetProperty];
+        if (oldValue != value)
+        {           
             if (reRender)
             {
                 var newState = {};
@@ -158,7 +159,7 @@ export class ReactClient implements IClient
             }
             target.state[targetProperty] = value;
             if (target.OnPropertyChanged)
-                target.OnPropertyChanged(targetProperty, value);
+                target.OnPropertyChanged(targetProperty, value, oldValue);
         }      
 
         var inpc = (target as INotifyPropertyChanged);
