@@ -4,4 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="src\Controls\Ellipse.tsx" />
+    <None Remove="src\Controls\HoboPicker.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="src\Controls\Ellipse.tsx" />
+    <TypeScriptCompile Include="src\Controls\HoboPicker.tsx" />
+  </ItemGroup>
+
 </Project>

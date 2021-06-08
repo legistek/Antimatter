@@ -1,3 +1,4 @@
+import { Binding } from '@antimatterjs/react';
 import * as React from 'react';
 
 import { Panel, IPanelProps, IPanelState } from './Panel';
@@ -5,9 +6,11 @@ import { Panel, IPanelProps, IPanelState } from './Panel';
 
 export interface IWrapPanelProps extends IPanelProps
 {
+    //MaxWidth: string | Binding;
 }
 export interface IWrapPanelState extends IPanelState
 {
+    //MaxWidth: string;
 }
 
 export class WrapPanelBase<
@@ -35,7 +38,7 @@ export class WrapPanelBase<
         {
             return (<>{this.props.children}</>);
         }
-    }   
+    }
 }
 
 export class WrapPanel extends WrapPanelBase<IWrapPanelProps, IWrapPanelState>

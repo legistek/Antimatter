@@ -10,6 +10,7 @@ export interface IPanelProps extends IFrameworkElementProps
     Background?: string|Binding,
     BorderBrush?: string|Binding,
     BorderThickness?: string | Binding,
+    BorderRadius?: string | Binding,
     Foreground?: string | Binding,
     Padding?: string,
     BoxShadow?: string,
@@ -23,6 +24,7 @@ export interface IPanelState extends IFrameworkElementState
     Background?: string,
     BorderBrush?: string,
     BorderThickness?: string,
+    BorderRadius?: string,
     Foreground?: string,
     Padding?: string,
     BoxShadow?: string,
@@ -34,24 +36,26 @@ export interface IPanelState extends IFrameworkElementState
 export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P,S>
 {
     constructor(props: IPanelProps)
-    {        
+    {
         super(props);
-        if (props.ItemsParent)        
-            props.ItemsParent.ItemsPanelInstance = this;        
+        if (props.ItemsParent)
+            props.ItemsParent.ItemsPanelInstance = this;
     }
 
     /* override */ getCSSStyles() : React.CSSProperties
     {
-        var styles = {
+        var styles: React.CSSProperties = {
+        //var styles = {
             color: this.state.Foreground,
             background: this.state.Background,
             borderColor: this.state.BorderBrush,
             borderWidth: this.state.BorderThickness,
+            borderRadius: this.state.BorderRadius,
             borderStyle: "solid",
             boxShadow: this.state.BoxShadow,
             padding: this.state.Padding,
             overflowX: Panel.GetScrollBarVisibilityCSSValue(this.state.HorizontalScrollBarVisibility),
-            overflowY: Panel.GetScrollBarVisibilityCSSValue(this.state.VerticalScrollBarVisibility)            
+            overflowY: Panel.GetScrollBarVisibilityCSSValue(this.state.VerticalScrollBarVisibility)
         };
         return Object.assign(super.getCSSStyles(), styles);
     }
@@ -66,10 +70,10 @@ export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> exten
         return (<>{this.props.children}</>);
     }
 
-    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
+    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll"
     {
         switch (v)
-        {            
+        {
             case undefined:
             case ScrollBarVisibility.Hidden:
                 return "hidden";

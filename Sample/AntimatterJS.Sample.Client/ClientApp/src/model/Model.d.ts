@@ -9,6 +9,8 @@ export class Company {
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
+	public Colors?: string[];
+	public SelectedColor?: string;
 }
 
 export class Employee {

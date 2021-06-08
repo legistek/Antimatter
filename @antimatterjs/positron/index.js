@@ -29,3 +29,5 @@ export * from './src/Controls/LoadingShimmer';
 export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
+export * from './src/Controls/Ellipse';
+export * from './src/Controls/HoboPicker';

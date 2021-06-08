@@ -5,6 +5,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights }
 import * as Model from '../model/Model';
 import
 {
+    HoboPicker,
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -111,6 +112,10 @@ export class Company extends AntimatterComponent
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
 
                 <StackPanel>
+                    <HoboPicker
+                        ItemsSource={new Binding(nameof<Model.Company>(c => c.Colors))}
+                        SelectedColor={new Binding(nameof<Model.Company>(c => c.SelectedColor))}
+                    />
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
                     <StackPanel Orientation={Orientation.Horizontal}>

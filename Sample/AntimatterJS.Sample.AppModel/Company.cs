@@ -140,7 +140,10 @@ namespace AntimatterJS.Sample.AppModel
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
                     {
-                        this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
+                        _addHotpink = true;
+                        OnPropertyChanged(nameof(Colors));
+
+                        //this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
                     })
                 {
                     Name = "New Employee",
@@ -202,6 +205,39 @@ namespace AntimatterJS.Sample.AppModel
         public override string ToString()
         {
             return $"Company: {this.Name}";
+        }
+
+        private bool _addHotpink = false;
+
+        //public string[] Colors => Constants.c_TagColors.Select(val => "#" + (val & 0xFFFFFF).ToString("X6")).ToArray();
+
+        public string[] Colors
+        {
+            get
+            {
+                var baseColors = Constants.c_TagColors.Select(val => "#" + (val & 0xFFFFFF).ToString("X6")).ToArray();
+                if (this._addHotpink)
+                    baseColors = baseColors.Append("hotpink").ToArray();
+                return baseColors;
+            }
+        }
+
+        private string _SelectedColor;
+        public string SelectedColor
+        {
+            get
+            {
+                if (_SelectedColor == null)
+                    _SelectedColor = Colors.FirstOrDefault();
+                return _SelectedColor;
+            }
+            set
+            {
+                if (_SelectedColor == value)
+                    return;
+                _SelectedColor = value;
+                OnPropertyChanged();
+            }
         }
     }
 }
