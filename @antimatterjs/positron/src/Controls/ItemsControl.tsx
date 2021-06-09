@@ -91,8 +91,8 @@ export class ItemsControl<
 
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
-        if (this.props.ItemTemplate)
-            return this.props.ItemTemplate as (item?: any) => JSX.Element;
+        if (this.state.ItemTemplate)
+            return this.state.ItemTemplate as (item?: any) => JSX.Element;
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }
