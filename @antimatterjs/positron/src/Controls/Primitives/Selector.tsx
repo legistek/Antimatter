@@ -98,7 +98,11 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         return this.state.CanSelect !== false;
     }
 
-    ProcessSelectionPointerAction(event: MouseEvent, item: any, fullClick: boolean, isCurrentlySelected: boolean)
+    /* protected virtual */ OnSelectionChanged()
+    {
+    }
+
+    /* private */ ProcessSelectionPointerAction(event: MouseEvent, item: any, fullClick: boolean, isCurrentlySelected: boolean)
     {
         if (!this.CanSelect)
             return;
@@ -111,7 +115,10 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         {
             this._currentSelectionAnchor = -1;
             if (!fullClick)
+            {
                 this.SetValue(nameof(this.state.SelectedItem), item);
+                this.OnSelectionChanged();
+            }
         }
         else if (event.ctrlKey)
         {
@@ -170,6 +177,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             this.SetValue(
                 nameof(this.state.SelectedItems),
                 this.state.ItemsSource?.slice(newSelStart, newSelEnd + 1));
+            this.OnSelectionChanged();
         }
         else
         {
@@ -178,12 +186,12 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             if (isCurrentlySelected && fullClick || !isCurrentlySelected && !fullClick)
                 this.SetSingleItemSelection(itemIndex);
         }
-
+        
         // Forces all the instantiated children to re-render with their new selection state
         this.ItemsPanelInstance?.InvalidateRender();
     }
 
-    ChangeSingleItemSelectionState(item: any, select: boolean)
+    /* private */ ChangeSingleItemSelectionState(item: any, select: boolean)
     {
         if (select)
         {
@@ -197,9 +205,10 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             this.state.SelectedItems.splice(index, 1);
         }
         this.SetValue(nameof(this.state.SelectedItems), this.state.SelectedItems);
+        this.OnSelectionChanged();
     }
 
-    SetSingleItemSelection(index: number)
+    /* private */ SetSingleItemSelection(index: number)
     {
         var item = this.state.ItemsSource
             ? this.state.ItemsSource[index]
@@ -214,6 +223,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         {
             this.SetValue(nameof(this.state.SelectedItem), item);
         }
+        this.OnSelectionChanged();
         this._lastClickedOrSelected = index;
     }
     
