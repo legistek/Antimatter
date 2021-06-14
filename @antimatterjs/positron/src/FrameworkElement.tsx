@@ -31,6 +31,7 @@ interface IFrameworkElementCommon
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {    
     IsVisible?: boolean | Binding,
+    IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
     IsLoading?: boolean | Binding
@@ -39,6 +40,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
     IsVisible?: boolean,
+    IsHitTestVisible?: boolean,
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
@@ -167,6 +169,8 @@ export class FrameworkElement<
             styles.gridColumn = this.state.Grid.Column + 1;
         if (this.state.Grid?.Row !== undefined)
             styles.gridRow = this.state.Grid.Row + 1;
+        if (this.state.IsHitTestVisible === false)
+            styles.pointerEvents = "none";
         return styles;
     }
 

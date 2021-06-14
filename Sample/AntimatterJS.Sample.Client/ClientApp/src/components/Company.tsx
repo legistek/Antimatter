@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -11,7 +11,8 @@ import
     Popup,
     PlacementMode,
     FrameworkElement,
-    WrapPanel
+    WrapPanel,
+    ColorPicker
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -66,6 +67,10 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             }>
                             <TextBlock Text="Really Nice bonus" />
                         </Popup>
+
+                        <ColorPicker
+                            ItemsSource={new Binding("Company.AvailableColors")}
+                            SelectedItem={new Binding("Color")} />
                     </WrapPanel>
 
                     <TextBox

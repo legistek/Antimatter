@@ -25,6 +25,6 @@ export class SelectableItemControlBase<
     }
 }
 
-export class SelectableItemControl extends SelectableItemControlBase
+export class SelectableItemControl extends SelectableItemControlBase<ISelectableItemControlProps, ISelectableItemControlState>
 {
 }

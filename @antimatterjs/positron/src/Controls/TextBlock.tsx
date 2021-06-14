@@ -7,13 +7,15 @@ import { getTheme } from '@fluentui/react';
 interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
-    FontFamily?: string,
+    Foreground?: string | Binding,
+    FontFamily?: string,    
     FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal"
 }
 interface ITextBlockState extends IFrameworkElementState
 {
     Text?: string | undefined,
+    Foreground?: string,
     FontFamily?: string,
     FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal"
@@ -55,9 +57,10 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         return Object.assign(
             super.getCSSStyles(),
             {
+                color: this.state.Foreground,
                 fontFamily: this.state.FontFamily,
                 fontSize: this.state.FontSize,
-                fontWeight: this.state.FontWeight
+                fontWeight: this.state.FontWeight,                
             });
     }
 }

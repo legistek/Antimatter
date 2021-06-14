@@ -75,7 +75,8 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                         alignSelf: "center",
                         margin: "0px 5px 0px 0px"
                     }}/>
-                <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
+                    Foreground={new Binding({ Path: "Color", Source: item })}                />
             </StackPanel>),
         {
             Layout: WindowLayout.Tablet,
@@ -86,7 +87,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                             alignSelf: "center",
                             margin: "0px 5px 0px 0px"
                         }} />
-                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })}/>
                     <TextBlock Text="Tablet!" />
                 </StackPanel>
             )

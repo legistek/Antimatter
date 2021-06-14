@@ -92,6 +92,25 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        #region string Color property
+        private string _Color = "#000000";
+        public string Color
+        {
+            get
+            {
+                return _Color;
+            }
+            set
+            {
+                if (_Color != value)
+                {
+                    _Color = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #region bool IsBonusEligible property
         private bool _IsBonusEligible;
         public bool IsBonusEligible
