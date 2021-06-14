@@ -3,12 +3,13 @@ import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { WindowLayoutContext } from './Window';
 import { WindowLayout } from '../Enums';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 interface IControlCommon
 {
     FontWeight?: undefined | "bold" | "normal",
     Padding?: string,
-    Template?: (control: any) => JSX.Element,
+    Template?: ControlTemplate,
     Layout?: WindowLayout
 }
 
@@ -47,7 +48,7 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
                         if (!this.state.Template)
                             return null;
                         (this.state as any).Layout = layout;
-                        return this.state.Template(this);
+                        return this.state.Template.GetVisualTree(layout)(this);
                     }
                 }
             </WindowLayoutContext.Consumer>);        

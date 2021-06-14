@@ -5,6 +5,7 @@ import { Style } from '../Style';
 import { Grid, IColumNDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { getTheme } from '@fluentui/react';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IResizePanelProps extends IControlProps
 {
@@ -54,7 +55,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
     public static DefaultStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
         {
             Thickness: 5,
-            Template: (templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>) => 
+            Template: new ControlTemplate((templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>) =>
             (
                 <Grid
                     ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
@@ -73,7 +74,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
                                 </>)
                     }
                 </Grid>
-            ),
+            )),
         },
         {            
             Selector: "@ .sizer.resizing",

@@ -4,6 +4,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 import { Shimmer } from '@fluentui/react';
 import { StackPanel } from './StackPanel';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ILoadingShimmerProps extends IControlProps
 {
@@ -20,7 +21,7 @@ export class LoadingShimmer<
 {
     public static DefaultStyle: Style<ILoadingShimmerProps> = new Style<ILoadingShimmerProps>(
         {
-            Template: (templatedParent: LoadingShimmer) =>
+            Template: new ControlTemplate((templatedParent: LoadingShimmer) =>
             {
                 if (!templatedParent.state.Lines)
                     return (<></>);
@@ -32,7 +33,7 @@ export class LoadingShimmer<
                     shimmers.push((<Shimmer className="shimmer" width={percent} />));
                 }
                 return (<StackPanel>{shimmers}</StackPanel>);
-            }
+            })
         },
         {
             Selector: "@ .shimmer",

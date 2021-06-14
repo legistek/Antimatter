@@ -8,6 +8,7 @@ import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
 import { getTheme, Icon, MotionAnimations } from '@fluentui/react';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ITreeViewCommon
 {
@@ -165,7 +166,7 @@ class TreeViewItem<
 
     public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
         {
-            Template: (templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
+            Template: new ControlTemplate((templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
                 <Grid
                     ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
@@ -200,7 +201,7 @@ class TreeViewItem<
                         VerticalScrollBarVisibility={ScrollBarVisibility.Hidden}
                         HorizontalScrollBarVisibility={ScrollBarVisibility.Hidden} />
                 </Grid>
-            )
+            ))
         },
         {
             Selector: "@",

@@ -5,6 +5,7 @@ import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentComma
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
 import { HorizontalAlignment } from '@antimatterjs/positron/src/Enums';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 interface ICommandButtonCommon
 {
@@ -40,7 +41,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
                 IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-                Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
                         ? (<PrimaryButton
                             style={{ minWidth: "90px" }}
@@ -53,7 +54,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}>
                             {templatedParent.state.Label}
-                        </DefaultButton>)
+                        </DefaultButton>))
             }
         ));
     
@@ -61,7 +62,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <PrimaryButton
                         onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
@@ -71,7 +72,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         disabled={!templatedParent.state.IsEnabled}>
                         {templatedParent.state.Label}
                     </PrimaryButton>
-                )
+                ))
             }
         ));
 
@@ -81,7 +82,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
             {                
                 Padding: "8px 0px 8px 0px",
                 IsVisible: true,
-                Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <CommandBarButton
                         style={{
@@ -96,7 +97,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         disabled={!templatedParent.state.IsEnabled}>
                         
                     </CommandBarButton>
-                ),                
+                )),                
             }
         ));
 
@@ -105,7 +106,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
                 Padding: "8px 0px 8px 0px",
-                Template: (templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <IconButton
                         styles={{
@@ -129,7 +130,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         }}
                         disabled={!templatedParent.state.IsEnabled}>
                     </IconButton>
-                ),
+                )),
             }
         ));
 
@@ -139,11 +140,4 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     {
         return (!icon) ? undefined : icon.toString(16);
     }
-
-    constructor(props)
-    {
-        super(props);
-    }
-
-
 }

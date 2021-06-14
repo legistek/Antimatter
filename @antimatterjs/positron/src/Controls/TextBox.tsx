@@ -3,6 +3,7 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { Autofill, TextField } from '@fluentui/react';
 import { Style } from '../Style';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 interface ITextBoxCommon
 {
@@ -33,7 +34,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
     };
     static DefaultStyle: Style<ITextBoxProps> = new Style(
         {
-            Template: (templatedParent: TextBox) =>
+            Template: new ControlTemplate((templatedParent: TextBox) =>
             (
                 <TextField
                     type={templatedParent.state.IsPassword ? "password" : undefined}
@@ -66,7 +67,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                     {
                         return templatedParent.state.ValidationError;
                     }} />
-            )
+            ))
         }
     );
 

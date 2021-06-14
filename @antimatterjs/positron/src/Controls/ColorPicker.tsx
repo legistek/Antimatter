@@ -8,7 +8,7 @@ import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector'
 import { SelectionMode } from '../Enums';
 import { Glyph } from './Glyph';
 import { HorizontalAlignment, VerticalAlignment } from '../Enums';
-import { DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { getTheme } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
@@ -42,7 +42,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
             SelectionMode: SelectionMode.Single,            
             ItemsSource: [],
             IconForeground: "white",
-            Template: (templatedParent: ColorPicker) => (
+            Template: new ControlTemplate((templatedParent: ColorPicker) => (
                 <>
                     <Ellipse
                         ref={r => templatedParent._button = r}
@@ -65,7 +65,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                             <WrapPanel ItemsParent={templatedParent} />
                         </div>
                     </Popup>
-                </>),
+                </>)),
             ItemTemplate: new DataTemplate((color: string) => (
                 <Ellipse
                     Fill={color}
@@ -75,7 +75,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
             ItemContainerStyle: new Style<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
-                    Template: (templatedParent: SelectableItemControl) =>
+                    Template: new ControlTemplate((templatedParent: SelectableItemControl) =>
                     (
                         <>
                             <>{templatedParent.props.children}</>
@@ -89,7 +89,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                                     HorizontalAlignment={HorizontalAlignment.Center}
                                     Overlaps={true} />)}
                         </>
-                    )
+                    ))
                 },
                 {
                     Rules: {
