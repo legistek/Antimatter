@@ -58,13 +58,13 @@ export interface IListBoxItemProps extends ISelectableItemProps, IControlProps
 {
 }
 
-interface IListBoxItemState extends ISelectableItemState, IControlState
+export interface IListBoxItemState extends ISelectableItemState, IControlState
 {
 }
 
-class ListBoxItem<P extends IListBoxItemProps = {}, S extends IListBoxItemState = {}>
+export class ListBoxItem<P extends IListBoxItemProps = {}, S extends IListBoxItemState = {}>
     extends Control<P, S>
-{    
+{
     static theme = getTheme();
     static DefaultStyle: Style<IListBoxItemProps> = new Style<IListBoxItemProps>(
         {
@@ -126,7 +126,7 @@ class ListBoxItem<P extends IListBoxItemProps = {}, S extends IListBoxItemState 
     );
 
     /* override */ constructClasses()
-    {        
+    {
         return super.constructClasses() +
             "listboxitem " +
             (this.props.IsSelected ? "selected " : "");

@@ -22,14 +22,14 @@ export interface ISelectorState extends IItemsControlState
     CanSelect?: boolean
 }
 
-export interface ISelectableItemProps extends IFrameworkElementProps
+export interface ISelectableItemProps
 {
     IsSelected?: boolean,
     SelectedForeground?: string,
     SelectedBackground?: string
 }
 
-export interface ISelectableItemState extends IFrameworkElementState
+export interface ISelectableItemState
 {
     IsSelected?: boolean
 }
@@ -51,7 +51,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
     public /* virtual */ OnRenderItem(item: any): JSX.Element | null
     {
-        var props: ISelectableItemProps = {
+        var props = {
             IsSelected: this.IsItemSelected(item),
             OnClick: (event: MouseEvent) => this.OnItemClick(event, item),
             OnPointerDown: (event: PointerEvent) => this.OnItemPointerDown(event, item)
@@ -187,7 +187,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
     {
         if (select)
         {
-            this.state.SelectedItems.push(item);            
+            this.state.SelectedItems.push(item);
         }
         else
         {
@@ -208,7 +208,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             return;
         if (this.SelectionMode !== SelectionMode.Single)
         {
-            this.SetValue(nameof(this.state.SelectedItems), [item]);                        
+            this.SetValue(nameof(this.state.SelectedItems), [item]);
         }
         else
         {
@@ -216,7 +216,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         }
         this._lastClickedOrSelected = index;
     }
-    
+
     /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
         if (prop === nameof(this.state.SelectedItem))

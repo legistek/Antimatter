@@ -24,6 +24,9 @@ import { Ellipse, IEllipseProps, IEllipseState } from './Ellipse';
 import { IWrapPanelProps, WrapPanel } from './WrapPanel';
 import { ISelectorProps, ISelectorState, Selector, ISelectableItemProps, ISelectableItemState } from './Primitives/Selector';
 import { SelectionMode } from '../Enums';
+import { ListBoxItem, IListBoxItemProps, IListBoxItemState } from './ListBox';
+import { Glyph } from './Glyph';
+import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 
 //export interface IHoboPickerProps extends IItemsControlProps {
 export interface IHoboPickerProps extends ISelectorProps {
@@ -92,7 +95,7 @@ export class HoboPicker extends Selector<IHoboPickerProps, IHoboPickerState>
             Template: HoboPicker.Template,
             ItemTemplate: (color: string) => {
                 return (
-                    <SelectableEllipse
+                    <Ellipse
                         Color={color}
                         Size={HoboPicker.ELLIPSE_SIZE}
                         Margin="5px"
@@ -102,48 +105,60 @@ export class HoboPicker extends Selector<IHoboPickerProps, IHoboPickerState>
         }
     );
 
-}
-
-class SelectableEllipse<P extends ISelectableEllipseProps = {}, S extends ISelectableEllipseState = {}> extends Ellipse<P, S> {
-    /* override */ renderElement(): JSX.Element | null {
-        const numericSize: number = (this.state.Size as number);
-        //const numericSize: number = (this.state.Size as number) ?? 30;
-
-        const fontSize: number = numericSize * 0.5;
-        const fontSizeCSS: string = `${fontSize}px`;
-
-        const iconNameString: string = this.state.IsSelected ? "e9a4" : "";
-        //const iconNameString: string = "e9a4";
-
-        const fluentIconStyle: React.CSSProperties = {
-            fontSize: fontSizeCSS,
-            fontWeight: "bold",
-            color: "#FFFFFF",
-            height: "100%",
-            //width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-        };
-        const fluentElem: JSX.Element = (
-            <Icon
-                iconName={iconNameString}
-                style={fluentIconStyle}
-            />
-        );
-
-        return fluentElem;
-
-        //return super.renderElement();
+    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement {
+        return SelectedItemContainer;
     }
+
 }
 
-//interface ISelectableEllipseProps extends IEllipseProps, ISelectableItemProps { }
-interface ISelectableEllipseProps extends IEllipseProps {
-    IsSelected?: boolean,
-}
+export class SelectedItemContainer<P extends IListBoxItemProps = {}, S extends IListBoxItemState = {}>
+    extends Control<P, S>
+{
 
-//interface ISelectableEllipseState extends IEllipseState, ISelectableItemState { }
-interface ISelectableEllipseState extends IEllipseState {
-    IsSelected?: boolean
+    glyph(): JSX.Element | null {
+        if (!this.state.IsSelected)
+            return null;
+        return (
+            <Glyph
+                Icon={0xE9A4}
+                FontSize="20px"
+                FontWeight="bold"
+                Foreground="#FFFFFF"
+                VerticalAlignment={VerticalAlignment.Center}
+                HorizontalAlignment={HorizontalAlignment.Center}
+                Overlaps={true}
+            />
+            );
+    }
+
+
+    static DefaultStyle: Style<IListBoxItemProps> = new Style<IListBoxItemProps>(
+        {
+            Margin: "0px",
+            Template: (templatedParent: SelectedItemContainer) =>
+                (
+                    <>
+                        <>{templatedParent.props.children}</>
+                        {templatedParent.glyph()}
+                    </>
+                )
+        },
+        {
+            Rules: {
+                cursor: "pointer"
+            }
+        },
+        {
+            Selector: "@:hover",
+            Rules: {
+                background: ListBoxItem.theme.semanticColors.listItemBackgroundHovered
+            }
+        }
+    );
+
+    /* override */ constructClasses() {
+        return super.constructClasses() +
+            "listboxitem " +
+            (this.props.IsSelected ? "selected " : "");
+    }
 }
