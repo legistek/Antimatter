@@ -67,8 +67,8 @@ export class Ellipse<P extends IEllipseProps = {}, S extends IEllipseState = {}>
             />
         );
 
-        return glyphElem;
-        //return fluentElem;
+        //return glyphElem;
+        return fluentElem;
 
         //return super.renderElement();
     }
@@ -87,14 +87,6 @@ export class Ellipse<P extends IEllipseProps = {}, S extends IEllipseState = {}>
         }
 
         return Object.assign(super.getCSSStyles(), styles);
-    }
-
-    public /* override */ constructClasses(): string {
-        //const classes: string = "amx-ptn-ha-center amx-ptn-va-center "
-        //const classes: string = "amx-ptn-ha-stretch amx-ptn-va-stretch "
-        const classes: string = '';
-
-        return classes + super.constructClasses();
     }
 
     public static DefaultStyle: Style<IEllipseProps> = new Style<IEllipseProps>(

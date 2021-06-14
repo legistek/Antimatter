@@ -51,7 +51,7 @@ export class ItemsControl<
         return React.createElement(
             this.GetContainerForItemOverride(),
             itemProps,
-            templ(item));       
+            templ(item));
     }
 
     public /* override */ renderElement(): JSX.Element | null
@@ -91,8 +91,8 @@ export class ItemsControl<
 
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
-        if (this.props.ItemTemplate)
-            return this.props.ItemTemplate as (item?: any) => JSX.Element;
+        if (this.state.ItemTemplate)
+            return this.state.ItemTemplate as (item?: any) => JSX.Element;
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }
@@ -101,7 +101,7 @@ export class ItemsControl<
     {
         return (i?: any) => (
             <>
-                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.ToString()}
+                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.toString()}
             </>);
     }
 }

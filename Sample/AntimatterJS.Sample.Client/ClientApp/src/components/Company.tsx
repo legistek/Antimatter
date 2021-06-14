@@ -12,7 +12,8 @@ import
     Popup,
     PlacementMode,
     FrameworkElement,
-    WrapPanel
+    WrapPanel,
+    Ellipse
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -114,7 +115,7 @@ export class Company extends AntimatterComponent
                 <StackPanel>
                     <HoboPicker
                         ItemsSource={new Binding(nameof<Model.Company>(c => c.Colors))}
-                        SelectedColor={new Binding(nameof<Model.Company>(c => c.SelectedColor))}
+                        SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedColor))}
                     />
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
