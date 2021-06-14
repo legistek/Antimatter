@@ -6,6 +6,7 @@ import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsCon
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { SelectionMode } from '../Enums';
+import { DataTemplate } from '../FrameworkTemplate';
 
 interface IDataGridCellCommon
 {
@@ -63,12 +64,12 @@ export interface IDataGridState extends IItemsControlState, IDataGridCommon
 
 export interface IDataGridColumn
 {
-    Template: (item: any) => JSX.Element;    
+    Template: DataTemplate;
     Header: string;
     Key: string;
     Width?: number,
     CanResize?: boolean,
-    EditTemplate?: (item: any) => JSX.Element;
+    EditTemplate?: DataTemplate;
     Data?: any;
 }
 

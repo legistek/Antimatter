@@ -7,10 +7,11 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
+import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 
 const theme = createTheme({
@@ -66,6 +67,31 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         )
     }
 
+    private employeeTemplate: DataTemplate = new DataTemplate(
+        (item) => (
+            <StackPanel Orientation={Orientation.Horizontal}>
+                <Icon iconName="e96a"
+                    style={{
+                        alignSelf: "center",
+                        margin: "0px 5px 0px 0px"
+                    }}/>
+                <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+            </StackPanel>),
+        {
+            Layout: WindowLayout.Tablet,
+            VisualTree: (item) => (
+                <StackPanel Orientation={Orientation.Horizontal}>
+                    <Icon iconName="e96a"
+                        style={{
+                            alignSelf: "center",
+                            margin: "0px 5px 0px 0px"
+                        }} />
+                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                    <TextBlock Text="Tablet!" />
+                </StackPanel>
+            )
+        });
+
     render()
     {
         return (
@@ -84,18 +110,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                 Background="Green"
                                 IsExpandedPath="IsExpanded"
                                 IsSelectedPath="IsSelected"
-                                ItemTemplate={
-                                    (item) =>
-                                    (<StackPanel Orientation={Orientation.Horizontal}>
-                                        <Icon iconName="e96a"
-                                            style={{                                                                                        
-                                                alignSelf: "center",
-                                                margin: "0px 5px 0px 0px"
-                                            }}
-                                        />
-                                        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
-                                    </StackPanel>
-                                    )}>
+                                ItemTemplate={this.employeeTemplate}>
                             </TreeView>
                         </ResizePanel>
 

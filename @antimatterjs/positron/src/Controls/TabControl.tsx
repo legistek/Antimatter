@@ -6,6 +6,7 @@ import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { DataTemplate } from '../FrameworkTemplate';
 
 export interface ITabItem
 {
@@ -50,7 +51,7 @@ export class TabControl<
                 return (
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
                         <ItemsControl ref={ic => templatedParent._tabList = ic}
-                            ItemTemplate={(tab: ITabItem) =>
+                            ItemTemplate={new DataTemplate((tab: ITabItem) =>
                             {
                                 if (!templatedParent.GetTabIsVisible(tab))
                                     return (<></>);
@@ -60,7 +61,7 @@ export class TabControl<
                                         {tab.Label}
                                     </div>
                                 );
-                            }}
+                            })}
                             ItemsSource={templatedParent.state.Tabs}/>                                                                                  
 
                         <TabPanel TabItem={templatedParent._selectedTab} />

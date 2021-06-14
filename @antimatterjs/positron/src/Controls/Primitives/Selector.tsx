@@ -1,7 +1,8 @@
 import { Binding, ModelObjectReference } from '@antimatterjs/react';
 import { IItemsControlState, IItemsControlProps, ItemsControl } from '../ItemsControl';
 import { SelectionMode } from '../../Enums';
-import { IFrameworkElementProps, IFrameworkElementState } from '@antimatterjs/positron/src/FrameworkElement';
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '@antimatterjs/positron/src/FrameworkElement';
+import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './SelectableItemControl';
 
 export interface ISelectorProps extends IItemsControlProps
 {
@@ -22,18 +23,6 @@ export interface ISelectorState extends IItemsControlState
     CanSelect?: boolean
 }
 
-export interface ISelectableItemProps extends IFrameworkElementProps
-{
-    IsSelected?: boolean,
-    SelectedForeground?: string,
-    SelectedBackground?: string
-}
-
-export interface ISelectableItemState extends IFrameworkElementState
-{
-    IsSelected?: boolean
-}
-
 export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItems: [] },
     S extends ISelectorState = { ItemsSource: [], SelectedItems: [] }>
     extends ItemsControl<P, S>
@@ -51,7 +40,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
     public /* virtual */ OnRenderItem(item: any): JSX.Element | null
     {
-        var props: ISelectableItemProps = {
+        var props: ISelectableItemControlProps = {
             IsSelected: this.IsItemSelected(item),
             OnClick: (event: MouseEvent) => this.OnItemClick(event, item),
             OnPointerDown: (event: PointerEvent) => this.OnItemPointerDown(event, item)
@@ -100,6 +89,11 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
     /* protected virtual */ OnSelectionChanged()
     {
+    }
+
+    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    {
+        return SelectableItemControlBase;
     }
 
     /* private */ ProcessSelectionPointerAction(event: MouseEvent, item: any, fullClick: boolean, isCurrentlySelected: boolean)

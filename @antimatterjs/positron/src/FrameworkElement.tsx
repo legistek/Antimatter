@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 
-import { HorizontalAlignment, VerticalAlignment } from './Enums';
+import { HorizontalAlignment, VerticalAlignment, WindowLayout } from './Enums';
 
 import './positron.css';
 import { Style } from '@antimatterjs/positron/src/Style';
 import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
 import { ItemsControl } from './Controls/ItemsControl';
+import { WindowLayoutContext } from './Controls/Window';
 
 interface IFrameworkElementCommon
 {
@@ -24,7 +25,7 @@ interface IFrameworkElementCommon
     OnLostPointerCapture?: (event: PointerEvent)=> void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element,
+    LoadingTemplate?: () => JSX.Element    
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -102,8 +103,8 @@ export class FrameworkElement<
                         ? this.state.LoadingTemplate()
                         : (this.state.ToolTip
                             ? (<TooltipHost content={this.state.ToolTip}>
-                                    { this.renderElement()}
-                                </TooltipHost>)
+                                { this.renderElement()}
+                            </TooltipHost>)
                             : this.renderElement())
                 }
             </div>

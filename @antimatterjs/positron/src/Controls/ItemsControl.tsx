@@ -7,11 +7,13 @@ import { Panel, IPanelProps } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style } from '../Style';
+import { DataTemplate } from '../FrameworkTemplate';
+import { WindowLayoutContext } from './Window';
 
 export interface IItemsControlProps extends IControlProps
 {
     ItemsSource?: any[] | Binding,
-    ItemTemplate?: (item?: any) => JSX.Element,
+    ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
 }
@@ -19,7 +21,7 @@ export interface IItemsControlProps extends IControlProps
 export interface IItemsControlState extends IControlState
 {
     ItemsSource?: any[],
-    ItemTemplate?: (item?: any) => JSX.Element,
+    ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
 }
@@ -60,14 +62,27 @@ export class ItemsControl<
             return super.renderElement();
         else
         {
-            return React.createElement(
-                (this.state.ItemsPanel || StackPanel),
-                {
-                    BorderThickness: this.state.BorderThickness,
-                    BorderBrush: this.state.BorderBrush,
-                    ItemsParent: this,
-                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto
-                } as IPanelProps);
+            return (
+                <WindowLayoutContext.Consumer>
+                    {
+                        (layout) =>
+                        {
+                            if (this.state.Layout !== layout)
+                            {
+                                (this.state as any).Layout = layout;
+                                this.ItemsPanelInstance?.InvalidateRender();
+                            }
+                            return React.createElement(
+                                (this.state.ItemsPanel || StackPanel),
+                                {
+                                    BorderThickness: this.state.BorderThickness,
+                                    BorderBrush: this.state.BorderBrush,
+                                    ItemsParent: this,
+                                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+                                } as IPanelProps);
+                        }
+                    }
+                </WindowLayoutContext.Consumer>);            
         }
     }
 
@@ -92,7 +107,7 @@ export class ItemsControl<
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
         if (this.state.ItemTemplate)
-            return this.state.ItemTemplate as (item?: any) => JSX.Element;
+            return this.state.ItemTemplate.GetVisualTree(this.state.Layout);
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }

@@ -1,16 +1,21 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { WindowLayout } from '../Enums';
+import { WindowLayoutContext } from './Window';
+import { DataTemplate } from '../FrameworkTemplate';
 
 export interface IContentPresenterProps extends IFrameworkElementProps
 {
     Content?: ModelObjectReference | Binding
-    ContentTemplate?: (content?: ModelObjectReference) => JSX.Element;
+    ContentTemplate?: DataTemplate,
+    Layout?: WindowLayout
 }
 export interface IContentPresenterState extends IFrameworkElementState
 {
     Content?: ModelObjectReference,
-    ContentTemplate?: (content?: ModelObjectReference) => JSX.Element;
+    ContentTemplate?: DataTemplate,
+    Layout?: WindowLayout
 }
 
 export class ContentPresenter<
@@ -21,8 +26,17 @@ export class ContentPresenter<
     /* override */ renderElement(): JSX.Element
     {
         return (
-            <DataContext Value={this.state.Content}>
-                {this.state.ContentTemplate ? this.state.ContentTemplate(this.state.Content) : (<></>)}
-            </DataContext>);
+            <WindowLayoutContext.Consumer>
+                {
+                    (layout) =>
+                    {
+                        (this.state as any).Layout = layout;
+                        return (
+                            <DataContext Value={this.state.Content}>
+                                {this.state.ContentTemplate ? this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content) : (<></>)}
+                            </DataContext>);
+                    }                    
+                }
+            </WindowLayoutContext.Consumer>);
     }
 }

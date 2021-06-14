@@ -1,11 +1,15 @@
+import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { WindowLayoutContext } from './Window';
+import { WindowLayout } from '../Enums';
 
 interface IControlCommon
 {
     FontWeight?: undefined | "bold" | "normal",
     Padding?: string,
-    Template?: (control: any) => JSX.Element
+    Template?: (control: any) => JSX.Element,
+    Layout?: WindowLayout
 }
 
 export interface IControlProps extends IFrameworkElementProps, IControlCommon
@@ -35,8 +39,17 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
 {
     /* override sealed */ renderElement(): JSX.Element | null
     {
-        if (!this.state.Template)
-            return null;
-        return this.state.Template(this);
+        return (
+            <WindowLayoutContext.Consumer>
+                {
+                    (layout) =>
+                    {
+                        if (!this.state.Template)
+                            return null;
+                        (this.state as any).Layout = layout;
+                        return this.state.Template(this);
+                    }
+                }
+            </WindowLayoutContext.Consumer>);        
     }
 }

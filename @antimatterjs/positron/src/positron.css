@@ -95,8 +95,8 @@ body {
 .amx-ptn-va-center {
     align-self: center;
     height: fit-content;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 /* Children of grids set to vertical stretch don't need to have stretch height themselves */

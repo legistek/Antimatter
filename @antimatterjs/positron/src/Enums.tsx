@@ -1,4 +1,12 @@
-// These match WinUI values for direct binding scenarios if desired
+// Most of these match WinUI values for direct binding scenarios if desired
+
+export enum WindowLayout
+{
+    Default = 0,
+    Desktop = 1,
+    Tablet = 2,
+    Phone = 3
+}
 
 export enum HorizontalAlignment
 {

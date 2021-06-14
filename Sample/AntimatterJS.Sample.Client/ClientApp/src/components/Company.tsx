@@ -15,6 +15,7 @@ import
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
+import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -101,6 +102,17 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 export class Company extends AntimatterComponent
 {
     static displayName = Company.name;
+
+    _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
+        <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
+    ));
+    _lastNameTemplate: DataTemplate = new DataTemplate((item) => (
+        <TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />
+    ));
+    _ageTemplate: DataTemplate = new DataTemplate((item) => (
+        <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
+    ));
+
     render()
     {
         console.log("Company rendering");
@@ -137,17 +149,17 @@ export class Company extends AntimatterComponent
                         {
                             Header: "First Name",
                             Key: "firstName",
-                            Template: (item) => (<TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />)
+                            Template: this._firstNameTemplate
                         },
                         {
                             Header: "Last Name",
                             Key: "lastName",
-                            Template: (item) => (<TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />)
+                            Template: this._lastNameTemplate
                         },
                         {
                             Header: "Age",
                             Key: "age",
-                            Template: (item) => (<TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />)
+                            Template: this._ageTemplate
                         }
                     ]}
 
