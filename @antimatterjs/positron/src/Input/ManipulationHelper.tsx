@@ -41,11 +41,11 @@ export class ManipulationHelper
             var ev1 = this._pointerCache[0];
             var ev2 = this._pointerCache[1];
 
-            // Get the absolute pointer distance at the time the second pointer goes down;
-            // this is the baseline for scale
+            // Get the absolute pointer distance at the time the second 
+            // pointer goes down; this is the baseline for scale
             this._scale.PendingBasePixelDistance =
                 this._scale.LastPixelDistance =
-                this.GetEventDistance(ev1, ev2); // / this._cumulativeScale; // ??
+                this.GetEventDistance(ev1, ev2);
 
             // Reset translation using a new centerpoint reference
             this._translate.Commit(
@@ -81,7 +81,8 @@ export class ManipulationHelper
         
         this._isManipulating = true;
         this._parent.Container?.setPointerCapture(event.pointerId);
-        var captured = this._parent.Container?.hasPointerCapture(event.pointerId);
+
+        // Once confirmed manipulation has begun stop propagation         
         event.stopPropagation();
         event.preventDefault();
 
@@ -95,9 +96,10 @@ export class ManipulationHelper
             }
         }
 
-        let deltaX = 0;
-        let deltaY = 0;        
-        let deltaScale = 1;
+        const args: ManipulationEventArgs = new ManipulationEventArgs(
+            ManipulationEvent.Delta,
+            event);
+        
         let centerX = 0;
         let centerY = 0;
         if (this._pointerCache.length > 1)
@@ -107,8 +109,8 @@ export class ManipulationHelper
             var ev2 = this._pointerCache[1];
 
             var newDistance = this.GetEventDistance(ev1, ev2);
-            deltaScale = newDistance / this._scale.LastPixelDistance;
-            this._scale.PendingCumScale = newDistance / this._scale.PendingBasePixelDistance;
+            args.DeltaScale = newDistance / this._scale.LastPixelDistance;
+            this._scale.PendingCumulativeScale = newDistance / this._scale.PendingBasePixelDistance;
 
             // Compute center point based on average of two points
             centerX = (ev1.pageX + ev2.pageX) / 2;
@@ -120,27 +122,21 @@ export class ManipulationHelper
             centerX = this._pointerCache[0].pageX;
             centerY = this._pointerCache[0].pageY;
         }
-                    
-        deltaX = centerX - this._translate.LastX;
-        deltaY = centerY - this._translate.LastY;
-        this._translate.PendingCumX = centerX - this._translate.PendingOriginX;
-        this._translate.PendingCumY = centerY - this._translate.PendingOriginY;
+
+        args.DeltaX = centerX - this._translate.LastX;
+        args.DeltaY = centerY - this._translate.LastY;
+        this._translate.PendingCumulativeX = centerX - this._translate.PendingOriginX;
+        this._translate.PendingCumulativeY = centerY - this._translate.PendingOriginY;
         this._translate.LastX = centerX;
         this._translate.LastY = centerY;            
         
         if (this._parent.state.OnManipulationDelta)
         {
-            const args: ManipulationEventArgs = new ManipulationEventArgs(
-                ManipulationEvent.Delta,
-                event);
             args.CenterX = this._scale.CenterX;
-            args.CenterY = this._scale.CenterY;
-            args.DeltaX = deltaX;
-            args.DeltaY = deltaY;
-            args.CumulativeX = this._translate.CommittedCumX + this._translate.PendingCumX;
-            args.CumulativeY = this._translate.CommittedCumY + this._translate.PendingCumY;
-            args.DeltaScale = deltaScale;
-            args.CumulativeScale = this._scale.CommittedCumScale * this._scale.PendingCumScale;
+            args.CenterY = this._scale.CenterY;            
+            args.CumulativeX = this._translate.CommittedCumulativeX + this._translate.PendingCumulativeX;
+            args.CumulativeY = this._translate.CommittedCumulativeY + this._translate.PendingCumulativeY;
+            args.CumulativeScale = this._scale.CommittedCumulativeScale * this._scale.PendingCumulativeScale;
             this._parent.state.OnManipulationDelta(args);
         }       
     }
@@ -207,17 +203,17 @@ class TranslateTracker
     public PendingOriginY: number = 0;
     public LastX: number = 0;
     public LastY: number = 0;
-    public PendingCumX: number = 0;
-    public PendingCumY: number = 0;
-    public CommittedCumX: number = 0;
-    public CommittedCumY: number = 0;
+    public PendingCumulativeX: number = 0;
+    public PendingCumulativeY: number = 0;
+    public CommittedCumulativeX: number = 0;
+    public CommittedCumulativeY: number = 0;
 
     public Commit(centerX: number, centerY: number)
     {
-        this.CommittedCumX += this.PendingCumX;
-        this.CommittedCumY += this.PendingCumY;
-        this.PendingCumX = 0;
-        this.PendingCumY = 0;        
+        this.CommittedCumulativeX += this.PendingCumulativeX;
+        this.CommittedCumulativeY += this.PendingCumulativeY;
+        this.PendingCumulativeX = 0;
+        this.PendingCumulativeY = 0;        
         this.PendingOriginX = this.LastX = centerX;
         this.PendingOriginY = this.LastY = centerY;
     }
@@ -227,16 +223,16 @@ class ScaleTracker
 {
     public PendingBasePixelDistance: number = 0;
     public LastPixelDistance: number = 0;
-    public PendingCumScale: number = 1;
-    public CommittedCumScale: number = 1;
+    public PendingCumulativeScale: number = 1;
+    public CommittedCumulativeScale: number = 1;
     public CenterX: number = 0;
     public CenterY: number = 0;
 
     public Commit()
     {
         this.PendingBasePixelDistance = 0;
-        this.CommittedCumScale *= this.PendingCumScale;
-        this.PendingCumScale = 1;
+        this.CommittedCumulativeScale *= this.PendingCumulativeScale;
+        this.PendingCumulativeScale = 1;
         this.LastPixelDistance = 0;
     }
 }
