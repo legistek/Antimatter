@@ -1,5 +1,5 @@
 /** 
-Derived from  https://github.com/dotnet/wpf
+Portions derived from  https://github.com/dotnet/wpf
 The MIT License (MIT)
 
 Copyright (c) .NET Foundation and Contributors
@@ -27,128 +27,77 @@ SOFTWARE.
 
 import { Point } from "./Point";
 
+/** Represents a matrix for performing 2D transformations. 
+ * This object is immutable and frozen after creation. */
 export class Matrix
 {
-    private _isIdentity: boolean = true;
-    private _isTranslationOnly: boolean = true;
-    private _isNotRotated = true;
-    private _m11: number = 1;
-    private _m12: number = 0;
-    private _m21: number = 0;
-    private _m22: number = 1;
-    private _offsetX: number = 0;
-    private _offsetY: number = 0;
+    public static readonly Identity: Matrix = new Matrix();
+
+    public readonly M11: number = 1;
+    public readonly M12: number = 0;
+    public readonly M21: number = 0;
+    public readonly M22: number = 1;
+    public readonly OffsetX: number = 0;
+    public readonly OffsetY: number = 0;
 
     constructor(m11?: number, m12?: number, m21?: number, m22?: number, offsetX?: number, offsetY?: number)
     {
-        this.M11 = m11 || 1;
-        this.M12 = m12 || 0;
-        this.M21 = m21 || 0;
-        this.M22 = m22 || 1;
-        this.OffsetX = offsetX || 0;
-        this.OffsetY = offsetY || 0;
-    }
-
-    public get M11(): number
-    {
-        return this._m11;
-    }
-    public set M11(value: number)
-    {
-        this._m11 = value;
-        if (value !== 1)
+        if (m11 && m11 !== 1)
         {
+            this.M11 = m11;
             this._isIdentity = false;
             this._isTranslationOnly = false;
-        }        
-    }
-
-    public get M12(): number
-    {
-        return this._m12;
-    }
-    public set M12(value: number)
-    {
-        this._m12 = value;
-        if (value !== 0)
-        {
-            this._isIdentity = false;
-            this._isTranslationOnly = false;        
-            this._isNotRotated = false;
         }
-    }
-
-    public get M21(): number
-    {
-        return this._m21;
-    }
-    public set M21(value: number)
-    {
-        this._m21 = value;
-        if (value !== 0)
+        if (m12 !== undefined && m12 !== 0)
         {
+            this.M12 = m12;            
             this._isIdentity = false;
             this._isTranslationOnly = false;
             this._isNotRotated = false;
         }
-    }
-
-    public get M22(): number
-    {
-        return this._m22;
-    }
-    public set M22(value: number)
-    {
-        this._m22 = value;
-        if (value !== 1)
+        if (m21 !== undefined && m21 !== 0)
         {
+            this.M21 = m21;
+            this._isIdentity = false;
+            this._isTranslationOnly = false;
+            this._isNotRotated = false;
+        }
+        if (m22 && m22 !== 1)
+        {
+            this.M22 = m22;
             this._isIdentity = false;
             this._isTranslationOnly = false;
         }
-    }
 
-    public get OffsetX()
-    {
-        return this._offsetX;
-    }
-    public set OffsetX(value: number)
-    {
-        this._offsetX = value;
-        if (value !== 0)
+        if (offsetX !== undefined && offsetX !== 0)
+        {
+            this.OffsetX = offsetX;
             this._isIdentity = false;
-    }
-
-    public get OffsetY()
-    {
-        return this._offsetY;
-    }
-    public set OffsetY(value: number)
-    {
-        this._offsetY = value;
-        if (value !== 0)
+        }
+        if (offsetY !== undefined && offsetY !== 0)
+        {
+            this.OffsetY = offsetY;
             this._isIdentity = false;
-    }
+        }
 
+        Object.freeze(this);
+    }
+    
     public get Determinant(): number
     {
         if (this._isIdentity || this._isTranslationOnly)
             return 1.0;
-        return (this._m11 * this._m22) - (this._m12 * this._m21);
+        return (this.M11 * this.M22) - (this.M12 * this.M21);
     }
     
-    public static get Identity(): Matrix 
-    {
-        return new Matrix();
-    }
-
     public TransformPoint(pt: Point): Point
     {
-        var xadd = pt.Y * this._m21 + this._offsetX;
-        var yadd = pt.X * this._m12 + this._offsetY;
+        var xadd = pt.Y * this.M21 + this.OffsetX;
+        var yadd = pt.X * this.M12 + this.OffsetY;
 
         return {
-            X: pt.X * this._m11 + xadd,
-            Y: pt.Y * this._m22 + yadd
+            X: pt.X * this.M11 + xadd,
+            Y: pt.Y * this.M22 + yadd
         };
     }
 
@@ -158,29 +107,29 @@ export class Matrix
 
         if (matrix2._isIdentity)
         {
-            return new Matrix(matrix1._m11, matrix1._m12, matrix1._m21, matrix1._m22, matrix1._offsetX, matrix1._offsetY);
+            return matrix1;
         }
         else if (!matrix1._isNotRotated && !matrix2._isNotRotated)
         {
             return new Matrix(
-                matrix1._m11 *= matrix2._m11,
+                matrix1.M11 * matrix2.M11,
                 0,
                 0,
-                matrix1._m22 *= matrix2._m22,
-                matrix2._m11 * matrix1._offsetX + matrix2._offsetX,
-                matrix2._m22 * matrix1._offsetY + matrix2._offsetY);
+                matrix1.M22 * matrix2.M22,
+                matrix2.M11 * matrix1.OffsetX + matrix2.OffsetX,
+                matrix2.M22 * matrix1.OffsetY + matrix2.OffsetY);
         }
         else
         {
             return new Matrix(
-                matrix1._m11 * matrix2._m11 + matrix1._m12 * matrix2._m21,
-                matrix1._m11 * matrix2._m12 + matrix1._m12 * matrix2._m22,
+                matrix1.M11 * matrix2.M11 + matrix1.M12 * matrix2.M21,
+                matrix1.M11 * matrix2.M12 + matrix1.M12 * matrix2.M22,
 
-                matrix1._m21 * matrix2._m11 + matrix1._m22 * matrix2._m21,
-                matrix1._m21 * matrix2._m12 + matrix1._m22 * matrix2._m22,
+                matrix1.M21 * matrix2.M11 + matrix1.M22 * matrix2.M21,
+                matrix1.M21 * matrix2.M12 + matrix1.M22 * matrix2.M22,
 
-                matrix1._offsetX * matrix2._m11 + matrix1._offsetY * matrix2._m21 + matrix2._offsetX,
-                matrix1._offsetX * matrix2._m12 + matrix1._offsetY * matrix2._m22 + matrix2._offsetY);
+                matrix1.OffsetX * matrix2.M11 + matrix1.OffsetY * matrix2.M21 + matrix2.OffsetX,
+                matrix1.OffsetX * matrix2.M12 + matrix1.OffsetY * matrix2.M22 + matrix2.OffsetY);
         }
     }
 
@@ -190,4 +139,8 @@ export class Matrix
             return '';
         return `matrix(${this.M11},${this.M12},${this.M21},${this.M22},${this.OffsetX},${this.OffsetY}) `;
     }
+
+    private _isIdentity: boolean = true;
+    private _isTranslationOnly: boolean = true;
+    private _isNotRotated = true;
 }

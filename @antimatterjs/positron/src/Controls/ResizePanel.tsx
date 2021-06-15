@@ -92,7 +92,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         }
     );
 
-    /* private */ OnPointerDown(e: PointerEvent)
+    /* private */ OnSizerPointerDown(e: PointerEvent)
     {
         if (this._isDragging)
             return; // should be impossible
@@ -121,7 +121,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         this.InvalidateRender();
     }
 
-    /* private */ OnPointerMove(e: PointerEvent)
+    /* private */ OnSizerPointerMove(e: PointerEvent)
     {
         if (!this._isDragging || !this._dragStartSize || !this._dragStartCoord)
             return;
@@ -148,7 +148,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         }
     }
 
-    /* private */ OnPointerUp(e: PointerEvent)
+    /* private */ OnSizerPointerUp(e: PointerEvent)
     {
         if (!this._isDragging || !this._capturedPointerID)
             return;
@@ -233,10 +233,10 @@ export class ResizePanel<P extends IResizePanelProps = {},
             <Grid
                 Grid={templatedParent.ComputeResizerGridPosition()}
                 Background={templatedParent.state.Background}
-                OnPointerDown={e => templatedParent.OnPointerDown(e)}
-                OnPointerUp={e => templatedParent.OnPointerUp(e)}
-                OnLostPointerCapture={e => templatedParent.OnPointerUp(e)}
-                OnPointerMove={e => templatedParent.OnPointerMove(e)} >
+                OnPointerDown={e => templatedParent.OnSizerPointerDown(e)}
+                OnPointerUp={e => templatedParent.OnSizerPointerUp(e)}
+                OnLostPointerCapture={e => templatedParent.OnSizerPointerUp(e)}
+                OnPointerMove={e => templatedParent.OnSizerPointerMove(e)} >
                 <div className={"sizer " + (templatedParent._isDragging ? "resizing" : "")}/>
             </Grid>
         );
@@ -256,4 +256,3 @@ export class ResizePanel<P extends IResizePanelProps = {},
     /* private */ _dragStartCoord?: number;
     /* private */ _activeGridElement?: IGridDefinition;
 }
-

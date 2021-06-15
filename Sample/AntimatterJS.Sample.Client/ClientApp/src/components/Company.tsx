@@ -115,14 +115,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     constructor(props)
     {
         super(props);
-        this._tr.CenterX = 25;
-        this._tr.CenterY = 25;
-        this._tr.ScaleX = 2;
-        this._tr.ScaleY = 2;
-        this._tr.TranslateX = 15;
-        this._tr.TranslateY = 10;
-
-        var max = this._tr.Value;
     }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
@@ -143,6 +135,22 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                OnManipulationStarted={(e) =>
+                {
+                    this._tr.CenterX = e.CenterX;
+                    this._tr.CenterY = e.CenterY;
+                }}
+                OnManipulationDelta={(e) =>
+                {
+                    this._tr.TranslateX = e.CumulativeX;
+                    this._tr.TranslateY = e.CumulativeY;
+                    this._tr.ScaleX = e.CumulativeScale;
+                    this._tr.ScaleY = e.CumulativeScale;
+                }}
+                OnManipulationCompleted={(e) =>
+                {
+                    this._tr.Reset();
+                }}            
                 Transform={this._tr}>
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />

@@ -219,17 +219,29 @@ export class MultitouchTransform
         return Math.atan2(this.Value.M12, this.Value.M11);
     }
 
+    public Reset()
+    {
+        this._committed = Matrix.Identity;
+        this._cachedCSS = '';
+        this._centerX = 0;
+        this._centerY = 0;
+        this._isCSSDirty = false;
+        this._isMatrixDirty = false;
+        this._pendingScale = new ScaleTransform();
+        this._pendingRotation = new RotateTransform();
+        this._pendingTranslation = new TranslateTransform();
+        this._target?.InvalidateRender();
+    }
+
     public CommitPendingTransformations()
     {
         this._committed = this.Value;
         this._cachedCSS = this._committed.ToCSS();
         this._isCSSDirty = false;
         this._isMatrixDirty = false;
-
         this._pendingScale = new ScaleTransform();        
         this._pendingRotation = new RotateTransform();
         this._pendingTranslation = new TranslateTransform();
-
         this._target?.InvalidateRender();
     }
 
