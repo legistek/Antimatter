@@ -9,6 +9,7 @@ import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
 import { ItemsControl } from './Controls/ItemsControl';
 import { WindowLayoutContext } from './Controls/Window';
+import { MultitouchTransform } from './Media/MultitouchTransform';
 
 interface IFrameworkElementCommon
 {
@@ -25,7 +26,8 @@ interface IFrameworkElementCommon
     OnLostPointerCapture?: (event: PointerEvent)=> void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element    
+    LoadingTemplate?: () => JSX.Element,
+    Transform?: MultitouchTransform
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -34,7 +36,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
-    IsLoading?: boolean | Binding
+    IsLoading?: boolean | Binding    
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -44,7 +46,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
-    IsLoading?: boolean,
+    IsLoading?: boolean
 }
 
 export class FrameworkElement<
@@ -66,7 +68,9 @@ export class FrameworkElement<
         this.ApplyStyle();
 
         if (this.state.LoadedCommand)
-            this.callLoadedCommand();        
+            this.callLoadedCommand();
+        if (this.state.Transform)
+            this.state.Transform.AssignTarget(this);
     }    
     
     render()
@@ -171,6 +175,11 @@ export class FrameworkElement<
             styles.gridRow = this.state.Grid.Row + 1;
         if (this.state.IsHitTestVisible === false)
             styles.pointerEvents = "none";
+        if (this.state.Transform)
+        {
+            styles.transform = this.state.Transform.ToCSS();
+            styles.transformOrigin = "0px 0px";
+        }
         return styles;
     }
 

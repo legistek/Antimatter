@@ -56,8 +56,11 @@ export class Matrix
     public set M11(value: number)
     {
         this._m11 = value;
-        this._isIdentity = false;
-        this._isTranslationOnly = false;
+        if (value !== 1)
+        {
+            this._isIdentity = false;
+            this._isTranslationOnly = false;
+        }        
     }
 
     public get M12(): number
@@ -67,9 +70,12 @@ export class Matrix
     public set M12(value: number)
     {
         this._m12 = value;
-        this._isIdentity = false;
-        this._isTranslationOnly = false;
-        this._isNotRotated = false;
+        if (value !== 0)
+        {
+            this._isIdentity = false;
+            this._isTranslationOnly = false;        
+            this._isNotRotated = false;
+        }
     }
 
     public get M21(): number
@@ -79,9 +85,12 @@ export class Matrix
     public set M21(value: number)
     {
         this._m21 = value;
-        this._isIdentity = false;
-        this._isTranslationOnly = false;
-        this._isNotRotated = false;
+        if (value !== 0)
+        {
+            this._isIdentity = false;
+            this._isTranslationOnly = false;
+            this._isNotRotated = false;
+        }
     }
 
     public get M22(): number
@@ -91,8 +100,11 @@ export class Matrix
     public set M22(value: number)
     {
         this._m22 = value;
-        this._isIdentity = false;
-        this._isTranslationOnly = false;
+        if (value !== 1)
+        {
+            this._isIdentity = false;
+            this._isTranslationOnly = false;
+        }
     }
 
     public get OffsetX()
@@ -102,7 +114,8 @@ export class Matrix
     public set OffsetX(value: number)
     {
         this._offsetX = value;
-        this._isIdentity = false;
+        if (value !== 0)
+            this._isIdentity = false;
     }
 
     public get OffsetY()
@@ -112,7 +125,8 @@ export class Matrix
     public set OffsetY(value: number)
     {
         this._offsetY = value;
-        this._isIdentity = false;
+        if (value !== 0)
+            this._isIdentity = false;
     }
 
     public get Determinant(): number
@@ -172,6 +186,8 @@ export class Matrix
 
     public ToCSS(): string
     {
-        return `matrix(${this.M11},${this.M12},${this.M21},${this.M22},${this.OffsetX},${this.OffsetY})`;
+        if (this._isIdentity)
+            return '';
+        return `matrix(${this.M11},${this.M12},${this.M21},${this.M22},${this.OffsetX},${this.OffsetY}) `;
     }
 }

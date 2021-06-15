@@ -12,7 +12,10 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    ColorPicker
+    ColorPicker,
+    IFrameworkElementState,
+    IFrameworkElementProps,
+    MultitouchTransform
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -104,9 +107,23 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     }
 }
 
-export class Company extends AntimatterComponent
+export class Company extends FrameworkElement<IFrameworkElementProps, IFrameworkElementState>
 {
     static displayName = Company.name;
+    private _tr = new MultitouchTransform();
+
+    constructor(props)
+    {
+        super(props);
+        this._tr.CenterX = 25;
+        this._tr.CenterY = 25;
+        this._tr.ScaleX = 2;
+        this._tr.ScaleY = 2;
+        this._tr.TranslateX = 15;
+        this._tr.TranslateY = 10;
+
+        var max = this._tr.Value;
+    }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
@@ -118,15 +135,15 @@ export class Company extends AntimatterComponent
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    render()
+    renderElement()
     {
         console.log("Company rendering");
 
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                Transform={this._tr}>
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 

@@ -99,7 +99,7 @@ export class ItemsControl<
         super.OnInvalidateRender();
     }
 
-    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return StackPanelBase;
     }

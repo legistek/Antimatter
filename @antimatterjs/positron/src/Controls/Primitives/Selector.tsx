@@ -1,7 +1,7 @@
 import { Binding, ModelObjectReference } from '@antimatterjs/react';
 import { IItemsControlState, IItemsControlProps, ItemsControl } from '../ItemsControl';
 import { SelectionMode } from '../../Enums';
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '@antimatterjs/positron/src/FrameworkElement';
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../../FrameworkElement';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './SelectableItemControl';
 
 export interface ISelectorProps extends IItemsControlProps
@@ -91,7 +91,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
     {
     }
 
-    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* protected override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return SelectableItemControlBase;
     }

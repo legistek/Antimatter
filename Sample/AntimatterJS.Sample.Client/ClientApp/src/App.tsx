@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
@@ -49,7 +49,7 @@ loadTheme(theme);
 export default class App extends AntimatterComponent<{ Model: ModelObjectReference }, { Model: ModelObjectReference }>
 {
     static displayName = App.name;
-
+    
     constructor(props)
     {
         super(props);
@@ -97,7 +97,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>                    
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                         <Company />
                         <ResizePanel Size={new Binding("UnderlingPanelWidth")}
