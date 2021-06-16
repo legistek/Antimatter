@@ -196,10 +196,20 @@ namespace AntimatterJS.Sample.AppModel
                     _Age = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FullName));
+                    OnPropertyChanged(nameof(RelevantAge));
                 }
             }
         }
         #endregion
+
+        public double RelevantAge
+        {
+            get
+            {
+                return _Age / 40.0;
+            }
+        }
+
 
         #region IUICommand Edit Command
 

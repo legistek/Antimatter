@@ -5,6 +5,8 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} 
 import * as Model from '../model/Model';
 import
 {
+    ProgressBar,
+    //ProgressBarBase,
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -81,6 +83,18 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
+                    <ProgressBar
+                        Progress={new Binding(nameof<Model.Employee>(e => e.RelevantAge))}
+                    />
+
+                    <ProgressBar
+                        Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        Denominator={100}
+                    />
+
+                    <ProgressBar
+                        Indeterminate={true}
+                    />
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}
