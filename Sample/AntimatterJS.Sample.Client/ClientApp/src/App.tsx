@@ -108,7 +108,6 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                 SelectedItem={new Binding("SelectedEmployee")}
                                 ChildrenPath="Underlings"
                                 SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                                Background="Green"
                                 IsExpandedPath="IsExpanded"
                                 IsSelectedPath="IsSelected"
                                 ItemTemplate={this.employeeTemplate}>

@@ -1,0 +1,112 @@
+import * as React from "react";
+import { Antimatter, Binding, Utilities } from "@antimatterjs/react";
+import { Panel, IPanelProps, IPanelState } from "../Controls/Panel";
+import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
+import { IItemsControlProps, IItemsControlState, ItemsControl } from "../Controls/ItemsControl";
+import { Style } from "../Style";
+import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
+import { FrameworkElement } from "../FrameworkElement";
+import { DocumentPagePresenter, IDocumentPagePresenterProps } from "./DocumentPagePresenter";
+import { HorizontalAlignment, ScrollBarVisibility } from "../Enums";
+import { ControlTemplate } from "../FrameworkTemplate";
+import { baseElementEvents } from "@fluentui/utilities";
+
+interface IDocumentViewerCommon
+{
+    Document?: IDocument|null
+}
+interface IDocumentViewerProps extends IItemsControlProps, IDocumentViewerCommon
+{
+    Position?: DocumentPosition|Binding,
+}
+interface IDocumentViewerState extends IItemsControlState, IDocumentViewerCommon
+{
+    Position?: DocumentPosition
+}
+
+export class DocumentViewerBase<
+    P extends IDocumentViewerProps = {},
+    S extends IDocumentViewerState = {}>
+    extends ItemsControl<P, S>
+{
+    constructor(props)
+    {
+        super(props);
+    }
+
+    render()
+    {
+        return super.render();
+    }
+
+    public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
+        {
+            ItemsPanel: ItemsStackPanel,
+            HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
+            ItemContainerStyle: new Style<IDocumentPagePresenterProps>(
+                {
+                    Margin: "5px",
+                    BorderBrush: "black",
+                    BorderThickness: "1px",                    
+                    HorizontalAlignment: HorizontalAlignment.Center
+                }),
+            Template: new ControlTemplate((templatedParent: DocumentViewer) =>
+            (
+                <Panel
+                    HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
+                    Background={templatedParent.state.Background}
+                    BorderThickness={templatedParent.state.BorderThickness}
+                    BorderBrush={templatedParent.state.BorderBrush}>
+                    <ItemsStackPanel
+                        ItemsParent={templatedParent}
+                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto} />
+                </Panel>
+            ))
+        }
+    );
+
+    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
+    {
+        if (property === nameof(this.state.Document))
+        {
+            var doc = value as IDocument;
+            this.SetValue(
+                nameof(this.state.ItemsSource),
+                this.ConstructPageArray(doc?.Pages || 0),
+                true);
+            this.ItemsPanelInstance?.InvalidateRender();
+        }
+        else if (property === nameof(this.state.Position))
+        {
+            // This is gonna be a doozy
+        }
+    }
+
+    public /* override */ OnRenderItem(item: any, props?: any): JSX.Element | null
+    {
+        const pageProps: IDocumentPagePresenterProps = {
+            PageIndex: item as number,
+            Document: this.state.Document,
+            Scale: this.state.Position?.scale || 1
+        };
+        return super.OnRenderItem(item, pageProps);
+    }
+
+    /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    {
+        return DocumentPagePresenter;
+    }
+
+    private ConstructPageArray(pages: number): number[]
+    {
+        let arr: number[] = new Array(pages);
+        for (let i = 0; i < pages; i++)
+            arr[i] = i;
+        return arr;
+    }
+}
+
+export class DocumentViewer extends DocumentViewerBase<IDocumentViewerProps, IDocumentViewerState>
+{
+}

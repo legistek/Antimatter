@@ -35,6 +35,7 @@ export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
 export * from './src/Controls/ColorPicker';
+export * from './src/Documents/DocumentViewer';
 export * from './src/Documents/DocumentPagePresenter';
 export * from './src/Documents/IDocument';
 export * from './src/Documents/PDFJSDocument';

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Panel, IPanelProps, IPanelState } from './Panel';
+import { PanelBase, IPanelProps, IPanelState } from './Panel';
 import { Orientation } from '../Enums';
 
 export interface IStackPanelProps extends IPanelProps
@@ -14,7 +14,7 @@ export interface IStackPanelState extends IPanelState
 }
 
 export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPanelState = {}>
-    extends Panel<P, S>
+    extends PanelBase<P, S>
 {
     /* override */ constructClasses(): string
     {        

@@ -17,7 +17,8 @@ import
     IFrameworkElementProps,
     MultitouchTransform,
     DocumentPagePresenter,
-    PDFJSDocument
+    PDFJSDocument,
+    DocumentViewer
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -125,7 +126,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
     private async LoadPDFAsync()
     {
-        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf");
+        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/2d1d7542-ceef-11eb-943f-0022484432a8/pdf");
         this.InvalidateRender();
     }
 
@@ -165,33 +166,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
-                
-                <div className="amx-ptn-fe" style={{ height: 4096 }}>
-                    <DocumentPagePresenter
-                        Document={this._pdfDoc}
-                        OnManipulationStarted={(e) =>
-                        {
-                            this._tr.CenterX = e.CenterX;
-                            this._tr.CenterY = e.CenterY;
-                        }}
-                        OnManipulationDelta={(e) =>
-                        {
-                            this._tr.TranslateX = e.CumulativeX;
-                            this._tr.TranslateY = e.CumulativeY;
-                            this._tr.ScaleX = e.CumulativeScale;
-                            this._tr.ScaleY = e.CumulativeScale;
-                        }}
-                        OnManipulationCompleted={(e) =>
-                        {
-                            this._scale = this._tr.AbsoluteScale;
-                            this._tr.Reset();
-                            this.InvalidateRender();
-                        }}
-                        Transform={this._tr}
-                        Scale={this._scale}
-                        PageIndex={880}/>
-                </div>
-                
+
+                <DocumentViewer Document={this._pdfDoc} />
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}
@@ -267,3 +243,30 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         />
  * 
  */
+
+
+/*
+ *                     <DocumentPagePresenter
+                        Document={this._pdfDoc}
+                        OnManipulationStarted={(e) =>
+                        {
+                            this._tr.CenterX = e.CenterX;
+                            this._tr.CenterY = e.CenterY;
+                        }}
+                        OnManipulationDelta={(e) =>
+                        {
+                            this._tr.TranslateX = e.CumulativeX;
+                            this._tr.TranslateY = e.CumulativeY;
+                            this._tr.ScaleX = e.CumulativeScale;
+                            this._tr.ScaleY = e.CumulativeScale;
+                        }}
+                        OnManipulationCompleted={(e) =>
+                        {
+                            this._scale = this._tr.AbsoluteScale;
+                            this._tr.Reset();
+                            this.InvalidateRender();
+                        }}
+                        Transform={this._tr}
+                        Scale={this._scale}
+                        PageIndex={880}/>
+                        */

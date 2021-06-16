@@ -10,3 +10,11 @@ export interface IDocumentPage
     Height: number; // Points at 1x scale
     RenderAsync(canvas: HTMLCanvasElement, scale: number): Promise<void>;
 }
+
+export interface DocumentPosition
+{
+    scale: number,
+    page: number,
+    x: number,
+    y: number
+}

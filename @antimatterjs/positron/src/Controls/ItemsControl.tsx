@@ -15,7 +15,9 @@ export interface IItemsControlProps extends IControlProps
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemContainerStyle?: Style<IFrameworkElementProps>
+    ItemContainerStyle?: Style<IFrameworkElementProps>,
+    HorizontalScrollBarVisibility?: ScrollBarVisibility,
+    VerticalScrollBarVisibility?: ScrollBarVisibility
 }
 
 export interface IItemsControlState extends IControlState
@@ -75,10 +77,11 @@ export class ItemsControl<
                             return React.createElement(
                                 (this.state.ItemsPanel || StackPanel),
                                 {
+                                    Background: this.state.Background,
                                     BorderThickness: this.state.BorderThickness,
                                     BorderBrush: this.state.BorderBrush,
                                     ItemsParent: this,
-                                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+                                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
                                 } as IPanelProps);
                         }
                     }
@@ -116,7 +119,7 @@ export class ItemsControl<
     {
         return (i?: any) => (
             <>
-                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.ToString()}
+                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.toString()}
             </>);
     }
 }

@@ -6,9 +6,9 @@ import { Style } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
 import { CommandButton } from './CommandButton';
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
-class CommandBarPanel extends Panel<IPanelProps, IPanelState>
+class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
 {
     _allCommandItems?: ICommandBarItemProps[];
     _visibleCommandItems?: ICommandBarItemProps[];

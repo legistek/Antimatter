@@ -130,13 +130,8 @@ export class ReactClient implements IClient
             newState[prop] = value;
             target.setState(newState);
         }
-        else
-        {
-            // deliberately change the state without
-            // telling React because we have no desire
-            // to rerender
-            target.state[prop] = value;
-        }
+        
+        target.state[prop] = value;        
     }
 
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)

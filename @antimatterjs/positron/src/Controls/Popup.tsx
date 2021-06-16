@@ -3,7 +3,7 @@ import { Callout, Target } from '@fluentui/react';
 import * as React from 'react';
 import { FrameworkElement } from '../FrameworkElement';
 import { Style } from '../Style';
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { ButtonBase } from './Primitives/ButtonBase';
 
 export enum PlacementMode
@@ -33,7 +33,7 @@ export interface IPopupState extends IPanelState
 export class PopupBase<
     P extends IPopupProps,
     S extends IPopupState>
-    extends Panel<P, S>
+    extends PanelBase<P, S>
 {
     public static DefaultStyle: Style<IPopupProps> = new Style<IPopupProps>(
         {
