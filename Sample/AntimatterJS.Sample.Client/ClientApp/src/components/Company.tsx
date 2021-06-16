@@ -15,11 +15,14 @@ import
     ColorPicker,
     IFrameworkElementState,
     IFrameworkElementProps,
-    MultitouchTransform
+    MultitouchTransform,
+    DocumentPagePresenter,
+    PDFJSDocument
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { IDocument } from '@antimatterjs/positron/src/Documents/IDocument';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -111,10 +114,19 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 {
     static displayName = Company.name;
     private _tr = new MultitouchTransform();
+    private _scale: number = 1;
+    private _pdfDoc?: IDocument|null;
 
     constructor(props)
     {
         super(props);
+        this.LoadPDFAsync();
+    }
+
+    private async LoadPDFAsync()
+    {
+        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf");
+        this.InvalidateRender();
     }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
@@ -154,9 +166,68 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
                 
-                <div className="amx-ptn-fe" style={{ height: 1024 }}>
-                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}                    
+                <div className="amx-ptn-fe" style={{ height: 4096 }}>
+                    <DocumentPagePresenter
+                        Document={this._pdfDoc}
+                        OnManipulationStarted={(e) =>
+                        {
+                            this._tr.CenterX = e.CenterX;
+                            this._tr.CenterY = e.CenterY;
+                        }}
+                        OnManipulationDelta={(e) =>
+                        {
+                            this._tr.TranslateX = e.CumulativeX;
+                            this._tr.TranslateY = e.CumulativeY;
+                            this._tr.ScaleX = e.CumulativeScale;
+                            this._tr.ScaleY = e.CumulativeScale;
+                        }}
+                        OnManipulationCompleted={(e) =>
+                        {
+                            this._scale = this._tr.AbsoluteScale;
+                            this._tr.Reset();
+                            this.InvalidateRender();
+                        }}
+                        Transform={this._tr}
+                        Scale={this._scale}
+                        PageIndex={880}/>
+                </div>
+                
+
+                {/*<ListBox                    */}
+                {/*    SelectionMode={SelectionMode.Single}                    */}
+                {/*    ItemsPanel={ItemsStackPanel}*/}
+                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
+                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
+                {/*    ItemTemplate={(item) =>*/}
+                {/*    (*/}
+                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
+                {/*            Margin="10px"*/}
+                {/*        />*/}
+                {/*    )} />*/}
+
+                {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
+                {/*    <ReactDataContext.Consumer>*/}
+                {/*        {ctx => (*/}
+                {/*            <div>*/}
+                {/*                <h2>CEO</h2>*/}
+                {/*                <Employee num={1} />*/}
+                {/*                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>*/}
+                {/*                    Increase*/}
+                {/*                </PrimaryButton>*/}
+                {/*            </div>*/}
+                {/*        )}*/}
+                {/*    </ReactDataContext.Consumer>*/}
+                {/*</DataContext>*/}
+            </Grid>
+        );
+    }
+}
+
+
+
+/*
+ * <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                        RowHeight={44}
                         SelectedItems={new Binding("SelectedEmployees")}
                         IsSelectAll={new Binding("IsAllSelected")}
                         OnManipulationStarted={(e) =>
@@ -194,35 +265,5 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                             }
                         ]}
                         />
-                </div>
-                
-
-                {/*<ListBox                    */}
-                {/*    SelectionMode={SelectionMode.Single}                    */}
-                {/*    ItemsPanel={ItemsStackPanel}*/}
-                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
-                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
-                {/*    ItemTemplate={(item) =>*/}
-                {/*    (*/}
-                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
-                {/*            Margin="10px"*/}
-                {/*        />*/}
-                {/*    )} />*/}
-
-                {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
-                {/*    <ReactDataContext.Consumer>*/}
-                {/*        {ctx => (*/}
-                {/*            <div>*/}
-                {/*                <h2>CEO</h2>*/}
-                {/*                <Employee num={1} />*/}
-                {/*                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>*/}
-                {/*                    Increase*/}
-                {/*                </PrimaryButton>*/}
-                {/*            </div>*/}
-                {/*        )}*/}
-                {/*    </ReactDataContext.Consumer>*/}
-                {/*</DataContext>*/}
-            </Grid>
-        );
-    }
-}
+ * 
+ */

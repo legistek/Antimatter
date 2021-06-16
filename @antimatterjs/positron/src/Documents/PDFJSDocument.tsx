@@ -1,0 +1,96 @@
+import { Utilities } from '@antimatterjs/react';
+import { IDocument, IDocumentPage } from './IDocument';
+
+export class PDFJSDocument implements IDocument
+{
+    private static _pdfjsTries: number = 5;
+    private _pages: number = 0;
+    private _pdf: any;
+
+    public static async CreateAsync(url: string): Promise<PDFJSDocument|null>
+    {
+        let pdfjsLib: any = (window as any).pdfjsLib;
+
+        var tries = 0;
+        while (!pdfjsLib && tries++ < PDFJSDocument._pdfjsTries)
+        {
+            await Utilities.SleepAsync(1000);
+            pdfjsLib = (window as any).pdfjsLib;
+        }
+
+        if (!pdfjsLib)
+            throw "Include a reference to PDF.JS in index.html";
+
+        var pdf = await pdfjsLib.getDocument({
+            url: url,
+            disableAutoFetch: true,
+            disableStream: true,
+            withCredentials: true,
+            rangeChunkSize: 128 * 1024,
+        }).promise;
+        if (!pdf)
+            return null;
+
+        var pdfDoc = new PDFJSDocument();
+        pdfDoc._pdf = pdf;
+        pdfDoc._pages = pdf.numPages;
+        return pdfDoc;
+    }
+
+    public get Pages(): number
+    {
+        return this._pages;
+    }
+
+    public async GetPageAsync(index: number): Promise<IDocumentPage|null> 
+    {
+        var page = await this._pdf.getPage(index + 1);
+        if (!page)
+            return null;
+        return new PDFJSPage(page);
+    }       
+}
+
+export class PDFJSPage implements IDocumentPage
+{
+    private _page: any;
+    private _width: number = 0;
+    private _height: number = 0;
+
+    constructor(page: any)
+    {
+        this._page = page;
+        var viewport = page.getViewport({ scale: 1 });
+        this._width = viewport.width;
+        this._height = viewport.height;
+    }
+
+    public get Width(): number
+    {
+        return this._width;
+    }
+
+    public get Height(): number
+    {
+        return this._height;
+    }
+
+    public async RenderAsync(canvas: HTMLCanvasElement, scale: number): Promise<void> 
+    {
+        var viewport = this._page.getViewport({ scale: scale });
+
+        var tempCanvas = document.createElement('canvas');
+        tempCanvas.width = viewport.width;
+        tempCanvas.height = viewport.height;
+        var tempContext = tempCanvas.getContext("2d");
+        await this._page.render({
+            canvasContext: tempContext,
+            viewport: viewport
+        }).promise;
+
+        var ctx = canvas.getContext("2d");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        ctx?.drawImage(tempCanvas, 0, 0);
+    }
+}

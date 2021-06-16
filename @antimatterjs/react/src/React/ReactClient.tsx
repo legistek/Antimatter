@@ -179,7 +179,7 @@ export class ReactClient implements IClient
         target.antimatterOldShouldComponentUpdate = target.shouldComponentUpdate;       
         target.shouldComponentUpdate = (nextProps, nextState) =>
         {
-            const propChanges: boolean = this.BindPropsInternal(target, nextProps, false)
+            const propChanges: boolean = this.BindPropsInternal(target, nextProps, false, nextState)
                 //|| !target.antimatterHasUpdated
                 ;
             if ((target as any).antimatterOldShouldComponentUpdate)
@@ -230,19 +230,19 @@ export class ReactClient implements IClient
         this.BindPropsInternal(target, target.props, true);
     }
 
-    BindPropsInternal(target: IBoundComponent, props: Readonly<{}>, force: boolean): boolean
+    BindPropsInternal(target: IBoundComponent, props: Readonly<{}>, force: boolean, nextState?: Readonly<{}>): boolean
     {
         let any: boolean = false;
         var entries = Object.entries(props);
         for (const entry of entries)
         {
-            if (this.ProcessPropChange(target, entry[0], entry[1], force))
+            if (this.ProcessPropChange(target, entry[0], entry[1], force, nextState))
                 any = true;
         }
         return any;
     }
 
-    ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean) : boolean
+    ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean, nextState?: Readonly<{}>) : boolean
     {        
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
@@ -270,7 +270,10 @@ export class ReactClient implements IClient
                 return false;
 
             // Plain old value; set the state and continue
-            target.state[prop] = value;
+            if (nextState)
+                nextState[prop] = value;
+            else
+                target.state[prop] = value;
 
             // If the target has property change notification, execute
             if ((target as any).OnPropertyChanged)

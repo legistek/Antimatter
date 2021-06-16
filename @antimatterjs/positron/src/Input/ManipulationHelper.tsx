@@ -14,7 +14,7 @@ export class ManipulationHelper
 
     constructor(parent: FrameworkElement)
     {
-        this._parent = parent;
+        this._parent = parent;        
     }
 
     public OnPointerDown(event: PointerEvent): void
@@ -71,7 +71,7 @@ export class ManipulationHelper
                 if (this._pointerCache.length === 1)
                 {
                     this._scale.CenterX = this._pointerCache[0].clientX - rc.left;
-                    this._scale.CenterY = this._pointerCache[0].offsetY - rc.top;
+                    this._scale.CenterY = this._pointerCache[0].clientY - rc.top;
                 }
                 else
                 {

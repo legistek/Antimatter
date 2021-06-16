@@ -37,7 +37,7 @@ export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> exten
     {        
         super(props);
         if (props.ItemsParent)        
-            props.ItemsParent.ItemsPanelInstance = this;        
+            props.ItemsParent.ItemsPanelInstance = this;
     }
 
     /* override */ getCSSStyles() : React.CSSProperties
