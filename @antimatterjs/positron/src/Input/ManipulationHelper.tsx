@@ -1,3 +1,4 @@
+import { raiseClick } from "@fluentui/utilities";
 import * as React from "react";
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from "../FrameworkElement";
 import { ManipulationEvent, ManipulationEventArgs } from "./ManipulationEventArgs";
@@ -64,18 +65,22 @@ export class ManipulationHelper
             this._parent.state.OnManipulationStarted)
         {
             var startedArgs = new ManipulationEventArgs(ManipulationEvent.Started, event);
-            if (this._pointerCache.length === 1)
-            {
-                this._scale.CenterX = this._pointerCache[0].clientX;
-                this._scale.CenterY = this._pointerCache[0].clientY;
+            var rc = this._parent.Container?.getBoundingClientRect();
+            if (rc)
+            {                
+                if (this._pointerCache.length === 1)
+                {
+                    this._scale.CenterX = this._pointerCache[0].clientX - rc.left;
+                    this._scale.CenterY = this._pointerCache[0].offsetY - rc.top;
+                }
+                else
+                {
+                    this._scale.CenterX = (this._pointerCache[0].clientX + this._pointerCache[1].clientX) / 2 - rc.left;
+                    this._scale.CenterY = (this._pointerCache[0].clientY + this._pointerCache[1].clientY) / 2 - rc.top;
+                }
+                startedArgs.CenterX = this._scale.CenterX;
+                startedArgs.CenterY = this._scale.CenterY;
             }
-            else
-            {
-                this._scale.CenterX = (this._pointerCache[0].clientX + this._pointerCache[1].clientX) / 2;
-                this._scale.CenterY = (this._pointerCache[0].clientY + this._pointerCache[1].clientY) / 2;
-            }
-            startedArgs.CenterX = this._scale.CenterX;
-            startedArgs.CenterY = this._scale.CenterY;
             this._parent.state.OnManipulationStarted(startedArgs);
         }
         
