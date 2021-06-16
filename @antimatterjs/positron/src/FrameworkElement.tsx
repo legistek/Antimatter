@@ -9,6 +9,9 @@ import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
 import { ItemsControl } from './Controls/ItemsControl';
 import { WindowLayoutContext } from './Controls/Window';
+import { MultitouchTransform } from './Media/MultitouchTransform';
+import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEventArgs';
+import { ManipulationHelper } from './Input/ManipulationHelper';
 
 interface IFrameworkElementCommon
 {
@@ -22,10 +25,18 @@ interface IFrameworkElementCommon
     OnPointerDown?: (event: PointerEvent) => void,
     OnPointerMove?: (event: PointerEvent) => void,
     OnPointerUp?: (event: PointerEvent) => void,
-    OnLostPointerCapture?: (event: PointerEvent)=> void,
+    OnPointerLeave?: (event: PointerEvent) => void,
+    OnPointerCancel?: (event: PointerEvent) => void,
+    OnPointerOut?: (event: PointerEvent) => void,
+    OnLostPointerCapture?: (event: PointerEvent) => void,
+    OnManipulationStarting?: (event: ManipulationEventArgs) => void,
+    OnManipulationStarted?: (event: ManipulationEventArgs) => void,
+    OnManipulationDelta?: (event: ManipulationEventArgs) => void,
+    OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
-    LoadingTemplate?: () => JSX.Element    
+    LoadingTemplate?: () => JSX.Element,
+    Transform?: MultitouchTransform
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -34,7 +45,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
-    IsLoading?: boolean | Binding
+    IsLoading?: boolean | Binding    
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -44,7 +55,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
-    IsLoading?: boolean,
+    IsLoading?: boolean
 }
 
 export class FrameworkElement<
@@ -56,8 +67,9 @@ export class FrameworkElement<
     _calledLoaded: boolean = false;
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
+    _gestureHandlers: boolean = false;
 
-    public Container: any;
+    public Container?: HTMLElement | null;
 
     constructor(props)
     {
@@ -66,7 +78,9 @@ export class FrameworkElement<
         this.ApplyStyle();
 
         if (this.state.LoadedCommand)
-            this.callLoadedCommand();        
+            this.callLoadedCommand();
+        if (this.state.Transform)
+            this.state.Transform.AssignTarget(this);
     }    
     
     render()
@@ -75,7 +89,13 @@ export class FrameworkElement<
             return null;
 
         this._isRenderValid = true;
-
+        
+        if (this.state.OnManipulationStarting ||
+            this.state.OnManipulationStarted ||
+            this.state.OnManipulationDelta ||
+            this.state.OnManipulationCompleted)
+            this._gestureHandlers = true;
+         
         return (
             <div
                 ref={r => this.Container = r}
@@ -83,21 +103,26 @@ export class FrameworkElement<
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
-                onPointerMove={this.state.OnPointerMove
-                    ? (event) =>
-                        this.state.OnPointerMove?.call(this, event.nativeEvent)
+                onPointerMove={this.state.OnPointerMove || this._gestureHandlers
+                    ? (event) => this.OnPointerMove(event)                        
                     : undefined}
-                onPointerDown={this.state.OnPointerDown
-                    ? (event) =>
-                        this.state.OnPointerDown?.call(this, event.nativeEvent)
+                onPointerDown={this.state.OnPointerDown || this._gestureHandlers
+                    ? (event) => this.OnPointerDown(event)                        
                     : undefined}
-                onPointerUp={this.state.OnPointerUp
-                    ? (event) =>
-                        this.state.OnPointerUp?.call(this, event.nativeEvent)
+                onPointerUp={this.state.OnPointerUp || this._gestureHandlers
+                    ? (event) => this.OnPointerUp(event)                        
                     : undefined}
-                onLostPointerCapture={this.state.OnLostPointerCapture
-                    ? (event) =>
-                        this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
+                onLostPointerCapture={this.state.OnLostPointerCapture 
+                    ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
+                    : undefined}
+                onPointerLeave={this.state.OnPointerLeave || this._gestureHandlers
+                    ? (event) => this.OnPointerLeave(event)
+                    : undefined}
+                onPointerCancel={this.state.OnPointerCancel || this._gestureHandlers
+                    ? (event) => this.OnPointerCancel(event)
+                    : undefined}
+                onPointerOut={this.state.OnPointerOut || this._gestureHandlers
+                    ? (event) => this.OnPointerOut(event)
                     : undefined}
                 className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
                 {
@@ -171,6 +196,11 @@ export class FrameworkElement<
             styles.gridRow = this.state.Grid.Row + 1;
         if (this.state.IsHitTestVisible === false)
             styles.pointerEvents = "none";
+        if (this.state.Transform)
+        {
+            styles.transform = this.state.Transform.ToCSS();
+            styles.transformOrigin = "0px 0px";
+        }
         return styles;
     }
 
@@ -265,4 +295,53 @@ export class FrameworkElement<
     }
 
     PropertyChanged: Event<PropertyChangedEventArgs> = new Event<PropertyChangedEventArgs>();
+
+    //#region "Manipulation Gestures"
+
+    private _manipulationHelper: ManipulationHelper = new ManipulationHelper(this);
+
+    private OnPointerDown(event: React.PointerEvent): void
+    {
+        this.state.OnPointerDown?.call(this, event.nativeEvent);
+        if (this._gestureHandlers)
+            this._manipulationHelper.OnPointerDown(event.nativeEvent);
+    }
+
+    private OnPointerMove(event: React.PointerEvent): void
+    {
+        this.state.OnPointerMove?.call(this, event.nativeEvent);
+        if (this._gestureHandlers)
+            this._manipulationHelper.OnPointerMove(event.nativeEvent);
+    }
+
+    private OnPointerUp(event: React.PointerEvent): void
+    {
+        this.state.OnPointerUp?.call(this, event.nativeEvent);
+        if (this._gestureHandlers)
+            this._manipulationHelper.OnPointerUp(event.nativeEvent);
+    }
+
+    private OnPointerLeave(event: React.PointerEvent): void
+    {
+        this.state.OnPointerLeave?.call(this, event.nativeEvent);
+        if (this._gestureHandlers)
+            this._manipulationHelper.OnPointerUp(event.nativeEvent);
+    }
+
+    private OnPointerCancel(event: React.PointerEvent): void
+    {
+        this.state.OnPointerCancel?.call(this, event.nativeEvent);
+        if (this._gestureHandlers)
+            this._manipulationHelper.OnPointerUp(event.nativeEvent);
+    }
+
+    private OnPointerOut(event: React.PointerEvent): void
+    {
+        this.state.OnPointerOut?.call(this, event.nativeEvent);
+        //if (this._gestureHandlers)
+        //    this._manipulationHelper.OnPointerUp(event.nativeEvent);
+    }
+
+
+    //#endregion "Manipulation Gestures"
 }

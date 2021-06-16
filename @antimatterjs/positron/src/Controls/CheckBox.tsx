@@ -3,6 +3,7 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { Checkbox as FluentCheckBox } from '@fluentui/react'
 import { IToggleButtonProps, IToggleButtonState, ToggleButton } from './Primitives/ToggleButton';
 import { Style } from '@antimatterjs/positron/src/Style';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ICheckBoxProps extends IToggleButtonProps
 {
@@ -30,7 +31,7 @@ export class CheckBox extends ToggleButton<ICheckBoxProps, ICheckBoxState>
     };
     static DefaultStyle: Style<ICheckBoxProps> = new Style(
         {
-            Template: (templatedParent: CheckBox) =>
+            Template: new ControlTemplate((templatedParent: CheckBox) =>
             (
                 <FluentCheckBox
                     styles={{
@@ -47,7 +48,7 @@ export class CheckBox extends ToggleButton<ICheckBoxProps, ICheckBoxState>
                         templatedParent.OnClick(checked?.nativeEvent as MouseEvent);
                     }}
                 />
-            )
+            ))
         }
     );
 }

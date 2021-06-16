@@ -3,6 +3,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 
 import { Separator as FluentSeparator } from '@fluentui/react'
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ISeparatorProps extends IControlProps
 {
@@ -15,7 +16,7 @@ export class Separator extends Control<ISeparatorProps, ISeparatorState>
 {
     public static DefaultStyle: Style<ISeparatorProps> = new Style<ISeparatorProps>(
         {
-            Template: (templatedParent: Separator) =>
+            Template: new ControlTemplate((templatedParent: Separator) =>
             (
                 <FluentSeparator styles={{
                     root: {
@@ -23,6 +24,6 @@ export class Separator extends Control<ISeparatorProps, ISeparatorState>
                         padding: "0px"
                     },
                 }} />
-            )
+            ))
         });
 }

@@ -12,7 +12,10 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    ColorPicker
+    ColorPicker,
+    IFrameworkElementState,
+    IFrameworkElementProps,
+    MultitouchTransform
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -104,9 +107,15 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     }
 }
 
-export class Company extends AntimatterComponent
+export class Company extends FrameworkElement<IFrameworkElementProps, IFrameworkElementState>
 {
     static displayName = Company.name;
+    private _tr = new MultitouchTransform();
+
+    constructor(props)
+    {
+        super(props);
+    }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
@@ -118,7 +127,7 @@ export class Company extends AntimatterComponent
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    render()
+    renderElement()
     {
         console.log("Company rendering");
 
@@ -126,7 +135,6 @@ export class Company extends AntimatterComponent
 
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -145,30 +153,49 @@ export class Company extends AntimatterComponent
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
-
-                <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                    RowHeight={44}
-                    SelectedItems={new Binding("SelectedEmployees")}
-                    IsSelectAll={new Binding("IsAllSelected")}
-                    Columns={[
+                
+                <div className="amx-ptn-fe" style={{ height: 1024 }}>
+                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                        RowHeight={44}                    
+                        SelectedItems={new Binding("SelectedEmployees")}
+                        IsSelectAll={new Binding("IsAllSelected")}
+                        OnManipulationStarted={(e) =>
                         {
-                            Header: "First Name",
-                            Key: "firstName",
-                            Template: this._firstNameTemplate
-                        },
+                            this._tr.CenterX = e.CenterX;
+                            this._tr.CenterY = e.CenterY;
+                        }}
+                        OnManipulationDelta={(e) =>
                         {
-                            Header: "Last Name",
-                            Key: "lastName",
-                            Template: this._lastNameTemplate
-                        },
+                            this._tr.TranslateX = e.CumulativeX;
+                            this._tr.TranslateY = e.CumulativeY;
+                            this._tr.ScaleX = e.CumulativeScale;
+                            this._tr.ScaleY = e.CumulativeScale;
+                        }}
+                        OnManipulationCompleted={(e) =>
                         {
-                            Header: "Age",
-                            Key: "age",
-                            Template: this._ageTemplate
-                        }
-                    ]}
-
-                />
+                            this._tr.Reset();
+                        }}
+                        Transform={this._tr}
+                        Columns={[
+                            {
+                                Header: "First Name",
+                                Key: "firstName",
+                                Template: this._firstNameTemplate
+                            },
+                            {
+                                Header: "Last Name",
+                                Key: "lastName",
+                                Template: this._lastNameTemplate
+                            },
+                            {
+                                Header: "Age",
+                                Key: "age",
+                                Template: this._ageTemplate
+                            }
+                        ]}
+                        />
+                </div>
+                
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

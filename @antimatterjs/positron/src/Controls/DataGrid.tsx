@@ -6,7 +6,7 @@ import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsCon
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { SelectionMode } from '../Enums';
-import { DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 
 interface IDataGridCellCommon
 {
@@ -117,7 +117,7 @@ export class DataGridBase<
 
     public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
         {
-            Template: (templatedParent: DataGridBase<IDataGridProps, IDataGridState>) => (
+            Template: new ControlTemplate((templatedParent: DataGridBase<IDataGridProps, IDataGridState>) =>(
                 <Fluent.ScrollablePane>
                     <Fluent.DetailsList
                         cellStyleProps={{
@@ -176,7 +176,7 @@ export class DataGridBase<
                         items={templatedParent.state.ItemsSource || []}
                         columns={templatedParent.ConstructColumns()} />
                 </Fluent.ScrollablePane>
-            )
+            ))
         }
     );
 

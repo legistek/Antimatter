@@ -12,6 +12,7 @@ import { HorizontalAlignment, VerticalAlignment } from '@antimatterjs/positron/s
 import { template } from '@babel/core';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 interface IDialogBoxCommon
 {    
@@ -41,7 +42,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 
     static DefaultStyle: Style<IDialogBoxProps> = new Style(
         {
-            Template: (templatedParent: DialogBox) =>
+            Template: new ControlTemplate((templatedParent: DialogBox) =>
             (
                 <Modal
                     isOpen={true}
@@ -120,7 +121,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                         </Grid>
                     </DataContext>
                 </Modal>
-            )
+            ))
         }
     );
 

@@ -6,6 +6,7 @@ import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IGroupBoxProps extends IControlProps
 {
@@ -31,7 +32,7 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
             BorderBrush: GroupBox.theme.semanticColors.inputBorder,
             BorderThickness: "1px",
             Padding: "10px",
-            Template: (templatedParent: GroupBox) =>
+            Template: new ControlTemplate((templatedParent: GroupBox) =>
             (
                 <StackPanel
                     Padding={(templatedParent.state.Header ? "0px 10px 10px 10px" : "10px")}>
@@ -49,7 +50,7 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
                     </StackPanel>
 
                 </StackPanel>
-            )
+            ))
         }
     );
 }
