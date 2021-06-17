@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List } from '@fluentui/react';
+import { divProperties, List } from '@fluentui/react';
 import { Binding, ModelObjectReference } from '@antimatterjs/react';
 
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
@@ -20,18 +20,29 @@ export class ItemsStackPanel extends PanelBase<IItemsStackPanelProps, IItemsStac
     renderElement()
     {
         return (
-            <List
-                items={this.props.ItemsParent?.state.ItemsSource}
+                <List
+                    items={this.props.ItemsParent?.state.ItemsSource}
+                    getItemCountForPage={(index, rect) => 2}
                 style={{
-                    display: 'block',
-                    overflowY: 'auto'
+                    width: 'fit-content',
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
                 }}
-                getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
-                onRenderCell={(item, index) =>
-                    this.props.ItemsParent?.OnRenderItem(item)}
-                version={this._version}
-                />
+                    getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
+                    onRenderCell={(item, index) =>
+                        this.props.ItemsParent?.OnRenderItem(item)}
+                    version={this._version}
+                    />
         );
+    }
+
+    /* override */ getCSSStyles() : React.CSSProperties
+    {
+        var styles = {
+            display: "block",
+            height: "100%"    
+        };
+        return Object.assign(super.getCSSStyles(), styles);
     }
 
     /* override */ OnInvalidateRender()

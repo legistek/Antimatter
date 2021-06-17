@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Antimatter, Binding, Utilities } from "@antimatterjs/react";
-import { Panel, IPanelProps, IPanelState } from "../Controls/Panel";
-import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
+import { Binding } from "@antimatterjs/react";
+import { Panel } from "../Controls/Panel";
+import { DocumentPosition, IDocument } from "./IDocument";
 import { IItemsControlProps, IItemsControlState, ItemsControl } from "../Controls/ItemsControl";
 import { Style } from "../Style";
 import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
@@ -9,7 +9,6 @@ import { FrameworkElement } from "../FrameworkElement";
 import { DocumentPagePresenter, IDocumentPagePresenterProps } from "./DocumentPagePresenter";
 import { HorizontalAlignment, ScrollBarVisibility } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";
-import { baseElementEvents } from "@fluentui/utilities";
 
 interface IDocumentViewerCommon
 {
@@ -53,14 +52,16 @@ export class DocumentViewerBase<
                 }),
             Template: new ControlTemplate((templatedParent: DocumentViewer) =>
             (
-                <Panel
-                    HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
+                <Panel                    
                     Background={templatedParent.state.Background}
                     BorderThickness={templatedParent.state.BorderThickness}
                     BorderBrush={templatedParent.state.BorderBrush}>
+                    
                     <ItemsStackPanel
                         ItemsParent={templatedParent}
-                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto} />
+                        HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
+                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto}/>
+                    
                 </Panel>
             ))
         }

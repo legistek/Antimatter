@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Position} from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -126,7 +126,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
     private async LoadPDFAsync()
     {
-        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/2d1d7542-ceef-11eb-943f-0022484432a8/pdf");
+        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf");
         this.InvalidateRender();
     }
 
@@ -167,7 +167,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
-                <DocumentViewer Document={this._pdfDoc} />
+                <DocumentViewer Document={this._pdfDoc}
+                    Position={{scale: 1, page: 0, x: 0, y: 0}}/>
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

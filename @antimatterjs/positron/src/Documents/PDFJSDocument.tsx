@@ -26,7 +26,7 @@ export class PDFJSDocument implements IDocument
             disableAutoFetch: true,
             disableStream: true,
             withCredentials: true,
-            rangeChunkSize: 128 * 1024,
+            rangeChunkSize: 256 * 1024,
         }).promise;
         if (!pdf)
             return null;
