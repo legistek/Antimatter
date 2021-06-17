@@ -48,6 +48,7 @@ export class DocumentPagePresenter<
         return (
             <>
                 <canvas
+                    style={{background: "white"}}
                     ref={r => this.RenderCanvas(r)}
                     width={this.state.Width}
                     height={this.state.Height} />

@@ -147,25 +147,28 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-                <StackPanel>
-                    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
+            <Grid RowDefinitions={
+                [
+                /*Grid.RowDefinition(),*/
+                Grid.RowDefinition(1, true)]}>
+                {/*<StackPanel>*/}
+                {/*    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />*/}
 
-                    <StackPanel Orientation={Orientation.Horizontal}>
-                        <TextBlock Text="Employee Count:" />
-                        <TextBlock Text={new Binding("Employees.Count")} />
-                    </StackPanel>
+                {/*    <StackPanel Orientation={Orientation.Horizontal}>*/}
+                {/*        <TextBlock Text="Employee Count:" />*/}
+                {/*        <TextBlock Text={new Binding("Employees.Count")} />*/}
+                {/*    </StackPanel>*/}
 
-                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
-                        Style={CommandButton.CommandBarButtonStyle} />
+                {/*    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}*/}
+                {/*        Style={CommandButton.CommandBarButtonStyle} />*/}
 
-                    {/*<ModernButton*/}
-                    {/*    Label="NEW EMPLOYEE"*/}
-                    {/*    IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
-                    {/*    Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
+                {/*    <ModernButton*/}
+                {/*        Label="NEW EMPLOYEE"*/}
+                {/*        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
+                {/*        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
 
-                    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
-                </StackPanel>
+                {/*    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />*/}
+                {/*</StackPanel>*/}
 
                 <DocumentViewer Document={this._pdfDoc}
                     Position={{scale: 1, page: 0, x: 0, y: 0}}/>

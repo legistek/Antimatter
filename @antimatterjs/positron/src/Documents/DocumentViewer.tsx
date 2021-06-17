@@ -9,6 +9,8 @@ import { FrameworkElement } from "../FrameworkElement";
 import { DocumentPagePresenter, IDocumentPagePresenterProps } from "./DocumentPagePresenter";
 import { HorizontalAlignment, ScrollBarVisibility } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";
+import { MultitouchTransform } from "../Media/MultitouchTransform";
+import { DefaultEffects } from "@fluentui/react";
 
 interface IDocumentViewerCommon
 {
@@ -28,6 +30,8 @@ export class DocumentViewerBase<
     S extends IDocumentViewerState = {}>
     extends ItemsControl<P, S>
 {
+
+
     constructor(props)
     {
         super(props);
@@ -41,13 +45,15 @@ export class DocumentViewerBase<
     public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
         {
             ItemsPanel: ItemsStackPanel,
+            Background: "#E0E0E0",
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
             ItemContainerStyle: new Style<IDocumentPagePresenterProps>(
                 {
-                    Margin: "5px",
-                    BorderBrush: "black",
-                    BorderThickness: "1px",                    
+                    Margin: "10px",
+                    BorderBrush: "#C0C0C0",
+                    BorderThickness: "1px",
+                    BoxShadow: DefaultEffects.elevation8,
                     HorizontalAlignment: HorizontalAlignment.Center
                 }),
             Template: new ControlTemplate((templatedParent: DocumentViewer) =>
