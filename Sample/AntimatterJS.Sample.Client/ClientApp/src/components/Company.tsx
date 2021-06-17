@@ -126,7 +126,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
     private async LoadPDFAsync()
     {
-        this._pdfDoc = await PDFJSDocument.CreateAsync("https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf");
+        this._pdfDoc = await PDFJSDocument.CreateAsync(
+            "/data"
+//            "https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf"
+        );
         this.InvalidateRender();
     }
 
@@ -149,7 +152,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return (
             <Grid RowDefinitions={
                 [
-                /*Grid.RowDefinition(),*/
+                Grid.RowDefinition(),
                 Grid.RowDefinition(1, true)]}>
                 {/*<StackPanel>*/}
                 {/*    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />*/}
@@ -170,8 +173,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 {/*    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />*/}
                 {/*</StackPanel>*/}
 
-                <DocumentViewer Document={this._pdfDoc}
-                    Position={{scale: 1, page: 0, x: 0, y: 0}}/>
+                <StackPanel Orientation={Orientation.Horizontal} >
+                    <TextBox Label="Page" Text={new Binding("DocPage")} />
+                    <TextBox Label="Scale" Text={new Binding("DocScale")} />
+                </StackPanel>
+
+                <DocumentViewer
+                    Document={this._pdfDoc}
+                    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

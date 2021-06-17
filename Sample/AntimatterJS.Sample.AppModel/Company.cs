@@ -31,6 +31,69 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
+        #region DocumentPosition DocPosition property
+        private DocumentPosition _DocPosition = DocumentPosition.Default;
+        public DocumentPosition DocPosition
+        {
+            get
+            {
+                return _DocPosition;
+            }
+            set
+            {
+                _DocPosition = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region int DocPage property
+        public int DocPage
+        {
+            get
+            {
+                return this.DocPosition.page;
+            }
+            set
+            {
+                if (this.DocPosition.page != value)
+                {
+                    this.DocPosition = new DocumentPosition
+                    {
+                        x = 0,
+                        y = 0,
+                        page = value,
+                        scale = DocPosition.scale
+                    };
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region float DocScale property
+        public float DocScale
+        {
+            get
+            {
+                return this.DocPosition.scale;
+            }
+            set
+            {
+                if (this.DocPosition.scale != value)
+                {
+                    this.DocPosition = new DocumentPosition
+                    {
+                        x = 0,
+                        y = 0,
+                        page = DocPosition.page,
+                        scale = value
+                    };
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
 
 
         #region Employee[] SelectedEmployees property
@@ -52,7 +115,6 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-
         #region bool IsAllSelected property
         private bool _IsAllSelected;
         public bool IsAllSelected
@@ -71,7 +133,6 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
-
 
         #region Employee SelectedEmployee property
         private Employee _SelectedEmployee;
@@ -225,4 +286,6 @@ namespace AntimatterJS.Sample.AppModel
             return $"Company: {this.Name}";
         }
     }
+
+
 }

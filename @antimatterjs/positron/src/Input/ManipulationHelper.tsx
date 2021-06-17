@@ -163,8 +163,11 @@ export class ManipulationHelper
             this._isPotentiallyManipulating = false;
             if (this._parent.state.OnManipulationCompleted)
             {
-                var me = new ManipulationEventArgs(ManipulationEvent.Completed, event);
-                this._parent.state.OnManipulationCompleted(me);
+                var args = new ManipulationEventArgs(ManipulationEvent.Completed, event);
+                args.CumulativeX = this._translate.CommittedCumulativeX + this._translate.PendingCumulativeX;
+                args.CumulativeY = this._translate.CommittedCumulativeY + this._translate.PendingCumulativeY;
+                args.CumulativeScale = this._scale.CommittedCumulativeScale * this._scale.PendingCumulativeScale;
+                this._parent.state.OnManipulationCompleted(args);
             }
         }
         else if (this._pointerCache.length === 1)

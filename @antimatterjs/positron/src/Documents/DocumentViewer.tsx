@@ -11,6 +11,7 @@ import { HorizontalAlignment, ScrollBarVisibility } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";
 import { MultitouchTransform } from "../Media/MultitouchTransform";
 import { DefaultEffects } from "@fluentui/react";
+import { DocumentPagesPanel } from "./DocumentPagesPanel";
 
 interface IDocumentViewerCommon
 {
@@ -30,16 +31,11 @@ export class DocumentViewerBase<
     S extends IDocumentViewerState = {}>
     extends ItemsControl<P, S>
 {
-
+    _pagesPanel: DocumentPagesPanel | null = null;
 
     constructor(props)
     {
         super(props);
-    }
-
-    render()
-    {
-        return super.render();
     }
 
     public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
@@ -62,8 +58,9 @@ export class DocumentViewerBase<
                     Background={templatedParent.state.Background}
                     BorderThickness={templatedParent.state.BorderThickness}
                     BorderBrush={templatedParent.state.BorderBrush}>
-                    
-                    <ItemsStackPanel
+
+                    <DocumentPagesPanel
+                        ref={r => templatedParent._pagesPanel = r}
                         ItemsParent={templatedParent}
                         HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
                         VerticalScrollBarVisibility={ScrollBarVisibility.Auto}/>
@@ -87,6 +84,17 @@ export class DocumentViewerBase<
         else if (property === nameof(this.state.Position))
         {
             // This is gonna be a doozy
+            var pos = value as DocumentPosition;
+            var oldPos = oldValue as DocumentPosition;
+            if (pos?.scale !== oldPos?.scale)
+                this.ItemsPanelInstance?.InvalidateRender();
+            this._pagesPanel?.Container?.scrollTo
+                ({
+                    behavior: "auto",
+                    left: 0,
+                    top: 792 * (pos.page + pos.y) * pos.scale 
+                });
+            //this._pagesPanel?.ScrollTo(pos.page, pos.y);
         }
     }
 
@@ -98,6 +106,17 @@ export class DocumentViewerBase<
             Scale: this.state.Position?.scale || 1
         };
         return super.OnRenderItem(item, pageProps);
+    }
+
+    public Scale(scale: number)
+    {
+        this.SetValue(nameof(this.state.Position),
+            {
+                x: 0,
+                y: 0,
+                scale: scale * (this.state.Position?.scale || 1),
+            });
+        this.ItemsPanelInstance?.InvalidateRender();
     }
 
     /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement

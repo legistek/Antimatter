@@ -27,6 +27,10 @@
   <ItemGroup>
     <Compile Remove="ClientApp\DataController.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controllers\DataController.cs" />
+  </ItemGroup>
      
   <ItemGroup>    
     <!--<ProjectReference Include="..\..\..\..\Limine\src\Legistek.Limine.Core\Legistek.Limine.Core.csproj" />-->    
