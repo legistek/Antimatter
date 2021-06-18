@@ -14,12 +14,12 @@ interface IDocumentPagePresenterCommon
 
 export interface IDocumentPagePresenterProps extends IPanelProps, IDocumentPagePresenterCommon
 {
-    Scale?: number | Binding
+    //Scale?: number | Binding
 }
 
 export interface IDocumentPagePresenterState extends IPanelState, IDocumentPagePresenterCommon
 {
-    Scale?: number,
+    //Scale?: number,
     Width?: number,
     Height?: number
 }
@@ -57,21 +57,21 @@ export class DocumentPagePresenter<
         );
     }
 
-    /* override */ getCSSStyles(): React.CSSProperties
-    {        
-        var styles = {
-            width: ((this.state.Width || 0) as number) * ((this.state.Scale || 1) as number),
-            height: ((this.state.Height || 0) as number) * ((this.state.Scale || 1) as number)
-        };
-        return Object.assign(super.getCSSStyles(), styles);
-    }
+    ///* override */ getCSSStyles(): React.CSSProperties
+    //{        
+    //    var styles = {
+    //        width: ((this.state.Width || 0) as number) * ((this.state.Scale || 1) as number),
+    //        height: ((this.state.Height || 0) as number) * ((this.state.Scale || 1) as number)
+    //    };
+    //    return Object.assign(super.getCSSStyles(), styles);
+    //}
 
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.Document) || property === nameof(this.state.PageIndex))
             this.InvalidatePage();
-        if (property == nameof(this.state.Scale))
-            this._isDirty = true;
+        //if (property == nameof(this.state.Scale))
+        //    this._isDirty = true;
     }
 
     private async FetchPageAsync(): Promise<IDocumentPage|null|undefined>
@@ -99,7 +99,7 @@ export class DocumentPagePresenter<
         var page = await this.FetchPageAsync();
         if (!page)
             return;        
-        await page.RenderAsync(canvas, (this.state.Scale || 1) as number);
+        await page.RenderAsync(canvas, 1);
     }
 
     private InvalidatePage()

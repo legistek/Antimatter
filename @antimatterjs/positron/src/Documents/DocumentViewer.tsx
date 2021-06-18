@@ -103,7 +103,7 @@ export class DocumentViewerBase<
         const pageProps: IDocumentPagePresenterProps = {
             PageIndex: item as number,
             Document: this.state.Document,
-            Scale: this.state.Position?.scale || 1
+            //Scale: this.state.Position?.scale || 1
         };
         return super.OnRenderItem(item, pageProps);
     }
