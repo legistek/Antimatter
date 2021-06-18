@@ -18,12 +18,18 @@ import
     MultitouchTransform,
     DocumentPagePresenter,
     PDFJSDocument,
-    DocumentViewer
+    DocumentViewer,
+    ItemsControl,
+    VirtualizingStackPanel,
+    Style,
+    IVirtualizingStackPanelProps,
+    HorizontalAlignment
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import { IDocument } from '@antimatterjs/positron/src/Documents/IDocument';
+import { Ellipse } from '@antimatterjs/positron/src/Shapes/Ellipse';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -116,12 +122,19 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     static displayName = Company.name;
     private _tr = new MultitouchTransform();
     private _scale: number = 1;
-    private _pdfDoc?: IDocument|null;
+    private _pdfDoc?: IDocument | null;
+    private _colors: string[];
 
     constructor(props)
     {
         super(props);
         this.LoadPDFAsync();
+
+        this._colors = new Array(20);
+        for (let i = 0; i < this._colors.length; i++)
+        {
+            this._colors[i] = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+        }
     }
 
     private async LoadPDFAsync()
@@ -178,9 +191,20 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <TextBox Label="Scale" Text={new Binding("DocScale")} />
                 </StackPanel>
 
-                <DocumentViewer
-                    Document={this._pdfDoc}
-                    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />
+                <ItemsControl                    
+                    ItemsPanel={VirtualizingStackPanel}
+                    ItemsPanelStyle={new Style<IVirtualizingStackPanelProps>({
+                        ItemHeight: 500,
+                    })}
+                    ItemsSource={this._colors}
+                    ItemTemplate={new DataTemplate((item) =>
+                        (<Ellipse Width={500} Height={500} Fill={item} />))}
+
+                />
+
+                {/*<DocumentViewer*/}
+                {/*    Document={this._pdfDoc}*/}
+                {/*    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />*/}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

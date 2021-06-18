@@ -3,7 +3,7 @@ import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react'
 
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
-import { Panel, IPanelProps } from './Panel';
+import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style } from '../Style';
@@ -15,6 +15,7 @@ export interface IItemsControlProps extends IControlProps
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
+    ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
@@ -25,6 +26,7 @@ export interface IItemsControlState extends IControlState
     ItemsSource?: any[],
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
+    ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
 }
 
@@ -77,6 +79,7 @@ export class ItemsControl<
                             return React.createElement(
                                 (this.state.ItemsPanel || StackPanel),
                                 {
+                                    Style: this.state.ItemsPanelStyle,
                                     Background: this.state.Background,
                                     BorderThickness: this.state.BorderThickness,
                                     BorderBrush: this.state.BorderBrush,
@@ -104,7 +107,7 @@ export class ItemsControl<
 
     /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return StackPanelBase;
+        return PanelBase;
     }
 
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element

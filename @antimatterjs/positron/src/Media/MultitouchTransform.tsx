@@ -211,7 +211,7 @@ export class MultitouchTransform
 
     public get AbsoluteScale()
     {
-        return Math.sqrt(this.Value.M11 * this.Value.M11 + this.Value.M22 * this.Value.M22);
+        return Math.sqrt(this.Value.M11 * this.Value.M11 + this.Value.M12 * this.Value.M12);
     }
 
     public get AbsoluteRotation()

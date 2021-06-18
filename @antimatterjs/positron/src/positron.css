@@ -118,7 +118,7 @@ body {
     width: 100%;
 }
 
-.amx-ptn-fe > .amx-ptn-va-stretch {
+.amx-ptn-fe:not(.amx-ptn-stack-panel:not(.horizontal)) > .amx-ptn-va-stretch {
     max-height: 100%;
     overflow: hidden;   
     top: 0px;
