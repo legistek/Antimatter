@@ -44,13 +44,11 @@ export abstract class VirtualizingPanel<
     private _hasComputed: boolean = false;
     private _observers?: IObserverCollection;
     private _renderWindowInfo: RenderWindowInfo = new RenderWindowInfo();
-    private _tr = new MultitouchTransform();
+    private _scroller: HTMLElement | null = null;
 
     constructor(props)
     {
         super(props);
-        this._tr.ScaleX = 0.25;
-        this._tr.ScaleY = 0.25;
     }
 
     /** Returns the multiple of the visible height that should be
@@ -62,6 +60,36 @@ export abstract class VirtualizingPanel<
     }
 
     protected abstract GetItemExpanseBounds(itemIndex: number): Span;
+
+    /* override */ renderElement(): JSX.Element | null
+    {
+        if (!this.state.ItemsParent)
+            return null;
+
+        var items = this.state.ItemsParent?.state.ItemsSource;
+        if (!items || items.length === 0)
+            return null;
+
+        return (
+
+            <>
+                <div
+                    ref={r => this._spacerBefore = r}
+                    style={{
+                        height: this._renderWindowInfo.StartItemBounds.Start,
+                        width: "100%"
+                    }} />
+
+                {this.RenderVisibleItems(items)}
+
+                <div ref={r => this._spacerAfter = r}
+                    style={{
+                        height: (this._renderWindowInfo.LastItemBounds.End - this._renderWindowInfo.EndItemBounds.End)
+                    }} />
+            </>
+
+        );
+    }
 
     private GetItemExpanseBoundsPrivate(itemIndex: number): Span
     {
@@ -77,8 +105,8 @@ export abstract class VirtualizingPanel<
     {
         let c = this.ItemCount;
 
-        windowTop /= this._tr.AbsoluteScale;
-        windowHeight /= this._tr.AbsoluteScale;
+        windowTop /= (this.state.Transform?.AbsoluteScale || 1);
+        windowHeight /= (this.state.Transform?.AbsoluteScale || 1);
 
         const windowBottom = windowTop + windowHeight * (1 + this.GetOverscanHeight());
         windowTop = Math.max(0, windowTop - windowHeight * this.GetOverscanHeight());
@@ -136,10 +164,18 @@ export abstract class VirtualizingPanel<
         if (!this.Container)
             return;
         this.ComputeRenderWindowInfo(
-            this.Container.scrollTop / this._tr.AbsoluteScale,
+            this.Container.scrollTop / (this.state.Transform?.AbsoluteScale || 1),
             this.Container.clientHeight);
         this._hasComputed;
         this.InvalidateRender();
+    }
+
+    private FindScroller(): HTMLElement|null|undefined
+    {
+        var elem = this.Container;
+        while (elem && elem?.style.overflowY !== "auto")
+            elem = elem.parentElement;
+        return elem;
     }
 
     /* override */ componentDidMount()
@@ -153,10 +189,15 @@ export abstract class VirtualizingPanel<
         //    this.RecomputeVisibleWindow();
         //};
 
+        var root = this.FindScroller();
+        if (!root)
+            return;
+        this._scroller = root;
+
         const intersectionObserver = new IntersectionObserver(
             this.IntersectionCallback.bind(this),
             {
-                root: this.Container,
+                root: this._scroller,
                 rootMargin: `50px`,
             });
         intersectionObserver.observe(this._spacerBefore);
@@ -217,7 +258,9 @@ export abstract class VirtualizingPanel<
             if (entry.target === this._spacerBefore || 
                  (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
             {
-                this.ComputeRenderWindowInfo(this.Container?.scrollTop, this.Container?.clientHeight);
+                this.ComputeRenderWindowInfo(
+                    this._scroller?.scrollTop || 0,
+                    this.state.ItemsParent?.Container?.clientHeight || 0);
                 this.InvalidateRender();
                 break;
             }
@@ -243,36 +286,7 @@ export abstract class VirtualizingPanel<
         }
     }
 
-    /* override */ renderElement(): JSX.Element | null
-    {
-        if (!this.state.ItemsParent)
-            return null;
-
-        var items = this.state.ItemsParent?.state.ItemsSource;
-        if (!items || items.length === 0)
-            return null;
-
-        return (
-
-            <StackPanel Transform={this._tr} VerticalAlignment={VerticalAlignment.Top}>
-                <div
-                    ref={r => this._spacerBefore = r}
-                    style={{
-                        height: this._renderWindowInfo.StartItemBounds.Start,
-                        width: "100%"
-                    }} />
-
-                {this.RenderVisibleItems(items)}
-
-                <div ref={r => this._spacerAfter = r}
-                    style={{
-                        height: (this._renderWindowInfo.LastItemBounds.End - this._renderWindowInfo.EndItemBounds.End)
-                        }} />
-            </StackPanel>
-
-        );
-    }
-
+    
     private RenderVisibleItems(items: any[]): JSX.Element[]|null
     {
         if (!this._hasComputed)

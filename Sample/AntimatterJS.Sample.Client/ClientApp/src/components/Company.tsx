@@ -23,11 +23,13 @@ import
     VirtualizingStackPanel,
     Style,
     IVirtualizingStackPanelProps,
-    HorizontalAlignment
+    HorizontalAlignment,
+    Panel,
+    ScrollBarVisibility
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
-import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import { IDocument } from '@antimatterjs/positron/src/Documents/IDocument';
 import { Ellipse } from '@antimatterjs/positron/src/Shapes/Ellipse';
 
@@ -128,9 +130,11 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     constructor(props)
     {
         super(props);
+        this._tr.ScaleX = 1;
+        this._tr.ScaleY = 1;
         this.LoadPDFAsync();
 
-        this._colors = new Array(20);
+        this._colors = new Array(20000);
         for (let i = 0; i < this._colors.length; i++)
         {
             this._colors[i] = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
@@ -192,11 +196,18 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 </StackPanel>
 
                 <ItemsControl                    
-                    ItemsPanel={VirtualizingStackPanel}
-                    ItemsPanelStyle={new Style<IVirtualizingStackPanelProps>({
-                        ItemHeight: 500,
-                    })}
                     ItemsSource={this._colors}
+                    Template={new ControlTemplate((tp) =>
+                    (
+                        <Panel VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                            <VirtualizingStackPanel
+                                VerticalAlignment={VerticalAlignment.Top}
+                                Transform={this._tr}
+                                ItemsParent={tp}
+                                ItemHeight={500}
+                            />
+                        </Panel>                        
+                    ))}
                     ItemTemplate={new DataTemplate((item) =>
                         (<Ellipse Width={500} Height={500} Fill={item} />))}
 

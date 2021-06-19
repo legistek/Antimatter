@@ -4,6 +4,7 @@ import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
+import { MultitouchTransform } from '../Media/MultitouchTransform';
 
 export interface IPanelProps extends IFrameworkElementProps
 {

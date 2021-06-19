@@ -57,13 +57,13 @@ export class DocumentViewerBase<
                 <Panel                    
                     Background={templatedParent.state.Background}
                     BorderThickness={templatedParent.state.BorderThickness}
-                    BorderBrush={templatedParent.state.BorderBrush}>
+                    BorderBrush={templatedParent.state.BorderBrush}
+                    HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
 
                     <DocumentPagesPanel
                         ref={r => templatedParent._pagesPanel = r}
-                        ItemsParent={templatedParent}
-                        HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
-                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto}/>
+                        ItemsParent={templatedParent}/>
                     
                 </Panel>
             ))
