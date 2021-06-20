@@ -130,11 +130,12 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     constructor(props)
     {
         super(props);
-        this._tr.ScaleX = 1;
-        this._tr.ScaleY = 1;
+        this._tr.ScaleX = 0.5;
+        this._tr.ScaleY = 0.5;
+        this._tr.TranslateY = 10;
         this.LoadPDFAsync();
 
-        this._colors = new Array(20000);
+        this._colors = new Array(10);
         for (let i = 0; i < this._colors.length; i++)
         {
             this._colors[i] = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
@@ -202,14 +203,18 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         <Panel VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
                             <VirtualizingStackPanel
                                 VerticalAlignment={VerticalAlignment.Top}
-                                Transform={this._tr}
+                                Scale={new Binding("DocScale")}
                                 ItemsParent={tp}
                                 ItemHeight={500}
                             />
                         </Panel>                        
                     ))}
                     ItemTemplate={new DataTemplate((item) =>
-                        (<Ellipse Width={500} Height={500} Fill={item} />))}
+                    (<Ellipse
+                        HorizontalAlignment={HorizontalAlignment.Center}
+                        Width={500}
+                        Height={500}
+                        Fill={item}/>))}
 
                 />
 

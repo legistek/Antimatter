@@ -1,4 +1,4 @@
-import { Utilities } from '@antimatterjs/react';
+import { Binding, Utilities } from '@antimatterjs/react';
 import * as React from 'react';
 import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 import { Span } from '../Foundation';
@@ -8,10 +8,12 @@ import { StackPanel } from './StackPanel';
 
 export interface IVirtualizingPanelProps extends IPanelProps
 {
+    Scale?: number|Binding,
 }
 
 export interface IVirtualizingPanelState extends IPanelState
 {
+    Scale?: number
 }
 
 interface IObserverCollection
@@ -70,9 +72,17 @@ export abstract class VirtualizingPanel<
         if (!items || items.length === 0)
             return null;
 
+        const widthPercent = this.state.Scale ? (100 / (this.state.Scale as number || 1)) : 100;
+
         return (
 
-            <>
+            <div style={
+                {
+                    transform: this.state.Scale ? `scale(${this.state.Scale})` : undefined,
+                    transformOrigin: "0px 0px",
+                    width: `${widthPercent}%`
+                }
+            }>
                 <div
                     ref={r => this._spacerBefore = r}
                     style={{
@@ -86,9 +96,17 @@ export abstract class VirtualizingPanel<
                     style={{
                         height: (this._renderWindowInfo.LastItemBounds.End - this._renderWindowInfo.EndItemBounds.End)
                     }} />
-            </>
+            </div>
 
         );
+    }
+
+    /* override */ getCSSStyles(): React.CSSProperties
+    {
+        const styles: React.CSSProperties = {
+            height: this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)
+        };
+        return Object.assign(super.getCSSStyles(), styles);
     }
 
     private GetItemExpanseBoundsPrivate(itemIndex: number): Span
@@ -105,8 +123,8 @@ export abstract class VirtualizingPanel<
     {
         let c = this.ItemCount;
 
-        windowTop /= (this.state.Transform?.AbsoluteScale || 1);
-        windowHeight /= (this.state.Transform?.AbsoluteScale || 1);
+        windowTop /= (this.state.Scale as number || 1);
+        windowHeight /= (this.state.Scale as number || 1);
 
         const windowBottom = windowTop + windowHeight * (1 + this.GetOverscanHeight());
         windowTop = Math.max(0, windowTop - windowHeight * this.GetOverscanHeight());
@@ -164,7 +182,7 @@ export abstract class VirtualizingPanel<
         if (!this.Container)
             return;
         this.ComputeRenderWindowInfo(
-            this.Container.scrollTop / (this.state.Transform?.AbsoluteScale || 1),
+            this.Container.scrollTop / (this.state.Scale as number || 1),
             this.Container.clientHeight);
         this._hasComputed;
         this.InvalidateRender();
