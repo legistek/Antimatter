@@ -1,0 +1,78 @@
+﻿import * as React from 'react';
+import { Binding, BindingMode } from '@antimatterjs/react';
+import { Style } from '@antimatterjs/positron/src/Style';
+import {
+    ISpinButtonStyles,
+    IStyle,
+
+    SpinButton
+} from '@fluentui/react';
+import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
+import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+
+interface ISpinnerProps extends IControlProps {
+    Value?: number | Binding,
+    MaxValue?: number | Binding,
+    MinValue?: number | Binding,
+    StepIncrement?: number | Binding,
+    Label?: string | Binding
+}
+interface ISpinnerState extends IControlState {
+    Value?: number,
+    MaxValue?: number,
+    MinValue?: number,
+    StepIncrement?: number,
+    Label?: string
+}
+export class Spinner extends Control<ISpinnerProps, ISpinnerState>
+{
+
+    public static DefaultStyle: Style<ISpinnerProps> = new Style<ISpinnerProps>(
+        {
+            Value: 0,
+            Template: new ControlTemplate((templatedParent: Spinner) => templatedParent.template)
+        }
+    );
+
+    private get template(): JSX.Element {
+        const textStyle: IStyle = {
+            fontFamily: this.state.FontFamily,
+            color: this.state.Foreground
+        };
+        if (this.state.FontSize)
+            textStyle.fontSize = `${this.state.FontSize}px`;
+
+        //const styles: ISpinButtonStyles = {
+        const styles: any = {
+            label: textStyle,
+            input: textStyle
+        }
+
+        const textValue: string = this.state.Value?.toString() || '0';
+        return (
+            <SpinButton
+                value={textValue}
+                onChange={(event, newValue?: string) => this.OnChange(newValue)}
+                max={this.state.MaxValue}
+                min={this.state.MinValue}
+                step={this.state.StepIncrement}
+                label={this.state.Label}
+                styles={styles}
+            />
+        );
+    }
+
+    public static DefaultBindings = {
+        Value: {
+            FallbackValue: 0,
+            Mode: BindingMode.TwoWay
+        }
+    };
+
+    private OnChange(newValue?: string): void {
+        if (!newValue)
+            return;
+        const numericValue: number = +newValue;
+        this.SetValue(nameof(this.state.Value), numericValue);
+    }
+}

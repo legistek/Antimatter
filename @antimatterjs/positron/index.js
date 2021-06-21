@@ -35,3 +35,4 @@ export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
 export * from './src/Controls/ColorPicker';
+export * from './src/Controls/Spinner';
