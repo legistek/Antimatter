@@ -209,7 +209,7 @@ code {
         opacity: 0%;
     }
 
-    100% {        
+    100% {
         max-height: 1000px;
         opacity: 100%;
     }
@@ -222,3 +222,8 @@ code {
 .amx-grow-entrance {
     animation: 1s 0s 1 growFrom0;
 }*/
+
+/* Vertically centers toggle button relative to checked/unchecked text (e.g., with custom font sizes) */
+.ms-Toggle-innerContainer {
+    align-items: center;
+}

@@ -1,21 +1,19 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Checkbox as FluentCheckBox } from '@fluentui/react'
-import { IToggleButtonProps, IToggleButtonState, ToggleButton } from './Primitives/ToggleButton';
+import { IToggleButtonProps, IToggleButtonState, ToggleButtonBase } from './Primitives/ToggleButton';
 import { Style } from '@antimatterjs/positron/src/Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ICheckBoxProps extends IToggleButtonProps
 {
-    Label?: string | Binding
 }
 
 interface ICheckBoxState extends IToggleButtonState
 {
-    Label?: string,
 }
 
-export class CheckBox extends ToggleButton<ICheckBoxProps, ICheckBoxState>
+export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
 {
     public static DefaultBindings = {
         IsEnabled: {
