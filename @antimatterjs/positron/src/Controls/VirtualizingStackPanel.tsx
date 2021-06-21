@@ -5,29 +5,30 @@ import { IVirtualizingPanelProps, IVirtualizingPanelState, VirtualizingPanel } f
 
 interface IVirtualizingStackPanelCommon
 {
-    GetItemSpan?: (index: number) => Span;
 }
 
 export interface IVirtualizingStackPanelProps extends IVirtualizingPanelProps, IVirtualizingStackPanelCommon
 {
-    ItemHeight?: number | Binding;
+    ItemHeight: number | ((index: number) => Span) | Binding;
 }
 
 export interface IVirtualizingStackPanelState extends IVirtualizingPanelState, IVirtualizingStackPanelCommon
 {
-    ItemHeight?: number;
+    ItemHeight: number | ((index: number) => Span)
 }
 
 export class VirtualizingStackPanelBase<
-    P extends IVirtualizingStackPanelProps = {},
-    S extends IVirtualizingStackPanelState = {}>
+    P extends IVirtualizingStackPanelProps,
+    S extends IVirtualizingStackPanelState>
     extends VirtualizingPanel<P, S>
 {
     protected /* override */ GetItemExpanseBounds(itemIndex: number): Span
     {
-        if (this.state.GetItemSpan)
-            return this.state.GetItemSpan(itemIndex);
-
+        if (typeof (this.state.ItemHeight) === 'function')
+        {
+            return (this.state.ItemHeight as ((index: number) => Span))(itemIndex);
+        }
+        
         const height = this.state.ItemHeight as number;
         if (height !== undefined)
         {

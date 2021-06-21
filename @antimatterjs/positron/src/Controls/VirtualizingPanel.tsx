@@ -1,7 +1,7 @@
 import { Binding, Utilities } from '@antimatterjs/react';
 import * as React from 'react';
 import { HorizontalAlignment, VerticalAlignment } from '../Enums';
-import { Span } from '../Foundation';
+import { Point, Span } from '../Foundation';
 import { MultitouchTransform } from '../Media/MultitouchTransform';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { StackPanel } from './StackPanel';
@@ -47,6 +47,9 @@ export abstract class VirtualizingPanel<
     private _observers?: IObserverCollection;
     private _renderWindowInfo: RenderWindowInfo = new RenderWindowInfo();
     private _scroller: HTMLElement | null = null;
+    private _needsWidthCalc: boolean = false;
+    private _maxWidth: number = 0;
+    private _desiredScroll?: Point;
 
     constructor(props)
     {
@@ -58,7 +61,14 @@ export abstract class VirtualizingPanel<
      **/
     protected /* virtual */ GetOverscanHeight() : number
     {
+        this.componentDidUpdate
         return 1;
+    }
+
+    public SetDesiredScroll(pt: Point)
+    {
+        this._desiredScroll = pt;
+        //this.InvalidateRender();
     }
 
     protected abstract GetItemExpanseBounds(itemIndex: number): Span;
@@ -87,7 +97,6 @@ export abstract class VirtualizingPanel<
                     ref={r => this._spacerBefore = r}
                     style={{
                         height: this._renderWindowInfo.StartItemBounds.Start,
-                        width: "100%"
                     }} />
 
                 {this.RenderVisibleItems(items)}
@@ -101,20 +110,34 @@ export abstract class VirtualizingPanel<
         );
     }
 
-    /* override */ getCSSStyles(): React.CSSProperties
-    {
-        const styles: React.CSSProperties = {
-            height: this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)
-        };
-        return Object.assign(super.getCSSStyles(), styles);
-    }
-
     private GetItemExpanseBoundsPrivate(itemIndex: number): Span
     {
-        var bounds = this.GetItemExpanseBounds(itemIndex);
-        //bounds.Start *= this._tr.AbsoluteScale;
-        //bounds.End *= this._tr.AbsoluteScale;
-        return bounds;
+        return this.GetItemExpanseBounds(itemIndex);        
+    }
+
+    /* override */ componentDidUpdate(prevProps)
+    {
+        if (!this.Container || !this._scroller)
+            return;
+
+        if (this._desiredScroll)
+        {
+            this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
+            this._scroller.scrollLeft = this._desiredScroll.X;
+            this._scroller.scrollTop = this._desiredScroll.Y;
+            this._desiredScroll = undefined;
+        }
+        else
+        {
+            // Preserve H scroll during calculation
+            const hscroll = this._scroller.scrollLeft;
+            this.Container.style.height = `${this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)}px`;
+            this.Container.style.width = "fit-content";
+            this._maxWidth = Math.max(this._maxWidth, this.Container?.clientWidth || 0);
+            this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
+
+            this._scroller.scrollLeft = hscroll;
+        }
     }
 
     private ComputeRenderWindowInfo (

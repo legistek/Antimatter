@@ -1,4 +1,4 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode, } from '@antimatterjs/react';
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Position} from '@fluentui/react';
 
@@ -25,7 +25,8 @@ import
     IVirtualizingStackPanelProps,
     HorizontalAlignment,
     Panel,
-    ScrollBarVisibility
+    ScrollBarVisibility,
+    VirtualizingPanel
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -125,20 +126,23 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     private _tr = new MultitouchTransform();
     private _scale: number = 1;
     private _pdfDoc?: IDocument | null;
-    private _colors: string[];
+    private _colors: any[];
+    private _i: number = 0;
+    private _vsp: VirtualizingStackPanel | null = null;
+    private _scroller: Panel | null = null;
 
     constructor(props)
     {
         super(props);
-        this._tr.ScaleX = 0.5;
-        this._tr.ScaleY = 0.5;
-        this._tr.TranslateY = 10;
         this.LoadPDFAsync();
 
-        this._colors = new Array(10);
+        this._colors = new Array(15);
         for (let i = 0; i < this._colors.length; i++)
         {
-            this._colors[i] = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
+            this._colors[i] = {
+                color: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`,
+                width: 500 + (i % 10) * 25
+            };
         }
     }
 
@@ -164,6 +168,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     renderElement()
     {
         console.log("Company rendering");
+
+        this.BindState(
+            {
+                Path: "DocScale",
+                Mode: BindingMode.TwoWay
+            },
+            "docScale");
 
         //this.BindState({ Path: "Employees" }, "employees");
 
@@ -200,8 +211,43 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     ItemsSource={this._colors}
                     Template={new ControlTemplate((tp) =>
                     (
-                        <Panel VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                        <Panel VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
+                            HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
+                            ref={r => this._scroller = r}>
                             <VirtualizingStackPanel
+                                ref={r => this._vsp = r}
+                                HorizontalAlignment={HorizontalAlignment.Center}
+                                OnManipulationStarted={(e) =>
+                                {
+                                    this._tr.CenterX = e.CenterX;
+                                    this._tr.CenterY = e.CenterY;
+                                }}
+                                OnManipulationDelta={(e) =>
+                                {
+                                    //if (e.CumulativeScale !== 1)
+                                    {
+                                        this._tr.TranslateX = e.CumulativeX;
+                                        this._tr.TranslateY = e.CumulativeY;
+                                        this._tr.ScaleX = e.CumulativeScale;
+                                        this._tr.ScaleY = e.CumulativeScale;
+                                    }
+                                }}
+                                OnManipulationCompleted={(e) =>
+                                {
+                                    var container = this._vsp;
+                                    var scroller = this._scroller?.Container;
+                                    if (!container || !scroller)
+                                        return;
+                                    this.SetValue("docScale", this.GetValue("docScale") * this._tr?.AbsoluteScale || 1);
+                                    container.SetDesiredScroll(
+                                        {
+                                            X: scroller.scrollLeft - ((this._tr?.AbsoluteX || 0)),
+                                            Y: scroller.scrollTop - ((this._tr?.AbsoluteY || 0))
+                                        }
+                                    );
+                                    this._tr.Reset();                                    
+                                }}
+                                Transform={this._tr}
                                 VerticalAlignment={VerticalAlignment.Top}
                                 Scale={new Binding("DocScale")}
                                 ItemsParent={tp}
@@ -212,9 +258,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     ItemTemplate={new DataTemplate((item) =>
                     (<Ellipse
                         HorizontalAlignment={HorizontalAlignment.Center}
-                        Width={500}
+                        Width={item.width}
                         Height={500}
-                        Fill={item}/>))}
+                        Fill={item.color}/>))}
 
                 />
 
