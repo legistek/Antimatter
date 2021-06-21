@@ -120,22 +120,25 @@ export abstract class VirtualizingPanel<
         if (!this.Container || !this._scroller)
             return;
 
+        // Preserve H scroll during re-calculation if needed
+        const hscroll = this._scroller.scrollLeft;
+        this.Container.style.height = `${this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)}px`;
+        this.Container.style.width = "fit-content";
+        this._maxWidth = Math.max(this._maxWidth, this.Container?.clientWidth || 0);
+        this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
+
         if (this._desiredScroll)
         {
-            this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
             this._scroller.scrollLeft = this._desiredScroll.X;
             this._scroller.scrollTop = this._desiredScroll.Y;
+
+            console.log(`Confirming desired scroll X: ${this._desiredScroll.X}`);
+            console.log(`Final  scroll X: ${this._scroller.scrollLeft}`);
+
             this._desiredScroll = undefined;
         }
         else
         {
-            // Preserve H scroll during calculation
-            const hscroll = this._scroller.scrollLeft;
-            this.Container.style.height = `${this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)}px`;
-            this.Container.style.width = "fit-content";
-            this._maxWidth = Math.max(this._maxWidth, this.Container?.clientWidth || 0);
-            this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
-
             this._scroller.scrollLeft = hscroll;
         }
     }

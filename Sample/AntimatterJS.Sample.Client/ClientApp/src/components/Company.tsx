@@ -26,7 +26,8 @@ import
     HorizontalAlignment,
     Panel,
     ScrollBarVisibility,
-    VirtualizingPanel
+    VirtualizingPanel,
+    Point
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -130,18 +131,21 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     private _i: number = 0;
     private _vsp: VirtualizingStackPanel | null = null;
     private _scroller: Panel | null = null;
+    private _scrollOrigin: Point = new Point();
 
     constructor(props)
     {
         super(props);
         this.LoadPDFAsync();
 
-        this._colors = new Array(15);
+        this._colors = new Array(10);
         for (let i = 0; i < this._colors.length; i++)
         {
+            var color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
             this._colors[i] = {
-                color: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`,
-                width: 500 + (i % 10) * 25
+                color: color,
+                width: 500,// + (i % 10) * 25,
+                key: color
             };
         }
     }
@@ -219,8 +223,17 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 HorizontalAlignment={HorizontalAlignment.Center}
                                 OnManipulationStarted={(e) =>
                                 {
+                                    var container = this._vsp;
+                                    var scroller = this._scroller?.Container;
+                                    if (!container || !scroller)
+                                        return;
+
                                     this._tr.CenterX = e.CenterX;
                                     this._tr.CenterY = e.CenterY;
+                                    this._scrollOrigin = {
+                                        X: scroller.scrollLeft,
+                                        Y: scroller.scrollTop,
+                                    };
                                 }}
                                 OnManipulationDelta={(e) =>
                                 {
@@ -230,6 +243,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                         this._tr.TranslateY = e.CumulativeY;
                                         this._tr.ScaleX = e.CumulativeScale;
                                         this._tr.ScaleY = e.CumulativeScale;
+
+                                        console.log(`Transform: X: ${this._tr.AbsoluteX}, Scale: ${this._tr.AbsoluteScale}`);
                                     }
                                 }}
                                 OnManipulationCompleted={(e) =>
@@ -238,17 +253,22 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     var scroller = this._scroller?.Container;
                                     if (!container || !scroller)
                                         return;
-                                    this.SetValue("docScale", this.GetValue("docScale") * this._tr?.AbsoluteScale || 1);
-                                    container.SetDesiredScroll(
-                                        {
-                                            X: scroller.scrollLeft - ((this._tr?.AbsoluteX || 0)),
-                                            Y: scroller.scrollTop - ((this._tr?.AbsoluteY || 0))
-                                        }
-                                    );
+
+                                    var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
+                                    var thisManipulationCumScale = this._tr?.AbsoluteScale || 1;
+                                    this.SetValue("docScale", newFinalScale);
+
+                                    var ds = {
+                                        X: this._scrollOrigin.X * 1 - ((this._tr?.AbsoluteX || 0) / 1),
+                                        Y: this._scrollOrigin.Y * 1 - ((this._tr?.AbsoluteY || 0) / 1)
+                                    }
+
+                                    container.SetDesiredScroll(ds);
+                                    console.log(`Setting desired scroll X: ${ds.X}`);
                                     this._tr.Reset();                                    
                                 }}
                                 Transform={this._tr}
-                                VerticalAlignment={VerticalAlignment.Top}
+                                VerticalAlignment={VerticalAlignment.Top}                                
                                 Scale={new Binding("DocScale")}
                                 ItemsParent={tp}
                                 ItemHeight={500}
@@ -256,9 +276,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         </Panel>                        
                     ))}
                     ItemTemplate={new DataTemplate((item) =>
-                    (<Ellipse
-                        HorizontalAlignment={HorizontalAlignment.Center}
+                    (<Ellipse                        
                         Width={item.width}
+                        HorizontalAlignment={HorizontalAlignment.Center}
                         Height={500}
                         Fill={item.color}/>))}
 

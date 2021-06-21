@@ -50,9 +50,12 @@ export class ItemsControl<
         if (props)
             Object.assign(itemProps, props);
 
-        (itemProps as any).key = item?.IsModelObjectReference
-            ? (item as ModelObjectReference).Handle.toString()
-            : item?.toString();
+        if (item?.IsModelObjectReference)
+            (itemProps as any).key = (item as ModelObjectReference).Handle.toString();
+        else if (item?.key)
+            (itemProps as any).key = item.key;
+        else
+            (itemProps as any).key = item?.toString();
 
         return React.createElement(
             this.GetContainerForItemOverride(),
