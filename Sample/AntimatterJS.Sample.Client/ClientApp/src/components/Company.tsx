@@ -5,6 +5,10 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} 
 import * as Model from '../model/Model';
 import
 {
+    ComboBox_Fluent,
+    ComboBoxOption_Fluent,
+    ComboBox_NotFluent,
+
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -37,6 +41,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
+
                     <TextBlock Text="Edit Info" FontWeight="bold" />
 
                     <WrapPanel>
@@ -127,6 +132,60 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
+    private hoboConverter: ((item: Model.Employee) => ComboBoxOption_Fluent) = (item: Model.Employee) => {
+        const cbo: ComboBoxOption_Fluent = { key: item.FullName ?? ``, text: item.FullName ?? ``};
+        return cbo;
+    }
+
+    private hoboOptions: ComboBoxOption_Fluent[] = [
+        { key: 'A', text: 'Option A' },
+        { key: 'B', text: 'Option B' },
+        { key: 'C', text: 'Option C', infotip: 'hobo' },
+        { key: 'D', text: 'Option D' },
+        { key: 'E', text: 'Option E' },
+        { key: 'F', text: 'Option F', disabled: true },
+        { key: 'G', text: 'Option G' },
+        { key: 'H', text: 'Option H' },
+        { key: 'I', text: 'Option I' },
+        { key: 'J', text: 'Option J' },
+    ];
+
+    private get comboBoxElem_Fluent(): JSX.Element {
+        const elem1: JSX.Element = (
+            <ComboBox_Fluent
+                ItemsSource={this.hoboOptions}
+                Multiselect={false}
+            />
+        );
+        const elem2: JSX.Element = (
+            <ComboBox_Fluent
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                Converter={this.hoboConverter}
+                Multiselect={true}
+            />
+        );
+
+        return elem1;
+    }
+
+    get comboBoxElem_NotFluent(): JSX.Element {
+        const elem3: JSX.Element = (
+            <ComboBox_NotFluent
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
+            />
+        );
+        const elem4: JSX.Element = (
+            <ComboBox_NotFluent
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+            />
+        );
+
+        return elem3;
+    }
+
+
     renderElement()
     {
         console.log("Company rendering");
@@ -136,6 +195,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
+                    {this.comboBoxElem_Fluent}
+                    {this.comboBoxElem_NotFluent}
+
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
                     <StackPanel Orientation={Orientation.Horizontal}>
@@ -153,10 +215,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
-                
+
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}                    
+                        RowHeight={44}
                         SelectedItems={new Binding("SelectedEmployees")}
                         IsSelectAll={new Binding("IsAllSelected")}
                         OnManipulationStarted={(e) =>
@@ -195,7 +257,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         ]}
                         />
                 </div>
-                
+
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

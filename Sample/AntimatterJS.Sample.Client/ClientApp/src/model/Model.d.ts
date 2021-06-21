@@ -9,6 +9,9 @@ export class Company {
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
+	public SomeEmployees?: Employee[];
+	public SomeEmployeeNames?: string[];
+	public SelectedEmployeeName?: string;
 }
 
 export class Employee {

@@ -4,4 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="src\Controls\ComboBox_Fluent.tsx" />
+    <None Remove="src\Controls\ComboBox_NotFluent.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="src\Controls\ComboBox_Fluent.tsx" />
+    <TypeScriptCompile Include="src\Controls\ComboBox_NotFluent.tsx" />
+  </ItemGroup>
+
 </Project>

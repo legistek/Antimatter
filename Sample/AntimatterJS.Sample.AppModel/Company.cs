@@ -31,7 +31,39 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
+        public IEnumerable<Employee> SomeEmployees
+        {
+            get
+            {
+                return this.Employees.Take<Employee>(10);
+            }
+        }
 
+        public IEnumerable<string> SomeEmployeeNames
+        {
+            get
+            {
+                return SomeEmployees.Select(e => e.FullName);
+            }
+        }
+
+        #region Employee SelectedEmployeeName property
+        private string _SelectedEmployeeName;
+        public string SelectedEmployeeName
+        {
+            get
+            {
+                return _SelectedEmployeeName;
+            }
+            set
+            {
+                if (_SelectedEmployeeName == value)
+                    return;
+                _SelectedEmployeeName = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
 
         #region Employee[] SelectedEmployees property
         private Employee[] _SelectedEmployees;

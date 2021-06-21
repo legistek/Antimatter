@@ -53,7 +53,7 @@ export class ItemsControl<
         return React.createElement(
             this.GetContainerForItemOverride(),
             itemProps,
-            templ(item));       
+            templ(item));
     }
 
     public /* override */ renderElement(): JSX.Element | null
@@ -82,7 +82,7 @@ export class ItemsControl<
                                 } as IPanelProps);
                         }
                     }
-                </WindowLayoutContext.Consumer>);            
+                </WindowLayoutContext.Consumer>);
         }
     }
 
