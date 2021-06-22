@@ -255,7 +255,7 @@ export class MultitouchTransform
     {
         if (this._target?.Container)
             this._target.Container.style.transform = this.ToCSS();
-        if (forceInvalidateRender)
-            this._target?.InvalidateRender();
+        //if (forceInvalidateRender)
+        //    this._target?.InvalidateRender();
     }
 }

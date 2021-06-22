@@ -36,6 +36,7 @@ export class DocumentPagePresenter<
     constructor(props)
     {
         super(props);
+        console.log('DocumentPagePresenter constructed');
         if (!this.state.Width)
         {
             (this.state as any)["Width"] = 612;
@@ -48,23 +49,26 @@ export class DocumentPagePresenter<
         return (
             <>
                 <canvas
-                    style={{background: "white"}}
+                    style={{
+                        background: "white",
+                        width: 612,
+                        height: 792
+                    }}
                     ref={r => this.RenderCanvas(r)}
-                    width={this.state.Width}
-                    height={this.state.Height} />
+                />
                 {this._page === null ? (<LoadingShimmer Overlaps={true} Lines={15} />) : (<></>)}
             </>
         );
     }
 
-    ///* override */ getCSSStyles(): React.CSSProperties
-    //{        
-    //    var styles = {
-    //        width: ((this.state.Width || 0) as number) * ((this.state.Scale || 1) as number),
-    //        height: ((this.state.Height || 0) as number) * ((this.state.Scale || 1) as number)
-    //    };
-    //    return Object.assign(super.getCSSStyles(), styles);
-    //}
+    /* override */ getCSSStyles(): React.CSSProperties
+    {        
+        var styles = {
+            width: ((this.state.Width || 0) as number),
+            height: ((this.state.Height || 0) as number)
+        };
+        return Object.assign(super.getCSSStyles(), styles);
+    }
 
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
@@ -99,7 +103,7 @@ export class DocumentPagePresenter<
         var page = await this.FetchPageAsync();
         if (!page)
             return;        
-        await page.RenderAsync(canvas, 1);
+        await page.RenderAsync(canvas, 3);
     }
 
     private InvalidatePage()

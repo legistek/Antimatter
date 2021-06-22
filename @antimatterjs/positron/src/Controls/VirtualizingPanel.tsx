@@ -48,7 +48,8 @@ export abstract class VirtualizingPanel<
     public SetDesiredScroll(pt: Point)
     {
         this._desiredScroll = pt;
-        this.InvalidateRender();
+        console.log("SetDesiredScroll");
+        //this.InvalidateRender();
     }
 
     /**
@@ -210,7 +211,7 @@ export abstract class VirtualizingPanel<
     }
 
     /* override */ OnInvalidateRender()
-    {
+    {        
         this.ComputeRenderWindowInfo(
             (this._scroller?.getBoundingClientRect().y || 0) - (this.Container?.getBoundingClientRect().y || 0),
             this.state.ItemsParent?.Container?.clientHeight || 0);
@@ -254,19 +255,24 @@ export abstract class VirtualizingPanel<
             (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End * scale < windowBottom)
             newInfo.EndIndex++;
 
-        needRender = true;
-        newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
-        if (newInfo.EndIndex + 1 === c)
-        {
-            // end index is the last item
-            newInfo.EndItemBounds = newInfo.LastItemBounds;
-        }
-        else
-        {
-            newInfo.EndItemBounds = itemBounds;
-        }
-        this._renderWindowInfo = newInfo;
+        console.log(`Recomputing render window:  scale: ${scale} top ${windowTop} height ${windowHeight} from {${this._renderWindowInfo.StartIndex}, ${this._renderWindowInfo.EndIndex}} to {${newInfo.StartIndex}, ${newInfo.EndIndex}}`);
 
+        //if (newInfo.StartIndex < this._renderWindowInfo.StartIndex ||
+        //    newInfo.EndIndex > this._renderWindowInfo.EndIndex)
+        {
+            needRender = true;
+            newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
+            if (newInfo.EndIndex + 1 === c)
+            {
+                // end index is the last item
+                newInfo.EndItemBounds = newInfo.LastItemBounds;
+            }
+            else
+            {
+                newInfo.EndItemBounds = itemBounds;
+            }
+            this._renderWindowInfo = newInfo;
+        }
         this._hasComputed = true;
     }
 
@@ -295,6 +301,7 @@ export abstract class VirtualizingPanel<
             if (entry.target === this._spacerBefore ||
                 (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
             {
+                console.log("IntersectionCallback");
                 this.InvalidateRender();
                 break;
             }

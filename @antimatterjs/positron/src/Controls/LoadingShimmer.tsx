@@ -30,7 +30,7 @@ export class LoadingShimmer<
                 for (let i: number = 0; i < (templatedParent.state.Lines || 0); i++)
                 {
                     var percent = (100 - i * step).toString() + "%";
-                    shimmers.push((<Shimmer className="shimmer" width={percent} />));
+                    shimmers.push((<Shimmer key={i} className="shimmer" width={percent} />));
                 }
                 return (<StackPanel>{shimmers}</StackPanel>);
             })

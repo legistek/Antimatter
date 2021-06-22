@@ -52,6 +52,8 @@ export class ItemsControl<
 
         if (item?.IsModelObjectReference)
             (itemProps as any).key = (item as ModelObjectReference).Handle.toString();
+        else if (typeof (item) === 'number')
+            (itemProps as any).key = item;
         else if (item?.key)
             (itemProps as any).key = item.key;
         else

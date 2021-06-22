@@ -24,7 +24,7 @@ interface IDocumentViewerProps extends IItemsControlProps, IDocumentViewerCommon
 }
 interface IDocumentViewerState extends IItemsControlState, IDocumentViewerCommon
 {
-    Position?: DocumentPosition
+    Position?: DocumentPosition,
 }
 
 export class DocumentViewerBase<
@@ -37,6 +37,7 @@ export class DocumentViewerBase<
     private _scrollOrigin: Point = new Point();
     private _sizeFaker: HTMLElement | null = null;
     private _tr = new MultitouchTransform();
+    private _scale: number = 1;
 
     constructor(props)
     {
@@ -92,8 +93,7 @@ export class DocumentViewerBase<
                         if (!vsp || !scroller || !vsp.Container || !this._sizeFaker)
                             return;
 
-                        var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
-                        this.SetValue("docScale", newFinalScale);
+                        this._scale = this._scale * this._tr?.AbsoluteScale || 1;
 
                         this._sizeFaker.style.width = '0px';
                         scroller.style.overflowX = "auto";
@@ -106,12 +106,14 @@ export class DocumentViewerBase<
 
                         vsp.SetDesiredScroll(ds);
                         this._tr.Reset();
+
+                        this.InvalidateRender();
                     }).bind(this)}
                     Transform={this._tr}
                     VerticalAlignment={VerticalAlignment.Top}
-                    Scale={new Binding("DocScale")}
+                    Scale={this._scale}
                     ItemsParent={this}
-                    ItemHeight={792}
+                    ItemHeight={812}
                 />
                 <div
                     ref={r => this._sizeFaker = r}
@@ -161,12 +163,13 @@ export class DocumentViewerBase<
     }
 
     public /* override */ OnRenderItem(item: any, props?: any): JSX.Element | null
-    {
-        const pageProps: IDocumentPagePresenterProps = {
+    {                
+        const pageProps = Object.assign(props || {}, 
+        {
             PageIndex: item as number,
             Document: this.state.Document,
             //Scale: this.state.Position?.scale || 1
-        };
+        });
         return super.OnRenderItem(item, pageProps);
     }
 
