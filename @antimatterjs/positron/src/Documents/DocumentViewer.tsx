@@ -7,11 +7,12 @@ import { Style } from "../Style";
 import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
 import { FrameworkElement } from "../FrameworkElement";
 import { DocumentPagePresenter, IDocumentPagePresenterProps } from "./DocumentPagePresenter";
-import { HorizontalAlignment, ScrollBarVisibility } from "../Enums";
+import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";
 import { MultitouchTransform } from "../Media/MultitouchTransform";
 import { DefaultEffects } from "@fluentui/react";
-import { DocumentPagesPanel } from "./DocumentPagesPanel";
+import { VirtualizingStackPanel } from "../Controls/VirtualizingStackPanel";
+import { Point } from "../Foundation";
 
 interface IDocumentViewerCommon
 {
@@ -31,11 +32,93 @@ export class DocumentViewerBase<
     S extends IDocumentViewerState = {}>
     extends ItemsControl<P, S>
 {
-    _pagesPanel: DocumentPagesPanel | null = null;
+    private _vsp: VirtualizingStackPanel | null = null;
+    private _scroller: Panel | null = null;
+    private _scrollOrigin: Point = new Point();
+    private _sizeFaker: HTMLElement | null = null;
+    private _tr = new MultitouchTransform();
 
     constructor(props)
     {
         super(props);
+    }
+
+    private Template(): JSX.Element
+    {
+        return (
+            <Panel
+                ref={r => this._scroller = r}
+                Background={this.state.Background}
+                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
+                HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                <VirtualizingStackPanel
+                    ref={r => this._vsp = r}
+                    HorizontalAlignment={HorizontalAlignment.Center}
+                    OnManipulationStarted={((e) =>
+                    {
+                        var vsp = this._vsp?.Container;
+                        var scroller = this._scroller?.Container;
+                        if (!this._vsp || !vsp || !scroller)
+                            return;
+
+                        this._tr.CenterX = e.CenterX;
+                        this._tr.CenterY = e.CenterY;
+                        this._scrollOrigin = {
+                            X: vsp.getBoundingClientRect().x - (vsp.parentElement?.getBoundingClientRect()?.x || 0),
+                            Y: scroller.scrollTop,
+                        };
+                    }).bind(this)}
+                    OnManipulationDelta={((e) =>
+                    {
+                        var vsp = this._vsp?.Container;
+                        var scroller = this._scroller?.Container;
+                        if (!vsp || !scroller || !this._sizeFaker)
+                            return;
+                        this._tr.TranslateX = e.CumulativeX;
+                        this._tr.TranslateY = e.CumulativeY;
+                        this._tr.ScaleX = e.CumulativeScale;
+                        this._tr.ScaleY = e.CumulativeScale;
+
+                        if (this._tr.ScaleX !== 1)
+                        {
+                            scroller.style.overflowX = "hidden";
+                            this._sizeFaker.style.width = '9999999px';
+                        }
+                    }).bind(this)}
+                    OnManipulationCompleted={((e) =>
+                    {
+                        var vsp = this._vsp;
+                        var scroller = this._scroller?.Container;
+                        if (!vsp || !scroller || !vsp.Container || !this._sizeFaker)
+                            return;
+
+                        var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
+                        this.SetValue("docScale", newFinalScale);
+
+                        this._sizeFaker.style.width = '0px';
+                        scroller.style.overflowX = "auto";
+
+                        var ds = {
+                            X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
+                                (vsp?.Container?.getBoundingClientRect().x || 0),
+                            Y: this._scrollOrigin.Y * 1 - ((this._tr?.AbsoluteY || 0) / 1)
+                        }
+
+                        vsp.SetDesiredScroll(ds);
+                        this._tr.Reset();
+                    }).bind(this)}
+                    Transform={this._tr}
+                    VerticalAlignment={VerticalAlignment.Top}
+                    Scale={new Binding("DocScale")}
+                    ItemsParent={this}
+                    ItemHeight={792}
+                />
+                <div
+                    ref={r => this._sizeFaker = r}
+                    style={{ height: 1, position: 'absolute' }} >
+                </div>
+            </Panel>
+            );
     }
 
     public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
@@ -52,21 +135,7 @@ export class DocumentViewerBase<
                     BoxShadow: DefaultEffects.elevation8,
                     HorizontalAlignment: HorizontalAlignment.Center
                 }),
-            Template: new ControlTemplate((templatedParent: DocumentViewer) =>
-            (
-                <Panel                    
-                    Background={templatedParent.state.Background}
-                    BorderThickness={templatedParent.state.BorderThickness}
-                    BorderBrush={templatedParent.state.BorderBrush}
-                    HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
-                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-
-                    <DocumentPagesPanel
-                        ref={r => templatedParent._pagesPanel = r}
-                        ItemsParent={templatedParent}/>
-                    
-                </Panel>
-            ))
+            Template: new ControlTemplate((templatedParent: DocumentViewer) => templatedParent.Template())
         }
     );
 
@@ -83,18 +152,11 @@ export class DocumentViewerBase<
         }
         else if (property === nameof(this.state.Position))
         {
-            // This is gonna be a doozy
             var pos = value as DocumentPosition;
             var oldPos = oldValue as DocumentPosition;
             if (pos?.scale !== oldPos?.scale)
                 this.ItemsPanelInstance?.InvalidateRender();
-            this._pagesPanel?.Container?.scrollTo
-                ({
-                    behavior: "auto",
-                    left: 0,
-                    top: 792 * (pos.page + pos.y) * pos.scale 
-                });
-            //this._pagesPanel?.ScrollTo(pos.page, pos.y);
+            this._vsp?.SetDesiredScroll({ X: 0, Y: 792 * (pos.page + pos.y) * pos.scale });            
         }
     }
 

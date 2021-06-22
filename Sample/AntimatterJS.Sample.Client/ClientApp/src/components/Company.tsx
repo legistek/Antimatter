@@ -124,18 +124,12 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 export class Company extends FrameworkElement<IFrameworkElementProps, IFrameworkElementState>
 {
     static displayName = Company.name;
-    private _tr = new MultitouchTransform();
+    
     private _scale: number = 1;
     private _pdfDoc?: IDocument | null;
-    private _sizeFaker: HTMLElement | null = null;
+    
     private _colors: any[];
-    private _i: number = 0;
-    private _vsp: VirtualizingStackPanel | null = null;
-    private _scroller: Panel | null = null;
-    private _scrollOrigin: Point = new Point();
-    private _wasHscrolled: boolean = false;
-    private _origCenterX: number = 0;
-    private _origScrollX: number = 0;
+
 
     constructor(props)
     {
@@ -215,94 +209,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <TextBox Label="Scale" Text={new Binding("DocScale")} />
                 </StackPanel>
 
-                <ItemsControl                    
-                    ItemsSource={this._colors}
-                    Template={new ControlTemplate((tp) =>
-                    (
-                        <Panel VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
-                            HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}
-                            ref={r => this._scroller = r}>
-                            <VirtualizingStackPanel
-                                ref={r => this._vsp = r}
-                                HorizontalAlignment={HorizontalAlignment.Center}
-                                OnManipulationStarted={((e) =>
-                                {
-                                    var vsp = this._vsp?.Container;
-                                    var scroller = this._scroller?.Container;
-                                    if (!this._vsp || !vsp || !scroller)
-                                        return;
-
-                                    this._vsp.SuspendAutoRealization = true;
-                                    
-                                    this._wasHscrolled = vsp.clientWidth > scroller.clientWidth;
-                                    this._origScrollX = scroller.scrollLeft;
-
-                                    this._tr.CenterX = this._origCenterX = e.CenterX;
-                                    this._tr.CenterY = e.CenterY;
-                                    this._scrollOrigin = {
-                                        X: vsp.getBoundingClientRect().x - (vsp.parentElement?.getBoundingClientRect()?.x || 0),
-                                        Y: scroller.scrollTop,
-                                    };
-                                }).bind(this)}
-                                OnManipulationDelta={((e) =>
-                                {
-                                    var vsp = this._vsp?.Container;
-                                    var scroller = this._scroller?.Container;
-                                    if (!vsp || !scroller || !this._sizeFaker)
-                                        return;
-                                    this._tr.TranslateX = e.CumulativeX;
-                                    this._tr.TranslateY = e.CumulativeY;
-                                    this._tr.ScaleX = e.CumulativeScale;
-                                    this._tr.ScaleY = e.CumulativeScale;
-
-                                    if (this._tr.ScaleX !== 1)
-                                    {
-                                        scroller.style.overflowX = "hidden";
-                                        this._sizeFaker.style.width = '9999999px';
-                                    }
-                                }).bind(this)}
-                                OnManipulationCompleted={((e) =>
-                                {
-                                    var vsp = this._vsp;
-                                    var scroller = this._scroller?.Container;
-                                    if (!vsp || !scroller || !vsp.Container || !this._sizeFaker)
-                                        return;
-
-                                    var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
-                                    this.SetValue("docScale", newFinalScale);
-
-                                    this._sizeFaker.style.width = '0px';
-                                    scroller.style.overflowX = "auto";
-                                        
-                                    var ds = {
-                                        X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
-                                            (vsp?.Container?.getBoundingClientRect().x || 0),
-                                        Y: this._scrollOrigin.Y * 1 - ((this._tr?.AbsoluteY || 0) / 1)
-                                    }
-
-                                    vsp.SetDesiredScroll(ds);
-                                    this._tr.Reset();                                    
-                                }).bind(this)}
-                                Transform={this._tr}
-                                VerticalAlignment={VerticalAlignment.Top}                                
-                                Scale={new Binding("DocScale")}
-                                ItemsParent={tp}
-                                ItemHeight={500}
-                            />
-                            <div
-                                ref={r => this._sizeFaker = r}
-                                id="sizeFaker"
-                                style={{ height: 1, position: 'absolute' }} >
-                            </div>
-                        </Panel>                        
-                    ))}
-                    ItemTemplate={new DataTemplate((item) =>
-                    (<Ellipse                        
-                        Width={item.width}                        
-                        Height={500}
-                        Fill={item.color}/>))}
-
-                />
+                <DocumentViewer Document={this._pdfDoc}/>              
 
                 {/*<DocumentViewer*/}
                 {/*    Document={this._pdfDoc}*/}

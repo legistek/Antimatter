@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Point } from "./Point";
+import { Point } from "../Foundation";
 
 /** Represents a matrix for performing 2D transformations. 
  * This object is immutable and frozen after creation. */

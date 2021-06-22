@@ -48,7 +48,7 @@ export abstract class VirtualizingPanel<
     public SetDesiredScroll(pt: Point)
     {
         this._desiredScroll = pt;
-        this.InvalidateRealization();
+        this.InvalidateRender();
     }
 
     /**
@@ -81,9 +81,7 @@ export abstract class VirtualizingPanel<
         if (!this.state.ItemsParent)
             return null;
 
-        var items = this.state.ItemsParent?.state.ItemsSource;
-        if (!items || items.length === 0)
-            return null;
+        var items = this.state.ItemsParent?.state.ItemsSource || [];
 
         // We need the scaled div to remain the same pixel width
         // for horizontal scrolling to work properly if that's
@@ -211,6 +209,14 @@ export abstract class VirtualizingPanel<
         super.componentWillUnmount?.call(this);
     }
 
+    /* override */ OnInvalidateRender()
+    {
+        this.ComputeRenderWindowInfo(
+            (this._scroller?.getBoundingClientRect().y || 0) - (this.Container?.getBoundingClientRect().y || 0),
+            this.state.ItemsParent?.Container?.clientHeight || 0);
+        super.OnInvalidateRender();
+    }
+
     private ComputeRenderWindowInfo(
         windowTop: number,
         windowHeight: number): void
@@ -289,23 +295,18 @@ export abstract class VirtualizingPanel<
             if (entry.target === this._spacerBefore ||
                 (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
             {
-                this.InvalidateRealization();
+                this.InvalidateRender();
                 break;
             }
         }
     }
 
-    private InvalidateRealization()
-    {
-        this.ComputeRenderWindowInfo(
-            (this._scroller?.getBoundingClientRect().y || 0) - (this.Container?.getBoundingClientRect().y || 0),
-            this.state.ItemsParent?.Container?.clientHeight || 0);       
-        this.InvalidateRender();        
-    }
-
     private RenderVisibleItems(items: any[]): JSX.Element[] | null
     {
         if (!this._hasComputed)
+            return null;
+
+        if (!items || items.length === 0)
             return null;
 
         var visibleItems: JSX.Element[] = new Array(
