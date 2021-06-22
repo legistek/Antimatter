@@ -49,7 +49,7 @@ export abstract class VirtualizingPanel<
     {
         this._desiredScroll = pt;
         this.InvalidateVirtualization();
-        this.InvalidateRender();
+        //this.InvalidateRender();
     }
 
     /**
@@ -92,6 +92,8 @@ export abstract class VirtualizingPanel<
         const widthPercent = this.state.Scale
             ? (100 / (this.state.Scale as number || 1))
             : 100;
+
+        this._suspendNextReRealization = false;
 
         return (
             <div style={
@@ -224,8 +226,10 @@ export abstract class VirtualizingPanel<
 
         let c = this.ItemCount;
 
-        windowTop /= (this.state.Scale as number || 1);
-        windowHeight /= (this.state.Scale as number || 1);
+        const scale = (this.state.Scale as number || 1);
+
+        //windowTop /= (this.state.Scale as number || 1);
+        //windowHeight /= (this.state.Scale as number || 1);
 
         let newInfo: RenderWindowInfo = new RenderWindowInfo();
 
@@ -236,9 +240,9 @@ export abstract class VirtualizingPanel<
             ((index) =>
             {
                 var itemPos = this.GetItemExpanseBounds(index);
-                if (itemPos.Start > windowTop)
+                if (itemPos.Start * scale > windowTop)
                     return -1;  // too far; go lower
-                else if (itemPos.End < windowBottom)
+                else if (itemPos.End * scale < windowBottom)
                     return +1;  // not far enough; go higher
                 else
                     return 0;
@@ -251,7 +255,7 @@ export abstract class VirtualizingPanel<
         let itemBounds: Span = { Start: 0, End: 0 };
 
         while (c > newInfo.EndIndex + 1 &&
-            (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End < windowBottom)
+            (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End * scale < windowBottom)
             newInfo.EndIndex++;
 
         console.log(`Recomputing render window: from {${this._renderWindowInfo.StartIndex}, ${this._renderWindowInfo.EndIndex}} to {${newInfo.StartIndex}, ${newInfo.EndIndex}}`);
@@ -317,6 +321,9 @@ export abstract class VirtualizingPanel<
 
     private InvalidateVirtualization()
     {
+        if (this._suspendNextReRealization)
+            return;
+        this._suspendNextReRealization = true;
         if (this.ComputeRenderWindowInfo(
             this._scroller?.scrollTop || 0,
             this.state.ItemsParent?.Container?.clientHeight || 0))
@@ -363,4 +370,5 @@ export abstract class VirtualizingPanel<
     private _realizedChildren: FrameworkElement[] = [];
     private _realizationGeneration: number = 0;
     private _lastRealizedGeneration: number = 0;
+    private _suspendNextReRealization: boolean = false;
 }

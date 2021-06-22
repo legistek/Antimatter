@@ -100,6 +100,7 @@ export class FrameworkElement<
             <div
                 ref={r => this.Container = r}
                 style={this.getCSSStyles()}
+                onContextMenu={(event) => event.preventDefault()}
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}

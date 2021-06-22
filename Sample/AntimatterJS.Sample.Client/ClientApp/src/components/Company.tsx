@@ -127,12 +127,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     private _tr = new MultitouchTransform();
     private _scale: number = 1;
     private _pdfDoc?: IDocument | null;
+    private _sizeFaker: HTMLElement | null = null;
     private _colors: any[];
     private _i: number = 0;
     private _vsp: VirtualizingStackPanel | null = null;
     private _scroller: Panel | null = null;
     private _scrollOrigin: Point = new Point();
     private _wasHscrolled: boolean = false;
+    private _origCenterX: number = 0;
+    private _origScrollX: number = 0;
 
     constructor(props)
     {
@@ -228,8 +231,11 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     var scroller = this._scroller?.Container;
                                     if (!vsp || !scroller)
                                         return;
+                                    
+                                    this._wasHscrolled = vsp.clientWidth > scroller.clientWidth;
+                                    this._origScrollX = scroller.scrollLeft;
 
-                                    this._tr.CenterX = e.CenterX;
+                                    this._tr.CenterX = this._origCenterX = e.CenterX;
                                     this._tr.CenterY = e.CenterY;
                                     this._scrollOrigin = {
                                         X: vsp.getBoundingClientRect().x - (vsp.parentElement?.getBoundingClientRect()?.x || 0),
@@ -240,26 +246,51 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 }).bind(this)}
                                 OnManipulationDelta={((e) =>
                                 {
-                                    //if (e.CumulativeScale !== 1)
+                                    var vsp = this._vsp?.Container;
+                                    var scroller = this._scroller?.Container;
+                                    if (!vsp || !scroller || !this._sizeFaker)
+                                        return;
+
                                     {
+                                        var rc = vsp.getBoundingClientRect();
+                                        var rs = scroller.getBoundingClientRect();
+                                        //var scrolling = rc.width > rs.width;
+                                        let offset: number = 0;
+                                        if (this._wasHscrolled && rs.width > rc.width)
+                                        {
+                                            offset = rc.x - rs.x;
+                                            //this._tr.CenterX = this._origCenterX - offset;
+                                        }
+                                        
                                         this._tr.TranslateX = e.CumulativeX;
                                         this._tr.TranslateY = e.CumulativeY;
                                         this._tr.ScaleX = e.CumulativeScale;
                                         this._tr.ScaleY = e.CumulativeScale;
 
-                                        //console.log(`Transform: X: ${this._tr.AbsoluteX}, Scale: ${this._tr.AbsoluteScale}`);
+                                        if (this._tr.ScaleX !== 1)
+                                        {
+                                            scroller.style.overflow = "hidden";
+                                            this._sizeFaker.style.width = '2000px';
+                                        }
+
+                                        //var desiredScrollLeft = this._origScrollX * e.CumulativeScale - e.CumulativeX;
+                                        //scroller.scrollLeft = desiredScrollLeft;
+                                        //console.log(`Translate ${e.CumulativeX}, Scale ${e.CumulativeScale}, desired scrollLeft; ${desiredScrollLeft}, new actual scrollLeft: ${scroller.scrollLeft}`);
                                     }
                                 }).bind(this)}
                                 OnManipulationCompleted={((e) =>
                                 {
                                     var vsp = this._vsp;
                                     var scroller = this._scroller?.Container;
-                                    if (!vsp || !scroller)
+                                    if (!vsp || !scroller || !vsp.Container || !this._sizeFaker)
                                         return;
 
                                     var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
                                     this.SetValue("docScale", newFinalScale);
 
+                                    this._sizeFaker.style.width = '0px';
+                                    scroller.style.overflow = "auto";
+                                        
                                     var ds = {
                                         X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
                                             (vsp?.Container?.getBoundingClientRect().x || 0),
@@ -275,12 +306,16 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 ItemsParent={tp}
                                 ItemHeight={500}
                             />
+                            <div
+                                ref={r => this._sizeFaker = r}
+                                id="sizeFaker"
+                                style={{ height: 1, position: 'absolute' }} >
+                            </div>
                         </Panel>                        
                     ))}
                     ItemTemplate={new DataTemplate((item) =>
                     (<Ellipse                        
-                        Width={item.width}
-                        HorizontalAlignment={HorizontalAlignment.Center}
+                        Width={item.width}                        
                         Height={500}
                         Fill={item.color}/>))}
 
