@@ -229,8 +229,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 {
                                     var vsp = this._vsp?.Container;
                                     var scroller = this._scroller?.Container;
-                                    if (!vsp || !scroller)
+                                    if (!this._vsp || !vsp || !scroller)
                                         return;
+
+                                    this._vsp.SuspendAutoRealization = true;
                                     
                                     this._wasHscrolled = vsp.clientWidth > scroller.clientWidth;
                                     this._origScrollX = scroller.scrollLeft;
@@ -241,8 +243,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                         X: vsp.getBoundingClientRect().x - (vsp.parentElement?.getBoundingClientRect()?.x || 0),
                                         Y: scroller.scrollTop,
                                     };
-
-                                    //console.log(`Transform: X: Initial Scroll ${this._scrollOrigin.X}`);
                                 }).bind(this)}
                                 OnManipulationDelta={((e) =>
                                 {
@@ -250,32 +250,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     var scroller = this._scroller?.Container;
                                     if (!vsp || !scroller || !this._sizeFaker)
                                         return;
+                                    this._tr.TranslateX = e.CumulativeX;
+                                    this._tr.TranslateY = e.CumulativeY;
+                                    this._tr.ScaleX = e.CumulativeScale;
+                                    this._tr.ScaleY = e.CumulativeScale;
 
+                                    if (this._tr.ScaleX !== 1)
                                     {
-                                        var rc = vsp.getBoundingClientRect();
-                                        var rs = scroller.getBoundingClientRect();
-                                        //var scrolling = rc.width > rs.width;
-                                        let offset: number = 0;
-                                        if (this._wasHscrolled && rs.width > rc.width)
-                                        {
-                                            offset = rc.x - rs.x;
-                                            //this._tr.CenterX = this._origCenterX - offset;
-                                        }
-                                        
-                                        this._tr.TranslateX = e.CumulativeX;
-                                        this._tr.TranslateY = e.CumulativeY;
-                                        this._tr.ScaleX = e.CumulativeScale;
-                                        this._tr.ScaleY = e.CumulativeScale;
-
-                                        if (this._tr.ScaleX !== 1)
-                                        {
-                                            scroller.style.overflow = "hidden";
-                                            this._sizeFaker.style.width = '2000px';
-                                        }
-
-                                        //var desiredScrollLeft = this._origScrollX * e.CumulativeScale - e.CumulativeX;
-                                        //scroller.scrollLeft = desiredScrollLeft;
-                                        //console.log(`Translate ${e.CumulativeX}, Scale ${e.CumulativeScale}, desired scrollLeft; ${desiredScrollLeft}, new actual scrollLeft: ${scroller.scrollLeft}`);
+                                        scroller.style.overflowX = "hidden";
+                                        this._sizeFaker.style.width = '9999999px';
                                     }
                                 }).bind(this)}
                                 OnManipulationCompleted={((e) =>
@@ -289,7 +272,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     this.SetValue("docScale", newFinalScale);
 
                                     this._sizeFaker.style.width = '0px';
-                                    scroller.style.overflow = "auto";
+                                    scroller.style.overflowX = "auto";
                                         
                                     var ds = {
                                         X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -

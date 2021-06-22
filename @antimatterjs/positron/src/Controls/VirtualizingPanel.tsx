@@ -48,8 +48,7 @@ export abstract class VirtualizingPanel<
     public SetDesiredScroll(pt: Point)
     {
         this._desiredScroll = pt;
-        this.InvalidateVirtualization();
-        //this.InvalidateRender();
+        this.InvalidateRealization();
     }
 
     /**
@@ -74,7 +73,7 @@ export abstract class VirtualizingPanel<
         endIndex: number,
         children: FrameworkElement[])
     {
-        //console.log(`${children.length} children realized`);
+        console.log(`${children.length} children realized`);
     }
 
     /* override */ renderElement(): JSX.Element | null
@@ -92,8 +91,6 @@ export abstract class VirtualizingPanel<
         const widthPercent = this.state.Scale
             ? (100 / (this.state.Scale as number || 1))
             : 100;
-
-        this._suspendNextReRealization = false;
 
         return (
             <div style={
@@ -118,7 +115,7 @@ export abstract class VirtualizingPanel<
             </div>
         );
     }
-    
+
     // Recalculates the container dimensions - width is based on the maximum 
     // width of any item previously rendered and height is based on the 
     // spans of the items. This must be done every time the component updates 
@@ -140,10 +137,6 @@ export abstract class VirtualizingPanel<
         {
             this._scroller.scrollLeft = this._desiredScroll.X;
             this._scroller.scrollTop = this._desiredScroll.Y;
-
-            console.log(`Confirming desired scroll X: ${this._desiredScroll.X}`);
-            console.log(`Final  scroll X: ${this._scroller.scrollLeft}`);
-
             this._desiredScroll = undefined;
         }
         else
@@ -152,7 +145,7 @@ export abstract class VirtualizingPanel<
         }
 
         if (this._realizationGeneration !== this._lastRealizedGeneration)
-        {            
+        {
             this._lastRealizedGeneration = this._realizationGeneration;
             this.OnChildrenRealized(
                 this._renderWindowInfo.StartIndex,
@@ -218,9 +211,9 @@ export abstract class VirtualizingPanel<
         super.componentWillUnmount?.call(this);
     }
 
-    private ComputeRenderWindowInfo (
+    private ComputeRenderWindowInfo(
         windowTop: number,
-        windowHeight: number) : boolean
+        windowHeight: number): void
     {
         let needRender: boolean = false;
 
@@ -228,14 +221,11 @@ export abstract class VirtualizingPanel<
 
         const scale = (this.state.Scale as number || 1);
 
-        //windowTop /= (this.state.Scale as number || 1);
-        //windowHeight /= (this.state.Scale as number || 1);
-
         let newInfo: RenderWindowInfo = new RenderWindowInfo();
 
         const windowBottom = windowTop + windowHeight * (1 + (this.state.OverscanHeight as number || 1));
         windowTop = Math.max(0, windowTop - windowHeight * (this.state.OverscanHeight as number || 1));
-        
+
         newInfo.StartIndex = Utilities.SortedBinarySearch(
             ((index) =>
             {
@@ -258,33 +248,20 @@ export abstract class VirtualizingPanel<
             (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End * scale < windowBottom)
             newInfo.EndIndex++;
 
-        console.log(`Recomputing render window: from {${this._renderWindowInfo.StartIndex}, ${this._renderWindowInfo.EndIndex}} to {${newInfo.StartIndex}, ${newInfo.EndIndex}}`);
-
-        if (newInfo.StartIndex < this._renderWindowInfo.StartIndex ||
-            newInfo.EndIndex > this._renderWindowInfo.EndIndex)
+        needRender = true;
+        newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
+        if (newInfo.EndIndex + 1 === c)
         {
-            // Only need to actually re-render if the new view window
-            // contains items not already rendered
-            needRender = true;
-            newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
-            if (newInfo.EndIndex + 1 === c)
-            {
-                // end index is the last item
-                newInfo.EndItemBounds = newInfo.LastItemBounds;
-            }
-            else
-            {
-                newInfo.EndItemBounds = itemBounds;
-            }
-            this._renderWindowInfo = newInfo;
+            // end index is the last item
+            newInfo.EndItemBounds = newInfo.LastItemBounds;
         }
         else
         {
-            console.log("No need to change realization window");
+            newInfo.EndItemBounds = itemBounds;
         }
-        
+        this._renderWindowInfo = newInfo;
+
         this._hasComputed = true;
-        return needRender;
     }
 
     private get ItemCount(): number
@@ -292,50 +269,44 @@ export abstract class VirtualizingPanel<
         return this.state.ItemsParent?.state?.ItemsSource?.length || 0;
     }
 
-    private FindScroller(): HTMLElement|null|undefined
+    private FindScroller(): HTMLElement | null | undefined
     {
         var elem = this.Container;
         while (elem && elem?.style.overflowY !== "auto")
             elem = elem.parentElement;
         return elem;
     }
-    
+
     private IntersectionCallback(entries: IntersectionObserverEntry[]): void
     {
         if (!this._spacerBefore || !this._spacerAfter || !this.Container)
             return;
-
         for (const entry of entries)
         {
             if (!entry.isIntersecting)
-                continue;                       
+                continue;
 
-            if (entry.target === this._spacerBefore || 
-                 (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
+            if (entry.target === this._spacerBefore ||
+                (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
             {
-                this.InvalidateVirtualization();                
+                this.InvalidateRealization();
                 break;
             }
         }
     }
 
-    private InvalidateVirtualization()
+    private InvalidateRealization()
     {
-        if (this._suspendNextReRealization)
-            return;
-        this._suspendNextReRealization = true;
-        if (this.ComputeRenderWindowInfo(
-            this._scroller?.scrollTop || 0,
-            this.state.ItemsParent?.Container?.clientHeight || 0))
-        {
-            this.InvalidateRender();
-        }
+        this.ComputeRenderWindowInfo(
+            (this._scroller?.getBoundingClientRect().y || 0) - (this.Container?.getBoundingClientRect().y || 0),
+            this.state.ItemsParent?.Container?.clientHeight || 0);       
+        this.InvalidateRender();        
     }
-    
-    private RenderVisibleItems(items: any[]): JSX.Element[]|null
+
+    private RenderVisibleItems(items: any[]): JSX.Element[] | null
     {
         if (!this._hasComputed)
-            return null;        
+            return null;
 
         var visibleItems: JSX.Element[] = new Array(
             this._renderWindowInfo.EndIndex - this._renderWindowInfo.StartIndex + 1);
@@ -351,7 +322,7 @@ export abstract class VirtualizingPanel<
                 {
                     ref: (r) => r ? this._realizedChildren?.push(r) : {}
                 }) || (<></>);
-            visibleItems[j] = renderedItem;                        
+            visibleItems[j] = renderedItem;
         }
 
         this._realizationGeneration++;
@@ -370,5 +341,4 @@ export abstract class VirtualizingPanel<
     private _realizedChildren: FrameworkElement[] = [];
     private _realizationGeneration: number = 0;
     private _lastRealizedGeneration: number = 0;
-    private _suspendNextReRealization: boolean = false;
 }
