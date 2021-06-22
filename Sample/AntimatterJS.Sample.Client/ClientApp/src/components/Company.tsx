@@ -1,10 +1,11 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
 {
+    DatePicker,
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -38,6 +39,20 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                 <DataContext Value={this.state.Value}>
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
                     <TextBlock Text="Edit Info" FontWeight="bold" />
+
+                    <DatePicker
+                        Label="Start Date (#1)"
+                        Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate), Mode: BindingMode.TwoWay })}
+                        HasTime={true}
+                    />
+
+                    <DatePicker
+                        Label="Start date (#2)"
+                        Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate) })}
+                        UseInternationalFormat={true}
+                        HasTime={true}
+                    />
+
 
                     <WrapPanel>
                         <TextBox
@@ -83,7 +98,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
-
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}
@@ -153,10 +167,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
-                
+
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}                    
+                        RowHeight={44}
                         SelectedItems={new Binding("SelectedEmployees")}
                         IsSelectAll={new Binding("IsAllSelected")}
                         OnManipulationStarted={(e) =>
@@ -195,7 +209,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         ]}
                         />
                 </div>
-                
+
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

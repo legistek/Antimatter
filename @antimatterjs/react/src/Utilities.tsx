@@ -28,12 +28,25 @@ export class Utilities
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    //Converts server-compatible UTC ticks format to app-compatible local-time JS Date format
     public static DateFromTicks(ticks: bigint): Date
     {
         // get the ms from Unix Time 0
-        var ms = Number((ticks - unixTime0Ticks) / BigInt(10000));
+        const ms: number = Number((ticks - unixTime0Ticks) / BigInt(10000));
+        const utc: Date = new Date(ms);
+        const offset: number = utc.getTimezoneOffset() * 60 * 1000;
+        return new Date(ms + offset);
+    }
 
-        return new Date(ms);
+    //Supposed to return bigint type, but that currently gives serialization error, so for now sneak in a number instead
+    public static TicksFromDate(local: Date): any
+    {
+        const offset: number = local.getTimezoneOffset() * 60 * 1000;
+        const ms: number = local.getTime() - offset;
+        //return (BigInt(ms) * BigInt(10000)) + unixTime0Ticks;
+
+        const ticks: bigint = (BigInt(ms) * BigInt(10000)) + unixTime0Ticks;
+        return Number(ticks);
     }
 
     public static AddStyleSheet(sheet: string)

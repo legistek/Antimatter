@@ -1,4 +1,6 @@
-﻿export class ModelValue
+﻿import { Utilities } from "@antimatterjs/react/src/Utilities";
+
+export class ModelValue
 {
     Type?: ModelValueType;
     StringValue?: string;
@@ -19,10 +21,15 @@
         {
 
         }
+        else if (jsValue instanceof Date)
+        {
+            val.Type = ModelValueType.DateTime;
+            val.LongValue = Utilities.TicksFromDate(jsValue);
+        }
         else
-        {            
+        {
             switch (typeof jsValue)
-            {                
+            {
                 case "undefined":
                     val.Type = ModelValueType.Null;
                     break;
@@ -85,7 +92,7 @@
         switch (this.Type)
         {
             case ModelValueType.ObjectHandle:
-            case ModelValueType.Collection:               
+            case ModelValueType.Collection:
                 return this.ObjectHandle?.toString() || "";
             case ModelValueType.String:
                 return this.StringValue || "";
@@ -101,7 +108,7 @@
     }
 }
 
-export enum ModelValueType 
+export enum ModelValueType
 {
     Null = 0,
     ObjectHandle = 1,

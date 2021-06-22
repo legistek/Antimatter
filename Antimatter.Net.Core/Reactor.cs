@@ -24,7 +24,7 @@ namespace Antimatter.Net
         /// single tenant or multi-tenant.
         /// </summary>
         /// <param name="client">An instance of an object implementing
-        /// the <see cref="IClient"/> interface, which will used by 
+        /// the <see cref="IClient"/> interface, which will used by
         /// <see cref="Reactor"/>s to communicate with clients to notify
         /// them of model updates.
         /// </param>
@@ -43,21 +43,21 @@ namespace Antimatter.Net
         #region Model Server-Invocable Methods
 
         /// <summary>
-        /// Invoked by Model Servers to construct a new <see cref="Reactor"/> 
+        /// Invoked by Model Servers to construct a new <see cref="Reactor"/>
         /// instance. See remarks.
         /// </summary>
-        /// <param name="clientid">The client ID, used by multi-tenant Model Servers. 
+        /// <param name="clientid">The client ID, used by multi-tenant Model Servers.
         /// Can be <c>null</c> for single-tenant model servers. See remarks.
         /// </param>
         /// <remarks>
         /// <para>
-        /// For single-tenant Model Servers, i.e., when the Model Server is executing 
+        /// For single-tenant Model Servers, i.e., when the Model Server is executing
         /// on the same end user's machine as the client, there should be one
         /// static global <see cref="Reactor"/> for the application. In this
         /// case <paramref name="clientid"/> can be <c>null</c>.
         /// </para>
         /// <para>
-        /// For multi-tenant Model Servers, i.e., when the model server is a 
+        /// For multi-tenant Model Servers, i.e., when the model server is a
         /// SignalR or other remote server handling multiple client connections,
         /// there must be a unique <see cref="Reactor"/> instance for each
         /// client connection, keyed to the <paramref name="clientid"/> which likewise
@@ -89,22 +89,22 @@ namespace Antimatter.Net
         }
 
         /// <summary>
-        /// Invoked by model servers to set the application route for 
+        /// Invoked by model servers to set the application route for
         /// browser or browser-like applications. This can but need not
-        /// be a URL. 
-        /// </summary>        
+        /// be a URL.
+        /// </summary>
         public void NavigateTo(string route)
         {
             Reactor.Client.NavigateTo(this.ClientID, route);
         }
-                
+
         public static object SessionContext => _currentSessionContext.Value;
 
         #endregion
 
         #region Client-Invocable Methods
         /// <summary>
-        /// Invoked by clients to update model (source) properties in response to 
+        /// Invoked by clients to update model (source) properties in response to
         /// UI actions.
         /// </summary>
         [AMXClientInvocable]
@@ -123,9 +123,9 @@ namespace Antimatter.Net
         /// </summary>
         [AMXClientInvocable]
         public void Bind(
-            int handle, 
-            string path, 
-            int bxIndex, 
+            int handle,
+            string path,
+            int bxIndex,
             bool notifyCollectionChanged,
             bool marshalValue)
         {
@@ -135,7 +135,7 @@ namespace Antimatter.Net
 
             var bx = new BindingExpression(this, path)
             {
-                BXIndex = bxIndex,                
+                BXIndex = bxIndex,
                 NotifyCollectionChanged = notifyCollectionChanged,
                 SourceReference = objRef,
                 MarshalValue = marshalValue
@@ -168,7 +168,7 @@ namespace Antimatter.Net
         /// <summary>
         /// Invoked by clients in response to UI actions (like button presses)
         /// triggering bound <see cref="ICommand"/>s on model objects.
-        /// </summary>        
+        /// </summary>
         [AMXClientInvocable]
         public void ExecuteICommand(int netRef, ModelValue commandParameter)
         {
@@ -179,7 +179,7 @@ namespace Antimatter.Net
         /// <summary>
         /// Invoked by clients to obtain root level model objects without binding.
         /// See also <see cref="RegisterRootObject"/>.
-        /// </summary>         
+        /// </summary>
         [AMXClientInvocable]
         public int GetRootObject(string identifier)
         {
@@ -188,7 +188,7 @@ namespace Antimatter.Net
                 return objRef.Handle;
             return -1;
         }
-        
+
         #endregion
 
         #region Internals
@@ -196,7 +196,7 @@ namespace Antimatter.Net
         internal static IClient Client { get; private set; }
 
         internal string ClientID { get; }
-        
+
         internal void FinalDispose(ObjectReference reference)
         {
             //Console.WriteLine($"Disposing {reference.Object?.ToString()}");
@@ -259,7 +259,7 @@ namespace Antimatter.Net
                     var arr = ienum.Select(item => GetModelValue(item)).ToArray();
                     return new ModelValue
                     {
-                        Type = ModelValueType.Collection,     
+                        Type = ModelValueType.Collection,
                         Collection = arr,
                         ObjectHandle = GetOrCreateReference(obj).Handle,
                     };
@@ -271,13 +271,13 @@ namespace Antimatter.Net
                 else if (marshalled)
                 {
                     return Reactor.Client.MarshalObject(obj);
-                }    
+                }
                 else {
                     var handle = GetOrCreateReference(obj).Handle;
                     return new ModelValue
                     {
                         Type = ModelValueType.Object,
-                        Key = (obj is Model.ObservableObject oo) 
+                        Key = (obj is Model.ObservableObject oo)
                             ? oo.GetKey() ?? obj.GetHashCode().ToString()
                             : obj.GetHashCode().ToString(),
                         ObjectHandle = handle,
@@ -434,9 +434,9 @@ namespace Antimatter.Net
                     dnv.ObjectHandle = dnr.Handle;
                 },
                 (mgr, dnv, value) => dnv.StringValue = (string)value,
-                (mgr, dnv, value) => 
+                (mgr, dnv, value) =>
                     dnv.IntValue = Convert.ToInt32(value),
-                (mgr, dnv, value) => 
+                (mgr, dnv, value) =>
                     dnv.LongValue = Convert.ToInt64(value),
                 (mgr, dnv, value) =>
                     dnv.FloatValue = Convert.ToSingle(value),
@@ -453,7 +453,8 @@ namespace Antimatter.Net
                 },
                 (mgr, dnv, value) => dnv.BoolValue = (bool)value,
                 (mgr, dnv, value) => dnv.StringValue = ((Guid)value).ToString(),
-                (mgr, dnv, value) => dnv.LongValue = ((DateTime)value).Ticks,
+                (mgr, dnv, value) =>
+                    dnv.LongValue = ((DateTime)value).Ticks,
                 (mgr, dnv, value) => dnv.LongValue = ((TimeSpan)value).Ticks,
                 (mgr, dnv, value) => dnv.StringValue = (string)value
             };
@@ -475,7 +476,7 @@ namespace Antimatter.Net
             { typeof(DateTime), ModelValueType.DateTime },
             { typeof(TimeSpan), ModelValueType.TimeSpan },
         };
-        internal static Dictionary<Type, IModelValueConverter> _customConverters = 
+        internal static Dictionary<Type, IModelValueConverter> _customConverters =
             new Dictionary<Type, IModelValueConverter>();
 
         #endregion

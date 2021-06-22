@@ -10,10 +10,10 @@ const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-o
 const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
-{    
+{
     StartupAsync(): Promise<void>
     {
-        // just returns a promise that loops until the 
+        // just returns a promise that loops until the
         // Mono WASM "Module" is detected
         return new Promise<void>((resolve, reject) =>
         {
@@ -31,13 +31,13 @@ export class WebassemblyServer implements IServer
                 }, 1000);
             };
             loop();
-        });        
+        });
     }
 
     //#region Client-Invocable Methods
 
     GetRootObject(objectid: string): Promise<ModelObjectReference>
-    {       
+    {
         var handle = this.CallStaticMethod(
             WebassemblyServer.c_ServerAssembly,
             WebassemblyServer.c_ServerType,
@@ -116,7 +116,7 @@ export class WebassemblyServer implements IServer
     public UpdateBinding(bxIndex: number, valuePtr: number)
     {
         var type = this.getValueI32(valuePtr + 8) as ModelValueType;
-        var value = this.getModelValue(valuePtr, type);        
+        var value = this.getModelValue(valuePtr, type);
         BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
     }
 
@@ -181,7 +181,7 @@ export class WebassemblyServer implements IServer
             + `${this.Module.HEAP32[ptr + 10].toString(16)}${this.Module.HEAP32[ptr + 11].toString(16)}`
             + `${this.Module.HEAP32[ptr + 12].toString(16)}${this.Module.HEAP32[ptr + 13].toString(16)}`
             + `${this.Module.HEAP32[ptr + 14].toString(16)}${this.Module.HEAP32[ptr + 15].toString(16)}`
-        
+
         return guid;
     }
 
@@ -200,7 +200,7 @@ export class WebassemblyServer implements IServer
     }
 
     getValueFloat(ptr: number)
-    {        
+    {
         return this.Module.HEAPF32[ptr >> 2];
     }
 
@@ -232,7 +232,7 @@ export class WebassemblyServer implements IServer
 
     getModelValue(valuePtr: number, type: ModelValueType): any
     {
-        valuePtr += 8;  // C# class data is 8 bytes off from address        
+        valuePtr += 8;  // C# class data is 8 bytes off from address
         switch (type)
         {
             case ModelValueType.Null:

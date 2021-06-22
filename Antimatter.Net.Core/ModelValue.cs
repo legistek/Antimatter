@@ -102,7 +102,7 @@ namespace Antimatter.Net
             get => guidValue;
             set => guidValue = value;
         }
-        
+
         [FieldOffset(32)]
         private ModelValue[] _collection;
         public ModelValue[] Collection
@@ -114,7 +114,7 @@ namespace Antimatter.Net
         internal object ToCSValue(Reactor mgr, Type desiredType = null)
         {
             switch (this.Type)
-            {                
+            {
                 case ModelValueType.Float:
                     return this.FloatValue;
                 case ModelValueType.Int:
@@ -138,9 +138,9 @@ namespace Antimatter.Net
                     return new DateTime(this.LongValue, DateTimeKind.Utc);
                 case ModelValueType.TimeSpan:
                     return new TimeSpan(this.LongValue);
-                case ModelValueType.Object:                
+                case ModelValueType.Object:
                     return mgr.GetReference(this.objectHandle)?.Object;
-                case ModelValueType.Collection:             
+                case ModelValueType.Collection:
                     if (desiredType.IsArray)
                     {
                         Type elementType = desiredType.GetElementType();
