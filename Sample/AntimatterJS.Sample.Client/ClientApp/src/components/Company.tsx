@@ -132,13 +132,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     private _vsp: VirtualizingStackPanel | null = null;
     private _scroller: Panel | null = null;
     private _scrollOrigin: Point = new Point();
+    private _wasHscrolled: boolean = false;
 
     constructor(props)
     {
         super(props);
         this.LoadPDFAsync();
 
-        this._colors = new Array(10);
+        this._colors = new Array(1000);
         for (let i = 0; i < this._colors.length; i++)
         {
             var color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
@@ -221,21 +222,23 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                             <VirtualizingStackPanel
                                 ref={r => this._vsp = r}
                                 HorizontalAlignment={HorizontalAlignment.Center}
-                                OnManipulationStarted={(e) =>
+                                OnManipulationStarted={((e) =>
                                 {
-                                    var container = this._vsp;
+                                    var vsp = this._vsp?.Container;
                                     var scroller = this._scroller?.Container;
-                                    if (!container || !scroller)
+                                    if (!vsp || !scroller)
                                         return;
 
                                     this._tr.CenterX = e.CenterX;
                                     this._tr.CenterY = e.CenterY;
                                     this._scrollOrigin = {
-                                        X: scroller.scrollLeft,
+                                        X: vsp.getBoundingClientRect().x - (vsp.parentElement?.getBoundingClientRect()?.x || 0),
                                         Y: scroller.scrollTop,
                                     };
-                                }}
-                                OnManipulationDelta={(e) =>
+
+                                    console.log(`Transform: X: Initial Scroll ${this._scrollOrigin.X}`);
+                                }).bind(this)}
+                                OnManipulationDelta={((e) =>
                                 {
                                     //if (e.CumulativeScale !== 1)
                                     {
@@ -246,27 +249,26 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                                         console.log(`Transform: X: ${this._tr.AbsoluteX}, Scale: ${this._tr.AbsoluteScale}`);
                                     }
-                                }}
-                                OnManipulationCompleted={(e) =>
+                                }).bind(this)}
+                                OnManipulationCompleted={((e) =>
                                 {
-                                    var container = this._vsp;
+                                    var vsp = this._vsp;
                                     var scroller = this._scroller?.Container;
-                                    if (!container || !scroller)
+                                    if (!vsp || !scroller)
                                         return;
 
                                     var newFinalScale = this.GetValue("docScale") * this._tr?.AbsoluteScale || 1;
-                                    var thisManipulationCumScale = this._tr?.AbsoluteScale || 1;
                                     this.SetValue("docScale", newFinalScale);
 
                                     var ds = {
-                                        X: this._scrollOrigin.X * 1 - ((this._tr?.AbsoluteX || 0) / 1),
+                                        X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
+                                            (vsp?.Container?.getBoundingClientRect().x || 0),
                                         Y: this._scrollOrigin.Y * 1 - ((this._tr?.AbsoluteY || 0) / 1)
                                     }
 
-                                    container.SetDesiredScroll(ds);
-                                    console.log(`Setting desired scroll X: ${ds.X}`);
+                                    vsp.SetDesiredScroll(ds);
                                     this._tr.Reset();                                    
-                                }}
+                                }).bind(this)}
                                 Transform={this._tr}
                                 VerticalAlignment={VerticalAlignment.Top}                                
                                 Scale={new Binding("DocScale")}
