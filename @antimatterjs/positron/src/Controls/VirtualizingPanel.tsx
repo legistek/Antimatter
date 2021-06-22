@@ -1,19 +1,19 @@
-import { Binding, Utilities } from '@antimatterjs/react';
 import * as React from 'react';
-import { HorizontalAlignment, VerticalAlignment } from '../Enums';
+import { Binding, Utilities } from '@antimatterjs/react';
 import { Point, Span } from '../Foundation';
-import { MultitouchTransform } from '../Media/MultitouchTransform';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
-import { StackPanel } from './StackPanel';
+import { FrameworkElement } from '../FrameworkElement';
 
 export interface IVirtualizingPanelProps extends IPanelProps
 {
-    Scale?: number|Binding,
+    Scale?: number | Binding,
+    OverscanHeight?: number,
 }
 
 export interface IVirtualizingPanelState extends IPanelState
 {
     Scale?: number
+    OverscanHeight?: number,
 }
 
 interface IObserverCollection
@@ -37,41 +37,45 @@ export abstract class VirtualizingPanel<
     S extends IVirtualizingPanelState>
     extends PanelBase<P, S>
 {
-    private _spacerBefore: HTMLElement | null = null;
-    private _spacerAfter: HTMLElement | null = null;
-    //private _itemsBefore: number = 0;
-    //private _heightBefore: number = 0;
-    //private _lastRenderedItemCount: number = 0;
-    //private _visibleItemCapacity: number = 0;
-    private _hasComputed: boolean = false;
-    private _observers?: IObserverCollection;
-    private _renderWindowInfo: RenderWindowInfo = new RenderWindowInfo();
-    private _scroller: HTMLElement | null = null;
-    private _needsWidthCalc: boolean = false;
-    private _maxWidth: number = 0;
-    private _desiredScroll?: Point;
-
-    constructor(props)
-    {
-        super(props);
-    }
-
-    /** Returns the multiple of the visible height that should be
-     * rendered before and after the visible height to promote smoother scrolling. 
-     **/
-    protected /* virtual */ GetOverscanHeight() : number
-    {
-        this.componentDidUpdate
-        return 1;
-    }
-
+    /**
+     * Sets the desired scroll position for the VirtualizingPanel. 
+     * @param pt A Point with the x and y scroll coordinates. The 
+     * actual scroll position does not change immediately but rather
+     * is updated once the component re-renders. This can be called
+     * at the conclusion of a manipulation gesture, for example, to
+     * set the scroll position to match the transform.
+     */
     public SetDesiredScroll(pt: Point)
     {
         this._desiredScroll = pt;
-        //this.InvalidateRender();
+        this.InvalidateVirtualization();
+        this.InvalidateRender();
     }
 
+    /**
+     * Returns a Span (start and end y-coordinate boundaries) for the item
+     * by its index. Sub-classes must implement this item according to their 
+     * specific needs.
+     * @param itemIndex The 0-based index of the item.
+     */
     protected abstract GetItemExpanseBounds(itemIndex: number): Span;
+
+    /**
+     * Invoked when a new set of children have been realized (i.e. visualized
+     * and are no longer virtual). Sub-classes can override this function to
+     * do things like cache actual item heights for on-the-fly virtualization.
+     * @param startIndex The starting 0-based index that has been realized.
+     * @param endIndex The ending 0-based index that has been realized.
+     * @param children An array of realized children. These will be DOM 
+     * references to the item container for each item.
+     */
+    protected /* virtual */ OnChildrenRealized(
+        startIndex: number,
+        endIndex: number,
+        children: FrameworkElement[])
+    {
+        //console.log(`${children.length} children realized`);
+    }
 
     /* override */ renderElement(): JSX.Element | null
     {
@@ -82,10 +86,14 @@ export abstract class VirtualizingPanel<
         if (!items || items.length === 0)
             return null;
 
-        const widthPercent = this.state.Scale ? (100 / (this.state.Scale as number || 1)) : 100;
+        // We need the scaled div to remain the same pixel width
+        // for horizontal scrolling to work properly if that's
+        // desired.
+        const widthPercent = this.state.Scale
+            ? (100 / (this.state.Scale as number || 1))
+            : 100;
 
         return (
-
             <div style={
                 {
                     transform: this.state.Scale ? `scale(${this.state.Scale})` : undefined,
@@ -106,15 +114,14 @@ export abstract class VirtualizingPanel<
                         height: (this._renderWindowInfo.LastItemBounds.End - this._renderWindowInfo.EndItemBounds.End)
                     }} />
             </div>
-
         );
     }
-
-    private GetItemExpanseBoundsPrivate(itemIndex: number): Span
-    {
-        return this.GetItemExpanseBounds(itemIndex);        
-    }
-
+    
+    // Recalculates the container dimensions - width is based on the maximum 
+    // width of any item previously rendered and height is based on the 
+    // spans of the items. This must be done every time the component updates 
+    // because we are overriding React's virtual DOM in this narrow instance, 
+    // otherwise we'd have to do two renders every time new items get realized.
     /* override */ componentDidUpdate(prevProps)
     {
         if (!this.Container || !this._scroller)
@@ -141,97 +148,21 @@ export abstract class VirtualizingPanel<
         {
             this._scroller.scrollLeft = hscroll;
         }
-    }
 
-    private ComputeRenderWindowInfo (
-        windowTop: number,
-        windowHeight: number) : void
-    {
-        let c = this.ItemCount;
-
-        windowTop /= (this.state.Scale as number || 1);
-        windowHeight /= (this.state.Scale as number || 1);
-
-        const windowBottom = windowTop + windowHeight * (1 + this.GetOverscanHeight());
-        windowTop = Math.max(0, windowTop - windowHeight * this.GetOverscanHeight());
-        
-        this._renderWindowInfo.StartIndex = Utilities.SortedBinarySearch(
-            ((index) =>
-            {
-                var itemPos = this.GetItemExpanseBoundsPrivate(index);
-                if (itemPos.Start > windowTop)
-                    return -1;  // too far; go lower
-                else if (itemPos.End < windowBottom)
-                    return +1;  // not far enough; go higher
-                else
-                    return 0;
-            }).bind(this),
-            c);
-
-        this._renderWindowInfo.StartItemBounds = this.GetItemExpanseBoundsPrivate(this._renderWindowInfo.StartIndex);
-        this._renderWindowInfo.EndIndex = this._renderWindowInfo.StartIndex;
-
-        let itemBounds: Span = { Start: 0, End: 0 };
-
-        while (c > this._renderWindowInfo.EndIndex + 1 &&
-            (itemBounds = this.GetItemExpanseBoundsPrivate(this._renderWindowInfo.EndIndex)).End < windowBottom)
-            this._renderWindowInfo.EndIndex++;
-
-        //this._renderWindowInfo.EndItemBounds = itemBounds;
-        //if (this._renderWindowInfo.EndIndex < c - 1)
-        //    this._renderWindowInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
-        //else
-        //    this._renderWindowInfo.LastItemBounds = itemBounds;
-
-       
-        this._renderWindowInfo.LastItemBounds = this.GetItemExpanseBoundsPrivate(c - 1);
-        if (this._renderWindowInfo.EndIndex + 1 === c)
-        {
-            // end index is the last item
-            this._renderWindowInfo.EndItemBounds = this._renderWindowInfo.LastItemBounds;
+        if (this._realizationGeneration !== this._lastRealizedGeneration)
+        {            
+            this._lastRealizedGeneration = this._realizationGeneration;
+            this.OnChildrenRealized(
+                this._renderWindowInfo.StartIndex,
+                this._renderWindowInfo.EndIndex,
+                this._realizedChildren);
         }
-        else
-        {
-            this._renderWindowInfo.EndItemBounds = itemBounds;
-        }
-
-        this._hasComputed = true;
-    }
-
-    private get ItemCount(): number
-    {
-        return this.state.ItemsParent?.state?.ItemsSource?.length || 0;
-    }
-
-    private RecomputeVisibleWindow()
-    {
-        if (!this.Container)
-            return;
-        this.ComputeRenderWindowInfo(
-            this.Container.scrollTop / (this.state.Scale as number || 1),
-            this.Container.clientHeight);
-        this._hasComputed;
-        this.InvalidateRender();
-    }
-
-    private FindScroller(): HTMLElement|null|undefined
-    {
-        var elem = this.Container;
-        while (elem && elem?.style.overflowY !== "auto")
-            elem = elem.parentElement;
-        return elem;
     }
 
     /* override */ componentDidMount()
     {
         if (!this._spacerBefore || !this._spacerAfter || !this.Container)
             return;
-
-        //this.RecomputeVisibleWindow();
-        //this.Container.onscroll = (ev) =>
-        //{
-        //    this.RecomputeVisibleWindow();
-        //};
 
         var root = this.FindScroller();
         if (!root)
@@ -282,8 +213,89 @@ export abstract class VirtualizingPanel<
             this._observers.after.disconnect();
             delete this._observers;
         }
+        super.componentWillUnmount?.call(this);
     }
 
+    private ComputeRenderWindowInfo (
+        windowTop: number,
+        windowHeight: number) : boolean
+    {
+        let needRender: boolean = false;
+
+        let c = this.ItemCount;
+
+        windowTop /= (this.state.Scale as number || 1);
+        windowHeight /= (this.state.Scale as number || 1);
+
+        let newInfo: RenderWindowInfo = new RenderWindowInfo();
+
+        const windowBottom = windowTop + windowHeight * (1 + (this.state.OverscanHeight as number || 1));
+        windowTop = Math.max(0, windowTop - windowHeight * (this.state.OverscanHeight as number || 1));
+        
+        newInfo.StartIndex = Utilities.SortedBinarySearch(
+            ((index) =>
+            {
+                var itemPos = this.GetItemExpanseBounds(index);
+                if (itemPos.Start > windowTop)
+                    return -1;  // too far; go lower
+                else if (itemPos.End < windowBottom)
+                    return +1;  // not far enough; go higher
+                else
+                    return 0;
+            }).bind(this),
+            c);
+
+        newInfo.StartItemBounds = this.GetItemExpanseBounds(newInfo.StartIndex);
+        newInfo.EndIndex = newInfo.StartIndex;
+
+        let itemBounds: Span = { Start: 0, End: 0 };
+
+        while (c > newInfo.EndIndex + 1 &&
+            (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End < windowBottom)
+            newInfo.EndIndex++;
+
+        console.log(`Recomputing render window: from {${this._renderWindowInfo.StartIndex}, ${this._renderWindowInfo.EndIndex}} to {${newInfo.StartIndex}, ${newInfo.EndIndex}}`);
+
+        if (newInfo.StartIndex < this._renderWindowInfo.StartIndex ||
+            newInfo.EndIndex > this._renderWindowInfo.EndIndex)
+        {
+            // Only need to actually re-render if the new view window
+            // contains items not already rendered
+            needRender = true;
+            newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
+            if (newInfo.EndIndex + 1 === c)
+            {
+                // end index is the last item
+                newInfo.EndItemBounds = newInfo.LastItemBounds;
+            }
+            else
+            {
+                newInfo.EndItemBounds = itemBounds;
+            }
+            this._renderWindowInfo = newInfo;
+        }
+        else
+        {
+            console.log("No need to change realization window");
+        }
+        
+        this._hasComputed = true;
+        return needRender;
+    }
+
+    private get ItemCount(): number
+    {
+        return this.state.ItemsParent?.state?.ItemsSource?.length || 0;
+    }
+
+    private FindScroller(): HTMLElement|null|undefined
+    {
+        var elem = this.Container;
+        while (elem && elem?.style.overflowY !== "auto")
+            elem = elem.parentElement;
+        return elem;
+    }
+    
     private IntersectionCallback(entries: IntersectionObserverEntry[]): void
     {
         if (!this._spacerBefore || !this._spacerAfter || !this.Container)
@@ -294,144 +306,61 @@ export abstract class VirtualizingPanel<
             if (!entry.isIntersecting)
                 continue;                       
 
-            //const spacerBeforeRect = this._spacerBefore.getBoundingClientRect();
-            //const spacerAfterRect = this._spacerAfter.getBoundingClientRect();
-            //const spacerSeparation = spacerAfterRect.top - spacerBeforeRect.bottom;
-            //const containerSize = entry.rootBounds?.height || 0;
-
             if (entry.target === this._spacerBefore || 
                  (entry.target === this._spacerAfter && this._spacerAfter.offsetHeight > 0))
             {
-                this.ComputeRenderWindowInfo(
-                    this._scroller?.scrollTop || 0,
-                    this.state.ItemsParent?.Container?.clientHeight || 0);
-                this.InvalidateRender();
+                this.InvalidateVirtualization();                
                 break;
             }
-
-            ////window.clearTimeout(scroller['isScrolling']);
-            ////scroller['isScrolling'] = setTimeout(() => {                
-            //if (entry.target === this._spacerBefore)
-            //{
-            //    this.OnBeforeSpacerVisible(
-            //        entry.intersectionRect.top - entry.boundingClientRect.top,
-            //        spacerSeparation,
-            //        containerSize);
-            //}
-            //else if (entry.target === this._spacerAfter &&
-            //        this._spacerAfter.offsetHeight > 0)
-            //{
-            //    // When we first start up, both the "before" and "after" spacers will be visible, but it's only relevant to raise a
-            //    // single event to load the initial data. To avoid raising two events, skip the one for the "after" spacer if we know
-            //    // it's meaningless to talk about any overlap into it.
-            //    this.OnAfterSpacerVisible(entry.boundingClientRect.bottom - entry.intersectionRect.bottom, spacerSeparation, containerSize);
-            //}
-            ////}, 100);
         }
     }
 
+    private InvalidateVirtualization()
+    {
+        if (this.ComputeRenderWindowInfo(
+            this._scroller?.scrollTop || 0,
+            this.state.ItemsParent?.Container?.clientHeight || 0))
+        {
+            this.InvalidateRender();
+        }
+    }
     
     private RenderVisibleItems(items: any[]): JSX.Element[]|null
     {
         if (!this._hasComputed)
             return null;        
-        //this._lastRenderedItemCount = 0;
 
         var visibleItems: JSX.Element[] = new Array(
             this._renderWindowInfo.EndIndex - this._renderWindowInfo.StartIndex + 1);
 
-        // Visible items           
+        this._realizedChildren = [];
+
         for (let i = this._renderWindowInfo.StartIndex,
             j = 0; i <= this._renderWindowInfo.EndIndex;
             i++, j++)
         {
             var item = items[i];
-
-            var renderedItem = this.state.ItemsParent?.OnRenderItem(item) || (<></>);
-            //this._lastRenderedItemCount++;
+            var renderedItem = this.state.ItemsParent?.OnRenderItem(item,
+                {
+                    ref: (r) => r ? this._realizedChildren?.push(r) : {}
+                }) || (<></>);
             visibleItems[j] = renderedItem;                        
         }
+
+        this._realizationGeneration++;
 
         return visibleItems;
     }
 
-    //private UpdateItemDistribution(itemsBefore: number, visibleItemCapacity: number): void
-    //{
-    //    if (itemsBefore != this._itemsBefore || visibleItemCapacity != this._visibleItemCapacity)
-    //    {
-    //        this._itemsBefore = itemsBefore;
-    //        this._visibleItemCapacity = visibleItemCapacity;
-    //        this._hasComputed = true;
-    //        this.InvalidateRender();
-    //    }
-    //}
-
-    //private OnBeforeSpacerVisible(spacerSize: number, spacerSeparation: number, containerSize: number): void
-    //{
-    //    var dist = this.CalcualteItemDistribution(spacerSize, spacerSeparation, containerSize);
-
-    //    // Since we know the before spacer is now visible, we absolutely have to slide the window up
-    //    // by at least one element. If we're not doing that, the previous item size info we had must
-    //    // have been wrong, so just move along by one in that case to trigger an update and apply the
-    //    // new size info.
-    //    if (dist.ItemsInSpacer === this._itemsBefore && dist.ItemsInSpacer > 0)
-    //    {
-    //        dist.ItemsInSpacer--;
-    //    }
-
-    //    this.UpdateItemDistribution(dist.ItemsInSpacer, dist.VisibleItemCapacity);
-    //}
-
-    //private OnAfterSpacerVisible(spacerSize: number, spacerSeparation: number, containerSize: number): void
-    //{
-    //    var dist = this.CalcualteItemDistribution(spacerSize, spacerSeparation, containerSize);
-
-    //    var itemsBefore = Math.max(0, this.ItemCount - dist.ItemsInSpacer - dist.VisibleItemCapacity);
-
-    //    // Since we know the after spacer is now visible, we absolutely have to slide the window down
-    //    // by at least one element. If we're not doing that, the previous item size info we had must
-    //    // have been wrong, so just move along by one in that case to trigger an update and apply the
-    //    // new size info.
-    //    if (itemsBefore == this._itemsBefore && itemsBefore < this.ItemCount - dist.VisibleItemCapacity)
-    //    {
-    //        itemsBefore++;
-    //    }
-
-    //    this.UpdateItemDistribution(itemsBefore, dist.VisibleItemCapacity);
-    //}
-
-    //private CalcualteItemDistribution(
-    //    spacerSize : number,
-    //    spacerSeparation:number,
-    //    containerSize : number): { ItemsInSpacer: number, VisibleItemCapacity: number }
-    //{
-    //    if (this._lastRenderedItemCount > 0)
-    //    {
-    //        this._itemSize = spacerSeparation / this._lastRenderedItemCount;
-    //    }
-
-    //    if (_itemSize <= 0)
-    //    {
-    //        // At this point, something unusual has occurred, likely due to misuse of this component.
-    //        // Reset the calculated item size to the user-provided item size.
-    //        _itemSize = this.GetItemSize();
-    //    }
-
-    //    return {
-    //        ItemsInSpacer: Math.max(0, Math.floor(spacerSize / this._itemSize) - this.GetOverscanHeight()),
-    //        VisibleItemCapacity: Math.ceil(containerSize / this._itemSize) + 2 * this.GetOverscanHeight()
-    //    };
-    //}
-}
-
-export class ScrollInfo
-{
-    public ScrollTop: number = 0;
-    public ClientHeight: number = 0;
-
-    public static Equals(s1: ScrollInfo, s2: ScrollInfo)
-    {
-        return s1.ScrollTop === s2.ScrollTop &&
-            s1.ClientHeight === s2.ClientHeight;
-    }
+    private _spacerBefore: HTMLElement | null = null;
+    private _spacerAfter: HTMLElement | null = null;
+    private _hasComputed: boolean = false;
+    private _observers?: IObserverCollection;
+    private _renderWindowInfo: RenderWindowInfo = new RenderWindowInfo();
+    private _scroller: HTMLElement | null = null;
+    private _maxWidth: number = 0;
+    private _desiredScroll?: Point;
+    private _realizedChildren: FrameworkElement[] = [];
+    private _realizationGeneration: number = 0;
+    private _lastRealizedGeneration: number = 0;
 }

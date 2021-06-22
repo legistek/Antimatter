@@ -236,7 +236,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                         Y: scroller.scrollTop,
                                     };
 
-                                    console.log(`Transform: X: Initial Scroll ${this._scrollOrigin.X}`);
+                                    //console.log(`Transform: X: Initial Scroll ${this._scrollOrigin.X}`);
                                 }).bind(this)}
                                 OnManipulationDelta={((e) =>
                                 {
@@ -247,7 +247,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                         this._tr.ScaleX = e.CumulativeScale;
                                         this._tr.ScaleY = e.CumulativeScale;
 
-                                        console.log(`Transform: X: ${this._tr.AbsoluteX}, Scale: ${this._tr.AbsoluteScale}`);
+                                        //console.log(`Transform: X: ${this._tr.AbsoluteX}, Scale: ${this._tr.AbsoluteScale}`);
                                     }
                                 }).bind(this)}
                                 OnManipulationCompleted={((e) =>

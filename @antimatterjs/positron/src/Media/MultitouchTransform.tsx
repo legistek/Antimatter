@@ -124,7 +124,7 @@ export class MultitouchTransform
         this._pendingTranslation.TranslateX = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get TranslateY()
@@ -136,7 +136,7 @@ export class MultitouchTransform
         this._pendingTranslation.TranslateY = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get Rotation()
@@ -148,7 +148,7 @@ export class MultitouchTransform
         this._pendingRotation.Angle = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get ScaleX()
@@ -160,7 +160,7 @@ export class MultitouchTransform
         this._pendingScale.ScaleX = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get ScaleY()
@@ -172,7 +172,7 @@ export class MultitouchTransform
         this._pendingScale.ScaleY = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get CenterX()
@@ -184,7 +184,7 @@ export class MultitouchTransform
         this._centerX = value;        
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get CenterY()
@@ -196,7 +196,7 @@ export class MultitouchTransform
         this._centerY = value;
         this._isCSSDirty = true;
         this._isMatrixDirty = true;
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public get AbsoluteX()
@@ -230,7 +230,7 @@ export class MultitouchTransform
         this._pendingScale = new ScaleTransform();
         this._pendingRotation = new RotateTransform();
         this._pendingTranslation = new TranslateTransform();
-        this._target?.InvalidateRender();
+        this.UpdateTarget(true);
     }
 
     public CommitPendingTransformations()
@@ -242,12 +242,20 @@ export class MultitouchTransform
         this._pendingScale = new ScaleTransform();        
         this._pendingRotation = new RotateTransform();
         this._pendingTranslation = new TranslateTransform();
-        this._target?.InvalidateRender();
+        this.UpdateTarget();
     }
 
     public AssignTarget(target: FrameworkElement)
     {
         this._target = target;
-        target.InvalidateRender();
+        this.UpdateTarget();
+    }
+
+    private UpdateTarget(forceInvalidateRender: boolean = false): void
+    {
+        //if (this._target?.Container)
+        //    this._target.Container.style.transform = this.ToCSS();
+        //if (forceInvalidateRender)
+            this._target?.InvalidateRender();
     }
 }
