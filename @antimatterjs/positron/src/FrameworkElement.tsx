@@ -206,7 +206,7 @@ export class FrameworkElement<
             styles.touchAction = "pan-y";
         if (this.state.Transform)
         {
-            styles.transform = this.state.Transform.ToCSS();
+            //styles.transform = this.state.Transform.ToCSS();
             styles.transformOrigin = "0px 0px";
         }
         return styles;
