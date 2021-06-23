@@ -134,9 +134,11 @@ export abstract class VirtualizingPanel<
 
         if (this._desiredScroll)
         {
+            console.log(`Setting scroll to ${this._desiredScroll.X}, ${this._desiredScroll.Y}`);
             this._scroller.scrollLeft = this._desiredScroll.X;
             this._scroller.scrollTop = this._desiredScroll.Y;
             this._desiredScroll = undefined;
+            console.log(`Actual scroll now ${this._scroller.scrollLeft}, ${this._scroller.scrollTop}`);
         }
         else
         {

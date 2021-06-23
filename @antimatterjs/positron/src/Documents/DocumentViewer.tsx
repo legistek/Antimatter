@@ -101,7 +101,7 @@ export class DocumentViewerBase<
                         var ds = {
                             X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
                                 (vsp?.Container?.getBoundingClientRect().x || 0),
-                            Y: this._scrollOrigin.Y * 1 - ((this._tr?.AbsoluteY || 0) / 1)
+                            Y: this._scrollOrigin.Y - ((this._tr?.AbsoluteY || 0) / 1)
                         }
 
                         vsp.SetDesiredScroll(ds);
@@ -131,9 +131,9 @@ export class DocumentViewerBase<
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
             ItemContainerStyle: new Style<IDocumentPagePresenterProps>(
                 {
-                    Margin: "10px",
+                    Margin: "0px",
                     BorderBrush: "#C0C0C0",
-                    BorderThickness: "1px",
+                    //BorderThickness: "1px",
                     BoxShadow: DefaultEffects.elevation8,
                     HorizontalAlignment: HorizontalAlignment.Center
                 }),
