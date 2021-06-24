@@ -50,6 +50,13 @@ export class ItemsControl<
             ? (item as ModelObjectReference).Handle.toString()
             : item?.toString();
 
+        const hobo1 = this.GetContainerForItemOverride();
+        const hobo2 = templ(item);
+        const elem = React.createElement(
+            hobo1,
+            itemProps,
+            hobo2)
+
         return React.createElement(
             this.GetContainerForItemOverride(),
             itemProps,
