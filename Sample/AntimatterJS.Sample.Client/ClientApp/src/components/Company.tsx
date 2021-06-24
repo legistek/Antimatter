@@ -6,7 +6,6 @@ import * as Model from '../model/Model';
 import
 {
     ComboBox_Fluent,
-    ComboBoxOption_Fluent,
     ComboBox_NotFluent,
 
     ListBox, SelectionMode,
@@ -132,36 +131,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    private hoboConverter: ((item: Model.Employee) => ComboBoxOption_Fluent) = (item: Model.Employee) => {
-        const cbo: ComboBoxOption_Fluent = { key: item.FullName ?? ``, text: item.FullName ?? ``};
-        return cbo;
-    }
-
-    private hoboOptions: ComboBoxOption_Fluent[] = [
-        { key: 'A', text: 'Option A' },
-        { key: 'B', text: 'Option B' },
-        { key: 'C', text: 'Option C', infotip: 'hobo' },
-        { key: 'D', text: 'Option D' },
-        { key: 'E', text: 'Option E' },
-        { key: 'F', text: 'Option F', disabled: true },
-        { key: 'G', text: 'Option G' },
-        { key: 'H', text: 'Option H' },
-        { key: 'I', text: 'Option I' },
-        { key: 'J', text: 'Option J' },
-    ];
-
     private get comboBoxElem_Fluent(): JSX.Element {
         const elem1: JSX.Element = (
             <ComboBox_Fluent
-                ItemsSource={this.hoboOptions}
-                Multiselect={false}
-            />
-        );
-        const elem2: JSX.Element = (
-            <ComboBox_Fluent
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-                Converter={this.hoboConverter}
-                Multiselect={true}
             />
         );
 
@@ -196,7 +169,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
                     {this.comboBoxElem_Fluent}
-                    {this.comboBoxElem_NotFluent}
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 

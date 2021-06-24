@@ -1,16 +1,15 @@
 ﻿import * as React from 'react';
-import { Binding } from "@antimatterjs/react";
+import { Binding, ModelObjectReference } from "@antimatterjs/react";
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
 import {
     IRenderFunction,
-    IComboBoxStyles,
     IStyle,
 
-    ComboBox as FluentComboBox,
-    IComboBox as FluentIComboBox,
-    IComboBoxOption as FluentIComboBoxOption
+    Dropdown,
+    IDropdownOption,
+    ISelectableOption
 
 } from '@fluentui/react';
 
@@ -20,21 +19,23 @@ import { ISelectableItemControlProps, SelectableItemControl } from './Primitives
 import { SelectionMode } from '../Enums';
 
 
-export interface IComboBoxProps extends IItemsControlProps {
+export interface IComboBoxProps extends ISelectorProps {
+//export interface IComboBoxProps extends IItemsControlProps {
 //export interface IComboBoxProps extends IControlProps {
-    //ItemsSource?: any[] | Binding,
-
-    Converter?: ((item: any) => ComboBoxOption_Fluent),
-    Multiselect?: boolean | Binding
+    //Multiselect?: boolean | Binding
 }
-export interface IComboBoxState extends IItemsControlState {
+export interface IComboBoxState extends ISelectorState {
+//export interface IComboBoxState extends IItemsControlState {
 //export interface IComboBoxState extends IControlState {
-    //ItemsSource?: any[],
-
-    Multiselect?: boolean
+    //Multiselect?: boolean
 }
 
-class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = {}> extends ItemsControl<P, S>
+class EmptyISelectorState implements ISelectorState {
+    SelectedItems = [];
+}
+
+class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState> extends Selector<P, S>
+//class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = {}> extends ItemsControl<P, S>
 //class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = {}> extends Control<P, S>
 {
 
@@ -44,65 +45,70 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = {}>
         }
     };
 
+    public static ItemTemplate(item: any): JSX.Element {
+        const hoboDiv: JSX.Element = <div>HOBO!</div>
+
+        return hoboDiv;
+    }
+
+    private onRenderOption: IRenderFunction<IDropdownOption> = (item?: IDropdownOption) => {
+        //return this.OnRenderItem(item?.data);
+        const elem: JSX.Element | null = this.OnRenderItem(item?.data);
+        const hoboElem: JSX.Element = <div>Hobo</div>
+
+        return elem;
+    };
+
     public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
         {
-            Template: new ControlTemplate((templatedParent: ComboBoxBase) => templatedParent.controlTemplate)
+            Template: new ControlTemplate((templatedParent: ComboBoxBase) => templatedParent.controlTemplate),
+            ItemTemplate: new DataTemplate((item: any) => ComboBoxBase.ItemTemplate(item))
         }
     );
 
-    private options: ComboBoxOption_Fluent[] = [];
+    private options: IDropdownOption[] = [];
 
     private populateOptions(): void {
         this.options = [];
-        for (const item of (this.state.ItemsSource ?? [])) {
-            const o: ComboBoxOption_Fluent = this.props.Converter?.call(this, item) ?? (item as ComboBoxOption_Fluent);
-            this.options.push(o);
+        if (!this.state.ItemsSource)
+            return;
+        for (let item of this.state.ItemsSource ?? []) {
+            const ref: ModelObjectReference = item as ModelObjectReference;
+            const option: IDropdownOption = {
+                key: ref.Key,
+                text: ref.Key,
+                data: ref
+            };
+            this.options.push(option);
         }
-
-        //this.options = exampleOptions;
     }
 
     private get controlTemplate(): JSX.Element {
         this.populateOptions();
-        const inputStyle: IStyle = {
-            cursor: 'pointer',
-            color: 'transparent !important',    //!important b/c a "rgb(16, 16, 16)" from somewhere overrides it o/w
-            textShadow: '0 0 0 #000000'         //This + transparent color => hide cursor while keeping text visible
-        };
-        //const styles: IComboBoxStyles = {
-        const styles = {
-            input: inputStyle
-        };
+        let selectedKey: string | number | string[] | number[] | null = null;
+        if (this.state.SelectedItem) {
+            const ref: ModelObjectReference = this.state.SelectedItem as ModelObjectReference;
+            selectedKey = ref.Key;
+        }
+        //Multiselect goes here
         return (
-            <FluentComboBox
-                styles={styles}
-                allowFreeform={false}
+            <Dropdown
                 options={this.options}
+                selectedKey={selectedKey}
                 onRenderOption={this.onRenderOption}
                 onChange={this.onChange}
-                useComboBoxAsMenuWidth={true}
-                multiSelect={this.state.Multiselect}
+                multiSelect={this.props.SelectionMode == SelectionMode.Multiple}
             />
         );
     }
 
-    private onRenderOption: IRenderFunction<ComboBoxOption_Fluent> = (item?: ComboBoxOption_Fluent) => {
-        return <div>{item?.text} {item?.infotip}</div>;
-    };
-
-    private onChange = (event: React.FormEvent<FluentIComboBox>, option?: FluentIComboBoxOption, index?: number, value?: string) =>
+    private onChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption, index?: number) =>
     {
-        console.log(`change to ${value}`);
+        if (index == null)
+            return;
+        console.log(`change to ${index}`);
+        this.SetSingleItemSelection(index);
     }
 }
 
 export class ComboBox_Fluent extends ComboBoxBase<IComboBoxProps, IComboBoxState> { }
-
-
-export interface ComboBoxOption_Fluent extends FluentIComboBoxOption {
-    infotip?: string;
-}
-
-//export interface IComboBoxConverter<P> {
-//    (props?: P, converter?: (props?: P) => JSX.Element | null): JSX.Element | null;
-//}

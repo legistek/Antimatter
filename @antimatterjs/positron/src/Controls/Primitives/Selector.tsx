@@ -180,7 +180,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             if (isCurrentlySelected && fullClick || !isCurrentlySelected && !fullClick)
                 this.SetSingleItemSelection(itemIndex);
         }
-        
+
         // Forces all the instantiated children to re-render with their new selection state
         this.ItemsPanelInstance?.InvalidateRender();
     }
@@ -189,7 +189,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
     {
         if (select)
         {
-            this.state.SelectedItems.push(item);            
+            this.state.SelectedItems.push(item);
         }
         else
         {
@@ -211,7 +211,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             return;
         if (this.SelectionMode !== SelectionMode.Single)
         {
-            this.SetValue(nameof(this.state.SelectedItems), [item]);                        
+            this.SetValue(nameof(this.state.SelectedItems), [item]);
         }
         else
         {
@@ -220,7 +220,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this.OnSelectionChanged();
         this._lastClickedOrSelected = index;
     }
-    
+
     /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
         if (prop === nameof(this.state.SelectedItem))
