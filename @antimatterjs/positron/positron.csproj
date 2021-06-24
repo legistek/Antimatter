@@ -5,13 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="src\Controls\ComboBox_Fluent.tsx" />
-    <None Remove="src\Controls\ComboBox_NotFluent.tsx" />
+    <None Remove="src\Controls\ComboBox.tsx" />
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="src\Controls\ComboBox_Fluent.tsx" />
-    <TypeScriptCompile Include="src\Controls\ComboBox_NotFluent.tsx" />
+    <TypeScriptCompile Include="src\Controls\ComboBox.tsx" />
   </ItemGroup>
 
 </Project>

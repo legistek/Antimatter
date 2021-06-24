@@ -6,12 +6,15 @@ export class Company {
 	public Name?: string;
 	public Employees?: Employee[];
 	public SelectedEmployee?: Employee;
+	public SelectedEmployees?: Employee[];
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
 	public SomeEmployees?: Employee[];
 	public SomeEmployeeNames?: string[];
 	public SelectedEmployeeName?: string;
+	public SelectedEmployeesDisplayText?: string;
+	public SelectedEmployeeChangedCommand?: ICommand;
 }
 
 export class Employee {

@@ -5,8 +5,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} 
 import * as Model from '../model/Model';
 import
 {
-    ComboBox_Fluent,
-    ComboBox_NotFluent,
+    ComboBox,
 
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
@@ -131,19 +130,38 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    b
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
-    {
-        const elem: JSX.Element = <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />;
-        return elem;
-    });
+        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+    );
+    _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
+        <TextBlock Text={item} />
+    );
 
-    private get comboBoxElem_Fluent(): JSX.Element {
+    private get comboBoxElem(): JSX.Element
+    {
         const elem: JSX.Element = (
-            <ComboBox_Fluent
+            <ComboBox
+                //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
+                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
+                //ItemTemplate={this._comboBoxRedundantStringTemplate}
+
+
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
                 ItemTemplate={this._comboBoxOptionTemplate}
+
+                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+
+
+                SelectionMode={SelectionMode.Multiple}
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
+
+                //IsEnabled={false}
+
+                Label="Employee Selector Thingy"
+                //Placeholder="if you can see this, nothing is selected"
             />
         );
         return elem;
@@ -159,7 +177,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
-                    {this.comboBoxElem_Fluent}
+                    {this.comboBoxElem}
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 

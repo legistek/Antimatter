@@ -31,13 +31,9 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
-        public IEnumerable<Employee> SomeEmployees
-        {
-            get
-            {
-                return this.Employees.Take<Employee>(10);
-            }
-        }
+        //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
+
+        public IEnumerable<Employee> SomeEmployees => Employees.Take(10);
 
         public IEnumerable<string> SomeEmployeeNames
         {
@@ -65,24 +61,40 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-        #region Employee[] SelectedEmployees property
-        private Employee[] _SelectedEmployees;
-        public Employee[] SelectedEmployees
+        //#region Employee[] SelectedEmployees property
+        //private Employee[] _SelectedEmployees = new Employee[] { };
+        //public Employee[] SelectedEmployees
+        //{
+        //    get
+        //    {
+        //        return _SelectedEmployees;
+        //    }
+        //    set
+        //    {
+        //        if (_SelectedEmployees != value)
+        //        {
+        //            _SelectedEmployees = value;
+        //            OnPropertyChanged();
+        //            OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+        //        }
+        //    }
+        //}
+        //#endregion
+
+        public ObservableCollection<Employee> SelectedEmployees { get; } =
+            new ObservableCollection<Employee>();
+
+        public string SelectedEmployeesDisplayText
         {
             get
             {
-                return _SelectedEmployees;
-            }
-            set
-            {
-                if (_SelectedEmployees != value)
-                {
-                    _SelectedEmployees = value;
-                    OnPropertyChanged();
-                }
+                if (SelectedEmployees == null)
+                    return String.Empty;
+
+                string joined = string.Join(",", SelectedEmployees.Select(e => e.LastName));
+                return joined;
             }
         }
-        #endregion
 
 
         #region bool IsAllSelected property
@@ -172,7 +184,9 @@ namespace AntimatterJS.Sample.AppModel
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
                     {
-                        this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
+                        var newEmployee = new Employee(this, "New", "Employee", 20);
+                        this.Employees.Insert(0, newEmployee);
+                        //SomeEmployees.Insert(0, newEmployee);
                     })
                 {
                     Name = "New Employee",
@@ -220,7 +234,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectedEmployeeChangedCommand ?? (_SelectedEmployeeChangedCommand = new Command(
                     (arg) =>
                     {
-                        ;
+                        OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
                     })
                 {
                 });

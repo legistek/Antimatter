@@ -1,4 +1,4 @@
-import { Binding, ModelObjectReference } from '@antimatterjs/react';
+import { Antimatter, Binding, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 import { IItemsControlState, IItemsControlProps, ItemsControl } from '../ItemsControl';
 import { SelectionMode } from '../../Enums';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../../FrameworkElement';
@@ -12,6 +12,7 @@ export interface ISelectorProps extends IItemsControlProps
     IsSelectAll?: boolean | Binding,
     CanSelect?: boolean | Binding,
     SelectionMode?: SelectionMode,
+    SelectionChangedCommand?: ModelObjectReference | Binding
 }
 
 export interface ISelectorState extends IItemsControlState
@@ -20,8 +21,12 @@ export interface ISelectorState extends IItemsControlState
     SelectedIndex?: number,
     SelectedItems: any[],
     IsSelectAll?: boolean,
-    CanSelect?: boolean
+    CanSelect?: boolean,
+    SelectionChangedCommand?: ModelObjectReference
 }
+
+//Default state param for use by "base" classes that Selector
+export class EmptyISelectorState implements ISelectorState { SelectedItems = []; }
 
 export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItems: [] },
     S extends ISelectorState = { ItemsSource: [], SelectedItems: [] }>
@@ -54,6 +59,8 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             return true;
         else if (this.SelectionMode !== SelectionMode.Single)
         {
+            if (this.state.SelectedItems == null)
+                return false;
             return (this.state.SelectedItems.length > 0 && this.state.SelectedItems.includes(item)) === true;
         }
         else
@@ -89,6 +96,11 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
     /* protected virtual */ OnSelectionChanged()
     {
+        this.InvalidateRender();
+
+        const ref: ModelObjectReference = this.state.SelectionChangedCommand as ModelObjectReference;
+        if (ref)
+            Antimatter.Server.ExecuteICommand(ref, ModelValue.Get(null));
     }
 
     /* protected override */ GetContainerForItemOverride(): typeof FrameworkElement
@@ -221,15 +233,25 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this._lastClickedOrSelected = index;
     }
 
+    //(Multi-selection only) toggles selected state of an item by index
+    /* protected */ ToggleMultiItemSelection(index: number)
+    {
+        var item: any = this.state.ItemsSource ? this.state.ItemsSource[index] : null;
+        if (!item || (this.SelectionMode == SelectionMode.Single))
+            return;
+        const items: any[] = this.state.SelectedItems ?? [];
+        const currentIndex: number = items.indexOf(item);
+        if (currentIndex == -1)
+            items.push(item);
+        else
+            items.splice(currentIndex, 1);
+        this.SetValue(nameof(this.state.SelectedItems), items);
+        this.OnSelectionChanged();
+        this._lastClickedOrSelected = index;
+    }
+
     /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
-        if (prop === nameof(this.state.SelectedItem))
-        {
-            this.InvalidateRender();
-        }
-        else
-        {
-            super.OnPropertyChanged(prop, value, oldValue);
-        }
+        super.OnPropertyChanged(prop, value, oldValue);
     }
 }
