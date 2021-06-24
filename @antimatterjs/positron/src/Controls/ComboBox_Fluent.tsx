@@ -27,6 +27,8 @@ export interface IComboBoxProps extends ISelectorProps {
 //export interface IComboBoxProps extends IItemsControlProps {
 //export interface IComboBoxProps extends IControlProps {
     //Multiselect?: boolean | Binding
+
+    TitleTemplate?: DataTemplate
 }
 export interface IComboBoxState extends ISelectorState {
 //export interface IComboBoxState extends IItemsControlState {
@@ -39,7 +41,7 @@ class EmptyISelectorState implements ISelectorState {
 }
 
 interface IComboBoxPanelState extends IPanelState {
-    SelectedKey?: string;
+    SelectedKey?: number;
 }
 
 class ComboBoxPanel extends Panel<IPanelProps, IComboBoxPanelState>
@@ -50,39 +52,59 @@ class ComboBoxPanel extends Panel<IPanelProps, IComboBoxPanelState>
 
     /* override */ renderElement(): JSX.Element | null {
         this.PopulateOptions();
+
+        var key: number | null = null;
+        const selectedItem: ModelObjectReference = this.Parent?.state.SelectedItem as ModelObjectReference;
+        if (selectedItem?.IsModelObjectReference)
+            key = selectedItem?.Handle;
+
         return (
             <Dropdown
                 options={this._options}
-                selectedKey={this.state.SelectedKey}
+                selectedKey={key}
                 onRenderOption={this.onRenderOption}
+                onRenderTitle={this.onRenderTitle}
                 onChange={this.onChange}
-                multiSelect={this.Parent?.props.SelectionMode == SelectionMode.Multiple}
+                //multiSelect={this.Parent?.props.SelectionMode == SelectionMode.Multiple}
             />
         );
     }
 
+    //private onRenderTitle: IRenderFunction<IDropdownOption[]> = (items?: IDropdownOption[]) => {
+    private onRenderTitle = (items) => {
+        //if (this.Parent.props.TitleTemplate)
+        //    return <>{this.Parent.props.TitleTemplate.GetVisualTree()}</>;
+        //if (items && items?.length == 1)
+        //    return this.state.ItemsParent?.OnRenderItem(items[0].data);
+        if (items && items.length == 1)
+            return this.onRenderOption(items[0]);
+
+        return <>HOBO?</>;
+    }
+
     private onRenderOption: IRenderFunction<IDropdownOption> = (item?: IDropdownOption) => {
-        //return this.OnRenderItem(item?.data);
+        //return this.state.ItemsParent?.OnRenderItem(item?.data);
         //const elem: React.ReactElement = this.OnRenderItem(item?.data) ?? React.createElement('div');
         //const elem: React.ReactElement | null = this.OnRenderItem(item?.data);
         const elem: any = this.state.ItemsParent?.OnRenderItem(item?.data);
-
-        const hoboDiv: JSX.Element = ComboBoxBase.HoboDiv;
-
-        if (elem) {
-            const types: React.ReactElement = (elem as React.ReactElement)
-            const hobo: string = ReactDomServer.renderToString(elem) ?? '';
-            const whoknows: string = ReactDomServer.renderToString(hoboDiv) ?? '';
-
-            const yolo: JSX.Element = <div dangerouslySetInnerHTML={{ __html: hobo }}></div>;
-
-            const help: JSX.Element = (<>{elem}</>);
-
-            return help;
-        }
-
-
         return elem;
+
+        //const hoboDiv: JSX.Element = ComboBoxBase.HoboDiv;
+
+        //if (elem) {
+        //    const types: React.ReactElement = (elem as React.ReactElement)
+        //    const hobo: string = ReactDomServer.renderToString(elem) ?? '';
+        //    const whoknows: string = ReactDomServer.renderToString(hoboDiv) ?? '';
+
+        //    const yolo: JSX.Element = <div dangerouslySetInnerHTML={{ __html: hobo }}></div>;
+
+        //    const help: JSX.Element = (<>{elem}</>);
+
+        //    //return help;
+        //}
+
+
+        //return elem;
         //return ComboBoxBase.HoboDiv;
     };
 
@@ -102,24 +124,21 @@ class ComboBoxPanel extends Panel<IPanelProps, IComboBoxPanelState>
                 continue;
 
             const cmdProps: IDropdownOption = {
-                key: option.Handle.toString(),
+                key: option.Handle,
                 text: option.Handle.toString(),
                 data: option
             };
             this._options.push(cmdProps);
         }
-        this.UpdateSelection();
+        //this.UpdateSelection();
     }
 
-    //Update SelectedKey in component's state to force a rerender
     public UpdateSelection(): void
     {
         const selectedItem: ModelObjectReference = this.Parent?.state.SelectedItem as ModelObjectReference;
         if (!selectedItem?.IsModelObjectReference)
             return;
-        const key: string = selectedItem?.Handle.toString() ?? '';
-        if (key == this.state.SelectedKey)
-            return;
+        const key: number = selectedItem?.Handle;
         if (key != this.state.SelectedKey)
             this.setState({ SelectedKey: key });
     }
@@ -152,13 +171,13 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
         return ComboBoxBase.HoboDiv;
     }
 
-    private static HoboStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    private static HoboStyle: Style<ISelectableItemControlProps> = new Style<ISelectableItemControlProps>(
         {
-            Template: new ControlTemplate((templatedParent: ComboBoxBase<IComboBoxProps, IComboBoxState>) =>
-            {
-                return (
-                    <div>HOBO, BUT THIS TIME FROM ItemContainerStyle</div>
-                );
+            Template: new ControlTemplate((templatedParent: SelectableItemControl) => {
+                const elem: JSX.Element = <>{templatedParent.props.children}</>;
+                const hobo: string = ReactDomServer.renderToString(elem) ?? '';
+
+                return elem;
             })
         }
     );
@@ -173,7 +192,7 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
     );
 
     /* protected override */ OnSelectionChanged() {
-        (this.ItemsPanelInstance as ComboBoxPanel)?.PopulateOptions();
+        (this.ItemsPanelInstance as ComboBoxPanel)?.UpdateSelection();
         super.OnSelectionChanged();
     }
 

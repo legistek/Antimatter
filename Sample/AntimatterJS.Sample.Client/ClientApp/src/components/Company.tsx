@@ -131,31 +131,22 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
+    b
+    _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
+    {
+        const elem: JSX.Element = <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />;
+        return elem;
+    });
+
     private get comboBoxElem_Fluent(): JSX.Element {
-        const elem1: JSX.Element = (
+        const elem: JSX.Element = (
             <ComboBox_Fluent
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-            />
-        );
-
-        return elem1;
-    }
-
-    get comboBoxElem_NotFluent(): JSX.Element {
-        const elem3: JSX.Element = (
-            <ComboBox_NotFluent
-                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
-                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
-            />
-        );
-        const elem4: JSX.Element = (
-            <ComboBox_NotFluent
-                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                ItemTemplate={this._comboBoxOptionTemplate}
             />
         );
-
-        return elem3;
+        return elem;
     }
 
 
