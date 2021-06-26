@@ -468,7 +468,7 @@ class DocumentPagePresenter<
             // Even though we're realized, wait a bit to make sure
             // we're STILL dirty. We don't want fast scrolls, etc., to result
             // in unneeded rendering
-            await Utilities.SleepAsync(500);
+            await Utilities.SleepAsync(50);
             if (!this._isDirty)
                 return;
 

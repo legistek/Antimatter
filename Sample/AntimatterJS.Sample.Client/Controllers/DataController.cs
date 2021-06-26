@@ -18,9 +18,9 @@ namespace AntimatterJS.Sample.Client.Controllers
             string physicalPath = Path.Combine(
               Directory.GetCurrentDirectory(),
               "Data",
-              //"Absurdely Long PDF (26000 pages).pdf"
-              //"Microsoft_Win7_UXGuide5.pdf"
-              "Different Page Sizes.pdf"
+              //"Absurdely Long PDF 15000 pages.pdf"
+              "Microsoft_Win7_UXGuide5.pdf"
+              //"Different Page Sizes.pdf"
               );
 
             return PhysicalFile(
