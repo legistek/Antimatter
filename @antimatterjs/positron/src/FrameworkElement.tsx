@@ -22,6 +22,7 @@ interface IFrameworkElementCommon
     HorizontalAlignment?: HorizontalAlignment,
     VerticalAlignment?: VerticalAlignment,
     OnClick?: (event: MouseEvent) => void,
+    OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
     OnPointerMove?: (event: PointerEvent) => void,
     OnPointerUp?: (event: PointerEvent) => void,
@@ -101,6 +102,9 @@ export class FrameworkElement<
                 ref={r => this.Container = r}
                 style={this.getCSSStyles()}
                 onContextMenu={(event) => event.preventDefault()}
+                onScroll={this.state.OnScroll
+                    ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
+                    : undefined}
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
@@ -137,6 +141,16 @@ export class FrameworkElement<
                 }
             </div>
         );
+    }
+
+    public get ActualHeight(): number
+    {
+        return this.Container?.clientHeight || 0;
+    }
+
+    public get ActualWidth(): number
+    {
+        return this.Container?.clientWidth || 0;
     }
 
     public InvalidateRender()

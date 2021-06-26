@@ -18,9 +18,15 @@ export class Utilities
     {
         if (!item)
             return "";
-        else if (item?.IsModelObjectReference)
-            return (item as ModelObjectReference).Key;
-        return item;
+
+        if (item?.IsModelObjectReference)
+            return (item as ModelObjectReference).Handle.toString();
+        else if (typeof (item) === 'number')
+            return item;
+        else if (item?.key)
+            return item.key;
+        else
+            return item?.toString();
     }
 
     public static SleepAsync(ms): Promise<any>

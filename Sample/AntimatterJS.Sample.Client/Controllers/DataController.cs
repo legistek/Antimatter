@@ -18,9 +18,17 @@ namespace AntimatterJS.Sample.Client.Controllers
             string physicalPath = Path.Combine(
               Directory.GetCurrentDirectory(),
               "Data",
-              "Microsoft_Win7_UXGuide5.pdf");
+              //"Absurdely Long PDF (26000 pages).pdf"
+              //"Microsoft_Win7_UXGuide5.pdf"
+              "Different Page Sizes.pdf"
+              );
 
-            return PhysicalFile(physicalPath, "application/octet-stream", "Microsoft_Win7_UXGuide5.pdf");
+            return PhysicalFile(
+                physicalPath, 
+                "application/octet-stream",
+                "Microsoft_Win7_UXGuide5.pdf"
+                //"Absurdely Long PDF (26000 pages).pdf"
+                );
         }
     }
 }

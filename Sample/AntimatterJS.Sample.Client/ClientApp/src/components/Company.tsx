@@ -15,18 +15,13 @@ import
     ColorPicker,
     IFrameworkElementState,
     IFrameworkElementProps,
-    MultitouchTransform,
-    DocumentPagePresenter,
     PDFJSDocument,
     DocumentViewer,
     ItemsControl,
-    VirtualizingStackPanel,
     Style,
-    IVirtualizingStackPanelProps,
     HorizontalAlignment,
     Panel,
     ScrollBarVisibility,
-    VirtualizingPanel,
     Point
 } from '@antimatterjs/positron';
 
@@ -209,7 +204,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <TextBox Label="Scale" Text={new Binding("DocScale")} />
                 </StackPanel>
 
-                <DocumentViewer Document={this._pdfDoc}/>              
+                <DocumentViewer
+                    Document={this._pdfDoc}
+                    Scale={new Binding({
+                        Path: "DocScale",
+                        Mode: BindingMode.TwoWay
+                    })}
+                />
 
                 {/*<DocumentViewer*/}
                 {/*    Document={this._pdfDoc}*/}

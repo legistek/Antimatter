@@ -78,19 +78,29 @@ export class PDFJSPage implements IDocumentPage
     public async RenderAsync(canvas: HTMLCanvasElement, scale: number): Promise<void> 
     {
         var viewport = this._page.getViewport({ scale: scale });
-
-        var tempCanvas = document.createElement('canvas');
-        tempCanvas.width = viewport.width;
-        tempCanvas.height = viewport.height;
-        var tempContext = tempCanvas.getContext("2d");
-        await this._page.render({
-            canvasContext: tempContext,
-            viewport: viewport
-        }).promise;
-
-        var ctx = canvas.getContext("2d");
         canvas.width = viewport.width;
         canvas.height = viewport.height;
-        ctx?.drawImage(tempCanvas, 0, 0);
+
+        var context = canvas.getContext("2d");
+        await this._page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+        
+
+
+        //var tempCanvas = document.createElement('canvas');
+        //tempCanvas.width = viewport.width;
+        //tempCanvas.height = viewport.height;
+        //var tempContext = tempCanvas.getContext("2d");
+        //await this._page.render({
+        //    canvasContext: tempContext,
+        //    viewport: viewport
+        //}).promise;
+
+        //var ctx = canvas.getContext("2d");
+        //canvas.width = viewport.width;
+        //canvas.height = viewport.height;
+        //ctx?.drawImage(tempCanvas, 0, 0);
     }
 }

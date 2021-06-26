@@ -67,6 +67,11 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         return (<>{this.props.children}</>);
     }
 
+    public /* virtual */ OnItemSourceChange()
+    {
+        this.InvalidateRender();
+    }
+
     static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
     {
         switch (v)

@@ -23,13 +23,13 @@ interface IObserverCollection
     after: MutationObserver
 }
 
-class RenderWindowInfo
+export class RenderWindowInfo
 {
     StartIndex: number = 0;
-    StartItemBounds: Span = { Start: 0, End: 0 };
+    StartItemTop: number = 0;
     EndIndex: number = 0;
-    EndItemBounds: Span = { Start: 0, End: 0 };
-    LastItemBounds: Span = { Start: 0, End: 0 };
+    ExpanseHeight: number = 0;
+    LastItemBottom: number = 0;
 }
 
 export abstract class VirtualizingPanel<
@@ -59,6 +59,64 @@ export abstract class VirtualizingPanel<
      * @param itemIndex The 0-based index of the item.
      */
     protected abstract GetItemExpanseBounds(itemIndex: number): Span;
+
+    /**
+     * Returns a RenderWindowInfo with complete information about how to
+     * render the current window. The default implementation uses 
+     * GetItemExpanseBounds to test against educated guesses. Sub-classes
+     * may have more efficient implementations which may or may not also
+     * utilize GetItemExpanseBounds. (Sub-classes must still implement 
+     * GetItemExpanseBounds in case it is invoked elsewhere.)
+     * @param windowTop The top Y position of the current render window.
+     * @param windowBottom The bottom Y position of the current render
+     * window.
+     */
+    protected /* virtual */ ComputeRenderWindow(windowTop: number, windowBottom: number): RenderWindowInfo
+    {
+        const c = this.ItemCount;
+        let newInfo: RenderWindowInfo = new RenderWindowInfo();
+
+        newInfo.StartIndex = Utilities.SortedBinarySearch(
+            ((index) =>
+            {
+                var itemPos = this.GetItemExpanseBounds(index);
+                if (itemPos.Start > windowTop)
+                    return -1;  // too far; go lower
+                else if (itemPos.End < windowBottom)
+                    return +1;  // not far enough; go higher
+                else
+                    return 0;
+            }).bind(this),
+            c);
+
+        newInfo.StartItemTop = this.GetItemExpanseBounds(newInfo.StartIndex).Start;
+        newInfo.EndIndex = newInfo.StartIndex;
+
+        let itemBounds: Span = { Start: 0, End: 0 };
+
+        while (c > newInfo.EndIndex + 1 &&
+            (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End < windowBottom)
+            newInfo.EndIndex++;
+
+        newInfo.LastItemBottom = itemBounds.End;
+        
+        if (newInfo.EndIndex + 1 === c)
+        {
+            // end index is the last item
+            newInfo.ExpanseHeight = newInfo.LastItemBottom;
+        }
+        else
+        {
+            newInfo.ExpanseHeight = this.GetItemExpanseBounds(c - 1).End;
+        }
+
+        this._lastWindow = {
+            Start: windowTop,
+            End: windowBottom
+        };
+
+        return newInfo;
+    }
 
     /**
      * Invoked when a new set of children have been realized (i.e. visualized
@@ -102,14 +160,14 @@ export abstract class VirtualizingPanel<
                 <div
                     ref={r => this._spacerBefore = r}
                     style={{
-                        height: this._renderWindowInfo.StartItemBounds.Start,
+                        height: this._renderWindowInfo.StartItemTop,
                     }} />
 
                 {this.RenderVisibleItems(items)}
 
                 <div ref={r => this._spacerAfter = r}
                     style={{
-                        height: (this._renderWindowInfo.LastItemBounds.End - this._renderWindowInfo.EndItemBounds.End)
+                        height: (this._renderWindowInfo.ExpanseHeight - this._renderWindowInfo.LastItemBottom)
                     }} />
             </div>
         );
@@ -125,9 +183,24 @@ export abstract class VirtualizingPanel<
         if (!this.Container || !this._scroller)
             return;
 
+        // Before we do anything else - Did we realize enough children?
+        var windowHeight = this._lastWindow.End - this._lastWindow.Start;
+        var childrenHeight = this.MeasureRealizedChildren();
+
+        if (windowHeight > childrenHeight)
+        {
+            // nope
+            var avgHeight = childrenHeight / this._realizedChildren.length;
+            var extra = Math.ceil((windowHeight - childrenHeight) / avgHeight);
+            this._renderWindowInfo.EndIndex += extra;
+            this._renderWindowInfo.LastItemBottom = this.GetItemExpanseBounds(this._renderWindowInfo.EndIndex).End;
+            this.setState({});  // force render without re-computing render window
+            return;
+        }       
+
         // Preserve H scroll during re-calculation if needed
         const hscroll = this._scroller.scrollLeft;
-        this.Container.style.height = `${this._renderWindowInfo.LastItemBounds.End * (this.state.Scale as number || 1)}px`;
+        this.Container.style.height = `${this._renderWindowInfo.ExpanseHeight * (this.state.Scale as number || 1)}px`;
         this.Container.style.width = "fit-content";
         this._maxWidth = Math.max(this._maxWidth, this.Container?.clientWidth || 0);
         this.Container.style.width = `${this._maxWidth * (this.state.Scale as number || 1)}px`;
@@ -148,11 +221,25 @@ export abstract class VirtualizingPanel<
         if (this._realizationGeneration !== this._lastRealizedGeneration)
         {
             this._lastRealizedGeneration = this._realizationGeneration;
+            if (this._renderWindowInfo.EndIndex - this._renderWindowInfo.StartIndex + 1 != this._realizedChildren.length)
+            {
+                let a = 5;
+            }
             this.OnChildrenRealized(
                 this._renderWindowInfo.StartIndex,
                 this._renderWindowInfo.EndIndex,
                 this._realizedChildren);
         }
+    }
+
+    private MeasureRealizedChildren(): number
+    {
+        let height = 0;
+        for (const child of this._realizedChildren)
+        {
+            height += child.ActualHeight;
+        }
+        return height;
     }
 
     /* override */ componentDidMount()
@@ -214,67 +301,27 @@ export abstract class VirtualizingPanel<
 
     /* override */ OnInvalidateRender()
     {        
-        this.ComputeRenderWindowInfo(
+        this.ComputeRenderWindowInfoPrivate(
             (this._scroller?.getBoundingClientRect().y || 0) - (this.Container?.getBoundingClientRect().y || 0),
             this.state.ItemsParent?.Container?.clientHeight || 0);
         super.OnInvalidateRender();
     }
-
-    private ComputeRenderWindowInfo(
+    
+    private ComputeRenderWindowInfoPrivate(
         windowTop: number,
         windowHeight: number): void
-    {
-        let needRender: boolean = false;
-
-        let c = this.ItemCount;
-
+    {        
         const scale = (this.state.Scale as number || 1);
-
-        let newInfo: RenderWindowInfo = new RenderWindowInfo();
-
-        const windowBottom = windowTop + windowHeight * (1 + (this.state.OverscanHeight as number || 1));
+        
+        let windowBottom = windowTop + windowHeight * (1 + (this.state.OverscanHeight as number || 1));
         windowTop = Math.max(0, windowTop - windowHeight * (this.state.OverscanHeight as number || 1));
 
-        newInfo.StartIndex = Utilities.SortedBinarySearch(
-            ((index) =>
-            {
-                var itemPos = this.GetItemExpanseBounds(index);
-                if (itemPos.Start * scale > windowTop)
-                    return -1;  // too far; go lower
-                else if (itemPos.End * scale < windowBottom)
-                    return +1;  // not far enough; go higher
-                else
-                    return 0;
-            }).bind(this),
-            c);
+        windowBottom /= scale;
+        windowTop /= scale;
 
-        newInfo.StartItemBounds = this.GetItemExpanseBounds(newInfo.StartIndex);
-        newInfo.EndIndex = newInfo.StartIndex;
-
-        let itemBounds: Span = { Start: 0, End: 0 };
-
-        while (c > newInfo.EndIndex + 1 &&
-            (itemBounds = this.GetItemExpanseBounds(newInfo.EndIndex)).End * scale < windowBottom)
-            newInfo.EndIndex++;
-
+        var newInfo = this.ComputeRenderWindow(windowTop, windowBottom);
         console.log(`Recomputing render window:  scale: ${scale} top ${windowTop} height ${windowHeight} from {${this._renderWindowInfo.StartIndex}, ${this._renderWindowInfo.EndIndex}} to {${newInfo.StartIndex}, ${newInfo.EndIndex}}`);
-
-        //if (newInfo.StartIndex < this._renderWindowInfo.StartIndex ||
-        //    newInfo.EndIndex > this._renderWindowInfo.EndIndex)
-        {
-            needRender = true;
-            newInfo.LastItemBounds = this.GetItemExpanseBounds(c - 1);
-            if (newInfo.EndIndex + 1 === c)
-            {
-                // end index is the last item
-                newInfo.EndItemBounds = newInfo.LastItemBounds;
-            }
-            else
-            {
-                newInfo.EndItemBounds = itemBounds;
-            }
-            this._renderWindowInfo = newInfo;
-        }
+        this._renderWindowInfo = newInfo;
         this._hasComputed = true;
     }
 
@@ -351,4 +398,5 @@ export abstract class VirtualizingPanel<
     private _realizedChildren: FrameworkElement[] = [];
     private _realizationGeneration: number = 0;
     private _lastRealizedGeneration: number = 0;
+    private _lastWindow: Span = { Start: 0, End: 0 };
 }

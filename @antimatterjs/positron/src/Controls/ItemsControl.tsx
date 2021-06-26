@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, ModelObjectReference, Utilities } from '@antimatterjs/react';
 
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
@@ -50,14 +50,7 @@ export class ItemsControl<
         if (props)
             Object.assign(itemProps, props);
 
-        if (item?.IsModelObjectReference)
-            (itemProps as any).key = (item as ModelObjectReference).Handle.toString();
-        else if (typeof (item) === 'number')
-            (itemProps as any).key = item;
-        else if (item?.key)
-            (itemProps as any).key = item.key;
-        else
-            (itemProps as any).key = item?.toString();
+        (itemProps as any).key = Utilities.SmartGetKey(item);
 
         return React.createElement(
             this.GetContainerForItemOverride(),
