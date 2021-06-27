@@ -5,7 +5,7 @@ const unixTime0Ticks: bigint =
     BigInt(621355968) * BigInt(1000000000);
 
 export class Utilities
-{
+{    
     public static SmartEquals(item1: any, item2: any): boolean
     {
         if (item1?.IsModelObjectReference && item2?.IsModelObjectReference &&

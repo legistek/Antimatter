@@ -10,7 +10,7 @@ import { FrameworkElement } from "../FrameworkElement";
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";
 import { MultitouchTransform } from "../Media/MultitouchTransform";
-import { Point } from "../Foundation";
+import { Point, Rect } from "../Foundation";
 import { IStackPanelProps, IStackPanelState, StackPanel, StackPanelBase } from "../Controls/StackPanel";
 import { IVirtualizingItemsControlProps, IVirtualizingItemsControlState, VirtualizingItemsControl, VirtualizingItemsControlBase } from "../Controls/VirtualizingItemsControl";
 import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } from "../Controls/VirtualizedPanel";
@@ -60,6 +60,7 @@ export class DocumentViewerBase<
                         return;
                     this._pagesPanel.ScrollingUp = this._scroller.Container.scrollTop < this._lastScrollY;
                     this._lastScrollY = this._scroller.Container.scrollTop;
+                    this._pagesPanel.UpdatePagesOnScroll();
                 }}
                 VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                 HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}>
@@ -92,13 +93,15 @@ export class DocumentViewerBase<
                         this._tr.TranslateX = e.CumulativeX;
                         this._tr.TranslateY = e.CumulativeY;
                         this._tr.ScaleX = e.CumulativeScale;
-                        this._tr.ScaleY = e.CumulativeScale;
+                        this._tr.ScaleY = e.CumulativeScale;                        
 
                         if (this._tr.ScaleX !== 1)
                         {
                             scroller.style.overflowX = "hidden";
                             this._sizeFaker.style.width = '9999999px';
                         }
+
+                        this._pagesPanel?.UpdatePagesOnScroll();
                     }).bind(this)}
                     OnManipulationCompleted={((e) =>
                     {
@@ -198,7 +201,7 @@ export class DocumentViewerBase<
 
     /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return DocumentPagePresenter;
+        return DocumentPagePresenterBase;
     }
 
     private ConstructPageArray(pages: number): number[]
@@ -334,6 +337,82 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
         //this.InvalidateRender();
     }
 
+    /**
+     * Determines if a given page is in the scrollable view and if so returns
+     * the visible bounds. The DocumentPagePresenter can/should call this 
+     * when realized and periodically thereafter to render a high resolution
+     * overlay apporpriate for the viewport.
+     * @param page The DocumentPagePresenter
+     */
+    public IsPageInView(page: DocumentPagePresenter): Rect|null
+    {
+        if (!this.Scroller || !page.CurrentCanvas || !page.state.IsRealized)
+            return null;
+        const viewRenderWidth = this.Scroller.clientWidth;
+        const viewRenderHeight = this.Scroller.clientHeight;
+
+        // Upper left corner of canvas relative to scroller
+        var upperLeft = FrameworkElement.TranslatePoint(
+            new Point(),
+            page.CurrentCanvas,
+            this.Scroller);
+        // Bottom right corner of canvas relative to scroller
+        var bottomRight = FrameworkElement.TranslatePoint(
+            new Point(
+                page.CurrentCanvas.getBoundingClientRect().width,
+                page.CurrentCanvas.getBoundingClientRect().height),
+            page.CurrentCanvas,
+            this.Scroller);
+
+        // Derive the bounds of the visible portion of the canvas
+        // relative to the scroller
+        var boundedUpperLeft = new Point(
+            Math.max(0, Math.min(viewRenderWidth, upperLeft.X)),
+            Math.max(0, Math.min(viewRenderHeight, upperLeft.Y))
+        );
+        var boundedBottomRight = new Point(
+            Math.min(viewRenderWidth, Math.max(0, bottomRight.X)),
+            Math.min(viewRenderHeight, Math.max(0, bottomRight.Y))
+        );
+
+        // Translate the visible bounds back to canvas coordinates
+        var visibleUpperLeft = FrameworkElement.TranslatePoint(boundedUpperLeft, this.Scroller, page.CurrentCanvas);
+        var visibleBottomRight = FrameworkElement.TranslatePoint(boundedBottomRight, this.Scroller, page.CurrentCanvas);
+        if (visibleBottomRight.X <= visibleUpperLeft.X ||
+            visibleBottomRight.Y <= visibleUpperLeft.Y)
+            return null;
+
+        return new Rect(
+            visibleUpperLeft.X,
+            visibleUpperLeft.Y,
+            visibleBottomRight.X - visibleUpperLeft.X,
+            visibleBottomRight.Y - visibleUpperLeft.Y);
+    }
+
+    /**
+     * Updates all realized pages by recomputing their visible viewports
+     * for high resolution rendering.
+     **/
+    public UpdatePagesOnScroll()
+    {
+        for (const page of this._realizedPages)
+        {
+            var rc = this.IsPageInView(page);
+            if (rc)
+                page.SetCurrentViewportWindow(rc, this.state.Scale || 1);
+        }
+    }
+
+    public OnPageRealized(page: DocumentPagePresenter)
+    {
+        this._realizedPages.add(page);
+    }
+
+    public OnPageDerealized(page: DocumentPagePresenter)
+    {
+        this._realizedPages.delete(page);
+    }
+
     private get ActualScale(): number
     {
         return (this.state.Scale as number) || 1;
@@ -349,7 +428,8 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
 
     private _maxWidth: number = 0;
     private _desiredScroll?: Point;
-    private _scroller: HTMLElement | null = null;    
+    private _scroller: HTMLElement | null = null;
+    private _realizedPages: Set<DocumentPagePresenter> = new Set<DocumentPagePresenter>();
 }
 
 interface IDocumentPagePresenterCommon
@@ -365,11 +445,21 @@ interface IDocumentPagePresenterProps extends IVirtualizedPanelProps, IDocumentP
 interface IDocumentPagePresenterState extends IVirtualizedPanelState, IDocumentPagePresenterCommon
 {
 }
-class DocumentPagePresenter<
+class DocumentPagePresenterBase<
     P extends IDocumentPagePresenterProps = {},
     S extends IDocumentPagePresenterState = {}>
     extends VirtualizedPanelBase<P, S>
 {
+    public get CurrentCanvas(): HTMLCanvasElement|null
+    {
+        return this._currentCanvas;        
+    }
+
+    public SetCurrentViewportWindow(rc: Rect, scale: number)
+    {
+        console.log(`Page ${this.state.PageIndex} Current Viewport - X: ${rc.X}, Y: ${rc.Y}, Width: ${rc.Width}, Height: ${rc.Height}, Scale: ${scale} `);
+    }
+
     /* override */ RenderRealizedElement(): JSX.Element
     {
         return (
@@ -409,12 +499,14 @@ class DocumentPagePresenter<
 
     protected /* override */ async OnRealization()
     {
-        this._isDirty = true;        
+        this._isDirty = true;
+        this.PagesPanel?.OnPageRealized(this);
     }
 
     protected /* override */ OnDerealization()
     {
-        this._isDirty = false;        
+        this._isDirty = false;
+        this.PagesPanel?.OnPageDerealized(this);
     }
 
     /* override */ getCSSStyles(): React.CSSProperties
@@ -462,6 +554,8 @@ class DocumentPagePresenter<
     {
         if (canvas === null || !this._isDirty || !this.state.Document)
             return;
+
+        this._currentCanvas = canvas;
 
         if (!this._smallImage)
         {
@@ -526,10 +620,14 @@ class DocumentPagePresenter<
         this._lastHeight = this.Container?.clientHeight || 0;
     }
 
+    private _currentCanvas: HTMLCanvasElement | null = null;
     private _lastWidth: number = 0;
     private _lastHeight: number = 0;
     private _isDirty: boolean = false;
     private _page?: IDocumentPage | null;
     private _smallImage: HTMLCanvasElement | null = null;
     private _hasRendered: boolean = false;
+}
+class DocumentPagePresenter extends DocumentPagePresenterBase<IDocumentPagePresenterProps, IDocumentPagePresenterState>
+{
 }

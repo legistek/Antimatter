@@ -12,6 +12,7 @@ import { WindowLayoutContext } from './Controls/Window';
 import { MultitouchTransform } from './Media/MultitouchTransform';
 import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEventArgs';
 import { ManipulationHelper } from './Input/ManipulationHelper';
+import { Point } from './Foundation';
 
 interface IFrameworkElementCommon
 {
@@ -64,13 +65,13 @@ export class FrameworkElement<
     S extends IFrameworkElementState = {}>    
     extends React.Component<P, S>
     implements INotifyPropertyChanged
-{
+{    
     _calledLoaded: boolean = false;
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
     _gestureHandlers: boolean = false;
 
-    public Container?: HTMLElement | null;
+    public Container: HTMLElement | null = null;
 
     constructor(props)
     {
@@ -83,8 +84,8 @@ export class FrameworkElement<
         if (this.state.Transform)
             this.state.Transform.AssignTarget(this);
     }    
-    
-    render()
+
+    render(): JSX.Element | null
     {
         if (this.state.IsVisible === false)
             return null;
@@ -145,12 +146,12 @@ export class FrameworkElement<
 
     public get ActualHeight(): number
     {
-        return this.Container?.clientHeight || 0;
+        return this.Container?.getBoundingClientRect()?.height || 0;
     }
 
     public get ActualWidth(): number
     {
-        return this.Container?.clientWidth || 0;
+        return this.Container?.getBoundingClientRect()?.width || 0;
     }
 
     public InvalidateRender()
@@ -165,11 +166,56 @@ export class FrameworkElement<
         });
     }
 
+    /**
+     * Used to bind a Model property to the React component state, without
+     * having to expose bindable props, returning the most recent bound value.
+     * As such it should typically called during render, the return value then
+     * being used in place of an explicit state variable. (It is safe to call
+     * this during each render, as the binding is not duplicated provided the 
+     * parameters do not change). 
+     * @param parameters The binding parameters.
+     * @param stateVar The name of the state variable to which to bind. If
+     * not supplied, a name will be derived from the binding parameters. If
+     * two-way binding is to be used, this name must be explicitly given so that
+     * it can be provided to SetValue when updating the target value in response
+     * to user input.
+     */
     public BindState(parameters: BindingParameters, stateVar?: string): any
     {
         // Inline Binding. Binding function returns a value 
         // immediately and also binds state for future update                
         return Antimatter.BindState(this, parameters, stateVar);
+    }
+
+    /**
+     * Translates a point from a coordinate system relative to the origin of this element
+     * to the origin of another element.
+     * @param relativePoint The Point relative to the origin of this element.
+     * @param relativeTo The element relative to which the point will be translated.
+     */
+    public static TranslatePoint(sourcePoint: Point, source: FrameworkElement | HTMLElement, relativeTo: FrameworkElement | HTMLElement): Point
+    {
+        let sourceElement: HTMLElement | null = null;
+        if (source instanceof HTMLElement)
+            sourceElement = source as HTMLElement;
+        else
+            sourceElement = (source as FrameworkElement)?.Container;
+        if (!sourceElement)
+            return new Point();
+
+        let relElement: HTMLElement | null = null;
+        if (relativeTo instanceof HTMLElement)
+            relElement = relativeTo as HTMLElement;
+        else
+            relElement = (relativeTo as FrameworkElement)?.Container;
+        if (!relElement)
+            return new Point();
+
+        var sourceRC = sourceElement.getBoundingClientRect();
+        var relRC = relElement.getBoundingClientRect();
+        return new Point(
+            sourcePoint.X + (sourceRC.x - relRC.x),
+            sourcePoint.Y + (sourceRC.y - relRC.y));
     }
 
     /* virtual */ OnInvalidateRender()
@@ -181,18 +227,33 @@ export class FrameworkElement<
     }
 
     /**
-     * Sets a state property value for the element, updating any
-     * two-way binding targets, and optionally forces a re-render
-     * of the element. Use instead of Component.setState.
-     * @param property
-     * @param newValue
-     * @param reRender
+     * Sets a single state variable value for the element, replacing 
+     * Component.setState. This is most typically used for two-way binding 
+     * situations to notify the Model side of a UI-driven change (like a button 
+     * click). Any Model properties two-way bound to this state variable will 
+     * be updated Model-side, but will not result in a new render of this 
+     * element unless other bound Model values wind up updating Model-side as a 
+     * consequence of this update. Also note that unlike setState, state
+     * variables are guaranteed to immediately reflect their new values after 
+     * calling this function. Finally note that this element's OnPropertyChanged
+     * function will NOT be called as a result of this function, since the 
+     * function should only be called in response to UI-side events like input
+     * rather than from prop or Model-side changes.
+     * @param stateVar The name of the state variable to set.
+     * @param newValue The new value.
+     * @param reRender Whether to force a re-render. Unlike a source-drvien
+     * binding update, a target-driven update will not necessarily result in a new 
+     * render of this element unless this argument is explicitly set to true. This
+     * is because it is presumed that the UI has already given visual feedback
+     * in response to the user input. (For example, an input field immediately 
+     * reflects typed text; there is no need to re-render when updating the 
+     * Model side with the new text).
      */
-    /* protected */ SetValue(property: string, newValue: any, reRender?: boolean): void
+    public SetValue(stateVar: string, newValue: any, reRender?: boolean): void
     {
-        if (this.state[property] === newValue)
+        if (this.state[stateVar] === newValue)
             return;
-        Antimatter.TargetChanged(this, property, newValue, reRender);
+        Antimatter.TargetChanged(this, stateVar, newValue, reRender);
     }
 
     /* protected */ GetValue(property: string): any
