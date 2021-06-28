@@ -1,3 +1,5 @@
+import { Rect } from "../Foundation";
+
 export interface IDocument
 {
     Pages: number;
@@ -8,7 +10,7 @@ export interface IDocumentPage
 {
     Width: number;  // Points at 1x scale
     Height: number; // Points at 1x scale
-    RenderAsync(canvas: HTMLCanvasElement, scale: number): Promise<void>;
+    RenderAsync(canvas: HTMLCanvasElement, srcBounds: Rect, scale: number): Promise<void>;
 }
 
 export interface DocumentPosition

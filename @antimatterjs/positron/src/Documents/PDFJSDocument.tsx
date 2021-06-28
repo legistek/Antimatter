@@ -1,4 +1,5 @@
 import { Utilities } from '@antimatterjs/react';
+import { Rect } from '../Foundation';
 import { IDocument, IDocumentPage } from './IDocument';
 
 export class PDFJSDocument implements IDocument
@@ -75,19 +76,22 @@ export class PDFJSPage implements IDocumentPage
         return this._height;
     }
 
-    public async RenderAsync(canvas: HTMLCanvasElement, scale: number): Promise<void> 
-    {
-        var viewport = this._page.getViewport({ scale: scale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        var context = canvas.getContext("2d");
+    public async RenderAsync(canvas: HTMLCanvasElement, srcBounds: Rect, scale: number): Promise<void>
+    {        
+        var viewport = this._page.getViewport(
+            {
+                scale: scale,
+                offsetX: -srcBounds.Left * scale,
+                offsetY: -srcBounds.Top * scale
+            }
+        );
+        
+        var ctx = canvas.getContext("2d");
+        
         await this._page.render({
-            canvasContext: context,
+            canvasContext: ctx,
             viewport: viewport
         }).promise;
-        
-
 
         //var tempCanvas = document.createElement('canvas');
         //tempCanvas.width = viewport.width;

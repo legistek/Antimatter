@@ -15,6 +15,7 @@ import { IStackPanelProps, IStackPanelState, StackPanel, StackPanelBase } from "
 import { IVirtualizingItemsControlProps, IVirtualizingItemsControlState, VirtualizingItemsControl, VirtualizingItemsControlBase } from "../Controls/VirtualizingItemsControl";
 import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } from "../Controls/VirtualizedPanel";
 import { LoadingShimmer } from "../Controls/LoadingShimmer";
+import { off } from "node:process";
 
 interface IDocumentViewerCommon
 {
@@ -314,12 +315,14 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
 
         if (this._desiredScroll)
         {
-            console.log(`Setting scroll to ${this._desiredScroll.X}, ${this._desiredScroll.Y}`);
+            //console.log(`Setting scroll to ${this._desiredScroll.X}, ${this._desiredScroll.Y}`);
             this._scroller.scrollLeft = this._desiredScroll.X;
             this._scroller.scrollTop = this._desiredScroll.Y;
             this._desiredScroll = undefined;
-            console.log(`Actual scroll now ${this._scroller.scrollLeft}, ${this._scroller.scrollTop}`);
+            //console.log(`Actual scroll now ${this._scroller.scrollLeft}, ${this._scroller.scrollTop}`);
         }
+
+        this.UpdatePagesOnScroll();
     }
 
     /**
@@ -346,7 +349,7 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
      */
     public IsPageInView(page: DocumentPagePresenter): Rect|null
     {
-        if (!this.Scroller || !page.CurrentCanvas || !page.state.IsRealized)
+        if (!this.Scroller || !page.CurrentCanvas)
             return null;
         const viewRenderWidth = this.Scroller.clientWidth;
         const viewRenderHeight = this.Scroller.clientHeight;
@@ -395,12 +398,19 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
      **/
     public UpdatePagesOnScroll()
     {
+        if (!this._realizedPages)
+            return;
         for (const page of this._realizedPages)
-        {
-            var rc = this.IsPageInView(page);
-            if (rc)
-                page.SetCurrentViewportWindow(rc, this.state.Scale || 1);
-        }
+            this.UpdatePageInView(page);
+    }
+
+    public UpdatePageInView(page: DocumentPagePresenter)
+    {
+        var rc = this.IsPageInView(page);
+        if (rc)
+            page.SetCurrentViewportWindow(
+                rc,
+                this.ActualScale * ((this.state.Transform?.AbsoluteScale as number) || 1));
     }
 
     public OnPageRealized(page: DocumentPagePresenter)
@@ -413,9 +423,13 @@ class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocum
         this._realizedPages.delete(page);
     }
 
+    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
+    {        
+    }
+
     private get ActualScale(): number
     {
-        return (this.state.Scale as number) || 1;
+        return ((this.state.Scale as number) || 1);
     }
 
     private FindScroller(): HTMLElement | null | undefined
@@ -457,7 +471,10 @@ class DocumentPagePresenterBase<
 
     public SetCurrentViewportWindow(rc: Rect, scale: number)
     {
-        console.log(`Page ${this.state.PageIndex} Current Viewport - X: ${rc.X}, Y: ${rc.Y}, Width: ${rc.Width}, Height: ${rc.Height}, Scale: ${scale} `);
+        //console.log(`Page ${this.state.PageIndex} Current Viewport - X: ${rc.X}, Y: ${rc.Y}, Width: ${rc.Width}, Height: ${rc.Height}, Scale: ${scale} `);
+        this._currentHighResViewport = new Rect(rc.X / scale, rc.Y / scale, rc.Width / scale, rc.Height / scale);
+        this._currentHighResScale = scale;
+        this._isHighResViewportDirty = true;
     }
 
     /* override */ RenderRealizedElement(): JSX.Element
@@ -478,9 +495,17 @@ class DocumentPagePresenterBase<
                             width: this._page?.Width || 612,
                             height: this._page?.Height || 792
                         }}
-                        ref={r => this.RenderCanvas(r)}
-                    />
-                    {this._smallImage === null ? (<LoadingShimmer Overlaps={true} Lines={20} LineHeight={8} />) : (<></>)}
+                        ref={r => this.RenderSmallCanvas(r)} />
+                    <canvas
+                        style={{
+                            position: "absolute",
+                            //width: 0,
+                            //height: 0,
+                            //left: 0,
+                            //top: 0
+                        }}
+                        ref={r => this.RenderHighResCanvas(r)} />
+                    {this._isSmallImageBlank ? (<LoadingShimmer Overlaps={true} Lines={20} LineHeight={8} />) : (<></>)}
                 </div>
 
             </>
@@ -493,19 +518,29 @@ class DocumentPagePresenterBase<
         {
             this._lastWidth = this.Container?.clientWidth || 0;
             this._lastHeight = this.Container?.clientHeight || 0;
-            this._hasRendered = true;
+            this._hasRendered = true;            
         }
     }
 
     protected /* override */ async OnRealization()
     {
         this._isDirty = true;
+        this._isHighResViewportDirty = true;
         this.PagesPanel?.OnPageRealized(this);
+        if (!this._isHighResLoopActive)
+        {
+            // Guarantee we don't accidentally start a render loop twice for the 
+            // same page; unclear exactly how many times the IntersectionObserver
+            // might get triggered for the same realization event.
+            this._isHighResLoopActive = true;            
+            this.BeginHighResRenderLoopAsync();
+        }
     }
 
     protected /* override */ OnDerealization()
     {
         this._isDirty = false;
+        this._isHighResLoopActive = false;
         this.PagesPanel?.OnPageDerealized(this);
     }
 
@@ -531,44 +566,93 @@ class DocumentPagePresenterBase<
         return (this.state.VirtualizingItemsParent?.ItemsPanelInstance as DocumentPagesPanel);
     }
 
+    private async BeginHighResRenderLoopAsync(): Promise<void>
+    {
+        while (this._isHighResLoopActive)
+        {
+            if (this._isHighResViewportDirty)
+            {
+                await this.RenderHighResImageAsync();
+            }
+            await Utilities.SleepAsync(250);
+        }
+    }
+
+    private async RenderHighResImageAsync(): Promise<void>
+    {
+        if (!this._page || this._currentHighResScale <= 1)
+            return;
+        if (!this._largeImage)
+            this._largeImage = document.createElement('canvas');
+        this._isHighResViewportDirty = false;
+        this._largeImage.width = Math.round(this._currentHighResViewport.Width * this._currentHighResScale);
+        this._largeImage.height = Math.round(this._currentHighResViewport.Height * this._currentHighResScale);
+        this._lastRenderedHighResViewport = this._currentHighResViewport;
+        await this._page.RenderAsync(this._largeImage, this._currentHighResViewport, this._currentHighResScale);
+        this.RenderHighResCanvas();
+    }
+
     private async RenderSmallImageAsync(): Promise<boolean>
     {
         if (!this.state.Document)
             return false;
-        if (!this._smallImage)
-            this._smallImage = document.createElement('canvas');
         if (!this._page)
         {
             this._page = await this.state.Document.GetPageAsync((this.state.PageIndex || 0) as number);
             if (!this._page)
                 return false;
         }
-
-        console.log(`Rendering PDF page small image ${this.state.PageIndex}`);
-        await this._page.RenderAsync(this._smallImage, 1);
-        this.InvalidateRender();
+                
+        this._smallImage.width = this._page.Width;
+        this._smallImage.height = this._page.Height;
+        
+        //console.log(`Rendering PDF page small image ${this.state.PageIndex}`);
+        await this._page.RenderAsync(this._smallImage, new Rect(0, 0, this._page.Width, this._page.Height), 1);        
         return true;
     }
 
-    private async RenderCanvas(canvas: HTMLCanvasElement | null)
+    private RenderHighResCanvas(canvas?: HTMLCanvasElement | null)
+    {
+        this._currentHighResCanvas = canvas || this._currentHighResCanvas;
+        if (this._currentHighResCanvas === null ||
+            this._currentHighResScale <= 1 ||
+            !this._page ||
+            !this._largeImage ||
+            this._largeImage.width === 0 ||
+            this._largeImage.height === 0)
+            return;       
+       
+        this._currentHighResCanvas.width = this._largeImage.width;
+        this._currentHighResCanvas.height = this._largeImage.height;
+      
+        var ctx = this._currentHighResCanvas.getContext("2d");
+        ctx?.drawImage(this._largeImage, 0, 0);
+        this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X)}px`;
+        this._currentHighResCanvas.style.top = `${Math.round(this._lastRenderedHighResViewport.Y)}px`;
+        this._currentHighResCanvas.style.width = `${Math.round(this._lastRenderedHighResViewport.Width)}px`;
+        this._currentHighResCanvas.style.height = `${Math.round(this._lastRenderedHighResViewport.Height)}px`;
+    }
+
+    private async RenderSmallCanvas(canvas: HTMLCanvasElement | null)
     {
         if (canvas === null || !this._isDirty || !this.state.Document)
             return;
 
         this._currentCanvas = canvas;
 
-        if (!this._smallImage)
+        if (this._isSmallImageBlank)
         {
             // Even though we're realized, wait a bit to make sure
-            // we're STILL dirty. We don't want fast scrolls, etc., to result
-            // in unneeded rendering
+            // we're STILL dirty before actually painting for the first time. 
+            // We don't want fast scrolls, etc., to result in unneeded 
+            // rendering
             await Utilities.SleepAsync(50);
             if (!this._isDirty)
                 return;
 
             this._isDirty = false;
 
-            if (!await this.RenderSmallImageAsync() || !this._smallImage)
+            if (!await this.RenderSmallImageAsync())
                 return;
         }
         else
@@ -585,14 +669,19 @@ class DocumentPagePresenterBase<
         //    viewport: viewport
         //}).promise;
 
-        console.log(`Painting PDF page small image ${this.state.PageIndex}`);
+        //console.log(`Painting PDF page small image ${this.state.PageIndex}`);
 
         var ctx = canvas.getContext("2d");
         canvas.width = this._smallImage?.width || 0;
         canvas.height = this._smallImage?.height || 0;
         ctx?.drawImage(this._smallImage, 0, 0);
 
-        this.InvalidateMeasure();        
+        this._isSmallImageBlank = false;
+
+        this.PagesPanel?.UpdatePageInView(this);
+
+        this.InvalidateMeasure();
+        this.InvalidateRender();        
     }
 
     private InvalidatePage()
@@ -620,13 +709,21 @@ class DocumentPagePresenterBase<
         this._lastHeight = this.Container?.clientHeight || 0;
     }
 
+    private _currentHighResCanvas: HTMLCanvasElement | null = null;
     private _currentCanvas: HTMLCanvasElement | null = null;
     private _lastWidth: number = 0;
     private _lastHeight: number = 0;
     private _isDirty: boolean = false;
     private _page?: IDocumentPage | null;
-    private _smallImage: HTMLCanvasElement | null = null;
+    private _smallImage: HTMLCanvasElement = document.createElement('canvas');
+    private _largeImage: HTMLCanvasElement | null = null;
     private _hasRendered: boolean = false;
+    private _currentHighResViewport: Rect = new Rect();
+    private _lastRenderedHighResViewport: Rect = new Rect();
+    private _currentHighResScale: number = 1;
+    private _isHighResViewportDirty: boolean = false;
+    private _isHighResLoopActive: boolean = false;
+    private _isSmallImageBlank: boolean = true;
 }
 class DocumentPagePresenter extends DocumentPagePresenterBase<IDocumentPagePresenterProps, IDocumentPagePresenterState>
 {

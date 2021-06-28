@@ -180,67 +180,40 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 [
                 Grid.RowDefinition(),
                 Grid.RowDefinition(1, true)]}>
-                {/*<StackPanel>*/}
-                {/*    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />*/}
+                <StackPanel>
+                    <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
-                {/*    <StackPanel Orientation={Orientation.Horizontal}>*/}
-                {/*        <TextBlock Text="Employee Count:" />*/}
-                {/*        <TextBlock Text={new Binding("Employees.Count")} />*/}
-                {/*    </StackPanel>*/}
+                    <StackPanel Orientation={Orientation.Horizontal}>
+                        <TextBlock Text="Employee Count:" />
+                        <TextBlock Text={new Binding("Employees.Count")} />
+                    </StackPanel>
 
-                {/*    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}*/}
-                {/*        Style={CommandButton.CommandBarButtonStyle} />*/}
+                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                        Style={CommandButton.CommandBarButtonStyle} />
 
-                {/*    <ModernButton*/}
-                {/*        Label="NEW EMPLOYEE"*/}
-                {/*        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
-                {/*        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
+                    <CommandButton
+                        Label="NEW EMPLOYEE"
+                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}
+                        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
 
-                {/*    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />*/}
-                {/*</StackPanel>*/}
-
-                <StackPanel Orientation={Orientation.Horizontal} >
-                    <TextBox Label="Page" Text={new Binding("DocPage")} />
-                    <TextBox Label="Scale" Text={new Binding("DocScale")} />
+                    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
                 <DocumentViewer
                     Document={this._pdfDoc}
-                    Scale={new Binding({
-                        Path: "DocScale",
-                        Mode: BindingMode.TwoWay
-                    })}
-                />
+                    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />
 
-                {/*<DocumentViewer*/}
-                {/*    Document={this._pdfDoc}*/}
-                {/*    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />*/}
-
-                {/*<ListBox                    */}
-                {/*    SelectionMode={SelectionMode.Single}                    */}
-                {/*    ItemsPanel={ItemsStackPanel}*/}
-                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
-                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
-                {/*    ItemTemplate={(item) =>*/}
-                {/*    (*/}
-                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
-                {/*            Margin="10px"*/}
-                {/*        />*/}
-                {/*    )} />*/}
-
-                {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
-                {/*    <ReactDataContext.Consumer>*/}
-                {/*        {ctx => (*/}
-                {/*            <div>*/}
-                {/*                <h2>CEO</h2>*/}
-                {/*                <Employee num={1} />*/}
-                {/*                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>*/}
-                {/*                    Increase*/}
-                {/*                </PrimaryButton>*/}
-                {/*            </div>*/}
-                {/*        )}*/}
-                {/*    </ReactDataContext.Consumer>*/}
-                {/*</DataContext>*/}
+                <ListBox                    
+                    SelectionMode={SelectionMode.Single}                    
+                    ItemsPanel={ItemsStackPanel}
+                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                    ItemTemplate={new DataTemplate((item) =>
+                    (
+                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+                            Margin="10px"
+                        />
+                    ))} />
             </Grid>
         );
     }

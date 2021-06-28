@@ -222,6 +222,7 @@ export class MultitouchTransform
     public Reset()
     {
         this._committed = Matrix.Identity;
+        this._cachedMatrix = Matrix.Identity;
         this._cachedCSS = '';
         this._centerX = 0;
         this._centerY = 0;

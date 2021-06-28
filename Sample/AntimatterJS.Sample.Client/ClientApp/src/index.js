@@ -11,9 +11,10 @@ import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
 
-import { Style } from '@antimatterjs/positron';
+import { Style, Window } from '@antimatterjs/positron';
 
 import App from './App';
+import ViewerTestApp from './ViewerTestApp';
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
@@ -71,12 +72,9 @@ loadTheme(theme);
 
     ReactDOM.render(
         <div>
-            <BrowserRouter basename={baseUrl}>
-                <App Model={appModel}/>
-
-                {/*<DataContext Value={limine}>*/}
-                {/*    <MainWindow />*/}
-                {/*</DataContext>*/}
+            <BrowserRouter basename={baseUrl}>                
+                <ViewerTestApp />                
+                {/*<App Model={appModel}/>*/}                
             </BrowserRouter>
         </div>,
         rootElement);
