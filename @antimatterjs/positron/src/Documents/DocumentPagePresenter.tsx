@@ -1,18 +1,8 @@
 import * as React from "react";
 import { DefaultEffects } from "@fluentui/react";
 import { Binding, Utilities } from "@antimatterjs/react";
-
-import { Panel } from "../Controls/Panel";
 import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
-import { Style } from "../Style";
-import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
-import { FrameworkElement } from "../FrameworkElement";
-import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
-import { ControlTemplate } from "../FrameworkTemplate";
-import { MultitouchTransform } from "../Media/MultitouchTransform";
 import { Point, Rect } from "../Foundation";
-import { IStackPanelProps, IStackPanelState, StackPanel, StackPanelBase } from "../Controls/StackPanel";
-import { IVirtualizingItemsControlProps, IVirtualizingItemsControlState, VirtualizingItemsControl, VirtualizingItemsControlBase } from "../Controls/VirtualizingItemsControl";
 import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } from "../Controls/VirtualizedPanel";
 import { LoadingShimmer } from "../Controls/LoadingShimmer";
 import { DocumentPagesPanel } from "./DocumentPagesPanel";
@@ -23,12 +13,15 @@ interface IDocumentPagePresenterCommon
     PageIndex?: number,
     PagePadding?: number
 }
+
 export interface IDocumentPagePresenterProps extends IVirtualizedPanelProps, IDocumentPagePresenterCommon
 {
 }
+
 interface IDocumentPagePresenterState extends IVirtualizedPanelState, IDocumentPagePresenterCommon
 {
 }
+
 export class DocumentPagePresenterBase<
     P extends IDocumentPagePresenterProps = {},
     S extends IDocumentPagePresenterState = {}>
@@ -167,8 +160,7 @@ export class DocumentPagePresenterBase<
 
         this._isRenderingHighResImage = true;
 
-        //if (!this._largeImage)
-            this._largeImage = document.createElement('canvas');        
+        this._largeImage = document.createElement('canvas');        
         
         this._largeImage.width = Math.ceil(this._currentHighResViewport.Width * this._currentHighResScale);
         this._largeImage.height = Math.ceil(this._currentHighResViewport.Height * this._currentHighResScale);
@@ -249,46 +241,29 @@ export class DocumentPagePresenterBase<
 
         this._currentCanvas = canvas;
 
-        //if (this._isSmallImageBlank)
-        {
-            // Even though we're realized, wait a bit to make sure
-            // we're STILL dirty before actually painting for the first time. 
-            // We don't want fast scrolls, etc., to result in unneeded 
-            // rendering
-            await Utilities.SleepAsync(50);
-            if (!this._isDirty)
-                return;
+        // Even though we're realized, wait a bit to make sure
+        // we're STILL dirty before actually painting for the first time. 
+        // We don't want fast scrolls, etc., to result in unneeded 
+        // rendering
+        await Utilities.SleepAsync(50);
+        if (!this._isDirty)
+            return;
 
-            this._isDirty = false;
+        this._isDirty = false;
 
-            if (!await this.RenderSmallImageAsync())
-                return;
-        }
-        //else
-        //{
-        //    this._isDirty = false;
-        //}
-
-        //var tempCanvas = document.createElement('canvas');
-        //tempCanvas.width = viewport.width;
-        //tempCanvas.height = viewport.height;
-        //var tempContext = tempCanvas.getContext("2d");
-        //await this._page.render({
-        //    canvasContext: tempContext,
-        //    viewport: viewport
-        //}).promise;
+        if (!await this.RenderSmallImageAsync())
+            return;
 
         //console.log(`Painting PDF page small image ${this.state.PageIndex}`);
 
         if (!this._smallImage)
-            // Maybe if scroll out happened during render
+            // Maybe if scroll out / derealization
+            // happened during render
             return;
         var ctx = canvas.getContext("2d");
         canvas.width = this._smallImage.width || 0;
         canvas.height = this._smallImage.height || 0;
         ctx?.drawImage(this._smallImage, 0, 0);
-
-        this._isSmallImageBlank = false;
 
         this.PagesPanel?.UpdatePageInView(this);
 
@@ -311,10 +286,6 @@ export class DocumentPagePresenterBase<
             this._lastHeight === this.Container.clientHeight)
             return;
 
-        // Adjust vscroll if the newly re-sized item is coming into view above us
-        //if ((resizedChild.Container?.getBoundingClientRect()?.top || 0) <
-        //this._scroller.getBoundingClientRect().top)
-
         this.PagesPanel?.RecomputeDimensions(true);
 
         this._lastWidth = this.Container?.clientWidth || 0;
@@ -336,8 +307,7 @@ export class DocumentPagePresenterBase<
     private _lastRenderedHighResViewport: Rect = new Rect();
     private _currentHighResScale: number = 1;
     private _isHighResViewportDirty: boolean = false;
-    private _isHighResLoopActive: boolean = false;
-    private _isSmallImageBlank: boolean = true;
+    private _isHighResLoopActive: boolean = false;    
 }
 export class DocumentPagePresenter extends DocumentPagePresenterBase<IDocumentPagePresenterProps, IDocumentPagePresenterState>
 {

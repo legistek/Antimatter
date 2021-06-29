@@ -24,6 +24,7 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
 
     /* override */ renderElement(): JSX.Element
     {
+        
         return (
             <div style={{
                 touchAction: "pan-y",
@@ -35,9 +36,9 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         );
     }
 
-    /** Must be called by a DocumentPagePresenter any time it may have changed 
-     * dimensions base size due to realization or any other reason. */
-    public RecomputeDimensions(preserveScroll: boolean)
+    /** Must be called any time the dimensions of the panel may have changed.
+     * @param childChanged true if being called because a child page changed dimensions due to first realization or otherwise. */
+    public RecomputeDimensions(childChanged: boolean)
     {
         if (!this.Container || !this._scroller)
             return;
@@ -62,27 +63,11 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         this.Container.style.height = `${this.Container.clientHeight * this.ActualScale}px`;
 
         this._scroller.scrollLeft = hscroll;
-        if (this.ScrollingUp && preserveScroll)
+        if (this.ScrollingUp && childChanged)
         {
             this._scroller.scrollTop = vscroll +
                 (this.Container.clientHeight - priorHeight);
         }
-
-        //// Restore hscroll
-        ////if (preserveScroll)
-        //{
-        //    this._scroller.scrollLeft = hscroll;
-        //    this._scroller.scrollTop = vscroll;
-        //}
-
-        //if (!preserveScroll && this.ScrollingUp && scrollAdj)
-        //{
-        //    this._scroller.scrollBy({
-        //        behavior: "auto",
-        //        left: 0,
-        //        top: scrollAdj * this.ActualScale
-        //    });
-        //}
     }
 
     /* override */ componentDidMount()
@@ -112,19 +97,16 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         this.UpdatePagesOnScroll();
     }
 
-    /**
-     * Sets the desired scroll position for the VirtualizingPanel. 
+    /** Sets the desired scroll position for the VirtualizingPanel. 
      * @param pt A Point with the x and y scroll coordinates. The 
      * actual scroll position does not change immediately but rather
      * is updated once the component re-renders. This can be called
      * at the conclusion of a manipulation gesture, for example, to
-     * set the scroll position to match the transform.
-     */
+     * set the scroll position to match the transform. Note this does
+     * not itself invalidate the render of this panel. */
     public SetDesiredScroll(pt: Point)
-    {
+    {        
         this._desiredScroll = pt;
-        console.log("SetDesiredScroll");
-        //this.InvalidateRender();
     }
 
     /**
@@ -132,7 +114,7 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
      * the visible bounds. The DocumentPagePresenter can/should call this 
      * when realized and periodically thereafter to render a high resolution
      * overlay apporpriate for the viewport.
-     * @param page The DocumentPagePresenter
+     * @param page The page presenter
      */
     public IsPageInView(page: DocumentPagePresenter): Rect | null
     {
@@ -166,8 +148,14 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         );
 
         // Translate the visible bounds back to canvas coordinates
-        var visibleUpperLeft = FrameworkElement.TranslatePoint(boundedUpperLeft, this.Scroller, page.CurrentCanvas);
-        var visibleBottomRight = FrameworkElement.TranslatePoint(boundedBottomRight, this.Scroller, page.CurrentCanvas);
+        var visibleUpperLeft = FrameworkElement.TranslatePoint(
+            boundedUpperLeft,
+            this.Scroller,
+            page.CurrentCanvas);
+        var visibleBottomRight = FrameworkElement.TranslatePoint(
+            boundedBottomRight,
+            this.Scroller,
+            page.CurrentCanvas);
         if (visibleBottomRight.X <= visibleUpperLeft.X ||
             visibleBottomRight.Y <= visibleUpperLeft.Y)
             return null;
@@ -179,10 +167,10 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
             Math.ceil(visibleBottomRight.Y - visibleUpperLeft.Y));
     }
 
-    /**
-     * Updates all realized pages by recomputing their visible viewports
-     * for high resolution rendering.
-     **/
+    /** Updates all realized pages by recomputing their visible viewports
+     * for high resolution rendering and flagging the page as ready to
+     * be repainted. The page maintains its own render loop that periodically
+     * checks for the high resolution viewport. */
     public UpdatePagesOnScroll()
     {
         if (!this._realizedPages)
@@ -191,6 +179,9 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
             this.UpdatePageInView(page);
     }
 
+    /**
+     * Updates the high-res render viewport for a specific realized page 
+     * @param page The page presenter */
     public UpdatePageInView(page: DocumentPagePresenter)
     {
         var rc = this.IsPageInView(page);
@@ -200,11 +191,19 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
                 this.ActualScale * ((this.state.Transform?.AbsoluteScale as number) || 1));
     }
 
+    /**
+     * Called by the page presenter on realization so this panel can track the currently realized pages.
+     * @param page the page presenter
+     */
     public OnPageRealized(page: DocumentPagePresenter)
     {
         this._realizedPages.add(page);
     }
 
+    /**
+     * Called by the page presenter on de-realization so this panel can track the currently realized pages.
+     * @param page the page presenter
+     */
     public OnPageDerealized(page: DocumentPagePresenter)
     {
         this._realizedPages.delete(page);
@@ -232,6 +231,3 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
     private _scroller: HTMLElement | null = null;
     private _realizedPages: Set<DocumentPagePresenter> = new Set<DocumentPagePresenter>();
 }
-
-
-

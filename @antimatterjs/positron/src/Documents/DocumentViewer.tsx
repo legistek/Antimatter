@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DefaultEffects } from "@fluentui/react";
 import { Binding, Utilities } from "@antimatterjs/react";
 
 import { Panel } from "../Controls/Panel";
