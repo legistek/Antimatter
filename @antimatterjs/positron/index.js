@@ -1,7 +1,7 @@
 export * from './src/Enums';
+export * from './src/Foundation';
 export * from './src/Media/MultitouchTransform';
 export * from './src/Media/Matrix';
-export * from './src/Media/Point';
 export * from './src/FrameworkElement';
 export * from './src/Style';
 export * from './src/DialogTemplate';
@@ -35,3 +35,8 @@ export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
 export * from './src/Controls/ColorPicker';
+export * from './src/Controls/VirtualizedPanel';
+export * from './src/Controls/VirtualizingItemsControl';
+export * from './src/Documents/DocumentViewer';
+export * from './src/Documents/IDocument';
+export * from './src/Documents/PDFJSDocument';

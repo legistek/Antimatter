@@ -2,7 +2,7 @@ import * as React from 'react';
 import { List } from '@fluentui/react';
 import { Binding, ModelObjectReference } from '@antimatterjs/react';
 
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IItemsStackPanelProps extends IPanelProps
 {
@@ -13,7 +13,7 @@ interface IItemsStackPanelState extends IPanelState
     version?: any
 }
 
-export class ItemsStackPanel extends Panel<IItemsStackPanelProps, IItemsStackPanelState>
+export class ItemsStackPanel extends PanelBase<IItemsStackPanelProps, IItemsStackPanelState>
 {
     _version: any = {};
 
@@ -30,7 +30,7 @@ export class ItemsStackPanel extends Panel<IItemsStackPanelProps, IItemsStackPan
                 onRenderCell={(item, index) =>
                     this.props.ItemsParent?.OnRenderItem(item)}
                 version={this._version}
-                />
+            />
         );
     }
 

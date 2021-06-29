@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -153,10 +153,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
-                
+
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}                    
+                        RowHeight={44}
                         SelectedItems={new Binding("SelectedEmployees")}
                         IsSelectAll={new Binding("IsAllSelected")}
                         OnManipulationStarted={(e) =>
@@ -193,9 +193,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 Template: this._ageTemplate
                             }
                         ]}
-                        />
+                    />
                 </div>
-                
+
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

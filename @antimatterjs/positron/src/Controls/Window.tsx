@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Antimatter, Binding, ModelObjectReference } from '@antimatterjs/react';
 
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
 import { DialogBox } from './DialogBox';
@@ -21,7 +21,7 @@ export interface IWindowState extends IPanelState
     Layout?: WindowLayout;
 }
 
-export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> extends Panel<IWindowProps, IWindowState>
+export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> extends PanelBase<IWindowProps, IWindowState>
 {
     constructor(props)
     {

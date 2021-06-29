@@ -4,6 +4,7 @@ import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
+import { MultitouchTransform } from '../Media/MultitouchTransform';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
@@ -31,13 +32,13 @@ export interface IPanelState extends IFrameworkElementState
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
 
-export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P,S>
+export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P, S>
 {
     constructor(props: IPanelProps)
     {        
         super(props);
         if (props.ItemsParent)        
-            props.ItemsParent.ItemsPanelInstance = this;        
+            props.ItemsParent.ItemsPanelInstance = this;
     }
 
     /* override */ getCSSStyles() : React.CSSProperties
@@ -66,6 +67,11 @@ export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> exten
         return (<>{this.props.children}</>);
     }
 
+    public /* virtual */ OnItemSourceChange()
+    {
+        this.InvalidateRender();
+    }
+
     static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
     {
         switch (v)
@@ -82,3 +88,6 @@ export class Panel<P extends IPanelProps = {}, S extends IPanelState = {}> exten
     }
 }
 
+export class Panel extends PanelBase<IPanelProps, IPanelState>
+{
+}

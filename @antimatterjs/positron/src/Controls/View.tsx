@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IViewProps extends IPanelProps
 {
@@ -13,7 +13,7 @@ export interface IViewState extends IPanelState
 
 export abstract class View<P extends IViewProps = {},
     S extends IViewState = {}>
-    extends Panel<P,S>
+    extends PanelBase<P,S>
 {
     /* protected */ abstract Template(): JSX.Element;
     
