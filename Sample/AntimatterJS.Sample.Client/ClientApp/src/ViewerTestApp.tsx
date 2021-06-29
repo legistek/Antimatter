@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { DialogBox, DocumentViewer, FrameworkElement, Grid, HorizontalAlignment, IDocument, MultitouchTransform, Orientation, PDFJSDocument, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, DocumentViewer, Panel, FrameworkElement, Grid, HorizontalAlignment, IDocument, MultitouchTransform, Orientation, PDFJSDocument, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+
 
 export default class ViewerTestApp extends FrameworkElement
 {
@@ -14,7 +15,10 @@ export default class ViewerTestApp extends FrameworkElement
     {
         return (
             <Window>
-                <DocumentViewer Document={this._pdfDoc} />
+                <Grid RowDefinitions={[Grid.RowDefinition(50), Grid.RowDefinition(1, true)]}>
+                    <Panel Background="blue"/>
+                    <DocumentViewer Document={this._pdfDoc} />
+                </Grid>
             </Window>
         );
     }

@@ -277,8 +277,8 @@ export class FrameworkElement<
             styles.gridRow = this.state.Grid.Row + 1;
         if (this.state.IsHitTestVisible === false)
             styles.pointerEvents = "none";
-        if (this._gestureHandlers)
-            styles.touchAction = "pan-y";
+        //if (this._gestureHandlers)
+        //    styles.touchAction = "pan-y";
         if (this.state.Transform)
         {
             //styles.transform = this.state.Transform.ToCSS();

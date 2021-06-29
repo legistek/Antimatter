@@ -19,6 +19,9 @@ export class ManipulationHelper
 
     public OnPointerDown(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
+
         this._pointerCache.push(event);
         this._isPotentiallyManipulating = true;
 
@@ -57,6 +60,8 @@ export class ManipulationHelper
 
     public OnPointerMove(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
         if (!this._isPotentiallyManipulating || this._pointerCache.length === 0)
             return;
 
@@ -148,6 +153,8 @@ export class ManipulationHelper
 
     public OnPointerUp(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
         if (!this.RemovePointerEvent(event))
             // We weren't tracking this one anyway
             return;

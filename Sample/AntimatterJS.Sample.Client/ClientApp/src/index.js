@@ -62,10 +62,12 @@ loadTheme(theme);
 
 (async function ()
 {
-    await Antimatter.StartAsync(new WebassemblyServer(), new ReactClient());
-    var appModel = await Antimatter.Server.GetRootObject("app");
+    await Antimatter.StartAsync(
+        null, //new WebassemblyServer(),
+        new ReactClient());
 
-    var limine = await Antimatter.Server.GetRootObject("limine");
+    //var appModel = await Antimatter.Server.GetRootObject("app");
+    //var limine = await Antimatter.Server.GetRootObject("limine");
 
     const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
     const rootElement = document.getElementById('root');

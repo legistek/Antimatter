@@ -10,11 +10,14 @@ export class Antimatter
 
     public static Server: IServer;   
 
-    public static StartAsync(server: IServer, client: IClient): Promise<void>
+    public static async StartAsync(server: IServer|null, client: IClient): Promise<void>
     {
-        Antimatter.Server = (window as any).AntimatterServer = server;
         Antimatter._client = (window as any).AntimatterClient = client;
-        return server.StartupAsync();
+        if (server)
+        {
+            Antimatter.Server = (window as any).AntimatterServer = server;
+            return await server.StartupAsync();
+        }
     }
 
     public static UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)

@@ -48,22 +48,30 @@ export class PDFJSDocument implements IDocument
         var page = await this._pdf.getPage(index + 1);
         if (!page)
             return null;
-        return new PDFJSPage(page);
+
+        var textContent = await page.getTextContent({
+            normalizeWhitespace: true,
+            includeMarkedContent: true,
+        });
+
+        return new PDFJSPage(page, textContent);
     }       
 }
 
 export class PDFJSPage implements IDocumentPage
 {
     private _page: any;
+    private _textContent: any;
     private _width: number = 0;
     private _height: number = 0;
 
-    constructor(page: any)
+    constructor(page: any, textContent: any)
     {
         this._page = page;
         var viewport = page.getViewport({ scale: 1 });
         this._width = viewport.width;
         this._height = viewport.height;
+        this._textContent = textContent;
     }
 
     public get Width(): number
@@ -76,13 +84,25 @@ export class PDFJSPage implements IDocumentPage
         return this._height;
     }
 
+    public RenderTextAsync(container: HTMLDivElement): Promise<void>
+    {
+        let pdfjsLib: any = (window as any).pdfjsLib;
+        var task = pdfjsLib.renderTextLayer({
+            textContent: this._textContent,
+            container: container,
+            viewport: this._page.getViewport({ scale: 1 }),
+            enhanceTextSelection: false
+        });
+        return task.promise;
+    }
+
     public async RenderAsync(canvas: HTMLCanvasElement, srcBounds: Rect, scale: number): Promise<void>
     {        
         var viewport = this._page.getViewport(
             {
                 scale: scale,
-                offsetX: -srcBounds.Left * scale,
-                offsetY: -srcBounds.Top * scale
+                offsetX: Math.floor(-srcBounds.Left * scale),
+                offsetY: Math.floor(-srcBounds.Top * scale)
             }
         );
         
@@ -90,7 +110,8 @@ export class PDFJSPage implements IDocumentPage
         
         await this._page.render({
             canvasContext: ctx,
-            viewport: viewport
+            viewport: viewport,
+            background: "white"
         }).promise;
 
         //var tempCanvas = document.createElement('canvas');
