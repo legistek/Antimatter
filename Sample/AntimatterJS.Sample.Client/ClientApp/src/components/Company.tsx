@@ -1,6 +1,6 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Position} from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -15,20 +15,11 @@ import
     ColorPicker,
     IFrameworkElementState,
     IFrameworkElementProps,
-    PDFJSDocument,
-    DocumentViewer,
-    ItemsControl,
-    Style,
-    HorizontalAlignment,
-    Panel,
-    ScrollBarVisibility,
-    Point
+    MultitouchTransform
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
-import { ControlTemplate, DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { IDocument } from '@antimatterjs/positron/src/Documents/IDocument';
-import { Ellipse } from '@antimatterjs/positron/src/Shapes/Ellipse';
+import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -119,37 +110,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 export class Company extends FrameworkElement<IFrameworkElementProps, IFrameworkElementState>
 {
     static displayName = Company.name;
-    
-    private _scale: number = 1;
-    private _pdfDoc?: IDocument | null;
-    
-    private _colors: any[];
-
+    private _tr = new MultitouchTransform();
 
     constructor(props)
     {
         super(props);
-        this.LoadPDFAsync();
-
-        this._colors = new Array(1000);
-        for (let i = 0; i < this._colors.length; i++)
-        {
-            var color = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`;
-            this._colors[i] = {
-                color: color,
-                width: 500,// + (i % 10) * 25,
-                key: color
-            };
-        }
-    }
-
-    private async LoadPDFAsync()
-    {
-        this._pdfDoc = await PDFJSDocument.CreateAsync(
-            "/data"
-//            "https://dev.limine.com/limineapi/webapi/matters/e41023f9-cd18-11eb-943f-0022484432a8/documents/c821b11c-cec4-11eb-943f-0022484432a8/pdf"
-        );
-        this.InvalidateRender();
     }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
@@ -166,20 +131,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     {
         console.log("Company rendering");
 
-        this.BindState(
-            {
-                Path: "DocScale",
-                Mode: BindingMode.TwoWay
-            },
-            "docScale");
-
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={
-                [
-                Grid.RowDefinition(),
-                Grid.RowDefinition(1, true)]}>
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -191,38 +146,16 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
                         Style={CommandButton.CommandBarButtonStyle} />
 
-                    <CommandButton
-                        Label="NEW EMPLOYEE"
-                        IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}
-                        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />
+                    {/*<ModernButton*/}
+                    {/*    Label="NEW EMPLOYEE"*/}
+                    {/*    IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
+                    {/*    Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
 
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
-                <DocumentViewer
-                    Document={this._pdfDoc}
-                    Position={new Binding({ Path: "DocPosition", MarshalValue: true })} />
-
-                <ListBox                    
-                    SelectionMode={SelectionMode.Single}                    
-                    ItemsPanel={ItemsStackPanel}
-                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
-                    ItemTemplate={new DataTemplate((item) =>
-                    (
-                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
-                            Margin="10px"
-                        />
-                    ))} />
-            </Grid>
-        );
-    }
-}
-
-
-
-/*
- * <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                <div className="amx-ptn-fe" style={{ height: 1024 }}>
+                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                         RowHeight={44}
                         SelectedItems={new Binding("SelectedEmployees")}
                         IsSelectAll={new Binding("IsAllSelected")}
@@ -260,33 +193,36 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 Template: this._ageTemplate
                             }
                         ]}
-                        />
- * 
- */
+                    />
+                </div>
 
 
-/*
- *                     <DocumentPagePresenter
-                        Document={this._pdfDoc}
-                        OnManipulationStarted={(e) =>
-                        {
-                            this._tr.CenterX = e.CenterX;
-                            this._tr.CenterY = e.CenterY;
-                        }}
-                        OnManipulationDelta={(e) =>
-                        {
-                            this._tr.TranslateX = e.CumulativeX;
-                            this._tr.TranslateY = e.CumulativeY;
-                            this._tr.ScaleX = e.CumulativeScale;
-                            this._tr.ScaleY = e.CumulativeScale;
-                        }}
-                        OnManipulationCompleted={(e) =>
-                        {
-                            this._scale = this._tr.AbsoluteScale;
-                            this._tr.Reset();
-                            this.InvalidateRender();
-                        }}
-                        Transform={this._tr}
-                        Scale={this._scale}
-                        PageIndex={880}/>
-                        */
+                {/*<ListBox                    */}
+                {/*    SelectionMode={SelectionMode.Single}                    */}
+                {/*    ItemsPanel={ItemsStackPanel}*/}
+                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
+                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
+                {/*    ItemTemplate={(item) =>*/}
+                {/*    (*/}
+                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
+                {/*            Margin="10px"*/}
+                {/*        />*/}
+                {/*    )} />*/}
+
+                {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
+                {/*    <ReactDataContext.Consumer>*/}
+                {/*        {ctx => (*/}
+                {/*            <div>*/}
+                {/*                <h2>CEO</h2>*/}
+                {/*                <Employee num={1} />*/}
+                {/*                <PrimaryButton onClick={Antimatter.BindCommand(this, { Path: "IncreaseAgeCommand", Source: ctx })}>*/}
+                {/*                    Increase*/}
+                {/*                </PrimaryButton>*/}
+                {/*            </div>*/}
+                {/*        )}*/}
+                {/*    </ReactDataContext.Consumer>*/}
+                {/*</DataContext>*/}
+            </Grid>
+        );
+    }
+}
