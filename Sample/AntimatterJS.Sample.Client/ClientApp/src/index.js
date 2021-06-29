@@ -11,7 +11,7 @@ import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
 
-import { Style, Window } from '@antimatterjs/positron';
+import { Style, View, Window } from '@antimatterjs/positron';
 
 import App from './App';
 import ViewerTestApp from './ViewerTestApp';
@@ -73,9 +73,11 @@ loadTheme(theme);
 
     ReactDOM.render(
         <div>
-            <BrowserRouter basename={baseUrl}>                
-                {/*<ViewerTestApp />      */}          
-                <App Model={appModel}/>
+            <BrowserRouter basename={baseUrl}>
+                <DataContext Value={appModel} >
+                    <ViewerTestApp />
+                </DataContext>
+                {/*<App Model={appModel}/>*/}
             </BrowserRouter>
         </div>,
         rootElement);

@@ -28,7 +28,7 @@ export class ItemsStackPanel extends PanelBase<IItemsStackPanelProps, IItemsStac
                 }}
                 getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
                 onRenderCell={(item, index) =>
-                    this.props.ItemsParent?.OnRenderItem(item)}
+                    this.props.ItemsParent?.OnRenderItem(item, index || 0)}
                 version={this._version}
             />
         );

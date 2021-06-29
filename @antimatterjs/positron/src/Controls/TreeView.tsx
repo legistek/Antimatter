@@ -53,7 +53,7 @@ export class TreeView<
         return TreeViewItem;
     }
 
-    /* override */ OnRenderItem(item: any, props?: ITreeViewItemProps)
+    /* override */ OnRenderItem(item: any, index: number, props?: ITreeViewItemProps)
     {
         props = props || {};
         props.TreeViewParent = this;
@@ -75,7 +75,7 @@ export class TreeView<
                 Source: item
             });
                 
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 
     // Called by a TVI on a click or a binding-based selection
@@ -277,7 +277,7 @@ class TreeViewItem<
         return TreeViewItem;
     }
 
-    /* override */ OnRenderItem(item: any, props?: ITreeViewItemProps)
+    /* override */ OnRenderItem(item: any, index: number, props?: ITreeViewItemProps)
     {
         props = props || {};
         props.TreeViewParent = this.state.TreeViewParent;
@@ -299,6 +299,6 @@ class TreeViewItem<
                 Source: item
             });
 
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 }

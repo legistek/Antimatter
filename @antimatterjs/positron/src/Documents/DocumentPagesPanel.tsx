@@ -1,19 +1,22 @@
 import * as React from "react";
 import { FrameworkElement } from "../FrameworkElement";
 import { Point, Rect } from "../Foundation";
-import { IStackPanelProps, IStackPanelState, StackPanel, StackPanelBase } from "../Controls/StackPanel";
+import { IStackPanelProps, IStackPanelState, StackPanelBase } from "../Controls/StackPanel";
 import { DocumentPagePresenter } from "./DocumentPagePresenter";
+import { IDocumentViewerProps } from "./DocumentViewer";
 
 interface IDocumentPagesPanelProps extends IStackPanelProps
 {
     Scale?: number;
 }
+
 interface IDocumentPagesPanelState extends IStackPanelState
 {
     Scale?: number;
 }
 
-export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocumentPagesPanelState>
+export class DocumentPagesPanel extends
+    StackPanelBase<IDocumentPagesPanelProps, IDocumentPagesPanelState>
 {
     public ScrollingUp: boolean = false;
 
@@ -37,7 +40,8 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
     }
 
     /** Must be called any time the dimensions of the panel may have changed.
-     * @param childChanged true if being called because a child page changed dimensions due to first realization or otherwise. */
+     * @param childChanged true if being called because a child page changed 
+     * dimensions due to first realization or otherwise. */
     public RecomputeDimensions(childChanged: boolean)
     {
         if (!this.Container || !this._scroller)
@@ -169,26 +173,48 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
 
     /** Updates all realized pages by recomputing their visible viewports
      * for high resolution rendering and flagging the page as ready to
-     * be repainted. The page maintains its own render loop that periodically
-     * checks for the high resolution viewport. */
+     * be repainted. Also updates the parent viewer with the current 
+     * "dominant" page (the page that occupies the most space in the viewport). */
     public UpdatePagesOnScroll()
     {
         if (!this._realizedPages)
             return;
+
+        let maxHeight: number = 0;
+        let maxHeightContender: DocumentPagePresenter | undefined = undefined;
+
         for (const page of this._realizedPages)
-            this.UpdatePageInView(page);
+        {            
+            var rc = this.UpdatePageInView(page);
+            if (!rc)
+                continue;
+            if (rc.Height > maxHeight ||
+                rc.Height === maxHeight &&
+                    maxHeightContender &&
+                    (page.state.PageIndex as number || 0) < (maxHeightContender.state.PageIndex as number ||0))
+            {
+                maxHeight = rc.Height;
+                maxHeightContender = page;
+            }
+        }
+
+        // Update the current page with one with the dominant height in the scroller
+        this.state.ItemsParent?.SetValue(
+            nameof<IDocumentViewerProps>(p => p.Page),
+            maxHeightContender?.state.PageIndex);
     }
 
     /**
      * Updates the high-res render viewport for a specific realized page 
      * @param page The page presenter */
-    public UpdatePageInView(page: DocumentPagePresenter)
+    public UpdatePageInView(page: DocumentPagePresenter): Rect|null
     {
         var rc = this.IsPageInView(page);
         if (rc)
             page.SetCurrentViewportWindow(
                 rc,
                 this.ActualScale * ((this.state.Transform?.AbsoluteScale as number) || 1));
+        return rc;
     }
 
     /**

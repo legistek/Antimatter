@@ -43,7 +43,8 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
         var items = itemsParent?.state.ItemsSource;
         if (!items || items.length === 0)
             return;
-        
+
+        let i = 0;
         for (const item of items)
         {
             var cmd = item as ModelObjectReference;
@@ -52,11 +53,12 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
 
             const cmdProps: ICommandBarItemProps = {
                 key: cmd.Handle.toString(),
-                data: cmd,
+                data: { index: i, command: cmd },
                 onRender: (item: ICommandBarItemProps, dismissMenu) =>
                 {
                     return itemsParent?.OnRenderItem(
-                        item.data,
+                        item.data.command,
+                        item.data.index,
                         {
                             Command: item.data,
                         }) || <></>;

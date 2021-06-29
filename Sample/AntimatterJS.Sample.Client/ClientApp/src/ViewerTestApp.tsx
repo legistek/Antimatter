@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import * as React from 'react';
-import { DialogBox, DocumentViewer, Panel, FrameworkElement, Grid, HorizontalAlignment, IDocument, MultitouchTransform, Orientation, PDFJSDocument, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, DocumentViewer, Panel, FrameworkElement, Grid, HorizontalAlignment, IDocument, MultitouchTransform, Orientation, PDFJSDocument, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout, TextBox } from '@antimatterjs/positron';
+import { Binding, BindingMode } from '@antimatterjs/react';
 
 
 export default class ViewerTestApp extends FrameworkElement
@@ -15,9 +16,19 @@ export default class ViewerTestApp extends FrameworkElement
     {
         return (
             <Window>
-                <Grid RowDefinitions={[Grid.RowDefinition(50), Grid.RowDefinition(1, true)]}>
-                    <Panel Background="blue"/>
-                    <DocumentViewer Document={this._pdfDoc} />
+                <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                    <StackPanel Orientation={Orientation.Horizontal}>
+                        <TextBox Label="Page" Text={new Binding({
+                            Mode: BindingMode.TwoWay,
+                            Path: "Company.DocPage",
+                            Converter: (p: number) => p + 1,
+                            ConverterBack: (p: number) => p - 1
+                        })} />
+                        <TextBox Label="Scale" Text={new Binding("Company.DocScale")} />
+                    </StackPanel>
+                    <DocumentViewer Document={this._pdfDoc}
+                        Page={new Binding("Company.DocPage")}
+                        Scale={new Binding("Company.DocScale")} />
                 </Grid>
             </Window>
         );

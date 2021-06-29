@@ -25,9 +25,10 @@ export class WrapPanelBase<
     {
         if (this.state.ItemsParent)
         {
+            let i = 0;
             var list = this.state.ItemsParent?.state?.ItemsSource?.map(item =>
             {
-                return this.state.ItemsParent?.OnRenderItem(item);
+                return this.state.ItemsParent?.OnRenderItem(item, i++);
             });
             return (<>{list}</>);
         }

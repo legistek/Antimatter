@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Binding, Utilities } from "@antimatterjs/react";
+import { Binding, BindingMode, Utilities } from "@antimatterjs/react";
 
 import { Panel } from "../Controls/Panel";
 import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
@@ -20,13 +20,17 @@ interface IDocumentViewerCommon
 }
 export interface IDocumentViewerProps extends IVirtualizingItemsControlProps, IDocumentViewerCommon
 {
-    Position?: DocumentPosition | Binding,
-    Scale?: number|Binding,
+    Page?: number | Binding,
+    Scale?: number | Binding,
+    X?: number | Binding,
+    Y?: number | Binding
 }
 export interface IDocumentViewerState extends IVirtualizingItemsControlState, IDocumentViewerCommon
 {
-    Position?: DocumentPosition,
+    Page?: number,
     Scale?: number,
+    X?: number,
+    Y?: number
 }
 
 export class DocumentViewerBase<
@@ -40,6 +44,15 @@ export class DocumentViewerBase<
     private _tr = new MultitouchTransform();
     private _pagesPanel: DocumentPagesPanel | null = null;
     private _lastScrollY: number = 0;
+
+    public static DefaultBindings = {
+        Scale: {
+            Mode: BindingMode.TwoWay
+        },
+        Page: {
+            Mode: BindingMode.TwoWay
+        }
+    };
 
     constructor(props)
     {
@@ -136,7 +149,6 @@ export class DocumentViewerBase<
 
     public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
         {
-            ItemsPanel: ItemsStackPanel,
             Background: "#E0E0E0",
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
@@ -160,17 +172,24 @@ export class DocumentViewerBase<
                 true);
             this.ItemsPanelInstance?.OnItemSourceChange();
         }
-        else if (property === nameof(this.state.Position))
+        else if (property === nameof(this.state.Scale))
         {
-            var pos = value as DocumentPosition;
-            var oldPos = oldValue as DocumentPosition;
-            if (pos?.scale !== oldPos?.scale)
-                this.ItemsPanelInstance?.InvalidateRender();
-            //this._pagesPanel?.SetDesiredScroll({ X: 0, Y: 792 * (pos.page + pos.y) * pos.scale });            
+            this.ItemsPanelInstance?.InvalidateRender();
+        }
+        else if (property === nameof(this.state.Page))
+        {
+            var page = this.ItemContainers[(this.state.Page as number || 0)];
+            if (!page)
+                return;
+            var offset = (page.Container?.getBoundingClientRect().top || 0) - (this._pagesPanel?.Container?.getBoundingClientRect().top || 0);
+            this._scroller?.Container?.scrollTo({
+                top: offset,
+                behavior: "smooth"
+            });
         }
     }
 
-    public /* override */ OnRenderItem(item: any, props?: any): JSX.Element | null
+    public /* override */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null
     {                
         const pageProps = Object.assign(props || {}, 
         {
@@ -179,18 +198,7 @@ export class DocumentViewerBase<
             Document: this.state.Document,            
             //Scale: this.state.Position?.scale || 1
         });
-        return super.OnRenderItem(item, pageProps);
-    }
-
-    public Scale(scale: number)
-    {
-        this.SetValue(nameof(this.state.Position),
-            {
-                x: 0,
-                y: 0,
-                scale: scale * (this.state.Position?.scale || 1),
-            });
-        this.ItemsPanelInstance?.InvalidateRender();
+        return super.OnRenderItem(item, index, pageProps);
     }
 
     /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
