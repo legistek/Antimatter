@@ -4,6 +4,7 @@ import { Point, Rect } from "../Foundation";
 import { IStackPanelProps, IStackPanelState, StackPanelBase } from "../Controls/StackPanel";
 import { DocumentPagePresenter } from "./DocumentPagePresenter";
 import { IDocumentViewerProps } from "./DocumentViewer";
+import { MultitouchTransform } from "../Media/MultitouchTransform";
 
 interface IDocumentPagesPanelProps extends IStackPanelProps
 {
@@ -80,6 +81,34 @@ export class DocumentPagesPanel extends
         if (!root)
             return;
         this._scroller = root;
+
+        this.Container?.addEventListener("wheel", (e) =>
+        {
+            if (!e.ctrlKey || !this.Container)
+                return;
+            
+            var center = FrameworkElement.TranslatePoint(
+                {
+                    X: e.clientX,
+                    Y: e.clientY
+                },
+                undefined,
+                this);
+            var scrollOrigin = {
+                X: this.Container.getBoundingClientRect().x - (this.Container.parentElement?.getBoundingClientRect()?.x || 0),
+                Y: this.Scroller?.scrollTop || 0,
+            };
+
+            // turn the deltaY into something usable as a scale; -100 = 2x, +100 = 1/2x
+            var scaleFactor = -2 * (e.deltaY / 100);
+
+            var tr = new MultitouchTransform();
+            tr.CenterX = center.X;
+            tr.CenterY = center.Y;
+            tr.ScaleX = tr.ScaleY = scaleFactor;
+
+            let a = 5;
+        });
     }
 
     /* override */ componentDidUpdate(prevProps)

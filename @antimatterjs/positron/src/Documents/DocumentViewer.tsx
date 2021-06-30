@@ -131,10 +131,9 @@ export class DocumentViewerBase<
                                 (vsp?.Container?.getBoundingClientRect().x || 0),
                             Y: this._scrollOrigin.Y - ((this._tr?.AbsoluteY || 0) / 1)
                         }
-
-                        vsp.SetDesiredScroll(ds);
+                        
                         this._tr.Reset();
-
+                        vsp.SetDesiredScroll(ds);
                         this.InvalidateRender();
                     }).bind(this)}
                     Transform={this._tr}
@@ -181,7 +180,8 @@ export class DocumentViewerBase<
             var page = this.ItemContainers[(this.state.Page as number || 0)];
             if (!page)
                 return;
-            var offset = (page.Container?.getBoundingClientRect().top || 0) - (this._pagesPanel?.Container?.getBoundingClientRect().top || 0);
+            var offset = (page.Container?.getBoundingClientRect().top || 0) -
+                (this._pagesPanel?.Container?.getBoundingClientRect().top || 0);
             this._scroller?.Container?.scrollTo({
                 top: offset,
                 behavior: "smooth"

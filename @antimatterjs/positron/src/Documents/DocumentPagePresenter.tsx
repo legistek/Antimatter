@@ -6,6 +6,7 @@ import { Point, Rect } from "../Foundation";
 import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } from "../Controls/VirtualizedPanel";
 import { LoadingShimmer } from "../Controls/LoadingShimmer";
 import { DocumentPagesPanel } from "./DocumentPagesPanel";
+import { FrameworkElement } from "../FrameworkElement";
 
 interface IDocumentPagePresenterCommon
 {
@@ -73,14 +74,14 @@ export class DocumentPagePresenterBase<
                         }}
                         ref={r => this.RenderHighResCanvas(r)} />
                     <div className="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-overlaps amx-ptn-pdf-textlayer"
-                        ref={r => this.RenderText(r)}                    >
+                        ref={r => this.RenderText(r)}>
 
                     </div>
                     {!this._smallImage ? (<LoadingShimmer Overlaps={true} Lines={20} LineHeight={8} />) : (<></>)}
                 </div>
             </>
         );
-    }
+    }    
 
     /* override */ componentDidUpdate(prevProps)
     {

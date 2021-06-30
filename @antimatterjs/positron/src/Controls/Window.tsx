@@ -60,6 +60,17 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         );
     }
 
+    /* override */ componentDidMount()
+    {
+        // Prevent accidental magnification
+        this.Container?.addEventListener("wheel", (e) =>
+        {
+            if (!e.ctrlKey)
+                return;
+            e.preventDefault();
+        });
+    }
+
     /* protected virtual */ GetLayout(): WindowLayout
     {
         if (window.outerWidth < 1024)
