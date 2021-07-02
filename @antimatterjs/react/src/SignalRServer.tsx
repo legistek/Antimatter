@@ -15,6 +15,11 @@ export class SignalRServer implements IServer
 
     //#region Client-Invocable Methods
 
+    OnServerStartup()
+    {
+        // nothing special needed here
+    }
+
     public async StartupAsync(): Promise<void>
     {
         this._connection.on("UpdateBinding", this.UpdateBinding.bind(this));

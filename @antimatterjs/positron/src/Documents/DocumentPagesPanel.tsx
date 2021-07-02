@@ -3,7 +3,7 @@ import { FrameworkElement } from "../FrameworkElement";
 import { Point, Rect } from "../Foundation";
 import { IStackPanelProps, IStackPanelState, StackPanelBase } from "../Controls/StackPanel";
 import { DocumentPagePresenter } from "./DocumentPagePresenter";
-import { IDocumentViewerProps } from "./DocumentViewer";
+import { DocumentViewer, IDocumentViewerProps } from "./DocumentViewer";
 import { MultitouchTransform } from "../Media/MultitouchTransform";
 
 interface IDocumentPagesPanelProps extends IStackPanelProps
@@ -19,6 +19,8 @@ interface IDocumentPagesPanelState extends IStackPanelState
 export class DocumentPagesPanel extends
     StackPanelBase<IDocumentPagesPanelProps, IDocumentPagesPanelState>
 {
+    private _innerDiv: HTMLElement | null = null;
+
     public ScrollingUp: boolean = false;
 
     public get Scroller(): HTMLElement | null
@@ -27,14 +29,14 @@ export class DocumentPagesPanel extends
     }
 
     /* override */ renderElement(): JSX.Element
-    {
-        
+    {        
         return (
-            <div style={{
-                touchAction: "pan-y",
-                transform: this.state.Scale ? `scale(${this.state.Scale})` : undefined,
-                transformOrigin: this.ActualScale < 1 ? "0px 0px" : "50% 0px"
-            }}>
+            <div ref={r => this._innerDiv = r}
+                style={{
+                    touchAction: "pan-y",
+                    transform: this.ActualScale ? `scale(${this.ActualScale})` : undefined,
+                    transformOrigin: this.ActualScale < 1 ? "0px 0px" : "50% 0px"
+                }}>
                 {super.renderElement()}
             </div>
         );
@@ -84,37 +86,20 @@ export class DocumentPagesPanel extends
 
         this.Container?.addEventListener("wheel", (e) =>
         {
-            if (!e.ctrlKey || !this.Container)
+            if (!e.ctrlKey)
                 return;
-            
-            var center = FrameworkElement.TranslatePoint(
-                {
-                    X: e.clientX,
-                    Y: e.clientY
-                },
-                undefined,
-                this);
-            var scrollOrigin = {
-                X: this.Container.getBoundingClientRect().x - (this.Container.parentElement?.getBoundingClientRect()?.x || 0),
-                Y: this.Scroller?.scrollTop || 0,
-            };
-
-            // turn the deltaY into something usable as a scale; -100 = 2x, +100 = 1/2x
-            var scaleFactor = -2 * (e.deltaY / 100);
-
-            var tr = new MultitouchTransform();
-            tr.CenterX = center.X;
-            tr.CenterY = center.Y;
-            tr.ScaleX = tr.ScaleY = scaleFactor;
-
-            let a = 5;
+            this.OnWheelScaling(e);            
         });
     }
 
     /* override */ componentDidUpdate(prevProps)
     {
-        if (!this._scroller)
+        if (!this._scroller || !this._innerDiv)
             return;
+
+        this._innerDiv.style.touchAction = "pan-y";
+        this._innerDiv.style.transform = this.ActualScale ? `scale(${this.ActualScale})` : '';
+        this._innerDiv.style.transformOrigin = this.ActualScale < 1 ? "0px 0px" : "50% 0px";
 
         this.RecomputeDimensions(false);
 
@@ -140,6 +125,7 @@ export class DocumentPagesPanel extends
     public SetDesiredScroll(pt: Point)
     {        
         this._desiredScroll = pt;
+        this.componentDidUpdate(null);
     }
 
     /**
@@ -230,7 +216,8 @@ export class DocumentPagesPanel extends
         // Update the current page with one with the dominant height in the scroller
         this.state.ItemsParent?.SetValue(
             nameof<IDocumentViewerProps>(p => p.Page),
-            maxHeightContender?.state.PageIndex);
+            maxHeightContender?.state.PageIndex,
+            false);
     }
 
     /**
@@ -270,7 +257,8 @@ export class DocumentPagesPanel extends
 
     private get ActualScale(): number
     {
-        return ((this.state.Scale as number) || 1);
+        //return ((this.state.Scale as number) || 1);
+        return ((this.state.ItemsParent as DocumentViewer)?.state?.Scale as number) || 1;
     }
 
     private FindScroller(): HTMLElement | null | undefined
@@ -279,6 +267,24 @@ export class DocumentPagesPanel extends
         while (elem && elem?.style.overflowY !== "auto")
             elem = elem.parentElement;
         return elem;
+    }
+
+    private OnWheelScaling(e: WheelEvent)
+    {
+        var center = FrameworkElement.TranslatePoint(
+            {
+                X: e.clientX,
+                Y: e.clientY
+            },
+            undefined,
+            this);
+
+        // turn the deltaY into something usable as a scale; -100 = 2x, +100 = 1/2x
+        var scaleFactor = -1.5 * (e.deltaY / 100);
+        if (scaleFactor < 0)
+            scaleFactor = -1 / scaleFactor;
+
+        (this.state.ItemsParent as DocumentViewer)?.ScaleAboutPoint(scaleFactor, center);
     }
 
     private _maxWidth: number = 0;

@@ -10,31 +10,31 @@ const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-o
 const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
-{    
+{
+    private _startupResolver?: ((value: void) => void) = undefined;
+
     StartupAsync(): Promise<void>
     {
-        // just returns a promise that loops until the 
-        // Mono WASM "Module" is detected
-        return new Promise<void>((resolve, reject) =>
+        if ((window as any).ServerStarted)
         {
-            var loop = () =>
-            {
-                setTimeout(function ()
-                {
-                    if ((window as any).Module)
-                        resolve();
-                    else
-                    {
-                        console.log("Still waiting for WASM module...");
-                        loop();
-                    }
-                }, 1000);
-            };
-            loop();
-        });        
+            console.log("Server started before Client");
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) =>
+        {
+            this._startupResolver = resolve;
+        });
     }
 
     //#region Client-Invocable Methods
+
+    OnServerStartup()
+    {
+        console.log("Client started before server");
+        if (this._startupResolver)
+            this._startupResolver();
+    }
 
     GetRootObject(objectid: string): Promise<ModelObjectReference>
     {       
@@ -135,6 +135,8 @@ export class WebassemblyServer implements IServer
         let method: any = this._cachedMethods.get(methodKey);
         if (!method)
         {
+            if (!this.Module.mono_bind_static_method)
+                throw "how can this be?";
             method = this.Module.mono_bind_static_method(methodKey);
             if (method)
                 this._cachedMethods.set(methodKey, method);

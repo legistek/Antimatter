@@ -1,25 +1,7 @@
-'use strict';
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter, HashRouter, Route } from 'react-router-dom';
-import registerServiceWorker from './registerServiceWorker';
-
-import './theme';
-import './custom.css'
-
-import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext, Utilities } from '@antimatterjs/react';
-import { MainWindow } from './limine/MainWindow';
 import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
-
-import { Style, View, Window } from '@antimatterjs/positron';
-
-
-
-import App from './App';
-import ViewerTestApp from './ViewerTestApp';
+import { Style } from '@antimatterjs/positron';
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
@@ -55,39 +37,12 @@ registerIcons(
         fontFace: {
             fontFamily: "IconFont",
         },
-        icons: Style.CreateIconSet(0xE900, 0xEA15)
+        icons: Style.CreateIconSet(0xE900, 0xF10D)
         //{
         //    'ThumbsUp': '\uE902',
         //    'ThumbsDown': '\uE901',
         //    'E90D': '\uE90D',
         //}
     })
-//initializeIcons();
+initializeIcons();
 loadTheme(theme);
-
-(async function ()
-{
-    await Antimatter.StartAsync(
-        new WebassemblyServer(),
-        new ReactClient());
-
-    var appModel = await Antimatter.Server.GetRootObject("app");
-    
-    const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
-    const rootElement = document.getElementById('root');
-
-    ReactDOM.render(
-        <div>
-            <BrowserRouter basename={baseUrl}>
-                <DataContext Value={appModel} >
-                    <ViewerTestApp />
-                </DataContext>
-                {/*<App Model={appModel}/>*/}
-            </BrowserRouter>
-        </div>,
-        rootElement);
-
-    registerServiceWorker();
-})();
-
-

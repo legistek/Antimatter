@@ -105,7 +105,8 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Padding: "8px 0px 8px 0px",
+                Padding: "8px 5px 8px 5px",
+                
                 Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
                 (
                     <IconButton
@@ -121,14 +122,16 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                             },
                             icon: {
                                 height: "fit-content",
-                                margin: "0px"
-                            }
+                                margin: "0px",
+                                fontSize: "20px"
+                            },                            
                         }}
-                        onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
+                        onClick={(e) =>
+                            templatedParent.OnClick(e.nativeEvent)}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
-                        disabled={!templatedParent.state.IsEnabled}>
+                        disabled={templatedParent.state.IsEnabled === false}>
                     </IconButton>
                 )),
             }

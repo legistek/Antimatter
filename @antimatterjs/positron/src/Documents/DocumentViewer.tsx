@@ -76,8 +76,7 @@ export class DocumentViewerBase<
                 VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                 HorizontalScrollBarVisibility={ScrollBarVisibility.Auto}>
                 <DocumentPagesPanel
-                    ref={r => this._pagesPanel = r}
-                    Scale={this.state.Scale}
+                    ref={r => this._pagesPanel = r}                    
                     HorizontalAlignment={HorizontalAlignment.Center}
                     VerticalAlignment={VerticalAlignment.Top}
                     ItemsParent={this}
@@ -116,25 +115,7 @@ export class DocumentViewerBase<
                     }).bind(this)}
                     OnManipulationCompleted={((e) =>
                     {
-                        var vsp = this._pagesPanel;
-                        var scroller = this._scroller?.Container;
-                        if (!vsp || !scroller || !vsp.Container || !this._sizeFaker)
-                            return;
-
-                        this.SetValue(nameof(this.state.Scale), (this.state.Scale as number || 1) * this._tr?.AbsoluteScale || 1, true);
-
-                        this._sizeFaker.style.width = '0px';
-                        scroller.style.overflowX = "auto";
-
-                        var ds = {
-                            X: (vsp?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
-                                (vsp?.Container?.getBoundingClientRect().x || 0),
-                            Y: this._scrollOrigin.Y - ((this._tr?.AbsoluteY || 0) / 1)
-                        }
-                        
-                        this._tr.Reset();
-                        vsp.SetDesiredScroll(ds);
-                        this.InvalidateRender();
+                        this.CommitTransform(this._scrollOrigin);                        
                     }).bind(this)}
                     Transform={this._tr}
                 >
@@ -144,6 +125,35 @@ export class DocumentViewerBase<
                     style={{ height: 1, position: 'absolute' }} >
                 </div>
             </Panel>);
+    }
+
+    public CommitTransform(scrollOrigin: Point, updateState: boolean = true)
+    {
+        var pagesPanel = this._pagesPanel;
+        var scroller = this._scroller?.Container;
+        if (!pagesPanel || !scroller || !pagesPanel.Container || !this._sizeFaker)
+            return;
+
+        if (updateState)
+            this.SetValue(
+                nameof(this.state.Scale),
+                (this.state.Scale as number || 1) * this._tr?.AbsoluteScale || 1,
+                false);
+
+        this._sizeFaker.style.width = '0px';
+        scroller.style.overflowX = "auto";
+
+        var ds = {
+            X: (pagesPanel?.Container?.parentElement?.getBoundingClientRect()?.x || 0) -
+                (pagesPanel?.Container?.getBoundingClientRect().x || 0),
+            Y: scrollOrigin.Y - ((this._tr?.AbsoluteY || 0) / 1)
+        }
+
+        this._tr.Reset();
+        pagesPanel.SetDesiredScroll(ds);
+
+        // Do we really have to do this?
+        //this.InvalidateRender();
     }
 
     public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
@@ -172,8 +182,8 @@ export class DocumentViewerBase<
             this.ItemsPanelInstance?.OnItemSourceChange();
         }
         else if (property === nameof(this.state.Scale))
-        {
-            this.ItemsPanelInstance?.InvalidateRender();
+        {            
+            this.ScaleAboutPoint((value as number) / (oldValue as number), undefined, false);
         }
         else if (property === nameof(this.state.Page))
         {
@@ -187,6 +197,38 @@ export class DocumentViewerBase<
                 behavior: "smooth"
             });
         }
+    }
+
+    public ScaleAboutPoint(scaleFactor: number, center?: Point, updateState: boolean = true)
+    {
+        if (!this._scroller?.Container || !this._pagesPanel?.Container)
+            return;
+
+        var scrollOrigin = {
+            X: this._pagesPanel.Container.getBoundingClientRect().x -
+                (this._pagesPanel.Container.parentElement?.getBoundingClientRect()?.x || 0),
+            Y: this._scroller?.Container.scrollTop || 0,
+        };
+
+        if (!center)
+        {
+            // Figure out the point on the pages panel that's the
+            // center of the viewport
+            center = FrameworkElement.TranslatePoint(
+                {
+                    X: this._scroller.Container.clientWidth / 2,
+                    Y: this._scroller.Container.clientHeight / 2
+                },
+                this._scroller,
+                this._pagesPanel);
+        }
+
+        this._tr.CenterX = center.X;
+        this._tr.CenterY = center.Y;
+
+        this._tr.ScaleX = this._tr.ScaleY = scaleFactor;
+
+        this.CommitTransform(scrollOrigin, updateState);
     }
 
     public /* override */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null

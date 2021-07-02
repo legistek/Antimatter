@@ -41,6 +41,12 @@
     -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.js" integrity="sha512-or6dZINrKDVWLBVCUIVHNwEf0qJtwBWvw9Edd/s2QCZYBl9lJgQZZqNQY2ZOWW8tF5Yoq6I8adPpC9ELlY325w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
       <script>
+          window.OnServerStartup = () =>
+          {
+              window.ServerStarted = true;
+              if (window.AntimatterServer)
+                  window.AntimatterServer.OnServerStartup();
+          };
           window.getCookie = (name) =>
           {
               var value = "; " + document.cookie;

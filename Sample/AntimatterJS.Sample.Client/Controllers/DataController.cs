@@ -23,12 +23,11 @@ namespace AntimatterJS.Sample.Client.Controllers
               //"Different Page Sizes.pdf"
               );
 
-            return PhysicalFile(
-                physicalPath, 
-                "application/octet-stream",
-                "Microsoft_Win7_UXGuide5.pdf"
-                //"Absurdely Long PDF (26000 pages).pdf"
-                );
-        }
-    }
+			return PhysicalFile(
+				physicalPath,
+				"application/octet-stream",
+				"Microsoft_Win7_UXGuide5.pdf",
+				enableRangeProcessing: true);
+        }        
+	}
 }

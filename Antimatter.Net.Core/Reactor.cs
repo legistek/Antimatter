@@ -7,6 +7,7 @@ using System.Linq;
 
 using Antimatter.Net.Internal;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Antimatter.Net
 {
@@ -96,6 +97,15 @@ namespace Antimatter.Net
         public void NavigateTo(string route)
         {
             Reactor.Client.NavigateTo(this.ClientID, route);
+        }
+
+        /// <summary>
+        /// Invoked by model servers to signal to clients that
+        /// they are ready to start.
+        /// </summary>   
+        public async Task StartupAsync()
+        {
+            await Reactor.Client.StartupAsync();
         }
                 
         public static object SessionContext => _currentSessionContext.Value;
