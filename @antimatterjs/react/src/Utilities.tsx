@@ -1,8 +1,7 @@
 ﻿import { release } from "os";
 import { ModelObjectReference } from "./ModelObjectReference";
 
-const unixTime0Ticks: bigint =
-    BigInt(621355968) * BigInt(1000000000);
+const unixTime0MSs: number = 62135596800000;
 
 export class Utilities
 {    
@@ -34,12 +33,18 @@ export class Utilities
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    public static DateFromTicks(ticks: bigint): Date
+    public static TicksMSFromDate(date: Date) : number
+    {
+        return date.getTime() + unixTime0MSs;
+    }
+
+    public static DateFromTicks(ticksms: number): Date
     {
         // get the ms from Unix Time 0
-        var ms = Number((ticks - unixTime0Ticks) / BigInt(10000));
-
-        return new Date(ms);
+        var ms = Number(ticksms - unixTime0MSs);
+        var dt = new Date();
+        dt.setTime(ms);
+        return dt;
     }
 
     public static AddStyleSheet(sheet: string)

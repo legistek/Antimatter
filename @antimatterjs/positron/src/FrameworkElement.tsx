@@ -97,12 +97,12 @@ export class FrameworkElement<
             this.state.OnManipulationDelta ||
             this.state.OnManipulationCompleted)
             this._gestureHandlers = true;
-         
+
+        //onContextMenu={(event) => event.preventDefault()}
         return (
             <div
                 ref={r => this.Container = r}
-                style={this.getCSSStyles()}
-                onContextMenu={(event) => event.preventDefault()}
+                style={this.getCSSStyles()}                
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
                     : undefined}

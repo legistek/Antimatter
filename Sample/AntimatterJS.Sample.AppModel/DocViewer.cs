@@ -8,6 +8,25 @@ namespace AntimatterJS.Sample.AppModel
 {
     public class DocViewer : ObservableObject
     {
+        #region DateTime Today property
+        private DateTime _Today = DateTime.Now;
+        public DateTime Today
+        {
+            get
+            {
+                return _Today;
+            }
+            set
+            {
+                if (_Today != value)
+                {
+                    _Today = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #region int Page property
         private int _Page = 0;
         public int Page

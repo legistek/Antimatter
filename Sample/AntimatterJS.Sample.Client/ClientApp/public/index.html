@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1.0, maximum-scale = 1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <base href="%PUBLIC_URL%/" />
     <!--
@@ -39,7 +39,7 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.js" integrity="sha512-or6dZINrKDVWLBVCUIVHNwEf0qJtwBWvw9Edd/s2QCZYBl9lJgQZZqNQY2ZOWW8tF5Yoq6I8adPpC9ELlY325w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.js" integrity="sha512-or6dZINrKDVWLBVCUIVHNwEf0qJtwBWvw9Edd/s2QCZYBl9lJgQZZqNQY2ZOWW8tF5Yoq6I8adPpC9ELlY325w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
       <script>
           window.OnServerStartup = () =>
           {
@@ -55,6 +55,7 @@
                   return parts.pop().split(";").shift();
           };
       </script>
+      <script src="https://mozilla.github.io/pdf.js/legacy/build/pdf.js" crossorigin="anonymous"></script>
       <script src="_framework/blazor.webassembly.js"></script>
   </body>
 </html>

@@ -11,10 +11,16 @@ export default class ViewerTestApp extends FrameworkElement
     {
         super(props);
         this.LoadPDFAsync();
+
+        
     }
 
     renderElement()
     {
+        var date = this.BindState({
+            Path: "Viewer.Today"
+        });
+
         return (
             <Window>
                 <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
