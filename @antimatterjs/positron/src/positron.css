@@ -100,11 +100,6 @@ body {
     margin-bottom: auto;
 }
 
-/* Children of grids set to vertical stretch don't need to have stretch height themselves */
-.amx-ptn-grid > .amx-ptn-va-stretch.amx-ptn-grid {
-    height: auto;
-}
-
 .ms-DetailsRow-check.ms-Check-checkHost {
     height: 100%;
 }
@@ -118,14 +113,22 @@ body {
     width: 100%;
 }
 
-.amx-ptn-fe:not(.amx-ptn-stack-panel:not(.horizontal)) > .amx-ptn-va-stretch {
+
+
+.amx-ptn-va-stretch {
     max-height: 100%;
-    overflow: hidden;   
+    overflow: hidden;
     top: 0px;
     bottom: 0px;
     height: 100%;
 }
 
+/* VA Stretch Children of grids should be height auto */
+.amx-ptn-grid > .amx-ptn-va-stretch {
+    height: auto;
+}
+
+/* VA Stretch Children of Vertical Stack Panels should be height auto */
 .amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
     height: auto;
 }

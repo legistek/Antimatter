@@ -3,6 +3,7 @@ import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Uti
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { Style } from '../Style';
+import { IPanelProps } from '../Controls/Panel';
 import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
@@ -45,7 +46,11 @@ export class TreeView<
     };
 
     public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
-        {}
+        {
+            ItemsPanelStyle: new Style<IPanelProps>({
+                VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+            })
+        }
     );
 
     /* override */ GetContainerForItemOverride()

@@ -61,7 +61,7 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                         item.data.index,
                         {
                             Command: item.data,
-                        }) || <></>;
+                        }) || (<></>);
                 },
             };
 

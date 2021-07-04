@@ -88,7 +88,6 @@ export class ItemsControl<
                                     BorderThickness: this.state.BorderThickness,
                                     BorderBrush: this.state.BorderBrush,
                                     ItemsParent: this,
-                                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
                                 } as IPanelProps);
                         }
                     }

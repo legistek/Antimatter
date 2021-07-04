@@ -60,16 +60,16 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
                         </CheckBox>
 
-                        <Popup IsOpen={new Binding("IsBonusEligible")}
-                            Background="rgba(255,255,255,.5)"
-                            Blur={10}
-                            Target={
-                                (() =>
-                                    this._cb)
-                                    .bind(this)
-                            }>
-                            <TextBlock Text="Really Nice bonus" />
-                        </Popup>
+                        {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
+                        {/*    Background="rgba(255,255,255,.5)"*/}
+                        {/*    Blur={10}*/}
+                        {/*    Target={*/}
+                        {/*        (() =>*/}
+                        {/*            this._cb)*/}
+                        {/*            .bind(this)*/}
+                        {/*    }>*/}
+                        {/*    <TextBlock Text="Really Nice bonus" />*/}
+                        {/*</Popup>*/}
 
                         <ColorPicker
                             ItemsSource={new Binding("Company.AvailableColors")}
