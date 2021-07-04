@@ -34,8 +34,7 @@ export class DocumentPagePresenterBase<
     }
 
     public SetCurrentViewportWindow(rc: Rect, scale: number)
-    {
-        //console.log(`Page ${this.state.PageIndex} Current Viewport - X: ${rc.X}, Y: ${rc.Y}, Width: ${rc.Width}, Height: ${rc.Height}, Scale: ${scale} `);
+    {        
         var x = Math.max(0, Math.floor(rc.X / scale) - 1);
         var y = Math.max(0, Math.floor(rc.Y / scale) - 1);
         var width = Math.min(Math.ceil(rc.Width / scale) + 2, (this._page?.Width || 0) - x);
@@ -58,15 +57,18 @@ export class DocumentPagePresenterBase<
                         height: ((this._page?.Height || 792) as number),
                         boxShadow: DefaultEffects.elevation4
                     }}>
-                    <canvas
+                    <canvas 
                         style={{
+                            zIndex: 1,
                             width: this._page?.Width || 612,
                             height: this._page?.Height || 792
                         }}
                         ref={r => this.RenderSmallCanvas(r)} />
                     <canvas
                         style={{
+                            zIndex: 2,
                             position: "absolute",
+                            transformOrigin: "0 0",
                             //width: 0,
                             //height: 0,
                             //left: 0,
@@ -224,8 +226,7 @@ export class DocumentPagePresenterBase<
         ctx?.drawImage(this._largeImage, 0, 0);
         this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X)}px`;
         this._currentHighResCanvas.style.top = `${Math.round(this._lastRenderedHighResViewport.Y)}px`;
-        this._currentHighResCanvas.style.width = `${Math.round(this._lastRenderedHighResViewport.Width)}px`;
-        this._currentHighResCanvas.style.height = `${Math.round(this._lastRenderedHighResViewport.Height)}px`;
+        this._currentHighResCanvas.style.transform = `scale(${(1 / this._currentHighResScale)})`;        
     }
 
     private async RenderText(textLayer: HTMLDivElement | null)

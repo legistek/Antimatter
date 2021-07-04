@@ -3,6 +3,7 @@ import { Component } from "react";
 import { BindingParameters } from "./BindingParameters";
 import { IClient } from "./IClient";
 import { IServer } from "./IServer";
+import { Utilities } from "./Utilities";
 
 export class Antimatter
 {
@@ -12,6 +13,9 @@ export class Antimatter
 
     public static async StartAsync(server: IServer|null, client: IClient): Promise<void>
     {
+        var browser = Utilities.GetBrowser();
+        console.log(`Browser: ${browser.Name} version ${browser.Version}`);
+
         Antimatter._client = (window as any).AntimatterClient = client;
         if (server)
         {

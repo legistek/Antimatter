@@ -113,19 +113,5 @@ export class PDFJSPage implements IDocumentPage
             viewport: viewport,
             background: "white"
         }).promise;
-
-        //var tempCanvas = document.createElement('canvas');
-        //tempCanvas.width = viewport.width;
-        //tempCanvas.height = viewport.height;
-        //var tempContext = tempCanvas.getContext("2d");
-        //await this._page.render({
-        //    canvasContext: tempContext,
-        //    viewport: viewport
-        //}).promise;
-
-        //var ctx = canvas.getContext("2d");
-        //canvas.width = viewport.width;
-        //canvas.height = viewport.height;
-        //ctx?.drawImage(tempCanvas, 0, 0);
     }
 }
