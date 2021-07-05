@@ -67,13 +67,14 @@ export class DocumentPagesPanel extends
 
         var priorHeight = this.Container.clientHeight;
         this.Container.style.height = "auto";
-        this.Container.style.height = `${this.Container.clientHeight * this.ActualScale}px`;
+        var newHeight = this.Container.clientHeight * this.ActualScale;
+        var diff = newHeight - priorHeight;
+        this.Container.style.height = `${newHeight}px`;
 
         this._scroller.scrollLeft = hscroll;
         if (this.ScrollingUp && childChanged)
         {
-            this._scroller.scrollTop = vscroll +
-                (this.Container.clientHeight - priorHeight);
+            this._scroller.scrollTop = vscroll + diff;
         }
     }
 
@@ -239,7 +240,7 @@ export class DocumentPagesPanel extends
      */
     public OnPageRealized(page: DocumentPagePresenter)
     {
-        this._realizedPages.add(page);
+        this._realizedPages.add(page);        
     }
 
     /**

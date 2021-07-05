@@ -177,7 +177,7 @@ export class DocumentPagePresenterBase<
 
     private async RenderSmallImageAsync(): Promise<boolean>
     {
-        if (!this.state.Document || this._isRenderingSmallImage)
+        if (!this.state.Document)
             return false;
         if (!this._page)
         {
@@ -186,6 +186,8 @@ export class DocumentPagePresenterBase<
                 return false;
         }
 
+        if (this._isRenderingSmallImage)
+            return false;
         this._isRenderingSmallImage = true;
 
         if (!this._smallImage)
@@ -283,9 +285,11 @@ export class DocumentPagePresenterBase<
 
     private InvalidateMeasure()
     {
-        if (!this.Container ||
-            this._lastWidth === this.Container.clientWidth &&
-            this._lastHeight === this.Container.clientHeight)
+        if (!this.Container
+            //||
+            //this._lastWidth === this.Container.clientWidth &&
+            //this._lastHeight === this.Container.clientHeight
+        )
             return;
 
         this.PagesPanel?.RecomputeDimensions(true);

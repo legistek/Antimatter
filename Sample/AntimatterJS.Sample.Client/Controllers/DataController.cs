@@ -19,8 +19,8 @@ namespace AntimatterJS.Sample.Client.Controllers
               Directory.GetCurrentDirectory(),
               "Data",
               //"Absurdely Long PDF 15000 pages.pdf"
-              "Microsoft_Win7_UXGuide5.pdf"
-              //"Different Page Sizes.pdf"
+              //"Microsoft_Win7_UXGuide5.pdf"
+              "Different Page Sizes.pdf"
               );
 
 			return PhysicalFile(
