@@ -47,7 +47,7 @@ export class DocumentPagesPanel extends
      * dimensions due to first realization or otherwise. */
     public RecomputeDimensions(childChanged: boolean)
     {
-        if (!this.Container || !this._scroller)
+        if (!this.Container || !this._scroller || !this._innerDiv)
             return;
 
         // Preserve hscroll and vscroll during the re-calc
@@ -57,10 +57,13 @@ export class DocumentPagesPanel extends
         // Measure desired width of the panel by changing the style to
         // "fit-content", then setting it explicitly depending on scale
         this.Container.style.width = "fit-content";
+        this._innerDiv.style.width = "unset";
         this._maxWidth = Math.max(
             this._maxWidth,
             (this.Container?.clientWidth || 0));
         this.Container.style.width = `${this._maxWidth * this.ActualScale}px`;
+        if (this.ActualScale < 1)
+            this._innerDiv.style.width = `${this._maxWidth}px`;
 
         // Basically do the same thing with height but only 
         // if the scale changed; 
@@ -74,6 +77,7 @@ export class DocumentPagesPanel extends
         this._scroller.scrollLeft = hscroll;
         if (this.ScrollingUp && childChanged)
         {
+            console.log(`Scrolling up preserving scroll position (diff: ${diff})`);
             this._scroller.scrollTop = vscroll + diff;
         }
     }
@@ -240,6 +244,7 @@ export class DocumentPagesPanel extends
      */
     public OnPageRealized(page: DocumentPagePresenter)
     {
+        console.log(`Page ${page.state.PageIndex} realized`);
         this._realizedPages.add(page);        
     }
 
@@ -256,7 +261,7 @@ export class DocumentPagesPanel extends
     {
     }
 
-    private get ActualScale(): number
+    public get ActualScale(): number
     {
         //return ((this.state.Scale as number) || 1);
         return ((this.state.ItemsParent as DocumentViewer)?.state?.Scale as number) || 1;

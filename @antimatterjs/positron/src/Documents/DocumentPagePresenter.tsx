@@ -46,9 +46,11 @@ export class DocumentPagePresenterBase<
 
     /* override */ RenderRealizedElement(): JSX.Element
     {
+        console.log(`Page ${this.state.PageIndex} rendering realized`);
         return (
             <>
                 <div className="amx-ptn-fe amx-ptn-ha-center"
+                    ref={r => this._outerDiv = r}
                     style={{
                         background: "white",
                         overflow: "visible",
@@ -93,6 +95,7 @@ export class DocumentPagePresenterBase<
             this._lastHeight = this.Container?.clientHeight || 0;
             this._hasRendered = true;
         }
+        this.InvalidateMeasure();
     }
 
     protected /* override */ async OnRealization()
@@ -226,9 +229,14 @@ export class DocumentPagePresenterBase<
 
         var ctx = this._currentHighResCanvas.getContext("2d");
         ctx?.drawImage(this._largeImage, 0, 0);
-        this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X)}px`;
+        this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X  )}px`;
         this._currentHighResCanvas.style.top = `${Math.round(this._lastRenderedHighResViewport.Y)}px`;
-        this._currentHighResCanvas.style.transform = `scale(${(1 / this._currentHighResScale)})`;        
+
+        //this._currentHighResCanvas.style.width = `${Math.round(this._lastRenderedHighResViewport.Width)}px`;
+        //this._currentHighResCanvas.style.height = `${Math.round(this._lastRenderedHighResViewport.Height)}px`;
+
+        var scale = this._lastRenderedHighResViewport.Width / this._currentHighResCanvas.width
+        this._currentHighResCanvas.style.transform = `scale(${(scale)})`;
     }
 
     private async RenderText(textLayer: HTMLDivElement | null)
@@ -242,6 +250,8 @@ export class DocumentPagePresenterBase<
     {
         if (canvas === null || !this._isDirty || !this.state.Document)
             return;
+
+        console.log(`Rendering small canvas for page: ${this.state.PageIndex}`);
 
         this._currentCanvas = canvas;
 
@@ -266,12 +276,11 @@ export class DocumentPagePresenterBase<
             return;
         var ctx = canvas.getContext("2d");
         canvas.width = this._smallImage.width || 0;
-        canvas.height = this._smallImage.height || 0;
+        canvas.height = this._smallImage.height || 0;        
         ctx?.drawImage(this._smallImage, 0, 0);
 
         this.PagesPanel?.UpdatePageInView(this);
-
-        this.InvalidateMeasure();
+        
         this.InvalidateRender();
     }
 
@@ -286,12 +295,13 @@ export class DocumentPagePresenterBase<
     private InvalidateMeasure()
     {
         if (!this.Container
-            //||
-            //this._lastWidth === this.Container.clientWidth &&
-            //this._lastHeight === this.Container.clientHeight
+            ||
+            this._lastWidth === this.Container.clientWidth &&
+            this._lastHeight === this.Container.clientHeight
         )
             return;
 
+        console.log(`Invalidating measure for page: ${this.state.PageIndex}`);
         this.PagesPanel?.RecomputeDimensions(true);
 
         this._lastWidth = this.Container?.clientWidth || 0;
@@ -313,7 +323,8 @@ export class DocumentPagePresenterBase<
     private _lastRenderedHighResViewport: Rect = new Rect();
     private _currentHighResScale: number = 1;
     private _isHighResViewportDirty: boolean = false;
-    private _isHighResLoopActive: boolean = false;    
+    private _isHighResLoopActive: boolean = false;
+    private _outerDiv: HTMLDivElement | null = null;
 }
 export class DocumentPagePresenter extends DocumentPagePresenterBase<IDocumentPagePresenterProps, IDocumentPagePresenterState>
 {
