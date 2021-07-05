@@ -100,6 +100,7 @@ export class DocumentPagePresenterBase<
 
     protected /* override */ async OnRealization()
     {
+        console.log(`Page ${this.state.PageIndex} realized`);
         this._isDirty = true;
         this._isHighResViewportDirty = true;
         this.PagesPanel?.OnPageRealized(this);
@@ -115,6 +116,7 @@ export class DocumentPagePresenterBase<
 
     protected /* override */ OnDerealization()
     {
+        console.log(`Page ${this.state.PageIndex} de-realized`);
         this._isDirty = false;
         this._isHighResLoopActive = false;
         this._currentCanvas = null;
@@ -250,18 +252,18 @@ export class DocumentPagePresenterBase<
     {
         if (canvas === null || !this._isDirty || !this.state.Document)
             return;
-
-        console.log(`Rendering small canvas for page: ${this.state.PageIndex}`);
-
+        
         this._currentCanvas = canvas;
 
         // Even though we're realized, wait a bit to make sure
         // we're STILL dirty before actually painting for the first time. 
         // We don't want fast scrolls, etc., to result in unneeded 
         // rendering
-        await Utilities.SleepAsync(50);
+        await Utilities.SleepAsync(200);
         if (!this._isDirty)
             return;
+
+        console.log(`Rendering small canvas for page: ${this.state.PageIndex}`);
 
         this._isDirty = false;
 

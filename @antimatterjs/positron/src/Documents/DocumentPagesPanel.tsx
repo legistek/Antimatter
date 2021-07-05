@@ -67,8 +67,8 @@ export class DocumentPagesPanel extends
 
         // Basically do the same thing with height but only 
         // if the scale changed; 
-
-        var priorHeight = this.Container.clientHeight;
+        
+        var priorHeight = this.Container.clientHeight;        
         this.Container.style.height = "auto";
         var newHeight = this.Container.clientHeight * this.ActualScale;
         var diff = newHeight - priorHeight;
@@ -79,6 +79,10 @@ export class DocumentPagesPanel extends
         {
             console.log(`Scrolling up preserving scroll position (diff: ${diff})`);
             this._scroller.scrollTop = vscroll + diff;
+        }
+        else
+        {
+            this._scroller.scrollTop = vscroll;
         }
     }
 
@@ -129,7 +133,7 @@ export class DocumentPagesPanel extends
      * not itself invalidate the render of this panel. */
     public SetDesiredScroll(pt: Point)
     {        
-        this._desiredScroll = pt;
+        this._desiredScroll = pt;        
         this.componentDidUpdate(null);
     }
 
