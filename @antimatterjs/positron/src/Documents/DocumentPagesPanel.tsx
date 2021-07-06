@@ -59,6 +59,8 @@ export class DocumentPagesPanel extends
         this.Container.style.width = `${this._maxWidth * this.ActualScale}px`;
         if (this.ActualScale < 1)
             this._innerDiv.style.width = `${this._maxWidth}px`;
+        else
+            this._innerDiv.style.width = "auto";
         this._lastHeight += deltaY;        
         this.Container.style.height = `${this._lastHeight * this.ActualScale}px`;
 
