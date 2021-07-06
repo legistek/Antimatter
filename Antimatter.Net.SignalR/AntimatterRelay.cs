@@ -62,6 +62,12 @@ namespace Antimatter.Net.SignalR
             GetOrCreateReactor().UpdateBindingSource(bxIndex, value);
         }
 
+        public Task StartupAsync()
+        {
+            // No special startup notification needed here
+            return Task.CompletedTask;
+        }
+
         public ModelValue MarshalObject(object obj)
         {
             try
@@ -99,5 +105,6 @@ namespace Antimatter.Net.SignalR
             }
             return mgrObject as Reactor;            
         }
+
     }
 }

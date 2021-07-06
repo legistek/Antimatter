@@ -39,8 +39,12 @@ export class ItemsControl<
     extends Control<P, S>
 {
     public ItemsPanelInstance: Panel | undefined | null;
+    public get ItemContainers(): FrameworkElement[]
+    {
+        return this._itemContainers;
+    }
 
-    public /* virtual */ OnRenderItem(item: any, props?: any): JSX.Element | null
+    public /* virtual */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null
     {
         var templ = this.GetTemplateForItem(item);
         if (!templ)
@@ -51,6 +55,8 @@ export class ItemsControl<
             Object.assign(itemProps, props);
 
         (itemProps as any).key = Utilities.SmartGetKey(item);
+        (itemProps as any).ref = (r: FrameworkElement) =>
+            this._itemContainers[index] = r;
 
         return React.createElement(
             this.GetContainerForItemOverride(),
@@ -92,7 +98,10 @@ export class ItemsControl<
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.ItemsSource))
+        {
+            this._itemContainers = new Array((value as any[])?.length || 0);
             this.ItemsPanelInstance?.InvalidateRender();
+        }
         super.OnPropertyChanged(property, value, oldValue);
     }
 
@@ -122,4 +131,6 @@ export class ItemsControl<
                 {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.toString()}
             </>);
     }
+
+    private _itemContainers: FrameworkElement[] = [];
 }

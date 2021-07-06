@@ -216,7 +216,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Edit",
                     ToolTip = "",
-                    Icon = 0xE9B1,
+                    Icon = 0xF022,
                 });
             }
         }
@@ -256,7 +256,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Increase Age",
-                    Icon = 0xE983,
+                    Icon = 0xF08C,
                     ToolTip = "Increase this person's age"
                 });
             }
@@ -279,7 +279,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Decrease Age",
                     ToolTip = "Decrease this person's age",
-                    Icon = 0xE982,
+                    Icon = 0xF08D,
                 });
             }
         }
@@ -301,7 +301,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Throw the bum out",
-                    Icon = 0xE959
+                    Icon = 0xF082
                 });
             }
         }
@@ -322,7 +322,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Make Bonus Eligible",
-                    Icon = 0,
+                    Icon = 0xE91A,
                 });
             }
         }
@@ -344,7 +344,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Do Something Else",
                     ToolTip = "",
-                    Icon = 0xE900
+                    Icon = 0xF000
                 });
             }
         }
