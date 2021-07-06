@@ -18,7 +18,7 @@ namespace AntimatterJS.Sample.AppModel
 
         public override string Title => "Edit Employee";
 
-        public override ushort Icon => 0xE913;
+        public override ushort Icon => 0xF080;
 
         public Employee Employee { get; }
 

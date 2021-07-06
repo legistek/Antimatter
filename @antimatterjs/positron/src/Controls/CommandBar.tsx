@@ -53,14 +53,14 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
 
             const cmdProps: ICommandBarItemProps = {
                 key: cmd.Handle.toString(),
-                data: { index: i, command: cmd },
+                data: { index: i++, command: cmd },
                 onRender: (item: ICommandBarItemProps, dismissMenu) =>
                 {
                     return itemsParent?.OnRenderItem(
                         item.data.command,
                         item.data.index,
                         {
-                            Command: item.data,
+                            Command: item.data.command,
                         }) || (<></>);
                 },
             };

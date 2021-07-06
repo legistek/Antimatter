@@ -181,7 +181,7 @@ class TreeViewItem<
                     <Icon
                         onClick={(e) => templatedParent.ToggleIsExpanded()}
                         className={templatedParent.GetExpanderClasses()}
-                        iconName="e9e1" />
+                        iconName="ChevronRight" />
 
 
                                             {/*IsEnabled={new Binding({*/}
