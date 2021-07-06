@@ -213,11 +213,11 @@ export class DocumentViewerBase<
         if (!center)
         {
             // Figure out the point on the pages panel that's the
-            // center of the viewport
+            // center-top of the viewport
             center = FrameworkElement.TranslatePoint(
                 {
                     X: this._scroller.Container.clientWidth / 2,
-                    Y: this._scroller.Container.clientHeight / 2
+                    Y: 0 //this._scroller.Container.clientHeight / 2
                 },
                 this._scroller,
                 this._pagesPanel);

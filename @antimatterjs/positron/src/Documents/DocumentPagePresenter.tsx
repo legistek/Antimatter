@@ -34,7 +34,9 @@ export class DocumentPagePresenterBase<
     }
 
     public SetCurrentViewportWindow(rc: Rect, scale: number)
-    {        
+    {
+        //console.log(`Setting high res viewport on page ${this.state.PageIndex} x=${rc.X} y=${rc.Y} width=${rc.Width} height=${rc.Height} scale=${scale}`);
+
         var x = Math.max(0, Math.floor(rc.X / scale) - 1);
         var y = Math.max(0, Math.floor(rc.Y / scale) - 1);
         var width = Math.min(Math.ceil(rc.Width / scale) + 2, (this._page?.Width || 0) - x);
@@ -78,6 +80,9 @@ export class DocumentPagePresenterBase<
                         }}
                         ref={r => this.RenderHighResCanvas(r)} />
                     <div className="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-overlaps amx-ptn-pdf-textlayer"
+                        style={{
+                            zIndex: 3,
+                        }}
                         ref={r => this.RenderText(r)}>
 
                     </div>
@@ -157,14 +162,29 @@ export class DocumentPagePresenterBase<
             {
                 await this.RenderHighResImageAsync();
             }
-            await Utilities.SleepAsync(500);
+            await Utilities.SleepAsync(250);
         }
     }
 
     private async RenderHighResImageAsync(): Promise<void>
     {
+        //if (this._isRenderingHighResImage)
+        //{
+        //    console.log("!!! Already rendering high res image !!!");
+        //}
+        //if (this._currentHighResScale <= 1)
+        //{
+        //    console.log("!!! Skipping high res render - scale < 1");
+        //}
+        //if (!this._page)
+        //{
+        //    console.log("!!! Skipping high res render - _page undefined");
+        //}
         if (!this._page || this._currentHighResScale <= 1 || this._isRenderingHighResImage)
             return;
+
+        var rc = this._currentHighResViewport;
+        //console.log(`Rendering high res viewport on page ${this.state.PageIndex} x=${rc.X} y=${rc.Y} width=${rc.Width} height=${rc.Height} scale=${this._currentHighResScale}`);
 
         this._isRenderingHighResImage = true;
 
@@ -173,11 +193,12 @@ export class DocumentPagePresenterBase<
         this._largeImage.width = Math.ceil(this._currentHighResViewport.Width * this._currentHighResScale);
         this._largeImage.height = Math.ceil(this._currentHighResViewport.Height * this._currentHighResScale);
         this._lastRenderedHighResViewport = this._currentHighResViewport;
+        this._isHighResViewportDirty = false;
         await this._page.RenderAsync(this._largeImage, this._currentHighResViewport, this._currentHighResScale);
         
         this.RenderHighResCanvas();
         this._isRenderingHighResImage = false;
-        this._isHighResViewportDirty = false;
+        
     }
 
     private async RenderSmallImageAsync(): Promise<boolean>

@@ -5,6 +5,7 @@ import { IStackPanelProps, IStackPanelState, StackPanelBase } from "../Controls/
 import { DocumentPagePresenter } from "./DocumentPagePresenter";
 import { DocumentViewer, IDocumentViewerProps } from "./DocumentViewer";
 import { MultitouchTransform } from "../Media/MultitouchTransform";
+import { Utilities } from "@antimatterjs/react";
 
 interface IDocumentPagesPanelProps extends IStackPanelProps
 {
@@ -235,7 +236,7 @@ export class DocumentPagesPanel extends
     {
         if (!this._realizedPages)
             return;
-
+        
         let maxHeight: number = 0;
         let maxHeightContender: DocumentPagePresenter | undefined = undefined;
 
