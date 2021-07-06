@@ -42,6 +42,30 @@ export class DocumentPagesPanel extends
         );
     }
 
+
+
+
+    public AdjustDimensionsOnChildRealization(newWidth: number, newHeight: number, deltaX: number, deltaY: number)
+    {
+        if (!this.Container || !this._scroller || !this._innerDiv)
+            return;
+
+        let hscroll: number = this._scroller.scrollLeft;
+        let vscroll: number = this._scroller.scrollTop;
+
+        this._maxWidth = Math.max(
+            this._maxWidth,
+            newWidth / Math.max(this.ActualScale, 1));
+        this.Container.style.width = `${this._maxWidth * this.ActualScale}px`;
+        if (this.ActualScale < 1)
+            this._innerDiv.style.width = `${this._maxWidth}px`;
+        this._lastHeight += deltaY;        
+        this.Container.style.height = `${this._lastHeight * this.ActualScale}px`;
+
+        this._scroller.scrollLeft = hscroll;
+        this._scroller.scrollTop = vscroll + (this.ScrollingUp ? (deltaY * this.ActualScale) : 0);
+    }
+
     /** Must be called any time the dimensions of the panel may have changed.
      * @param childChanged true if being called because a child page changed 
      * dimensions due to first realization or otherwise. */
@@ -110,7 +134,13 @@ export class DocumentPagesPanel extends
         this._innerDiv.style.transform = this.ActualScale ? `scale(${this.ActualScale})` : '';
         this._innerDiv.style.transformOrigin = this.ActualScale < 1 ? "0px 0px" : "50% 0px";
 
-        this.RecomputeDimensions(false);
+
+        //this.RecomputeDimensions(false);
+
+        this._lastHeight = this._innerDiv.clientHeight;
+
+        // TODO - Why does it get too wide sometimes???
+        this.AdjustDimensionsOnChildRealization(0, 0, 0, 0);
 
         if (this._desiredScroll)
         {
@@ -297,7 +327,8 @@ export class DocumentPagesPanel extends
         (this.state.ItemsParent as DocumentViewer)?.ScaleAboutPoint(scaleFactor, center);
     }
 
-    private _maxWidth: number = 0;
+    private _maxWidth: number = 0;      // the UNSCALED maximum width of all children
+    private _lastHeight: number = 0;    // the UNSCALED last measured height of the entire panel
     private _desiredScroll?: Point;
     private _scroller: HTMLElement | null = null;
     private _realizedPages: Set<DocumentPagePresenter> = new Set<DocumentPagePresenter>();

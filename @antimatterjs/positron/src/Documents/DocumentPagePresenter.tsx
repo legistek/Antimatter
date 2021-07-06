@@ -259,7 +259,7 @@ export class DocumentPagePresenterBase<
         // we're STILL dirty before actually painting for the first time. 
         // We don't want fast scrolls, etc., to result in unneeded 
         // rendering
-        await Utilities.SleepAsync(200);
+        await Utilities.SleepAsync(50);
         if (!this._isDirty)
             return;
 
@@ -303,8 +303,16 @@ export class DocumentPagePresenterBase<
         )
             return;
 
-        console.log(`Invalidating measure for page: ${this.state.PageIndex}`);
-        this.PagesPanel?.RecomputeDimensions(true);
+        var newWidth = this.Container?.clientWidth || 0;
+        var newHeight = this.Container?.clientHeight || 0;
+
+        console.log(`Invalidating measure for page: ${this.state.PageIndex}, width diff: ${newWidth - this._lastWidth}, ${newHeight - this._lastHeight}`);
+        //this.PagesPanel?.RecomputeDimensions(true);
+        this.PagesPanel?.AdjustDimensionsOnChildRealization(
+            newWidth,
+            newHeight,
+            newWidth - this._lastWidth,
+            newHeight - this._lastHeight);
 
         this._lastWidth = this.Container?.clientWidth || 0;
         this._lastHeight = this.Container?.clientHeight || 0;
@@ -314,8 +322,8 @@ export class DocumentPagePresenterBase<
     private _isRenderingHighResImage: boolean = false;
     private _currentHighResCanvas: HTMLCanvasElement | null = null;
     private _currentCanvas: HTMLCanvasElement | null = null;
-    private _lastWidth: number = 0;
-    private _lastHeight: number = 0;
+    private _lastWidth: number = 0;     // the UNSCALED last measured width of the item
+    private _lastHeight: number = 0;    // the UNSCALED last measured height of the item
     private _isDirty: boolean = false;
     private _page?: IDocumentPage | null;
     private _smallImage: HTMLCanvasElement | null = null;
