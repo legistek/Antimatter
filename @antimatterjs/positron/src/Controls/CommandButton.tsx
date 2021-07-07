@@ -33,7 +33,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         Icon: new Binding({ Path: "Icon", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })        
+        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })
     };
 
     public static DialogButtonStyle = new Style<ICommandButtonProps>(
@@ -57,7 +57,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         </DefaultButton>))
             }
         ));
-    
+
     public static PrimaryButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
@@ -79,7 +79,7 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     public static CommandBarButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
-            {                
+            {
                 Padding: "8px 0px 8px 0px",
                 IsVisible: true,
                 Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
@@ -95,9 +95,9 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         }}
                         text={templatedParent.state.Label}
                         disabled={!templatedParent.state.IsEnabled}>
-                        
+
                     </CommandBarButton>
-                )),                
+                )),
             }
         ));
 
@@ -141,3 +141,5 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         return (!icon) ? undefined : icon.toString(16);
     }
 }
+
+export class CommandButtonWithProps extends CommandButton<ICommandButtonProps, ICommandButtonState> { }

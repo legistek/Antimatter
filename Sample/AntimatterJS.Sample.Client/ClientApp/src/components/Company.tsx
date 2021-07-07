@@ -5,6 +5,9 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights }
 import * as Model from '../model/Model';
 import
 {
+    Coachmark,
+    TeachingBubble,
+
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -127,6 +130,42 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
+    private openButtonElem?: FrameworkElement | null;
+    private get OpenBubbleButton(): JSX.Element
+    {
+        const button: JSX.Element = (
+            <CommandButton
+                Command={new Binding(nameof<Model.Company>(c => c.OpenTeachingBubbleCommand))}
+                ref={r => this.openButtonElem = r }
+            />
+        );
+
+        return button;
+    }
+
+    private get Bubble(): JSX.Element
+    {
+        const bubble: JSX.Element = (
+            <TeachingBubble
+                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                TitleText="HOBO TITLE!"
+                MessageText="text text text yay"
+                ShowCloseButton={true}
+
+                PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+
+
+                ShowSecondaryButton={true}
+                CustomSecondaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                //SecondaryButtonTextOverride="CLOSE ME"
+
+                Target={(() => this.openButtonElem).bind(this)}
+            />
+        );
+
+        return bubble;
+    }
+
     renderElement()
     {
         console.log("Company rendering");
@@ -143,6 +182,11 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
 
+
+                    {this.OpenBubbleButton}
+                    {this.Bubble}
+
+
                     <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
                         Style={CommandButton.CommandBarButtonStyle} />
 
@@ -154,6 +198,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
+
+                {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                         RowHeight={44}
@@ -196,6 +242,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     />
                 </div>
 
+
+                */}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

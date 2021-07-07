@@ -9,6 +9,9 @@ export class Company {
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
+	public OpenTeachingBubbleCommand?: boolean;
+	public TeachingBubbleOpen?: boolean;
+	public TeachingBubblePrimaryCommand?: ICommand;
 }
 
 export class Employee {

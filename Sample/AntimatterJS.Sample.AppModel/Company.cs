@@ -285,7 +285,56 @@ namespace AntimatterJS.Sample.AppModel
         {
             return $"Company: {this.Name}";
         }
+
+        private Command _OpenTeachingBubbleCommand;
+        public ICommand OpenTeachingBubbleCommand
+        {
+            get
+            {
+                return _OpenTeachingBubbleCommand ?? (_OpenTeachingBubbleCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = true;
+                    })
+                {
+                    Name = "BUBBLES!",
+                    ToolTip = "Show teaching bubble thing OK"
+                });
+            }
+        }
+
+        #region boolean TeachingBubbleOpen property
+        private bool _TeachingBubbleOpen = false;
+        public bool TeachingBubbleOpen
+        {
+            get
+            {
+                return _TeachingBubbleOpen;
+            }
+            set
+            {
+                if (_TeachingBubbleOpen == value)
+                    return;
+                _TeachingBubbleOpen = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        private Command _TeachingBubblePrimaryCommand;
+        public ICommand TeachingBubblePrimaryCommand
+        {
+            get
+            {
+                return _TeachingBubblePrimaryCommand ?? (_TeachingBubblePrimaryCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = false;
+                    })
+                {
+                    Name = "Bubble CMD"
+                });
+            }
+        }
     }
-
-
 }
