@@ -297,8 +297,8 @@ namespace AntimatterJS.Sample.AppModel
                         TeachingBubbleOpen = true;
                     })
                 {
-                    Name = "BUBBLES!",
-                    ToolTip = "Show teaching bubble thing OK"
+                    Name = "Blow Bubbles",
+                    ToolTip = "Actually just the one bubble, and it's more of an 'open' than a 'blow'"
                 });
             }
         }

@@ -1,4 +1,4 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
 import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
@@ -147,8 +147,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     {
         const bubble: JSX.Element = (
             <TeachingBubble
-                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
-                TitleText="HOBO TITLE!"
+                IsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                HeaderText="HOBO TITLE!"
                 MessageText="text text text yay"
                 ShowCloseButton={true}
 
@@ -163,7 +163,24 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             />
         );
 
-        return bubble;
+        //return bubble;
+        return <></>
+    }
+
+    private get TextboxWithTeachingBubble(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <TextBox
+                Text="Unimportant text for bubble-ed control"
+
+                //TeachingBubbleIsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                TeachingBubbleIsOpen={new Binding({ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen), Mode: BindingMode.TwoWay})}
+
+                TeachingBubbleHeaderText="i am bubble header"
+                TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+            />
+        );
+        return elem;
     }
 
     renderElement()
@@ -181,14 +198,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         <TextBlock Text="Employee Count:" />
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
+                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                        Style={CommandButton.CommandBarButtonStyle} />
 
 
                     {this.OpenBubbleButton}
                     {this.Bubble}
 
+                    {this.TextboxWithTeachingBubble}
 
-                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
-                        Style={CommandButton.CommandBarButtonStyle} />
 
                     {/*<ModernButton*/}
                     {/*    Label="NEW EMPLOYEE"*/}

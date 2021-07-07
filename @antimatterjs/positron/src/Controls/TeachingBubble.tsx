@@ -1,15 +1,16 @@
 ﻿import * as React from 'react';
-import {
-    Point,
-    PrimaryButton,
-    Target,
+import
+    {
+        Point,
+        PrimaryButton,
+        Target,
 
 
-    IButtonProps,
-    TeachingBubble as FluentTeachingBubble,
-    ITeachingBubbleStyles,
-    IStyle,
-} from '@fluentui/react'
+        IButtonProps,
+        TeachingBubble as FluentTeachingBubble,
+        IStyle,
+        ITeachingBubbleStyles
+    } from '@fluentui/react';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { Orientation } from '@antimatterjs/positron/src/Enums';
 import { FrameworkElement } from '@antimatterjs/positron/src/FrameworkElement';
@@ -30,7 +31,7 @@ export interface ITeachingBubbleProps extends IControlProps
 {
     IsOpen?: boolean | Binding,
     Target?: () => FrameworkElement | undefined | null,
-    TitleText?: string | Binding,
+    HeaderText?: string | Binding,
     MessageText?: string | Binding,
     ShowCloseButton?: boolean | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,    //Can optionally provide to generate R-most action button
@@ -42,7 +43,7 @@ interface ITeachingBubbleState extends IControlState
 {
     IsOpen?: boolean,
     Target?: () => FrameworkElement | undefined | null,
-    TitleText?: string,
+    HeaderText?: string,
     MessageText?: string,
     ShowCloseButton?: boolean,
     PrimaryCommand?: ModelObjectReference,
@@ -63,7 +64,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
     static DefaultStyle: Style<ITeachingBubbleProps> = new Style<ITeachingBubbleProps>(
         {
             ShowCloseButton: true,
-            SecondaryButtonText: "MAYBE LATER...?",
+            SecondaryButtonText: "Maybe Later",
             Template: new ControlTemplate((templatedParent: TeachingBubble) => templatedParent.Template)
         }
     );
@@ -87,7 +88,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
         const bubble: JSX.Element = (
             <FluentTeachingBubble
                 target={this.FluentTarget}
-                headline={this.state.TitleText}
+                headline={this.state.HeaderText}
                 footerContent={this.Footer}
                 onDismiss={() => this.Close()}
                 hasCloseButton={this.state.ShowCloseButton}
