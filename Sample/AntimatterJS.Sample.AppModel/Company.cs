@@ -336,5 +336,15 @@ namespace AntimatterJS.Sample.AppModel
                 });
             }
         }
+
+        public TeachingBubbleParams TeachingBubbleInfo => new TeachingBubbleParams()
+        {
+            HeaderText = "I AM HEADER",
+            MessageText = "Message text here",
+            ShowCloseButton = true,
+            PrimaryCommand = TeachingBubblePrimaryCommand,
+            ShowSecondaryButton = true,
+            SecondaryButtonText = "DISMISS PLZ"
+        };
     }
 }

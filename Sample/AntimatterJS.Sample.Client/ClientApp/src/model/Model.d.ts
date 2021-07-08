@@ -1,4 +1,7 @@
-export class App {
+import { TeachingBubbleParams } from '@antimatterjs/positron';
+
+export class App
+{
 	public Company?: Company;
 }
 
@@ -12,6 +15,7 @@ export class Company {
 	public OpenTeachingBubbleCommand?: boolean;
 	public TeachingBubbleOpen?: boolean;
 	public TeachingBubblePrimaryCommand?: ICommand;
+	public TeachingBubbleInfo?: TeachingBubbleParams;
 }
 
 export class Employee {

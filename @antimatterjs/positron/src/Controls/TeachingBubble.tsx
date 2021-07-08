@@ -11,7 +11,7 @@ import
         IStyle,
         ITeachingBubbleStyles
     } from '@fluentui/react';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 import { Orientation } from '@antimatterjs/positron/src/Enums';
 import { FrameworkElement } from '@antimatterjs/positron/src/FrameworkElement';
 import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
@@ -19,30 +19,27 @@ import { Style } from '@antimatterjs/positron/src/Style';
 import { ButtonBase } from '@antimatterjs/positron/src/Controls/Primitives/ButtonBase';
 import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
 import { StackPanel } from '@antimatterjs/positron/src/Controls/StackPanel';
-import
-    {
-        CommandButton,
-        CommandButtonWithProps,
-        ICommandButtonProps, ICommandButtonState
-    }
+import { CommandButton, CommandButtonWithProps, ICommandButtonProps, ICommandButtonState }
     from '@antimatterjs/positron/src/Controls/CommandButton';
 
 export interface ITeachingBubbleProps extends IControlProps
 {
+    Params?: ModelObjectReference | Binding,
     IsOpen?: boolean | Binding,
-    Target?: () => FrameworkElement | undefined | null,
+    Target?: HTMLElement | (() => FrameworkElement | undefined | null) | null,
     HeaderText?: string | Binding,
     MessageText?: string | Binding,
     ShowCloseButton?: boolean | Binding,
-    PrimaryCommand?: ModelObjectReference | Binding,    //Can optionally provide to generate R-most action button
-    ShowSecondaryButton?: boolean | Binding,            //Renders secondary button (built-in "dismiss" one by default)
-    CustomSecondaryCommand?: ModelObjectReference | Binding, //Optional custom replacement for default secondary button
-    SecondaryButtonText?: string | Binding              //If using default secondary button, customizes just the text
+    PrimaryCommand?: ModelObjectReference | Binding,
+    ShowSecondaryButton?: boolean | Binding,
+    CustomSecondaryCommand?: ModelObjectReference | Binding,
+    SecondaryButtonText?: string | Binding
 }
 interface ITeachingBubbleState extends IControlState
 {
+    Params?: ModelObjectReference,
     IsOpen?: boolean,
-    Target?: () => FrameworkElement | undefined | null,
+    Target?: HTMLElement | (() => FrameworkElement | undefined | null) | null,
     HeaderText?: string,
     MessageText?: string,
     ShowCloseButton?: boolean,
@@ -54,6 +51,12 @@ interface ITeachingBubbleState extends IControlState
 
 export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbleState>
 {
+    //Used to allow this to be rendered by Control.tsx w/o an import declaration (which'd cause a circular ref error)
+    public static PortableConstructor = (props: ITeachingBubbleProps) =>
+    {
+        return React.createElement(TeachingBubble, props);
+    };
+
     public static DefaultBindings = {
         IsOpen: {
             Mode: BindingMode.TwoWay,
@@ -61,12 +64,37 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
         }
     };
 
+    public static BaseControlProps: ITeachingBubbleProps = {
+        HeaderText: new Binding({
+            Path: "HeaderText", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        MessageText: new Binding({
+            Path: "MessageText", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        ShowCloseButton: new Binding({
+            Path: "ShowCloseButton", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        PrimaryCommand: new Binding({
+            Path: "PrimaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        ShowSecondaryButton: new Binding({
+            Path: "ShowSecondaryButton", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        CustomSecondaryCommand: new Binding({
+            Path: "CustomSecondaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        SecondaryButtonText: new Binding({
+            Path: "SecondaryButtonText", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        })
+    }
+
     static DefaultStyle: Style<ITeachingBubbleProps> = new Style<ITeachingBubbleProps>(
-        {
-            ShowCloseButton: true,
-            SecondaryButtonText: "Maybe Later",
-            Template: new ControlTemplate((templatedParent: TeachingBubble) => templatedParent.Template)
-        }
+        Object.assign(
+            Object.assign(TeachingBubble.BaseControlProps),
+            {
+                Template: new ControlTemplate((templatedParent: TeachingBubble) => templatedParent.Template)
+            }
+        )
     );
 
     private get Template(): JSX.Element
@@ -158,9 +186,15 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
     {
         if (!this.state.Target)
             return null;
-        return this.state.Target()?.Container as Target;
+        if (this.state.Target instanceof HTMLElement)
+            return this.state.Target as Target;
+        else
+            return this.state.Target()?.Container as Target;
     }
 }
+
+//Give Control class access to TeachingBubble on startup w/o causing any inscrutable circular reference errors
+Control.TeachingBubbleConstructor = TeachingBubble.PortableConstructor;
 
 
 interface IUnboundButtonProps extends ICommandButtonProps
@@ -181,4 +215,9 @@ class UnboundButton extends CommandButton<IUnboundButtonProps, ICommandButtonSta
         ButtonBase.LastMouseEvent = e;
         this.props.OnClickOverride?.call(this);
     }
+}
+
+export class TeachingBubbleParams
+{
+
 }

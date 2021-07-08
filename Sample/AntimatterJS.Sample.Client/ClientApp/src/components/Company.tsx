@@ -148,15 +148,17 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         const bubble: JSX.Element = (
             <TeachingBubble
                 IsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
-                HeaderText="HOBO TITLE!"
-                MessageText="text text text yay"
-                ShowCloseButton={true}
+                Params={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
 
-                PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                //HeaderText="HOBO TITLE!"
+                //MessageText="text text text yay"
+                //ShowCloseButton={true}
+
+                //PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
 
 
-                ShowSecondaryButton={true}
-                CustomSecondaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                //ShowSecondaryButton={true}
+                //CustomSecondaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
                 //SecondaryButtonTextOverride="CLOSE ME"
 
                 Target={(() => this.openButtonElem).bind(this)}
@@ -173,14 +175,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             <TextBox
                 Text="Unimportant text for bubble-ed control"
 
-                //TeachingBubbleIsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
-                TeachingBubbleIsOpen={new Binding({ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen), Mode: BindingMode.TwoWay})}
+                TeachingBubbleIsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
 
-                TeachingBubbleHeaderText="i am bubble header"
-                TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                TeachingBubbleParams={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
+                //TeachingBubbleHeaderText="i am bubble header"
+                //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
             />
         );
         return elem;
+        //return <></>;
     }
 
     renderElement()
