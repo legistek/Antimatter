@@ -51,7 +51,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                         Width={ColorPicker.ELLIPSE_SIZE}
                         Height={ColorPicker.ELLIPSE_SIZE} />
                     <Glyph
-                        Icon={0xE928}
+                        Icon={"Edit"}
                         IsHitTestVisible={false}
                         Foreground={templatedParent.state.IconForeground}
                         Overlaps={true}
@@ -81,7 +81,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                             <>{templatedParent.props.children}</>
                             {templatedParent.state.IsSelected && (
                                 <Glyph
-                                    Icon={0xE9A4}
+                                    Icon={"CheckMark"}
                                     FontSize="16px"
                                     FontWeight="bold"
                                     Foreground="#FFFFFF"

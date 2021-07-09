@@ -1,20 +1,27 @@
 import * as React from "react";
 import { FrameworkElement } from "../FrameworkElement";
 import { Point, Rect } from "../Foundation";
-import { IStackPanelProps, IStackPanelState, StackPanel, StackPanelBase } from "../Controls/StackPanel";
+import { IStackPanelProps, IStackPanelState, StackPanelBase } from "../Controls/StackPanel";
 import { DocumentPagePresenter } from "./DocumentPagePresenter";
+import { DocumentViewer, IDocumentViewerProps } from "./DocumentViewer";
+import { MultitouchTransform } from "../Media/MultitouchTransform";
+import { Utilities } from "@antimatterjs/react";
 
 interface IDocumentPagesPanelProps extends IStackPanelProps
 {
     Scale?: number;
 }
+
 interface IDocumentPagesPanelState extends IStackPanelState
 {
     Scale?: number;
 }
 
-export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps, IDocumentPagesPanelState>
+export class DocumentPagesPanel extends
+    StackPanelBase<IDocumentPagesPanelProps, IDocumentPagesPanelState>
 {
+    private _innerDiv: HTMLElement | null = null;
+
     public ScrollingUp: boolean = false;
 
     public get Scroller(): HTMLElement | null
@@ -23,24 +30,51 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
     }
 
     /* override */ renderElement(): JSX.Element
-    {
-        
+    {        
         return (
-            <div style={{
-                touchAction: "pan-y",
-                transform: this.state.Scale ? `scale(${this.state.Scale})` : undefined,
-                transformOrigin: this.ActualScale < 1 ? "0px 0px" : "50% 0px"
-            }}>
+            <div ref={r => this._innerDiv = r}
+                style={{
+                    touchAction: "pan-y",
+                    transform: this.ActualScale ? `scale(${this.ActualScale})` : undefined,
+                    transformOrigin: this.ActualScale < 1 ? "0px 0px" : "50% 0px"
+                }}>
                 {super.renderElement()}
             </div>
         );
     }
 
+
+
+
+    public AdjustDimensionsOnChildRealization(newWidth: number, newHeight: number, deltaX: number, deltaY: number)
+    {
+        if (!this.Container || !this._scroller || !this._innerDiv)
+            return;
+
+        let hscroll: number = this._scroller.scrollLeft;
+        let vscroll: number = this._scroller.scrollTop;
+
+        this._maxWidth = Math.max(
+            this._maxWidth,
+            newWidth / Math.max(this.ActualScale, 1));
+        this.Container.style.width = `${this._maxWidth * this.ActualScale}px`;
+        if (this.ActualScale < 1)
+            this._innerDiv.style.width = `${this._maxWidth}px`;
+        else
+            this._innerDiv.style.width = "auto";
+        this._lastHeight += deltaY;        
+        this.Container.style.height = `${this._lastHeight * this.ActualScale}px`;
+
+        this._scroller.scrollLeft = hscroll;
+        this._scroller.scrollTop = vscroll + (this.ScrollingUp ? (deltaY * this.ActualScale) : 0);
+    }
+
     /** Must be called any time the dimensions of the panel may have changed.
-     * @param childChanged true if being called because a child page changed dimensions due to first realization or otherwise. */
+     * @param childChanged true if being called because a child page changed 
+     * dimensions due to first realization or otherwise. */
     public RecomputeDimensions(childChanged: boolean)
     {
-        if (!this.Container || !this._scroller)
+        if (!this.Container || !this._scroller || !this._innerDiv)
             return;
 
         // Preserve hscroll and vscroll during the re-calc
@@ -50,23 +84,32 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         // Measure desired width of the panel by changing the style to
         // "fit-content", then setting it explicitly depending on scale
         this.Container.style.width = "fit-content";
+        this._innerDiv.style.width = "unset";
         this._maxWidth = Math.max(
             this._maxWidth,
             (this.Container?.clientWidth || 0));
         this.Container.style.width = `${this._maxWidth * this.ActualScale}px`;
+        if (this.ActualScale < 1)
+            this._innerDiv.style.width = `${this._maxWidth}px`;
 
         // Basically do the same thing with height but only 
         // if the scale changed; 
-
-        var priorHeight = this.Container.clientHeight;
+        
+        var priorHeight = this.Container.clientHeight;        
         this.Container.style.height = "auto";
-        this.Container.style.height = `${this.Container.clientHeight * this.ActualScale}px`;
+        var newHeight = this.Container.clientHeight * this.ActualScale;
+        var diff = newHeight - priorHeight;
+        this.Container.style.height = `${newHeight}px`;
 
         this._scroller.scrollLeft = hscroll;
         if (this.ScrollingUp && childChanged)
         {
-            this._scroller.scrollTop = vscroll +
-                (this.Container.clientHeight - priorHeight);
+            console.log(`Scrolling up preserving scroll position (diff: ${diff})`);
+            this._scroller.scrollTop = vscroll + diff;
+        }
+        else
+        {
+            this._scroller.scrollTop = vscroll;
         }
     }
 
@@ -76,14 +119,31 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         if (!root)
             return;
         this._scroller = root;
+
+        this.Container?.addEventListener("wheel", (e) =>
+        {
+            if (!e.ctrlKey)
+                return;
+            this.OnWheelScaling(e);            
+        });
     }
 
     /* override */ componentDidUpdate(prevProps)
     {
-        if (!this._scroller)
+        if (!this._scroller || !this._innerDiv)
             return;
 
-        this.RecomputeDimensions(false);
+        this._innerDiv.style.touchAction = "pan-y";
+        this._innerDiv.style.transform = this.ActualScale ? `scale(${this.ActualScale})` : '';
+        this._innerDiv.style.transformOrigin = this.ActualScale < 1 ? "0px 0px" : "50% 0px";
+
+
+        //this.RecomputeDimensions(false);
+
+        this._lastHeight = this._innerDiv.clientHeight;
+
+        // TODO - Why does it get too wide sometimes???
+        this.AdjustDimensionsOnChildRealization(0, 0, 0, 0);
 
         if (this._desiredScroll)
         {
@@ -106,7 +166,8 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
      * not itself invalidate the render of this panel. */
     public SetDesiredScroll(pt: Point)
     {        
-        this._desiredScroll = pt;
+        this._desiredScroll = pt;        
+        this.componentDidUpdate(null);
     }
 
     /**
@@ -169,26 +230,49 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
 
     /** Updates all realized pages by recomputing their visible viewports
      * for high resolution rendering and flagging the page as ready to
-     * be repainted. The page maintains its own render loop that periodically
-     * checks for the high resolution viewport. */
+     * be repainted. Also updates the parent viewer with the current 
+     * "dominant" page (the page that occupies the most space in the viewport). */
     public UpdatePagesOnScroll()
     {
         if (!this._realizedPages)
             return;
+        
+        let maxHeight: number = 0;
+        let maxHeightContender: DocumentPagePresenter | undefined = undefined;
+
         for (const page of this._realizedPages)
-            this.UpdatePageInView(page);
+        {            
+            var rc = this.UpdatePageInView(page);
+            if (!rc)
+                continue;
+            if (rc.Height > maxHeight ||
+                rc.Height === maxHeight &&
+                    maxHeightContender &&
+                    (page.state.PageIndex as number || 0) < (maxHeightContender.state.PageIndex as number ||0))
+            {
+                maxHeight = rc.Height;
+                maxHeightContender = page;
+            }
+        }
+
+        // Update the current page with one with the dominant height in the scroller
+        this.state.ItemsParent?.SetValue(
+            nameof<IDocumentViewerProps>(p => p.Page),
+            maxHeightContender?.state.PageIndex,
+            false);
     }
 
     /**
      * Updates the high-res render viewport for a specific realized page 
      * @param page The page presenter */
-    public UpdatePageInView(page: DocumentPagePresenter)
+    public UpdatePageInView(page: DocumentPagePresenter): Rect|null
     {
         var rc = this.IsPageInView(page);
         if (rc)
             page.SetCurrentViewportWindow(
                 rc,
                 this.ActualScale * ((this.state.Transform?.AbsoluteScale as number) || 1));
+        return rc;
     }
 
     /**
@@ -197,7 +281,8 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
      */
     public OnPageRealized(page: DocumentPagePresenter)
     {
-        this._realizedPages.add(page);
+        console.log(`Page ${page.state.PageIndex} realized`);
+        this._realizedPages.add(page);        
     }
 
     /**
@@ -213,9 +298,10 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
     {
     }
 
-    private get ActualScale(): number
+    public get ActualScale(): number
     {
-        return ((this.state.Scale as number) || 1);
+        //return ((this.state.Scale as number) || 1);
+        return ((this.state.ItemsParent as DocumentViewer)?.state?.Scale as number) || 1;
     }
 
     private FindScroller(): HTMLElement | null | undefined
@@ -226,7 +312,26 @@ export class DocumentPagesPanel extends StackPanelBase<IDocumentPagesPanelProps,
         return elem;
     }
 
-    private _maxWidth: number = 0;
+    private OnWheelScaling(e: WheelEvent)
+    {
+        var center = FrameworkElement.TranslatePoint(
+            {
+                X: e.clientX,
+                Y: e.clientY
+            },
+            undefined,
+            this);
+
+        // turn the deltaY into something usable as a scale; -100 = 2x, +100 = 1/2x
+        var scaleFactor = -1.5 * (e.deltaY / 100);
+        if (scaleFactor < 0)
+            scaleFactor = -1 / scaleFactor;
+
+        (this.state.ItemsParent as DocumentViewer)?.ScaleAboutPoint(scaleFactor, center);
+    }
+
+    private _maxWidth: number = 0;      // the UNSCALED maximum width of all children
+    private _lastHeight: number = 0;    // the UNSCALED last measured height of the entire panel
     private _desiredScroll?: Point;
     private _scroller: HTMLElement | null = null;
     private _realizedPages: Set<DocumentPagePresenter> = new Set<DocumentPagePresenter>();

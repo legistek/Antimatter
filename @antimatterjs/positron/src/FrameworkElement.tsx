@@ -97,12 +97,12 @@ export class FrameworkElement<
             this.state.OnManipulationDelta ||
             this.state.OnManipulationCompleted)
             this._gestureHandlers = true;
-         
+
+        //onContextMenu={(event) => event.preventDefault()}
         return (
             <div
                 ref={r => this.Container = r}
-                style={this.getCSSStyles()}
-                onContextMenu={(event) => event.preventDefault()}
+                style={this.getCSSStyles()}                
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
                     : undefined}
@@ -190,18 +190,17 @@ export class FrameworkElement<
     /**
      * Translates a point from a coordinate system relative to the origin of this element
      * to the origin of another element.
-     * @param relativePoint The Point relative to the origin of this element.
+     * @param sourcePoint The Point relative to the source element.
+     * @param source The source element. If undefined, sourcePoint is assumed to be client (browser) coordinates.
      * @param relativeTo The element relative to which the point will be translated.
      */
-    public static TranslatePoint(sourcePoint: Point, source: FrameworkElement | HTMLElement, relativeTo: FrameworkElement | HTMLElement): Point
+    public static TranslatePoint(sourcePoint: Point, source: FrameworkElement | HTMLElement | undefined, relativeTo: FrameworkElement | HTMLElement): Point
     {
         let sourceElement: HTMLElement | null = null;
         if (source instanceof HTMLElement)
             sourceElement = source as HTMLElement;
-        else
-            sourceElement = (source as FrameworkElement)?.Container;
-        if (!sourceElement)
-            return new Point();
+        else if (source instanceof FrameworkElement)
+            sourceElement = (source as FrameworkElement).Container;
 
         let relElement: HTMLElement | null = null;
         if (relativeTo instanceof HTMLElement)
@@ -211,7 +210,7 @@ export class FrameworkElement<
         if (!relElement)
             return new Point();
 
-        var sourceRC = sourceElement.getBoundingClientRect();
+        var sourceRC = sourceElement?.getBoundingClientRect() || { x: 0, y: 0 };
         var relRC = relElement.getBoundingClientRect();
         return new Point(
             sourcePoint.X + (sourceRC.x - relRC.x),

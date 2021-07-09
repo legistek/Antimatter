@@ -375,7 +375,7 @@ export abstract class VirtualizingPanel<
             i++, j++)
         {
             var item = items[i];
-            var renderedItem = this.state.ItemsParent?.OnRenderItem(item,
+            var renderedItem = this.state.ItemsParent?.OnRenderItem(item, i,
                 {
                     ref: (r) => r ? this._realizedChildren?.push(r) : {}
                 }) || (<></>);

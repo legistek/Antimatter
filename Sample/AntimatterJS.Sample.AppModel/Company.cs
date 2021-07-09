@@ -205,7 +205,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "New Employee",
-                    Icon = 0xE911
+                    Icon = 0xF081
                 });
             }
         }
@@ -232,7 +232,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Fire this bum",
-                    Icon = 0xE959
+                    Icon = 0xF082
                 });
             }
         }

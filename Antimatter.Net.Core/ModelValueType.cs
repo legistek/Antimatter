@@ -21,7 +21,8 @@ namespace Antimatter.Net
         Long = 4,
 
         Float = 5,
-        //Double = 6,
+        
+        Double = 6,
 
         Collection = 7,
 

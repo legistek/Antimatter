@@ -6,6 +6,7 @@ import { Point, Rect } from "../Foundation";
 import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } from "../Controls/VirtualizedPanel";
 import { LoadingShimmer } from "../Controls/LoadingShimmer";
 import { DocumentPagesPanel } from "./DocumentPagesPanel";
+import { FrameworkElement } from "../FrameworkElement";
 
 interface IDocumentPagePresenterCommon
 {
@@ -34,7 +35,8 @@ export class DocumentPagePresenterBase<
 
     public SetCurrentViewportWindow(rc: Rect, scale: number)
     {
-        //console.log(`Page ${this.state.PageIndex} Current Viewport - X: ${rc.X}, Y: ${rc.Y}, Width: ${rc.Width}, Height: ${rc.Height}, Scale: ${scale} `);
+        //console.log(`Setting high res viewport on page ${this.state.PageIndex} x=${rc.X} y=${rc.Y} width=${rc.Width} height=${rc.Height} scale=${scale}`);
+
         var x = Math.max(0, Math.floor(rc.X / scale) - 1);
         var y = Math.max(0, Math.floor(rc.Y / scale) - 1);
         var width = Math.min(Math.ceil(rc.Width / scale) + 2, (this._page?.Width || 0) - x);
@@ -46,9 +48,11 @@ export class DocumentPagePresenterBase<
 
     /* override */ RenderRealizedElement(): JSX.Element
     {
+        console.log(`Page ${this.state.PageIndex} rendering realized`);
         return (
             <>
                 <div className="amx-ptn-fe amx-ptn-ha-center"
+                    ref={r => this._outerDiv = r}
                     style={{
                         background: "white",
                         overflow: "visible",
@@ -57,15 +61,18 @@ export class DocumentPagePresenterBase<
                         height: ((this._page?.Height || 792) as number),
                         boxShadow: DefaultEffects.elevation4
                     }}>
-                    <canvas
+                    <canvas 
                         style={{
+                            zIndex: 1,
                             width: this._page?.Width || 612,
                             height: this._page?.Height || 792
                         }}
                         ref={r => this.RenderSmallCanvas(r)} />
                     <canvas
                         style={{
+                            zIndex: 2,
                             position: "absolute",
+                            transformOrigin: "0 0",
                             //width: 0,
                             //height: 0,
                             //left: 0,
@@ -73,14 +80,17 @@ export class DocumentPagePresenterBase<
                         }}
                         ref={r => this.RenderHighResCanvas(r)} />
                     <div className="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-overlaps amx-ptn-pdf-textlayer"
-                        ref={r => this.RenderText(r)}                    >
+                        style={{
+                            zIndex: 3,
+                        }}
+                        ref={r => this.RenderText(r)}>
 
                     </div>
                     {!this._smallImage ? (<LoadingShimmer Overlaps={true} Lines={20} LineHeight={8} />) : (<></>)}
                 </div>
             </>
         );
-    }
+    }    
 
     /* override */ componentDidUpdate(prevProps)
     {
@@ -90,10 +100,12 @@ export class DocumentPagePresenterBase<
             this._lastHeight = this.Container?.clientHeight || 0;
             this._hasRendered = true;
         }
+        this.InvalidateMeasure();
     }
 
     protected /* override */ async OnRealization()
     {
+        console.log(`Page ${this.state.PageIndex} realized`);
         this._isDirty = true;
         this._isHighResViewportDirty = true;
         this.PagesPanel?.OnPageRealized(this);
@@ -109,6 +121,7 @@ export class DocumentPagePresenterBase<
 
     protected /* override */ OnDerealization()
     {
+        console.log(`Page ${this.state.PageIndex} de-realized`);
         this._isDirty = false;
         this._isHighResLoopActive = false;
         this._currentCanvas = null;
@@ -149,14 +162,29 @@ export class DocumentPagePresenterBase<
             {
                 await this.RenderHighResImageAsync();
             }
-            await Utilities.SleepAsync(500);
+            await Utilities.SleepAsync(250);
         }
     }
 
     private async RenderHighResImageAsync(): Promise<void>
     {
+        //if (this._isRenderingHighResImage)
+        //{
+        //    console.log("!!! Already rendering high res image !!!");
+        //}
+        //if (this._currentHighResScale <= 1)
+        //{
+        //    console.log("!!! Skipping high res render - scale < 1");
+        //}
+        //if (!this._page)
+        //{
+        //    console.log("!!! Skipping high res render - _page undefined");
+        //}
         if (!this._page || this._currentHighResScale <= 1 || this._isRenderingHighResImage)
             return;
+
+        var rc = this._currentHighResViewport;
+        //console.log(`Rendering high res viewport on page ${this.state.PageIndex} x=${rc.X} y=${rc.Y} width=${rc.Width} height=${rc.Height} scale=${this._currentHighResScale}`);
 
         this._isRenderingHighResImage = true;
 
@@ -165,16 +193,17 @@ export class DocumentPagePresenterBase<
         this._largeImage.width = Math.ceil(this._currentHighResViewport.Width * this._currentHighResScale);
         this._largeImage.height = Math.ceil(this._currentHighResViewport.Height * this._currentHighResScale);
         this._lastRenderedHighResViewport = this._currentHighResViewport;
+        this._isHighResViewportDirty = false;
         await this._page.RenderAsync(this._largeImage, this._currentHighResViewport, this._currentHighResScale);
         
         this.RenderHighResCanvas();
         this._isRenderingHighResImage = false;
-        this._isHighResViewportDirty = false;
+        
     }
 
     private async RenderSmallImageAsync(): Promise<boolean>
     {
-        if (!this.state.Document || this._isRenderingSmallImage)
+        if (!this.state.Document)
             return false;
         if (!this._page)
         {
@@ -183,6 +212,8 @@ export class DocumentPagePresenterBase<
                 return false;
         }
 
+        if (this._isRenderingSmallImage)
+            return false;
         this._isRenderingSmallImage = true;
 
         if (!this._smallImage)
@@ -221,10 +252,14 @@ export class DocumentPagePresenterBase<
 
         var ctx = this._currentHighResCanvas.getContext("2d");
         ctx?.drawImage(this._largeImage, 0, 0);
-        this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X)}px`;
+        this._currentHighResCanvas.style.left = `${Math.round(this._lastRenderedHighResViewport.X  )}px`;
         this._currentHighResCanvas.style.top = `${Math.round(this._lastRenderedHighResViewport.Y)}px`;
-        this._currentHighResCanvas.style.width = `${Math.round(this._lastRenderedHighResViewport.Width)}px`;
-        this._currentHighResCanvas.style.height = `${Math.round(this._lastRenderedHighResViewport.Height)}px`;
+
+        //this._currentHighResCanvas.style.width = `${Math.round(this._lastRenderedHighResViewport.Width)}px`;
+        //this._currentHighResCanvas.style.height = `${Math.round(this._lastRenderedHighResViewport.Height)}px`;
+
+        var scale = this._lastRenderedHighResViewport.Width / this._currentHighResCanvas.width
+        this._currentHighResCanvas.style.transform = `scale(${(scale)})`;
     }
 
     private async RenderText(textLayer: HTMLDivElement | null)
@@ -238,7 +273,7 @@ export class DocumentPagePresenterBase<
     {
         if (canvas === null || !this._isDirty || !this.state.Document)
             return;
-
+        
         this._currentCanvas = canvas;
 
         // Even though we're realized, wait a bit to make sure
@@ -248,6 +283,8 @@ export class DocumentPagePresenterBase<
         await Utilities.SleepAsync(50);
         if (!this._isDirty)
             return;
+
+        console.log(`Rendering small canvas for page: ${this.state.PageIndex}`);
 
         this._isDirty = false;
 
@@ -262,12 +299,11 @@ export class DocumentPagePresenterBase<
             return;
         var ctx = canvas.getContext("2d");
         canvas.width = this._smallImage.width || 0;
-        canvas.height = this._smallImage.height || 0;
+        canvas.height = this._smallImage.height || 0;        
         ctx?.drawImage(this._smallImage, 0, 0);
 
         this.PagesPanel?.UpdatePageInView(this);
-
-        this.InvalidateMeasure();
+        
         this.InvalidateRender();
     }
 
@@ -281,12 +317,23 @@ export class DocumentPagePresenterBase<
 
     private InvalidateMeasure()
     {
-        if (!this.Container ||
+        if (!this.Container
+            ||
             this._lastWidth === this.Container.clientWidth &&
-            this._lastHeight === this.Container.clientHeight)
+            this._lastHeight === this.Container.clientHeight
+        )
             return;
 
-        this.PagesPanel?.RecomputeDimensions(true);
+        var newWidth = this.Container?.clientWidth || 0;
+        var newHeight = this.Container?.clientHeight || 0;
+
+        console.log(`Invalidating measure for page: ${this.state.PageIndex}, width diff: ${newWidth - this._lastWidth}, ${newHeight - this._lastHeight}`);
+        //this.PagesPanel?.RecomputeDimensions(true);
+        this.PagesPanel?.AdjustDimensionsOnChildRealization(
+            newWidth,
+            newHeight,
+            newWidth - this._lastWidth,
+            newHeight - this._lastHeight);
 
         this._lastWidth = this.Container?.clientWidth || 0;
         this._lastHeight = this.Container?.clientHeight || 0;
@@ -296,8 +343,8 @@ export class DocumentPagePresenterBase<
     private _isRenderingHighResImage: boolean = false;
     private _currentHighResCanvas: HTMLCanvasElement | null = null;
     private _currentCanvas: HTMLCanvasElement | null = null;
-    private _lastWidth: number = 0;
-    private _lastHeight: number = 0;
+    private _lastWidth: number = 0;     // the UNSCALED last measured width of the item
+    private _lastHeight: number = 0;    // the UNSCALED last measured height of the item
     private _isDirty: boolean = false;
     private _page?: IDocumentPage | null;
     private _smallImage: HTMLCanvasElement | null = null;
@@ -307,7 +354,8 @@ export class DocumentPagePresenterBase<
     private _lastRenderedHighResViewport: Rect = new Rect();
     private _currentHighResScale: number = 1;
     private _isHighResViewportDirty: boolean = false;
-    private _isHighResLoopActive: boolean = false;    
+    private _isHighResLoopActive: boolean = false;
+    private _outerDiv: HTMLDivElement | null = null;
 }
 export class DocumentPagePresenter extends DocumentPagePresenterBase<IDocumentPagePresenterProps, IDocumentPagePresenterState>
 {
