@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { Style } from '@antimatterjs/positron/src/Style';
+
 import { PlacementMode, Popup } from './Popup';
 import { Ellipse } from '../Shapes/Ellipse';
 import { WrapPanel } from './WrapPanel';
@@ -12,6 +12,7 @@ import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { getTheme } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
+import { Style } from '../Style';
 
 export interface IColorPickerProps extends ISelectorProps
 {

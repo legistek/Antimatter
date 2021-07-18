@@ -165,8 +165,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             />
         );
 
-        //return bubble;
-        return <></>
+        return bubble;
+        //return <></>
     }
 
     private get TextboxWithTeachingBubble(): JSX.Element
@@ -175,7 +175,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             <TextBox
                 Text="Unimportant text for bubble-ed control"
 
-                TeachingBubbleIsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                TeachingBubbleIsOpen={{ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen) }}
 
                 TeachingBubbleParams={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
                 //TeachingBubbleHeaderText="i am bubble header"
@@ -206,7 +206,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
 
                     {this.OpenBubbleButton}
-                    {this.Bubble}
+                    {/*{this.Bubble}*/}
 
                     {this.TextboxWithTeachingBubble}
 

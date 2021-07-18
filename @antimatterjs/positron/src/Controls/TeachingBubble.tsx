@@ -1,28 +1,16 @@
 ﻿import * as React from 'react';
-import
-    {
-        Point,
-        PrimaryButton,
-        Target,
-
-
-        IButtonProps,
-        TeachingBubble as FluentTeachingBubble,
-        IStyle,
-        ITeachingBubbleStyles
-    } from '@fluentui/react';
+import { Target, TeachingBubble as FluentTeachingBubble, IStyle } from '@fluentui/react';
 import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
-import { Orientation } from '@antimatterjs/positron/src/Enums';
-import { FrameworkElement } from '@antimatterjs/positron/src/FrameworkElement';
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { Style } from '@antimatterjs/positron/src/Style';
-import { ButtonBase } from '@antimatterjs/positron/src/Controls/Primitives/ButtonBase';
-import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
-import { StackPanel } from '@antimatterjs/positron/src/Controls/StackPanel';
-import { CommandButton, CommandButtonWithProps, ICommandButtonProps, ICommandButtonState }
-    from '@antimatterjs/positron/src/Controls/CommandButton';
 
-export interface ITeachingBubbleProps extends IControlProps
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { Style } from '../Style';
+import { ControlTemplate } from '../FrameworkTemplate';
+import { StackPanel } from './StackPanel';
+import { Orientation } from '../Enums';
+import { CommandButton, ICommandButtonProps, ICommandButtonState } from './CommandButton';
+import { Control, IControlProps, IControlState } from './Control';
+
+export interface ITeachingBubbleProps extends IFrameworkElementProps
 {
     Params?: ModelObjectReference | Binding,
     IsOpen?: boolean | Binding,
@@ -35,7 +23,7 @@ export interface ITeachingBubbleProps extends IControlProps
     CustomSecondaryCommand?: ModelObjectReference | Binding,
     SecondaryButtonText?: string | Binding
 }
-interface ITeachingBubbleState extends IControlState
+interface ITeachingBubbleState extends IFrameworkElementState
 {
     Params?: ModelObjectReference,
     IsOpen?: boolean,
@@ -50,20 +38,14 @@ interface ITeachingBubbleState extends IControlState
 }
 
 export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbleState>
-{
-    //Used to allow this to be rendered by Control.tsx w/o an import declaration (which'd cause a circular ref error)
-    public static PortableConstructor = (props: ITeachingBubbleProps) =>
-    {
-        return React.createElement(TeachingBubble, props);
-    };
-
+{    
     public static DefaultBindings = {
         IsOpen: {
             Mode: BindingMode.TwoWay,
             FallbackValue: false
         }
     };
-
+    
     public static BaseControlProps: ITeachingBubbleProps = {
         HeaderText: new Binding({
             Path: "HeaderText", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
@@ -120,8 +102,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
                 footerContent={this.Footer}
                 onDismiss={() => this.Close()}
                 hasCloseButton={this.state.ShowCloseButton}
-                styles={fluentStyle}
-            >
+                styles={fluentStyle}>
                 {this.state.MessageText}
             </FluentTeachingBubble>
         );
@@ -145,11 +126,11 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
     }
 
     private get PrimaryButton(): JSX.Element | null
-    {
+    {        
         if (!this.state.PrimaryCommand)
             return null;
         return (
-            <CommandButtonWithProps
+            <CommandButton
                 Command={this.state.PrimaryCommand}
                 Style={CommandButton.DialogButtonStyle}
             />
@@ -165,7 +146,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
         if (this.state.CustomSecondaryCommand)
         {
             return (
-                <CommandButtonWithProps
+                <CommandButton
                     Command={this.state.CustomSecondaryCommand}
                     Style={style}
                 />
@@ -174,8 +155,8 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
 
         //Construct the default secondary button that dismisses the bubble
         return (
-            <UnboundButton
-                OnClickOverride={() => this.Close()}
+            <CommandButton
+                Command={() => this.Close()}                
                 Label={this.state.SecondaryButtonText}
                 Style={style}
             />
@@ -193,31 +174,20 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
     }
 }
 
-//Give Control class access to TeachingBubble on startup w/o causing any inscrutable circular reference errors
-Control.TeachingBubbleConstructor = TeachingBubble.PortableConstructor;
-
-
-interface IUnboundButtonProps extends ICommandButtonProps
+// Hideous ridiculous hack necessitated by Javascript stupidity
+// in being unable to allow a base class to reference a subclass
+Control.RenderTeachingBubble = (control: Control<IControlProps, IControlState>) : JSX.Element|null =>
 {
-    OnClickOverride?: () => void;
-}
-//CommandButton framework element modified to be compatible w/ client-side logic rather than bound commands
-class UnboundButton extends CommandButton<IUnboundButtonProps, ICommandButtonState>
-{
-    public static DefaultBindings = {
-        IsEnabled: {
-            FallbackValue: true
-        }
-    };
+    if (!control.state.TeachingBubbleParams)
+        return null;
 
-    /* override */ OnClick(e?: MouseEvent): void
-    {
-        ButtonBase.LastMouseEvent = e;
-        this.props.OnClickOverride?.call(this);
-    }
-}
+    return (<TeachingBubble
+        Params={control.state.TeachingBubbleParams}
+        IsOpen={new Binding(control.state.TeachingBubbleIsOpen)}
+        Target={() => control} />);
+};
 
+// Not sure what this is for
 export class TeachingBubbleParams
 {
-
 }

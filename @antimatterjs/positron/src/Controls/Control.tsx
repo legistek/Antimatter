@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, BindingMode, BindingParameters, ModelObjectReference } from '@antimatterjs/react';
+
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { WindowLayoutContext } from './Window';
 import { WindowLayout } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { ITeachingBubbleProps } from '@antimatterjs/positron/src/Controls/TeachingBubble';
 
 interface IControlCommon
 {
@@ -24,7 +24,7 @@ export interface IControlProps extends IFrameworkElementProps, IControlCommon
     FontFamily?: string | Binding,
     FontSize?: number | Binding,
     TeachingBubbleParams?: ModelObjectReference | Binding,
-    TeachingBubbleIsOpen?: boolean | Binding
+    TeachingBubbleIsOpen?: BindingParameters
 }
 
 export interface IControlState extends IFrameworkElementState, IControlCommon
@@ -37,7 +37,7 @@ export interface IControlState extends IFrameworkElementState, IControlCommon
     FontFamily?: string,
     FontSize?: number,
     TeachingBubbleParams?: ModelObjectReference,
-    TeachingBubbleIsOpen?: boolean
+    TeachingBubbleIsOpen?: BindingParameters
 }
 
 export class Control<P extends IControlProps = {}, S extends IControlState = {}>
@@ -69,27 +69,17 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         const bubblefiedElem: JSX.Element = (
             <>
                 {baseElem}
-                {this.TeachingBubbleElem}
+                {Control.RenderTeachingBubble(this)}
             </>
         );
         return bubblefiedElem;
     }
 
-    private get TeachingBubbleProps(): ITeachingBubbleProps
+    // Hideous ridiculous hack necessitated by Javascript stupidity
+    // in being unable to allow a base class to reference a subclass
+    static RenderTeachingBubble(
+        control: Control<IControlProps, IControlState>): JSX.Element | null
     {
-        return {
-            Params: this.props.TeachingBubbleParams,
-            IsOpen: this.props.TeachingBubbleIsOpen,
-            Target: this.Container
-        }
-    };
-
-    private get TeachingBubbleElem(): JSX.Element | null
-    {
-        if (!this.state.TeachingBubbleParams || this.state.TeachingBubbleIsOpen || !Control.TeachingBubbleConstructor)
-            return null;
-        return Control.TeachingBubbleConstructor(this.TeachingBubbleProps);
+        return null;
     }
-
-    public static TeachingBubbleConstructor?: (props: any) => JSX.Element;
 }

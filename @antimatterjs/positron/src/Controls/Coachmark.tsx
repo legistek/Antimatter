@@ -1,9 +1,9 @@
 ﻿import * as React from 'react';
 import { } from '@fluentui/react'
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
-import { Style } from '@antimatterjs/positron/src/Style';
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { Control, IControlProps, IControlState } from './Control';
+import { ControlTemplate } from '../FrameworkTemplate';
+import { Style } from '../Style';
 
 export class Coachmark extends Control<IControlProps, IControlState>
 {
