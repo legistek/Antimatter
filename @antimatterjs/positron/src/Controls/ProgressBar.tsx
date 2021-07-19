@@ -2,7 +2,7 @@
 import { Binding } from '@antimatterjs/react';
 import { ProgressIndicator } from '@fluentui/react'
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '@antimatterjs/positron/src/Style';
+import { Style } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IProgressBarProps extends IControlProps
