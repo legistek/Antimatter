@@ -3,6 +3,7 @@ import { Binding } from '@antimatterjs/react';
 import { ProgressIndicator } from '@fluentui/react'
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '@antimatterjs/positron/src/Style';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IProgressBarProps extends IControlProps
 {
@@ -24,8 +25,8 @@ export class ProgressBar extends Control<IProgressBarProps, IProgressBarState>
     static DefaultStyle: Style<IProgressBarProps> = new Style<IProgressBarProps>(
         {
             Denominator: 1,
-            Template: (templatedParent: ProgressBar) =>
-                <ProgressIndicator percentComplete={templatedParent.percentComplete} />
+            Template: new ControlTemplate((templatedParent: ProgressBar) =>
+                <ProgressIndicator percentComplete={templatedParent.percentComplete} />)
         }
     );
 
@@ -39,4 +40,4 @@ export class ProgressBar extends Control<IProgressBarProps, IProgressBarState>
     }
 }
 
-//export class ProgressBar extends ProgressBarBase<IProgressBarProps, IProgressBarState> { }
+//export class ProgressBar extends Progres7sBarBase<IProgressBarProps, IProgressBarState> { }
