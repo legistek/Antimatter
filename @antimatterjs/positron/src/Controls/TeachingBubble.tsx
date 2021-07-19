@@ -2,15 +2,15 @@
 import { Target, TeachingBubble as FluentTeachingBubble, IStyle } from '@fluentui/react';
 import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
+import { FrameworkElement } from '../FrameworkElement';
 import { Style } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { StackPanel } from './StackPanel';
 import { Orientation } from '../Enums';
-import { CommandButton, ICommandButtonProps, ICommandButtonState } from './CommandButton';
+import { CommandButton, ICommandButtonProps } from './CommandButton';
 import { Control, IControlProps, IControlState } from './Control';
 
-export interface ITeachingBubbleProps extends IFrameworkElementProps
+export interface ITeachingBubbleProps extends IControlProps
 {
     Params?: ModelObjectReference | Binding,
     IsOpen?: boolean | Binding,
@@ -23,7 +23,7 @@ export interface ITeachingBubbleProps extends IFrameworkElementProps
     CustomSecondaryCommand?: ModelObjectReference | Binding,
     SecondaryButtonText?: string | Binding
 }
-interface ITeachingBubbleState extends IFrameworkElementState
+interface ITeachingBubbleState extends IControlState
 {
     Params?: ModelObjectReference,
     IsOpen?: boolean,
