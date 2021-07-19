@@ -1,10 +1,13 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
 {
+    Coachmark,
+    TeachingBubble,
+
     ProgressBar,
     //ProgressBarBase,
     ListBox, SelectionMode,
@@ -14,7 +17,10 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    ColorPicker
+    ColorPicker,
+    IFrameworkElementState,
+    IFrameworkElementProps,
+    MultitouchTransform
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -59,16 +65,16 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
                         </CheckBox>
 
-                        <Popup IsOpen={new Binding("IsBonusEligible")}
-                            Background="rgba(255,255,255,.5)"
-                            Blur={10}
-                            Target={
-                                (() =>
-                                    this._cb)
-                                    .bind(this)
-                            }>
-                            <TextBlock Text="Really Nice bonus" />
-                        </Popup>
+                        {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
+                        {/*    Background="rgba(255,255,255,.5)"*/}
+                        {/*    Blur={10}*/}
+                        {/*    Target={*/}
+                        {/*        (() =>*/}
+                        {/*            this._cb)*/}
+                        {/*            .bind(this)*/}
+                        {/*    }>*/}
+                        {/*    <TextBlock Text="Really Nice bonus" />*/}
+                        {/*</Popup>*/}
 
                         <ColorPicker
                             ItemsSource={new Binding("Company.AvailableColors")}
@@ -118,9 +124,15 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     }
 }
 
-export class Company extends AntimatterComponent
+export class Company extends FrameworkElement<IFrameworkElementProps, IFrameworkElementState>
 {
     static displayName = Company.name;
+    private _tr = new MultitouchTransform();
+
+    constructor(props)
+    {
+        super(props);
+    }
 
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
@@ -132,7 +144,63 @@ export class Company extends AntimatterComponent
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    render()
+    private openButtonElem?: FrameworkElement | null;
+    private get OpenBubbleButton(): JSX.Element
+    {
+        const button: JSX.Element = (
+            <CommandButton
+                Command={new Binding(nameof<Model.Company>(c => c.OpenTeachingBubbleCommand))}
+                ref={r => this.openButtonElem = r }
+            />
+        );
+
+        return button;
+    }
+
+    private get Bubble(): JSX.Element
+    {
+        const bubble: JSX.Element = (
+            <TeachingBubble
+                IsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                Params={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
+
+                //HeaderText="HOBO TITLE!"
+                //MessageText="text text text yay"
+                //ShowCloseButton={true}
+
+                //PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+
+
+                //ShowSecondaryButton={true}
+                //CustomSecondaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                //SecondaryButtonTextOverride="CLOSE ME"
+
+                Target={(() => this.openButtonElem).bind(this)}
+            />
+        );
+
+        return bubble;
+        //return <></>
+    }
+
+    private get TextboxWithTeachingBubble(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <TextBox
+                Text="Unimportant text for bubble-ed control"
+
+                TeachingBubbleIsOpen={{ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen) }}
+
+                TeachingBubbleParams={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
+                //TeachingBubbleHeaderText="i am bubble header"
+                //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+            />
+        );
+        return elem;
+        //return <></>;
+    }
+
+    renderElement()
     {
         console.log("Company rendering");
 
@@ -140,7 +208,6 @@ export class Company extends AntimatterComponent
 
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-
                 <StackPanel>
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -148,9 +215,15 @@ export class Company extends AntimatterComponent
                         <TextBlock Text="Employee Count:" />
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
-
                     <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
                         Style={CommandButton.CommandBarButtonStyle} />
+
+
+                    {this.OpenBubbleButton}
+                    {/*{this.Bubble}*/}
+
+                    {this.TextboxWithTeachingBubble}
+
 
                     {/*<ModernButton*/}
                     {/*    Label="NEW EMPLOYEE"*/}
@@ -160,29 +233,52 @@ export class Company extends AntimatterComponent
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
-                <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                    RowHeight={44}
-                    SelectedItems={new Binding("SelectedEmployees")}
-                    IsSelectAll={new Binding("IsAllSelected")}
-                    Columns={[
-                        {
-                            Header: "First Name",
-                            Key: "firstName",
-                            Template: this._firstNameTemplate
-                        },
-                        {
-                            Header: "Last Name",
-                            Key: "lastName",
-                            Template: this._lastNameTemplate
-                        },
-                        {
-                            Header: "Age",
-                            Key: "age",
-                            Template: this._ageTemplate
-                        }
-                    ]}
 
-                />
+                {/*
+                <div className="amx-ptn-fe" style={{ height: 1024 }}>
+                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                        RowHeight={44}
+                        SelectedItems={new Binding("SelectedEmployees")}
+                        IsSelectAll={new Binding("IsAllSelected")}
+                        OnManipulationStarted={(e) =>
+                        {
+                            this._tr.CenterX = e.CenterX;
+                            this._tr.CenterY = e.CenterY;
+                        }}
+                        OnManipulationDelta={(e) =>
+                        {
+                            this._tr.TranslateX = e.CumulativeX;
+                            this._tr.TranslateY = e.CumulativeY;
+                            this._tr.ScaleX = e.CumulativeScale;
+                            this._tr.ScaleY = e.CumulativeScale;
+                        }}
+                        OnManipulationCompleted={(e) =>
+                        {
+                            this._tr.Reset();
+                        }}
+                        Transform={this._tr}
+                        Columns={[
+                            {
+                                Header: "First Name",
+                                Key: "firstName",
+                                Template: this._firstNameTemplate
+                            },
+                            {
+                                Header: "Last Name",
+                                Key: "lastName",
+                                Template: this._lastNameTemplate
+                            },
+                            {
+                                Header: "Age",
+                                Key: "age",
+                                Template: this._ageTemplate
+                            }
+                        ]}
+                    />
+                </div>
+
+
+                */}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

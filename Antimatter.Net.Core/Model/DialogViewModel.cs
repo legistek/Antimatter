@@ -61,7 +61,7 @@ namespace Antimatter.Net.Model
                 {
                     Name = "Cancel",
                     ToolTip = "Cancel the operation and close this window.",
-                    Icon = 0xE921,
+                    Icon = 0xF00C,
                     GetIsEnabled = CanCancel
                 });
             }

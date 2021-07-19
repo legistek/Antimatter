@@ -3,6 +3,7 @@ import { Component } from "react";
 import { BindingParameters } from "./BindingParameters";
 import { IClient } from "./IClient";
 import { IServer } from "./IServer";
+import { Utilities } from "./Utilities";
 
 export class Antimatter
 {
@@ -10,11 +11,17 @@ export class Antimatter
 
     public static Server: IServer;   
 
-    public static StartAsync(server: IServer, client: IClient): Promise<void>
+    public static async StartAsync(server: IServer|null, client: IClient): Promise<void>
     {
-        Antimatter.Server = (window as any).AntimatterServer = server;
+        var browser = Utilities.GetBrowser();
+        console.log(`Browser: ${browser.Name} version ${browser.Version}`);
+
         Antimatter._client = (window as any).AntimatterClient = client;
-        return server.StartupAsync();
+        if (server)
+        {
+            Antimatter.Server = (window as any).AntimatterServer = server;
+            return await server.StartupAsync();
+        }
     }
 
     public static UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)

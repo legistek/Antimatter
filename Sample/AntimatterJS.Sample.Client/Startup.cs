@@ -70,13 +70,14 @@ namespace AntimatterJS.Sample.Client
                 ServeUnknownFileTypes = true
             });
 
-            app.UseRouting();
-
+            app.UseRouting();            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+
+                endpoints.MapControllers();
 
                 /*
                  * Antimatter - Add for SignalR Server

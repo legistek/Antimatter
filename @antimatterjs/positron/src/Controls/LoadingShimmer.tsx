@@ -4,14 +4,17 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 import { Shimmer } from '@fluentui/react';
 import { StackPanel } from './StackPanel';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ILoadingShimmerProps extends IControlProps
 {
     Lines?: number,
+    LineHeight?: number
 }
 export interface ILoadingShimmerState extends IControlState
 {
-    Lines?: number
+    Lines?: number,
+    LineHeight?: number
 }
 
 export class LoadingShimmer<
@@ -20,7 +23,7 @@ export class LoadingShimmer<
 {
     public static DefaultStyle: Style<ILoadingShimmerProps> = new Style<ILoadingShimmerProps>(
         {
-            Template: (templatedParent: LoadingShimmer) =>
+            Template: new ControlTemplate((templatedParent: LoadingShimmer) =>
             {
                 if (!templatedParent.state.Lines)
                     return (<></>);
@@ -28,11 +31,15 @@ export class LoadingShimmer<
                 const step = 100 / templatedParent.state.Lines;
                 for (let i: number = 0; i < (templatedParent.state.Lines || 0); i++)
                 {
-                    var percent = (100 - i * step).toString() + "%";
-                    shimmers.push((<Shimmer className="shimmer" width={percent} />));
+                    var percent = (30 + (Math.random() * 70)).toString() + "%";
+                    shimmers.push((<Shimmer
+                        key={i}
+                        className="shimmer"
+                        style={{ lineHeight: templatedParent.state.LineHeight }}
+                        width={percent}/>));
                 }
                 return (<StackPanel>{shimmers}</StackPanel>);
-            }
+            })
         },
         {
             Selector: "@ .shimmer",

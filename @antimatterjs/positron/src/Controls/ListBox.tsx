@@ -4,6 +4,8 @@ import { BindingMode } from '@antimatterjs/react';
 import { Style } from '../Style';
 import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 import { ISelectableItemControlProps, SelectableItemControlBase } from './Primitives/SelectableItemControl';
+import { Control } from './Control';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IListBoxProps extends ISelectorProps
 {
@@ -45,13 +47,13 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
             ItemContainerStyle: new Style<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
-                    Template: (templatedParent: SelectableItemControlBase) =>
+                    Template: new ControlTemplate((templatedParent: SelectableItemControlBase) =>
                     (
                         <div className="listboxitem">
                             <>{templatedParent.props.children}</>
                             <div className="listboxitem-border-layer" />
                         </div>
-                    )
+                    ))
                 },
                 {
                     Rules: {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Threading.Tasks;
 using Antimatter.Net.Internal;
 
 namespace Antimatter.Net
@@ -12,6 +12,12 @@ namespace Antimatter.Net
     /// </summary>
     public interface IClient
     {
+        /// <summary>
+        /// Called by model servers to notify the client they are ready
+        /// to startup.
+        /// </summary>
+        Task StartupAsync();
+
         /// <summary>
         /// Notifies clients of an update to a bound source value.
         /// </summary>

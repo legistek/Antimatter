@@ -31,6 +31,69 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
+        #region DocumentPosition DocPosition property
+        private DocumentPosition _DocPosition = DocumentPosition.Default;
+        public DocumentPosition DocPosition
+        {
+            get
+            {
+                return _DocPosition;
+            }
+            set
+            {
+                _DocPosition = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region int DocPage property
+        public int DocPage
+        {
+            get
+            {
+                return this.DocPosition.page;
+            }
+            set
+            {
+                if (this.DocPosition.page != value)
+                {
+                    this.DocPosition = new DocumentPosition
+                    {
+                        x = 0,
+                        y = 0,
+                        page = value,
+                        scale = DocPosition.scale
+                    };
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region float DocScale property
+        public float DocScale
+        {
+            get
+            {
+                return this.DocPosition.scale;
+            }
+            set
+            {
+                if (this.DocPosition.scale != value)
+                {
+                    this.DocPosition = new DocumentPosition
+                    {
+                        x = 0,
+                        y = 0,
+                        page = DocPosition.page,
+                        scale = value
+                    };
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
 
 
         #region Employee[] SelectedEmployees property
@@ -52,7 +115,6 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-
         #region bool IsAllSelected property
         private bool _IsAllSelected;
         public bool IsAllSelected
@@ -71,7 +133,6 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
-
 
         #region Employee SelectedEmployee property
         private Employee _SelectedEmployee;
@@ -144,7 +205,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "New Employee",
-                    Icon = 0xE911
+                    Icon = 0xF081
                 });
             }
         }
@@ -171,7 +232,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Fire this bum",
-                    Icon = 0xE959
+                    Icon = 0xF082
                 });
             }
         }
@@ -224,5 +285,66 @@ namespace AntimatterJS.Sample.AppModel
         {
             return $"Company: {this.Name}";
         }
+
+        private Command _OpenTeachingBubbleCommand;
+        public ICommand OpenTeachingBubbleCommand
+        {
+            get
+            {
+                return _OpenTeachingBubbleCommand ?? (_OpenTeachingBubbleCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = true;
+                    })
+                {
+                    Name = "Blow Bubbles",
+                    ToolTip = "Actually just the one bubble, and it's more of an 'open' than a 'blow'"
+                });
+            }
+        }
+
+        #region boolean TeachingBubbleOpen property
+        private bool _TeachingBubbleOpen = false;
+        public bool TeachingBubbleOpen
+        {
+            get
+            {
+                return _TeachingBubbleOpen;
+            }
+            set
+            {
+                if (_TeachingBubbleOpen == value)
+                    return;
+                _TeachingBubbleOpen = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        private Command _TeachingBubblePrimaryCommand;
+        public ICommand TeachingBubblePrimaryCommand
+        {
+            get
+            {
+                return _TeachingBubblePrimaryCommand ?? (_TeachingBubblePrimaryCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = false;
+                    })
+                {
+                    Name = "Bubble CMD"
+                });
+            }
+        }
+
+        public TeachingBubbleParams TeachingBubbleInfo => new TeachingBubbleParams()
+        {
+            HeaderText = "I AM HEADER",
+            MessageText = "Message text here",
+            ShowCloseButton = true,
+            PrimaryCommand = TeachingBubblePrimaryCommand,
+            ShowSecondaryButton = true,
+            SecondaryButtonText = "DISMISS PLZ"
+        };
     }
 }

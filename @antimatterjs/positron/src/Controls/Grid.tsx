@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IGridProps extends IPanelProps
 {
@@ -48,7 +48,7 @@ export interface IRowDefinition extends IGridDefinition
     Height: IGridLength,
 }
 
-export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends Panel<P,S>
+export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> extends PanelBase<P,S>
 {    
     public static RowDefinition(height?: number , star?: boolean): IRowDefinition
     {
@@ -132,4 +132,8 @@ export class Grid<P extends IGridProps = {}, S extends IGridState = {}> extends 
 
         return columnTemplate;
     }
- }
+}
+
+export class Grid extends GridBase<IGridProps, IGridState>
+{
+}

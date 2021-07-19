@@ -21,6 +21,25 @@ namespace AntimatterJS.Sample.AppModel
         } = new ObservableCollection<DialogViewModel>();
         #endregion
 
+        #region DocViewer Viewer property
+        private DocViewer _Viewer = new DocViewer();
+        public DocViewer Viewer
+        {
+            get
+            {
+                return _Viewer;
+            }
+            set
+            {
+                if (_Viewer != value)
+                {
+                    _Viewer = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         public Company Company { get; } = new Company()
         {
             Name = "Edison Electric"

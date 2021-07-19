@@ -3,11 +3,13 @@ import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Uti
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { Style } from '../Style';
+import { IPanelProps } from '../Controls/Panel';
 import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
 import { getTheme, Icon, MotionAnimations } from '@fluentui/react';
+import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface ITreeViewCommon
 {
@@ -44,7 +46,11 @@ export class TreeView<
     };
 
     public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
-        {}
+        {
+            ItemsPanelStyle: new Style<IPanelProps>({
+                VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+            })
+        }
     );
 
     /* override */ GetContainerForItemOverride()
@@ -52,7 +58,7 @@ export class TreeView<
         return TreeViewItem;
     }
 
-    /* override */ OnRenderItem(item: any, props?: ITreeViewItemProps)
+    /* override */ OnRenderItem(item: any, index: number, props?: ITreeViewItemProps)
     {
         props = props || {};
         props.TreeViewParent = this;
@@ -74,7 +80,7 @@ export class TreeView<
                 Source: item
             });
                 
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 
     // Called by a TVI on a click or a binding-based selection
@@ -165,7 +171,7 @@ class TreeViewItem<
 
     public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
         {
-            Template: (templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
+            Template: new ControlTemplate((templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
                 <Grid
                     ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
@@ -175,7 +181,7 @@ class TreeViewItem<
                     <Icon
                         onClick={(e) => templatedParent.ToggleIsExpanded()}
                         className={templatedParent.GetExpanderClasses()}
-                        iconName="e9e1" />
+                        iconName="ChevronRight" />
 
 
                                             {/*IsEnabled={new Binding({*/}
@@ -200,7 +206,7 @@ class TreeViewItem<
                         VerticalScrollBarVisibility={ScrollBarVisibility.Hidden}
                         HorizontalScrollBarVisibility={ScrollBarVisibility.Hidden} />
                 </Grid>
-            )
+            ))
         },
         {
             Selector: "@",
@@ -276,7 +282,7 @@ class TreeViewItem<
         return TreeViewItem;
     }
 
-    /* override */ OnRenderItem(item: any, props?: ITreeViewItemProps)
+    /* override */ OnRenderItem(item: any, index: number, props?: ITreeViewItemProps)
     {
         props = props || {};
         props.TreeViewParent = this.state.TreeViewParent;
@@ -298,6 +304,6 @@ class TreeViewItem<
                 Source: item
             });
 
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 }

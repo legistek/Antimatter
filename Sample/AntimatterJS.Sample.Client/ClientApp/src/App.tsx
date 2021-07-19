@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
@@ -100,6 +100,11 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                 <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                         <Company />
+
+
+
+                        {/*
+
                         <ResizePanel Size={new Binding("UnderlingPanelWidth")}
                             Background={"blue"}
                             ResizerSide={Side.Left}>
@@ -108,17 +113,20 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                 SelectedItem={new Binding("SelectedEmployee")}
                                 ChildrenPath="Underlings"
                                 SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                                Background="Green"
                                 IsExpandedPath="IsExpanded"
                                 IsSelectedPath="IsSelected"
                                 ItemTemplate={this.employeeTemplate}>
                             </TreeView>
                         </ResizePanel>
 
+                        */}
+
+
+
                     </Grid>
                 </DataContext>
             </Window>
-            
+
             //<Layout>
             //    <Route exact path='/' component={Home} />
             //    <Route path='/counter' component={Company} />

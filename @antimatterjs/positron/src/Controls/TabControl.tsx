@@ -6,7 +6,7 @@ import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
-import { DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 
 export interface ITabItem
 {
@@ -40,7 +40,7 @@ export class TabControl<
 
     public static DefaultStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
         {
-            Template: (templatedParent: TabControl<ITabControlProps, ITabControlState>) =>
+            Template: new ControlTemplate((templatedParent: TabControl<ITabControlProps, ITabControlState>) =>
             {
                 let tabs: JSX.Element[] = [];
                 for (const tab of templatedParent.state.Tabs)
@@ -67,7 +67,7 @@ export class TabControl<
                         <TabPanel TabItem={templatedParent._selectedTab} />
 
                     </Grid>);               
-            },
+            }),
             Tabs: []
         },
         {

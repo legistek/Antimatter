@@ -1,7 +1,7 @@
 import { Binding, ModelObjectReference } from '@antimatterjs/react';
 import { IItemsControlState, IItemsControlProps, ItemsControl } from '../ItemsControl';
 import { SelectionMode } from '../../Enums';
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '@antimatterjs/positron/src/FrameworkElement';
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../../FrameworkElement';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './SelectableItemControl';
 
 export interface ISelectorProps extends IItemsControlProps
@@ -38,14 +38,14 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             (this.state as any).SelectedItems = [];
     }
 
-    public /* virtual */ OnRenderItem(item: any): JSX.Element | null
+    public /* virtual */ OnRenderItem(item: any, index: number): JSX.Element | null
     {
         var props: ISelectableItemControlProps = {
             IsSelected: this.IsItemSelected(item),
             OnClick: (event: MouseEvent) => this.OnItemClick(event, item),
             OnPointerDown: (event: PointerEvent) => this.OnItemPointerDown(event, item)
         };
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 
     IsItemSelected(item: any): boolean
@@ -91,7 +91,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
     {
     }
 
-    /* virtual */ GetContainerForItemOverride(): typeof FrameworkElement
+    /* protected override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
         return SelectableItemControlBase;
     }

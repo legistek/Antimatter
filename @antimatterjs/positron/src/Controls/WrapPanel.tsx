@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Panel, IPanelProps, IPanelState } from './Panel';
+import { PanelBase, IPanelProps, IPanelState } from './Panel';
 
 
 export interface IWrapPanelProps extends IPanelProps
@@ -13,7 +13,7 @@ export interface IWrapPanelState extends IPanelState
 export class WrapPanelBase<
     P extends IWrapPanelProps = {},
     S extends IWrapPanelState = {}>
-    extends Panel<P, S>
+    extends PanelBase<P, S>
 {
     /* override */ constructClasses(): string
     {
@@ -25,9 +25,10 @@ export class WrapPanelBase<
     {
         if (this.state.ItemsParent)
         {
+            let i = 0;
             var list = this.state.ItemsParent?.state?.ItemsSource?.map(item =>
             {
-                return this.state.ItemsParent?.OnRenderItem(item);
+                return this.state.ItemsParent?.OnRenderItem(item, i++);
             });
             return (<>{list}</>);
         }
