@@ -52,7 +52,7 @@ export class PopupBase<
     {
         return this.state.IsOpen ? (
             <Callout
-                target={this.ComputeTarget()}           
+                target={this.ComputeTarget()}
                 styles={{
                     root: {
                         backdropFilter: this.state.Blur
@@ -62,7 +62,7 @@ export class PopupBase<
                 }}
                 style={{
                     background: this.state.Background,
-                    padding: this.state.Padding,                                        
+                    padding: this.state.Padding,
                 }}
                 isBeakVisible={false}
                 coverTarget={this.state.Placement === PlacementMode.Cover}

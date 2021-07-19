@@ -13,7 +13,7 @@ export interface IButtonBaseState extends IControlState
     CommandParameter?: string | number | boolean | ModelObjectReference
 }
 
-export abstract class ButtonBase<
+export class ButtonBase<
     P extends IButtonBaseProps = {},
     S extends IButtonBaseState = {}>
     extends Control<P, S>

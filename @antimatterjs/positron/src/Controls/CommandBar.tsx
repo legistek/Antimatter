@@ -5,7 +5,7 @@ import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } fro
 import { Style } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
-import { CommandButton } from './CommandButton';
+import { CommandButton, CommandButtonBase } from './CommandButton';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
@@ -107,7 +107,7 @@ export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlSt
 
     /* override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return CommandButton;
+        return CommandButtonBase;
     }
 
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)

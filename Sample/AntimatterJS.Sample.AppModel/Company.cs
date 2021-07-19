@@ -285,7 +285,66 @@ namespace AntimatterJS.Sample.AppModel
         {
             return $"Company: {this.Name}";
         }
+
+        private Command _OpenTeachingBubbleCommand;
+        public ICommand OpenTeachingBubbleCommand
+        {
+            get
+            {
+                return _OpenTeachingBubbleCommand ?? (_OpenTeachingBubbleCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = true;
+                    })
+                {
+                    Name = "Blow Bubbles",
+                    ToolTip = "Actually just the one bubble, and it's more of an 'open' than a 'blow'"
+                });
+            }
+        }
+
+        #region boolean TeachingBubbleOpen property
+        private bool _TeachingBubbleOpen = false;
+        public bool TeachingBubbleOpen
+        {
+            get
+            {
+                return _TeachingBubbleOpen;
+            }
+            set
+            {
+                if (_TeachingBubbleOpen == value)
+                    return;
+                _TeachingBubbleOpen = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        private Command _TeachingBubblePrimaryCommand;
+        public ICommand TeachingBubblePrimaryCommand
+        {
+            get
+            {
+                return _TeachingBubblePrimaryCommand ?? (_TeachingBubblePrimaryCommand = new Command(
+                    (arg) =>
+                    {
+                        TeachingBubbleOpen = false;
+                    })
+                {
+                    Name = "Bubble CMD"
+                });
+            }
+        }
+
+        public TeachingBubbleParams TeachingBubbleInfo => new TeachingBubbleParams()
+        {
+            HeaderText = "I AM HEADER",
+            MessageText = "Message text here",
+            ShowCloseButton = true,
+            PrimaryCommand = TeachingBubblePrimaryCommand,
+            ShowSecondaryButton = true,
+            SecondaryButtonText = "DISMISS PLZ"
+        };
     }
-
-
 }

@@ -4,7 +4,6 @@ import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, Propert
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from './Enums';
 
 import './positron.css';
-import { Style } from '@antimatterjs/positron/src/Style';
 import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
 import { ItemsControl } from './Controls/ItemsControl';
@@ -13,6 +12,7 @@ import { MultitouchTransform } from './Media/MultitouchTransform';
 import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEventArgs';
 import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
+import { Style } from './Style';
 
 interface IFrameworkElementCommon
 {

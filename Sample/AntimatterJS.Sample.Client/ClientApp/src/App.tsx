@@ -49,7 +49,7 @@ loadTheme(theme);
 export default class App extends AntimatterComponent<{ Model: ModelObjectReference }, { Model: ModelObjectReference }>
 {
     static displayName = App.name;
-    
+
     constructor(props)
     {
         super(props);
@@ -97,9 +97,14 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>                    
+                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                         <Company />
+
+
+
+                        {/*
+
                         <ResizePanel Size={new Binding("UnderlingPanelWidth")}
                             Background={"blue"}
                             ResizerSide={Side.Left}>
@@ -114,10 +119,14 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                             </TreeView>
                         </ResizePanel>
 
+                        */}
+
+
+
                     </Grid>
                 </DataContext>
             </Window>
-            
+
             //<Layout>
             //    <Route exact path='/' component={Home} />
             //    <Route path='/counter' component={Company} />
