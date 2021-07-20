@@ -1,14 +1,9 @@
 ﻿import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { Style } from '@antimatterjs/positron/src/Style';
-import {
-    ISpinButtonStyles,
-    IStyle,
-
-    SpinButton
-} from '@fluentui/react';
-import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { ISpinButtonStyles, IStyle, SpinButton } from '@fluentui/react';
+import { Control, IControlProps, IControlState } from './Control';
+import { ControlTemplate } from '../FrameworkTemplate';
+import { Style } from '../Style';
 
 interface ISpinnerProps extends IControlProps {
     Value?: number | Binding,
@@ -34,7 +29,8 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
         }
     );
 
-    private get template(): JSX.Element {
+    private get template(): JSX.Element
+    {
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
             color: this.state.Foreground
@@ -58,6 +54,7 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                 step={this.state.StepIncrement}
                 label={this.state.Label}
                 styles={styles}
+                disabled={this.state.IsEnabled === false}
             />
         );
     }

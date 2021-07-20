@@ -49,6 +49,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         MinValue={0}
                         Label="The Age-O-Tron"
                     />
+                    <Spinner
+                        Value={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        IsEnabled={false}
+                        Label="The Borken Age-O-Tron"
+                    />
 
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
                     <TextBlock Text="Edit Info" FontWeight="bold" />
