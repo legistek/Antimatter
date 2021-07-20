@@ -25,6 +25,7 @@ export class Employee {
 	public FullName?: string;
 	public Age?: number;
 	public IncreaseAgeCommand?: ICommand;
+	public RelevantAge?: number;
 }
 
 export class ICommand {

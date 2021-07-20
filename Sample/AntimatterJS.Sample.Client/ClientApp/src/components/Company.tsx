@@ -8,6 +8,8 @@ import
     Coachmark,
     TeachingBubble,
 
+    ProgressBar,
+    //ProgressBarBase,
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -87,6 +89,19 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
+                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+
+                    <ProgressBar
+                        Progress={new Binding("TaskProgress")}
+                        Denominator={100}
+                    />
+
+                    <ProgressBar
+                        Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        Denominator={100}
+                    />
+
+                    <ProgressBar />
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}
