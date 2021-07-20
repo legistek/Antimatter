@@ -1,10 +1,15 @@
-import { Binding, DataContext, AntimatterComponent, ModelObjectReference, } from '@antimatterjs/react';
+import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights} from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
 {
+    Coachmark,
+    TeachingBubble,
+
+    ProgressBar,
+    //ProgressBarBase,
     Spinner,
 
     ListBox, SelectionMode,
@@ -69,16 +74,16 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
                         </CheckBox>
 
-                        <Popup IsOpen={new Binding("IsBonusEligible")}
-                            Background="rgba(255,255,255,.5)"
-                            Blur={10}
-                            Target={
-                                (() =>
-                                    this._cb)
-                                    .bind(this)
-                            }>
-                            <TextBlock Text="Really Nice bonus" />
-                        </Popup>
+                        {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
+                        {/*    Background="rgba(255,255,255,.5)"*/}
+                        {/*    Blur={10}*/}
+                        {/*    Target={*/}
+                        {/*        (() =>*/}
+                        {/*            this._cb)*/}
+                        {/*            .bind(this)*/}
+                        {/*    }>*/}
+                        {/*    <TextBlock Text="Really Nice bonus" />*/}
+                        {/*</Popup>*/}
 
                         <ColorPicker
                             ItemsSource={new Binding("Company.AvailableColors")}
@@ -93,6 +98,19 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
+                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+
+                    <ProgressBar
+                        Progress={new Binding("TaskProgress")}
+                        Denominator={100}
+                    />
+
+                    <ProgressBar
+                        Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        Denominator={100}
+                    />
+
+                    <ProgressBar />
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}
@@ -136,6 +154,62 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
+    private openButtonElem?: FrameworkElement | null;
+    private get OpenBubbleButton(): JSX.Element
+    {
+        const button: JSX.Element = (
+            <CommandButton
+                Command={new Binding(nameof<Model.Company>(c => c.OpenTeachingBubbleCommand))}
+                ref={r => this.openButtonElem = r }
+            />
+        );
+
+        return button;
+    }
+
+    private get Bubble(): JSX.Element
+    {
+        const bubble: JSX.Element = (
+            <TeachingBubble
+                IsOpen={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                Params={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
+
+                //HeaderText="HOBO TITLE!"
+                //MessageText="text text text yay"
+                //ShowCloseButton={true}
+
+                //PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+
+
+                //ShowSecondaryButton={true}
+                //CustomSecondaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                //SecondaryButtonTextOverride="CLOSE ME"
+
+                Target={(() => this.openButtonElem).bind(this)}
+            />
+        );
+
+        return bubble;
+        //return <></>
+    }
+
+    private get TextboxWithTeachingBubble(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <TextBox
+                Text="Unimportant text for bubble-ed control"
+
+                TeachingBubbleIsOpen={{ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen) }}
+
+                TeachingBubbleParams={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
+                //TeachingBubbleHeaderText="i am bubble header"
+                //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+            />
+        );
+        return elem;
+        //return <></>;
+    }
+
     renderElement()
     {
         console.log("Company rendering");
@@ -154,9 +228,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         <TextBlock Text="Employee Count:" />
                         <TextBlock Text={new Binding("Employees.Count")} />
                     </StackPanel>
-
                     <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
                         Style={CommandButton.CommandBarButtonStyle} />
+
+
+                    {this.OpenBubbleButton}
+                    {/*{this.Bubble}*/}
+
+                    {this.TextboxWithTeachingBubble}
+
 
                     {/*<ModernButton*/}
                     {/*    Label="NEW EMPLOYEE"*/}
@@ -166,6 +246,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
+
+                {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                         RowHeight={44}
@@ -205,9 +287,11 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                 Template: this._ageTemplate
                             }
                         ]}
-                        />
+                    />
                 </div>
 
+
+                */}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

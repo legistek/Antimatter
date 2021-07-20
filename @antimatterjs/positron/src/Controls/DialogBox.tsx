@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
 import { DefaultEffects, Dialog, getTheme, Icon, Modal, MotionAnimations } from '@fluentui/react';
+
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
@@ -8,11 +9,10 @@ import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { CommandButton } from './CommandButton';
-import { HorizontalAlignment, VerticalAlignment } from '@antimatterjs/positron/src/Enums';
-import { template } from '@babel/core';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 
 interface IDialogBoxCommon
 {    
