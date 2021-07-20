@@ -7,14 +7,14 @@ import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IProgressBarProps extends IControlProps
 {
-    Progress?: number | Binding,
+    Progress?: number | null | Binding,
     Denominator?: number | Binding,
-    Indeterminate?: boolean | Binding
+    Indeterminate?: boolean | Binding,
 }
 
 interface IProgressBarState extends IControlState
 {
-    Progress?: number,
+    Progress?: number | null,
     Denominator?: number,
     Indeterminate?: boolean
 }
@@ -30,8 +30,11 @@ export class ProgressBar extends Control<IProgressBarProps, IProgressBarState>
         }
     );
 
-    private get percentComplete(): number | undefined {
-        if (this.state.Indeterminate)
+    private get percentComplete(): number | undefined
+    {
+        if (this.state.Indeterminate ||
+            this.state.Progress === null ||
+            this.state.Progress === undefined )
             return undefined;
 
         const numerator: number = this.state.Progress ?? 0;

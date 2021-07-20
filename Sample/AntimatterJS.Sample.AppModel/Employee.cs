@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Antimatter.Net.Model;
@@ -40,6 +41,52 @@ namespace AntimatterJS.Sample.AppModel
             this.LastName = lastName;
             this.Age = age;
         }
+
+        #region double TaskProgress property
+        private double? _TaskProgress;
+        public double? TaskProgress
+        {
+            get
+            {
+                return _TaskProgress;
+            }
+            set
+            {
+                if (_TaskProgress != value)
+                {
+                    _TaskProgress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region IUICommand LongTask Command
+
+        private Command _LongTaskCommand;
+        public ICommand LongTaskCommand
+        {
+            get
+            {
+                return _LongTaskCommand ?? (_LongTaskCommand = new Command(
+                    (param) =>
+                    {
+                        Task.Run(async () =>
+                        {
+                            for (int i = 0; i < 100; i++)
+                            {
+                                this.TaskProgress = i;
+                                await Task.Delay(500);
+                            }
+                        });
+                    })
+                {
+                    Name = "Long Task",
+                });
+            }
+        }
+
+        #endregion
 
         #region ObservableCollection Underlings property
         private ObservableCollection<Employee> _Underlings;

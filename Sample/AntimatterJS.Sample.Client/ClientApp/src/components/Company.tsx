@@ -89,8 +89,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
+                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+
                     <ProgressBar
-                        Progress={new Binding(nameof<Model.Employee>(e => e.RelevantAge))}
+                        Progress={new Binding("TaskProgress")}
+                        Denominator={100}
                     />
 
                     <ProgressBar
@@ -98,9 +101,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Denominator={100}
                     />
 
-                    <ProgressBar
-                        Indeterminate={true}
-                    />
+                    <ProgressBar />
 
                     {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
                     {/*    <CommandButton*/}
