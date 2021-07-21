@@ -10,6 +10,8 @@ import
 
     ProgressBar,
     //ProgressBarBase,
+    Spinner,
+
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -41,6 +43,19 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
             >
 
                 <DataContext Value={this.state.Value}>
+                    <Spinner
+                        Value={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        LabelIsInline={false}
+                        StepIncrement={5}
+                        MinValue={0}
+                        Label="The Age-O-Tron"
+                    />
+                    <Spinner
+                        Value={new Binding(nameof<Model.Employee>(e => e.Age))}
+                        IsEnabled={false}
+                        Label="The Borken Age-O-Tron"
+                    />
+
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
                     <TextBlock Text="Edit Info" FontWeight="bold" />
 
@@ -210,6 +225,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
+
+
+
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
                     <StackPanel Orientation={Orientation.Horizontal}>
