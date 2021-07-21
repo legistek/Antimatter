@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { ISpinButtonStyles, IStyle, SpinButton } from '@fluentui/react';
+import { IStyle, Position, SpinButton } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
@@ -10,14 +10,16 @@ interface ISpinnerProps extends IControlProps {
     MaxValue?: number | Binding,
     MinValue?: number | Binding,
     StepIncrement?: number | Binding,
-    Label?: string | Binding
+    Label?: string | Binding,
+    LabelIsInline?: boolean | Binding
 }
 interface ISpinnerState extends IControlState {
     Value?: number,
     MaxValue?: number,
     MinValue?: number,
     StepIncrement?: number,
-    Label?: string
+    Label?: string,
+    LabelIsInline?: boolean
 }
 export class Spinner extends Control<ISpinnerProps, ISpinnerState>
 {
@@ -33,18 +35,13 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
     {
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
-            color: this.state.Foreground
+            color: this.state.Foreground,
+            fontSize: this.state.FontSize
         };
-        if (this.state.FontSize)
-            textStyle.fontSize = `${this.state.FontSize}px`;
-
-        //const styles: ISpinButtonStyles = {
-        const styles: any = {
-            label: textStyle,
-            input: textStyle
-        }
 
         const textValue: string = this.state.Value?.toString() || '0';
+        const labelPosition: Position = this.props.LabelIsInline ? Position.start : Position.top;
+
         return (
             <SpinButton
                 value={textValue}
@@ -53,7 +50,11 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                 min={this.state.MinValue}
                 step={this.state.StepIncrement}
                 label={this.state.Label}
-                styles={styles}
+                labelPosition={labelPosition}
+                styles={{
+                    label: textStyle,
+                    input: textStyle
+                }}
                 disabled={this.state.IsEnabled === false}
             />
         );
