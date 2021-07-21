@@ -45,10 +45,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                 <DataContext Value={this.state.Value}>
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
-                        LabelIsInline={true}
+                        LabelIsInline={false}
                         StepIncrement={5}
                         MinValue={0}
-                        FontSize={18}
                         Label="The Age-O-Tron"
                     />
                     <Spinner

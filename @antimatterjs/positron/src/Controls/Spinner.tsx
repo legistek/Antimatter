@@ -36,7 +36,9 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
             color: this.state.Foreground,
-            fontSize: this.state.FontSize
+            fontSize: this.state.FontSize,
+            lineHeight: "unset",
+            alignSelf: "center"
         };
 
         const textValue: string = this.state.Value?.toString() || '0';
@@ -53,7 +55,10 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                 labelPosition={labelPosition}
                 styles={{
                     label: textStyle,
-                    input: textStyle
+                    input: textStyle,
+                    spinButtonWrapper: {
+                        height: "fit-content"
+                    }
                 }}
                 disabled={this.state.IsEnabled === false}
             />
