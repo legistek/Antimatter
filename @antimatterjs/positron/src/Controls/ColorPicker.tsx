@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { Style } from '@antimatterjs/positron/src/Style';
+
 import { PlacementMode, Popup } from './Popup';
 import { Ellipse } from '../Shapes/Ellipse';
 import { WrapPanel } from './WrapPanel';
@@ -12,6 +12,7 @@ import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { getTheme } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
+import { Style } from '../Style';
 
 export interface IColorPickerProps extends ISelectorProps
 {
@@ -39,7 +40,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
 
     public static DefaultStyle: Style<IColorPickerProps> = new Style<IColorPickerProps>(
         {
-            SelectionMode: SelectionMode.Single,            
+            SelectionMode: SelectionMode.Single,
             ItemsSource: [],
             IconForeground: "white",
             Template: new ControlTemplate((templatedParent: ColorPicker) => (
@@ -51,7 +52,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                         Width={ColorPicker.ELLIPSE_SIZE}
                         Height={ColorPicker.ELLIPSE_SIZE} />
                     <Glyph
-                        Icon={0xE928}
+                        Icon={"Edit"}
                         IsHitTestVisible={false}
                         Foreground={templatedParent.state.IconForeground}
                         Overlaps={true}
@@ -81,7 +82,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                             <>{templatedParent.props.children}</>
                             {templatedParent.state.IsSelected && (
                                 <Glyph
-                                    Icon={0xE9A4}
+                                    Icon={"CheckMark"}
                                     FontSize="16px"
                                     FontWeight="bold"
                                     Foreground="#FFFFFF"
@@ -123,7 +124,7 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
             PopupIsOpen: open
         });
     }
-   
+
     private static COLUMNS_SIZE: number = 6;
     private static COLUMN_WIDTH: number = 40;
     private static get ELLIPSE_SIZE() { return ColorPicker.COLUMN_WIDTH - 10; }

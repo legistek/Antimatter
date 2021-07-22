@@ -59,7 +59,12 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                     }}                    
                     autoAdjustHeight={true}
                     label={templatedParent.state.Label}
-                    value={templatedParent.state.Text || ''}
+                    value=
+                    {
+                        (templatedParent.state.Text === null || templatedParent.state.Text === undefined)
+                            ? ''
+                            : templatedParent.state.Text
+                    }
                     onChange={(event, newValue) =>
                         templatedParent.SetValue(nameof(templatedParent.state.Text), newValue)
                     }

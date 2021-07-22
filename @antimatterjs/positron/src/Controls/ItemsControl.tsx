@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, ModelObjectReference, Utilities } from '@antimatterjs/react';
 
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
-import { Panel, IPanelProps } from './Panel';
+import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style } from '../Style';
@@ -15,7 +15,10 @@ export interface IItemsControlProps extends IControlProps
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemContainerStyle?: Style<IFrameworkElementProps>
+    ItemsPanelStyle?: Style<IPanelProps>,
+    ItemContainerStyle?: Style<IFrameworkElementProps>,
+    HorizontalScrollBarVisibility?: ScrollBarVisibility,
+    VerticalScrollBarVisibility?: ScrollBarVisibility
 }
 
 export interface IItemsControlState extends IControlState
@@ -23,6 +26,7 @@ export interface IItemsControlState extends IControlState
     ItemsSource?: any[],
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
+    ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
 }
 
@@ -35,8 +39,12 @@ export class ItemsControl<
     extends Control<P, S>
 {
     public ItemsPanelInstance: Panel | undefined | null;
+    public get ItemContainers(): FrameworkElement[]
+    {
+        return this._itemContainers;
+    }
 
-    public /* virtual */ OnRenderItem(item: any, props?: any): JSX.Element | null
+    public /* virtual */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null
     {
         var templ = this.GetTemplateForItem(item);
         if (!templ)
@@ -46,9 +54,9 @@ export class ItemsControl<
         if (props)
             Object.assign(itemProps, props);
 
-        (itemProps as any).key = item?.IsModelObjectReference
-            ? (item as ModelObjectReference).Handle.toString()
-            : item?.toString();
+        (itemProps as any).key = Utilities.SmartGetKey(item);
+        (itemProps as any).ref = (r: FrameworkElement) =>
+            this._itemContainers[index] = r;
 
         return React.createElement(
             this.GetContainerForItemOverride(),
@@ -75,10 +83,11 @@ export class ItemsControl<
                             return React.createElement(
                                 (this.state.ItemsPanel || StackPanel),
                                 {
+                                    Style: this.state.ItemsPanelStyle,
+                                    Background: this.state.Background,
                                     BorderThickness: this.state.BorderThickness,
                                     BorderBrush: this.state.BorderBrush,
                                     ItemsParent: this,
-                                    VerticalScrollBarVisibility: ScrollBarVisibility.Auto
                                 } as IPanelProps);
                         }
                     }
@@ -89,7 +98,10 @@ export class ItemsControl<
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.ItemsSource))
+        {
+            this._itemContainers = new Array((value as any[])?.length || 0);
             this.ItemsPanelInstance?.InvalidateRender();
+        }
         super.OnPropertyChanged(property, value, oldValue);
     }
 
@@ -101,7 +113,7 @@ export class ItemsControl<
 
     /* protected virtual */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return StackPanelBase;
+        return PanelBase;
     }
 
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
@@ -116,7 +128,9 @@ export class ItemsControl<
     {
         return (i?: any) => (
             <>
-                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.ToString()}
+                {i?.IsModelObjectReference ? (i as ModelObjectReference).Handle : i?.toString()}
             </>);
     }
+
+    private _itemContainers: FrameworkElement[] = [];
 }

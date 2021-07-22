@@ -20,7 +20,7 @@ export abstract class DialogTemplate extends Component<IDialogTemplateProps, IDi
 
     protected abstract renderTemplate(): JSX.Element;
 
-    public /* override sealed */ render(): JSX.Element
+    public /* override sealed */ renderElement(): JSX.Element
     {
         return this.renderTemplate();
     }
