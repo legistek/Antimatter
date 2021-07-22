@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Checkbox as FluentCheckBox } from '@fluentui/react'
-import { IToggleButtonProps, IToggleButtonState, ToggleButton } from './Primitives/ToggleButton';
+import { IToggleButtonProps, IToggleButtonState, ToggleButtonBase } from './Primitives/ToggleButton';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
 

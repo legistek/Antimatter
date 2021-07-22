@@ -65,6 +65,15 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     />
 
 
+                    <ToggleButton
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        CheckedText="Switched on (elsewhere)"
+                        UncheckedText="Switched off (elsewhere)"
+                        Label="Thing not to toggle because it's disabled"
+                        LabelIsInline={true}
+                        IsEnabled={false}
+                    />
+
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
                     <TextBlock Text="Edit Info" FontWeight="bold" />
 

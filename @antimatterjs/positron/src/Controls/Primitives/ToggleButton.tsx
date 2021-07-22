@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Binding, BindingMode } from "@antimatterjs/react";
-import { Style } from '@antimatterjs/positron/src/Style';
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { ButtonBase, IButtonBaseProps, IButtonBaseState } from "@antimatterjs/positron/src/Controls/Primitives/ButtonBase";
+import { Style } from '../../Style';
+import { ControlTemplate } from '../../FrameworkTemplate';
+import { ButtonBase, IButtonBaseProps, IButtonBaseState } from "./ButtonBase";
 import {
     IStyle,
     IToggleStyles,
@@ -15,6 +15,7 @@ export interface IToggleButtonProps extends IButtonBaseProps
     CheckedText?: string | Binding,
     UncheckedText?: string | Binding,
     Label?: string | Binding,
+    LabelIsInline?: boolean | Binding,
     IsThreeState?: boolean
 }
 
@@ -24,6 +25,7 @@ export interface IToggleButtonState extends IButtonBaseState
     CheckedText?: string,
     UncheckedText?: string,
     Label?: string,
+    LabelIsInline?: boolean
     IsThreeState?: boolean
 }
 
@@ -46,7 +48,7 @@ export class ToggleButtonBase<P extends IToggleButtonProps = {},
                 newValue = true;
             else if (this.state.IsChecked === false)
                 newValue = undefined;
-            else // this.state.IsChecked === true
+            else
                 newValue = false;
         }
         else
@@ -65,32 +67,29 @@ export class ToggleButton extends ToggleButtonBase<IToggleButtonProps, IToggleBu
             IsThreeState: false,
             Template: new ControlTemplate((templatedParent: ToggleButton) => templatedParent.template)
         }
-
     );
 
-    private get template(): JSX.Element {
+    private get template(): JSX.Element
+    {
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
+            fontSize: this.state.FontSize,
             color: this.state.Foreground
-        };
-        if (this.state.FontSize)
-            textStyle.fontSize = `${this.state.FontSize}px`;
-
-        //const style: IToggleStyles = {
-        const styles: any = {
-            label: textStyle,
-            text: textStyle
         };
 
         return (
             <Toggle
                 checked={this.state.IsChecked}
                 onChange={() => super.OnClick()}
+                disabled={this.state.IsEnabled === false}
                 label={this.state.Label}
                 onText={this.state.CheckedText}
                 offText={this.state.UncheckedText}
-                styles={styles}
-                //inlineLabel={true}
+                inlineLabel={this.state.LabelIsInline}
+                styles={{
+                    label: textStyle,
+                    text: textStyle
+                }}
             />
         );
     }
