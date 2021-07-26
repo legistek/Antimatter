@@ -5,6 +5,7 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights }
 import * as Model from '../model/Model';
 import
 {
+    ToggleButton,
     Coachmark,
     TeachingBubble,
 
@@ -54,6 +55,23 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         IsEnabled={false}
                         Label="The Borken Age-O-Tron"
+                    />
+
+                    <ToggleButton
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        CheckedText="Switched on"
+                        UncheckedText="Switched off"
+                        Label="Thing to toggle"
+                    />
+
+
+                    <ToggleButton
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        CheckedText="Switched on (elsewhere)"
+                        UncheckedText="Switched off (elsewhere)"
+                        Label="Thing not to toggle because it's disabled"
+                        LabelIsInline={true}
+                        IsEnabled={false}
                     />
 
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
