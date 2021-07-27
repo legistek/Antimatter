@@ -12,4 +12,12 @@
     <TypeScriptCompile Include="src\Controls\ProgressBar.tsx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="src\Controls\Spinner.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="src\Controls\Spinner.tsx" />
+  </ItemGroup>
+
 </Project>

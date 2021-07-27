@@ -35,6 +35,7 @@ export * from './src/Controls/ResizePanel';
 export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
 export * from './src/Controls/ColorPicker';
+export * from './src/Controls/Spinner';
 export * from './src/Controls/Coachmark';
 export * from './src/Controls/TeachingBubble';
 export * from './src/Controls/VirtualizedPanel';
