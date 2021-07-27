@@ -318,9 +318,9 @@ export class DocumentPagePresenterBase<
     private InvalidateMeasure()
     {
         if (!this.Container
-            ||
-            this._lastWidth === this.Container.clientWidth &&
-            this._lastHeight === this.Container.clientHeight
+            //||
+            //this._lastWidth === this.Container.clientWidth &&
+            //this._lastHeight === this.Container.clientHeight
         )
             return;
 
