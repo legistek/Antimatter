@@ -60,17 +60,12 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
         else
             key = this.GetItemKey(this.state.SelectedItem);
 
-
         const textStyle: IStyle =
         {
             fontFamily: this.state.FontFamily,
             color: this.state.Foreground,
             fontSize: this.state.FontSize
         };
-        const styles: any = //IDropdownStyles (except w/o requiring all props to be defined)
-        {
-            label: textStyle
-        }
 
         const placeholder: string = this.state.Placeholder ?? this.state.TitleStringOverride ?? '';
 
@@ -87,7 +82,7 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
                 label={this.state.Label}
                 placeholder={placeholder}
                 notifyOnReselect={false}
-                styles={styles}
+                styles={{ label: textStyle }}
             />
         );
     }
@@ -106,7 +101,8 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
 
     private OnRenderOption(option?: IDropdownOption): JSX.Element | null
     {
-        return this.OnRenderItem(option?.data);
+        const index: number = this._options?.findIndex(o => o == option);
+        return this.OnRenderItem(option?.data, index);
     };
 
     private OnChange(index?: number): void

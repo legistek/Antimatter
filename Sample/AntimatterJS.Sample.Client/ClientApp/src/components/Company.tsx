@@ -238,7 +238,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     }
 
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
-        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+        <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
+            VerticalAlignment={VerticalAlignment.Center}
+        />
     );
     _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
         <TextBlock Text={item} />
@@ -256,14 +258,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemTemplate={this._comboBoxOptionTemplate}
 
-                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
 
 
-                SelectionMode={SelectionMode.Multiple}
-                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
-                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                //SelectionMode={SelectionMode.Multiple}
+                //SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                //TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
 
-                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
+                //SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
 
                 //IsEnabled={false}
 
