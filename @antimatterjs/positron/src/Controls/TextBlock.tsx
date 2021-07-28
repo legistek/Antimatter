@@ -1,8 +1,8 @@
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { Style } from '@antimatterjs/positron/src/Style';
 import { getTheme } from '@fluentui/react';
+import { Style } from '../Style';
 
 interface ITextBlockProps extends IFrameworkElementProps
 {

@@ -43,5 +43,10 @@ namespace Antimatter.Net.Webassembly
                 return ModelValue.Null;
             }
         }
+
+        public async Task StartupAsync()
+        {
+            JS.InvokeJS("window.OnServerStartup", null);
+        }
     }
 }

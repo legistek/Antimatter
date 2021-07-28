@@ -5,7 +5,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaRoot>ClientApp\</SpaRoot>	
 	<SlnRoot>..\..\</SlnRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <RootNamespace>AntimatterJS.Sample.Client</RootNamespace>
@@ -23,6 +23,14 @@
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ClientApp\DataController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controllers\DataController.cs" />
+  </ItemGroup>
      
   <ItemGroup>    
     <!--<ProjectReference Include="..\..\..\..\Limine\src\Legistek.Limine.Core\Legistek.Limine.Core.csproj" />-->    
@@ -30,6 +38,18 @@
     <ProjectReference Include="..\..\Antimatter.Net.SignalR\Antimatter.Net.SignalR.csproj" />
     <ProjectReference Include="..\AntimatterJS.Sample.AppModel\AntimatterJS.Sample.AppModel.csproj" />
     <ProjectReference Include="..\AntimatterJS.Sample.Wasm\AntimatterJS.Sample.Wasm.csproj" />
+  </ItemGroup>
+     
+  <ItemGroup>
+    <None Update="Data\Absurdely Long PDF 15000 pages.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Different Page Sizes.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Microsoft_Win7_UXGuide5.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 	
 	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SlnRoot)node_modules') ">
@@ -44,7 +64,7 @@
 	
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SlnRoot)" Command="npm install" />
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
 
     <!-- Include the newly-built files in the publish output -->

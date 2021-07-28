@@ -71,13 +71,13 @@ namespace Antimatter.Net
             set => floatValue = value;
         }
 
-        //[FieldOffset(16)]
-        //private double doubleValue;
-        //public double DoubleValue
-        //{
-        //    get => doubleValue;
-        //    set => doubleValue = value;
-        //}
+        [FieldOffset(16)]
+        private double doubleValue;
+        public double DoubleValue
+        {
+            get => doubleValue;
+            set => doubleValue = value;
+        }
 
         [FieldOffset(16)]
         private int intValue;
@@ -117,6 +117,8 @@ namespace Antimatter.Net
             {                
                 case ModelValueType.Float:
                     return this.FloatValue;
+                case ModelValueType.Double:
+                    return this.DoubleValue;
                 case ModelValueType.Int:
                     return this.IntValue;
                 case ModelValueType.Long:
@@ -135,9 +137,12 @@ namespace Antimatter.Net
                         return g;
                     }
                 case ModelValueType.DateTime:
-                    return new DateTime(this.LongValue, DateTimeKind.Utc);
+                    return new DateTime(
+                        (long)(this.DoubleValue * 10000.0d), 
+                        DateTimeKind.Utc);
                 case ModelValueType.TimeSpan:
-                    return new TimeSpan(this.LongValue);
+                    return new TimeSpan(
+                        (long)(this.DoubleValue * 10000.0d));
                 case ModelValueType.Object:                
                     return mgr.GetReference(this.objectHandle)?.Object;
                 case ModelValueType.Collection:             

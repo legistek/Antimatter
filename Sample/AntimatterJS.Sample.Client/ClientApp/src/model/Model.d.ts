@@ -1,4 +1,7 @@
-export class App {
+import { TeachingBubbleParams } from '@antimatterjs/positron';
+
+export class App
+{
 	public Company?: Company;
 }
 
@@ -10,6 +13,10 @@ export class Company {
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
+	public OpenTeachingBubbleCommand?: boolean;
+	public TeachingBubbleOpen?: boolean;
+	public TeachingBubblePrimaryCommand?: ICommand;
+	public TeachingBubbleInfo?: TeachingBubbleParams;
 	public SomeEmployees?: Employee[];
 	public SomeEmployeeNames?: string[];
 	public SelectedEmployeeName?: string;
@@ -24,6 +31,7 @@ export class Employee {
 	public FullName?: string;
 	public Age?: number;
 	public IncreaseAgeCommand?: ICommand;
+	public RelevantAge?: number;
 }
 
 export class ICommand {

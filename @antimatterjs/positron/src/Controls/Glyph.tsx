@@ -7,14 +7,14 @@ import { IPanelProps, IPanelState, Panel } from './Panel';
 
 export interface IGlyphProps extends IFrameworkElementProps
 {
-    Icon?: number | Binding,
+    Icon?: number | string | Binding,
     FontSize?: number | string | Binding,
     Foreground?: string | Binding,
     FontWeight?: undefined | "bold" | "normal"
 }
 export interface IGlyphState extends IFrameworkElementState
 {
-    Icon?: number,
+    Icon?: number | string,
     FontSize?: number | string,
     Foreground?: string,
     FontWeight?: undefined | "bold" | "normal"
@@ -45,12 +45,29 @@ export class Glyph extends FrameworkElement<IGlyphProps, IGlyphState>
         return (
             <Icon
                 className="icon"
-                iconName={this.state.Icon?.toString(16)}
+                iconName={this.GetIconString()}
                 style={{
                     color: this.state.Foreground,
                     fontSize: this.state.FontSize,
                     fontWeight: this.state.FontWeight
                 }}
             />)
+    }
+
+    /* override */ getCSSStyles(): React.CSSProperties
+    {
+        var styles = super.getCSSStyles();
+        styles.height = this.state.FontSize;        
+        return styles;
+    }
+
+    private GetIconString(): string
+    {
+        if (typeof (this.state.Icon) === "string")
+            return this.state.Icon as string;
+        else if (typeof (this.state.Icon) === "number")
+            return (this.state.Icon as number).toString(16);
+        else
+            return "";
     }
 }

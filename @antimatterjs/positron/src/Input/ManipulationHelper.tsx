@@ -1,3 +1,4 @@
+import { raiseClick } from "@fluentui/utilities";
 import * as React from "react";
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from "../FrameworkElement";
 import { ManipulationEvent, ManipulationEventArgs } from "./ManipulationEventArgs";
@@ -13,11 +14,14 @@ export class ManipulationHelper
 
     constructor(parent: FrameworkElement)
     {
-        this._parent = parent;
+        this._parent = parent;        
     }
 
     public OnPointerDown(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
+
         this._pointerCache.push(event);
         this._isPotentiallyManipulating = true;
 
@@ -56,6 +60,8 @@ export class ManipulationHelper
 
     public OnPointerMove(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
         if (!this._isPotentiallyManipulating || this._pointerCache.length === 0)
             return;
 
@@ -64,18 +70,22 @@ export class ManipulationHelper
             this._parent.state.OnManipulationStarted)
         {
             var startedArgs = new ManipulationEventArgs(ManipulationEvent.Started, event);
-            if (this._pointerCache.length === 1)
-            {
-                this._scale.CenterX = this._pointerCache[0].clientX;
-                this._scale.CenterY = this._pointerCache[0].clientY;
+            var rc = this._parent.Container?.getBoundingClientRect();
+            if (rc)
+            {                
+                if (this._pointerCache.length === 1)
+                {
+                    this._scale.CenterX = this._pointerCache[0].clientX - rc.left;
+                    this._scale.CenterY = this._pointerCache[0].clientY - rc.top;
+                }
+                else
+                {
+                    this._scale.CenterX = (this._pointerCache[0].clientX + this._pointerCache[1].clientX) / 2 - rc.left;
+                    this._scale.CenterY = (this._pointerCache[0].clientY + this._pointerCache[1].clientY) / 2 - rc.top;
+                }
+                startedArgs.CenterX = this._scale.CenterX;
+                startedArgs.CenterY = this._scale.CenterY;
             }
-            else
-            {
-                this._scale.CenterX = (this._pointerCache[0].clientX + this._pointerCache[1].clientX) / 2;
-                this._scale.CenterY = (this._pointerCache[0].clientY + this._pointerCache[1].clientY) / 2;
-            }
-            startedArgs.CenterX = this._scale.CenterX;
-            startedArgs.CenterY = this._scale.CenterY;
             this._parent.state.OnManipulationStarted(startedArgs);
         }
         
@@ -143,6 +153,8 @@ export class ManipulationHelper
 
     public OnPointerUp(event: PointerEvent): void
     {
+        if (event.pointerType === "mouse")
+            return;
         if (!this.RemovePointerEvent(event))
             // We weren't tracking this one anyway
             return;
@@ -158,8 +170,11 @@ export class ManipulationHelper
             this._isPotentiallyManipulating = false;
             if (this._parent.state.OnManipulationCompleted)
             {
-                var me = new ManipulationEventArgs(ManipulationEvent.Completed, event);
-                this._parent.state.OnManipulationCompleted(me);
+                var args = new ManipulationEventArgs(ManipulationEvent.Completed, event);
+                args.CumulativeX = this._translate.CommittedCumulativeX + this._translate.PendingCumulativeX;
+                args.CumulativeY = this._translate.CommittedCumulativeY + this._translate.PendingCumulativeY;
+                args.CumulativeScale = this._scale.CommittedCumulativeScale * this._scale.PendingCumulativeScale;
+                this._parent.state.OnManipulationCompleted(args);
             }
         }
         else if (this._pointerCache.length === 1)

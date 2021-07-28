@@ -43,14 +43,14 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             (this.state as any).SelectedItems = [];
     }
 
-    public /* virtual */ OnRenderItem(item: any): JSX.Element | null
+    public /* virtual */ OnRenderItem(item: any, index: number): JSX.Element | null
     {
         var props: ISelectableItemControlProps = {
             IsSelected: this.IsItemSelected(item),
             OnClick: (event: MouseEvent) => this.OnItemClick(event, item),
             OnPointerDown: (event: PointerEvent) => this.OnItemPointerDown(event, item)
         };
-        return super.OnRenderItem(item, props);
+        return super.OnRenderItem(item, index, props);
     }
 
     IsItemSelected(item: any): boolean
