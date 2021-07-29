@@ -8,8 +8,7 @@ export class ModelValue
     ObjectHandle?: number;
     FloatValue?: number;
     DoubleValue?: number;
-    IntValue?: number;
-    LongValue?: bigint;
+    IntValue?: number;    
     Collection?: ModelValue[];
     BoolValue?: boolean;
 
@@ -32,10 +31,6 @@ export class ModelValue
             {
                 case "undefined":
                     val.Type = ModelValueType.Null;
-                    break;
-                case "bigint":
-                    val.Type = ModelValueType.Long;
-                    val.LongValue = jsValue;
                     break;
                 case "boolean":
                     val.Type = ModelValueType.Bool;
@@ -98,8 +93,8 @@ export class ModelValue
                 return this.StringValue || "";
             case ModelValueType.Int:
                 return this.IntValue?.toString() || "";
-            case ModelValueType.Long:
-                return this.LongValue?.toString() || "";
+            case ModelValueType.Double:
+                return this.DoubleValue?.toString() || "";
             case ModelValueType.Bool:
                 return this.BoolValue?.toString() || "";
             default:
@@ -114,9 +109,9 @@ export enum ModelValueType
     ObjectHandle = 1,
     String = 2,
     Int = 3,
-    Long = 4,
+    //Long = 4,
     Float = 5,
-    //Double = 6,
+    Double = 6,
     Collection = 7,
     Bool = 8,
     Guid = 9,

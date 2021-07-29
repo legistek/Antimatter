@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Panel, IPanelProps, IPanelState } from './Panel';
+import { PanelBase, IPanelProps, IPanelState } from './Panel';
 import { Orientation } from '../Enums';
 
 export interface IStackPanelProps extends IPanelProps
@@ -14,7 +14,7 @@ export interface IStackPanelState extends IPanelState
 }
 
 export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPanelState = {}>
-    extends Panel<P, S>
+    extends PanelBase<P, S>
 {
     /* override */ constructClasses(): string
     {        
@@ -27,9 +27,10 @@ export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPan
     {
         if (this.state.ItemsParent)
         {
+            let i = 0;
             var list = this.state.ItemsParent?.state?.ItemsSource?.map(item =>
             {
-                return this.state.ItemsParent?.OnRenderItem(item);
+                return this.state.ItemsParent?.OnRenderItem(item, i++);
             });
             return (<>{list}</>);
         }

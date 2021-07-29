@@ -4,51 +4,51 @@ import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentComma
 
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
-import { HorizontalAlignment } from '@antimatterjs/positron/src/Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { HorizontalAlignment } from '../Enums';
 
-interface ICommandButtonCommon
-{
-}
-export interface ICommandButtonProps extends IButtonBaseProps, ICommandButtonCommon
+export interface ICommandButtonProps extends IButtonBaseProps
 {
     Icon?: number | Binding,
     Label?: string | Binding,
     IsDefault?: boolean | Binding
 }
-export interface ICommandButtonState extends IButtonBaseState, ICommandButtonCommon
+export interface ICommandButtonState extends IButtonBaseState
 {
     Icon?: number,
     Label?: string,
     IsDefault?: boolean
 }
 
-export class CommandButton<P extends ICommandButtonProps = {}, S extends ICommandButtonState = {}>
+export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICommandButtonState = {}>
     extends ButtonBase<P, S>
 {
-    static BaseCommandButtonProps: ICommandButtonProps = {
+    public static BaseCommandButtonProps: ICommandButtonProps = {
         HorizontalAlignment: HorizontalAlignment.Left,
         Margin: "5px",
-        IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
+        IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true }),
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-        IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
+        IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true  }),
         Icon: new Binding({ Path: "Icon", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })        
-    };
+        Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })
+    };    
+}
 
+export class CommandButton extends CommandButtonBase<ICommandButtonProps, ICommandButtonState>
+{
     public static DialogButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
-            Object.assign({}, CommandButton.BaseCommandButtonProps),
+            Object.assign({}, CommandButtonBase.BaseCommandButtonProps),
             {
                 IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
-                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
                         ? (<PrimaryButton
                             style={{ minWidth: "90px" }}
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}>
                             {templatedParent.state.Label}
-                          </PrimaryButton>)
+                        </PrimaryButton>)
                         : (<DefaultButton
                             style={{ minWidth: "90px" }}
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
@@ -57,12 +57,12 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         </DefaultButton>))
             }
         ));
-    
+
     public static PrimaryButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <PrimaryButton
                         onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
@@ -79,10 +79,10 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
     public static CommandBarButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
-            {                
+            {
                 Padding: "8px 0px 8px 0px",
                 IsVisible: true,
-                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <CommandBarButton
                         style={{
@@ -95,9 +95,9 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                         }}
                         text={templatedParent.state.Label}
                         disabled={!templatedParent.state.IsEnabled}>
-                        
+
                     </CommandBarButton>
-                )),                
+                )),
             }
         ));
 
@@ -105,8 +105,9 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Padding: "8px 0px 8px 0px",
-                Template: new ControlTemplate((templatedParent: CommandButton<ICommandButtonProps, ICommandButtonState>) =>
+                Padding: "8px 5px 8px 5px",
+
+                Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <IconButton
                         styles={{
@@ -121,14 +122,16 @@ export class CommandButton<P extends ICommandButtonProps = {}, S extends IComman
                             },
                             icon: {
                                 height: "fit-content",
-                                margin: "0px"
-                            }
+                                margin: "0px",
+                                fontSize: "20px"
+                            },
                         }}
-                        onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
+                        onClick={(e) =>
+                            templatedParent.OnClick(e.nativeEvent)}
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
-                        disabled={!templatedParent.state.IsEnabled}>
+                        disabled={templatedParent.state.IsEnabled === false}>
                     </IconButton>
                 )),
             }

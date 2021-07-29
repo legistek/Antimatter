@@ -3,17 +3,17 @@ import { Control, IControlProps, IControlState } from "../Control";
 
 export interface IButtonBaseProps extends IControlProps
 {
-    Command?: ModelObjectReference | Binding,
+    Command?: ModelObjectReference | Binding | ((commandParameter: any)=>void),
     CommandParameter?: string | number | boolean | ModelObjectReference | Binding
 }
 
 export interface IButtonBaseState extends IControlState
 {
-    Command?: ModelObjectReference,
+    Command?: ModelObjectReference | ((commandParameter: any) => void),
     CommandParameter?: string | number | boolean | ModelObjectReference
 }
 
-export abstract class ButtonBase<
+export class ButtonBase<
     P extends IButtonBaseProps = {},
     S extends IButtonBaseState = {}>
     extends Control<P, S>
@@ -23,9 +23,15 @@ export abstract class ButtonBase<
     /* virtual */ OnClick(e?: MouseEvent): void
     {
         ButtonBase.LastMouseEvent = e;
-        if (this.state.Command)
+        if (typeof (this.state.Command) === "function")
+        {
+            (this.state.Command as any)(this.state.CommandParameter);
+        }
+        else if (this.state.Command instanceof ModelObjectReference)
+        {
             Antimatter.Server.ExecuteICommand(
                 this.state.Command as ModelObjectReference,
                 ModelValue.Get(this.state.CommandParameter));
+        }
     }
 }

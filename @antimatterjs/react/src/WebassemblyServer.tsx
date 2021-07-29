@@ -6,35 +6,35 @@ import { IServer } from "./IServer";
 import { ModelValue, ModelValueType } from "./ModelValue";
 import { Utilities } from "./Utilities";
 
-const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
-const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
+//const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
+//const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
 {
+    private _startupResolver?: ((value: void) => void) = undefined;
+
     StartupAsync(): Promise<void>
     {
-        // just returns a promise that loops until the
-        // Mono WASM "Module" is detected
-        return new Promise<void>((resolve, reject) =>
+        if ((window as any).ServerStarted)
         {
-            var loop = () =>
-            {
-                setTimeout(function ()
-                {
-                    if ((window as any).Module)
-                        resolve();
-                    else
-                    {
-                        console.log("Still waiting for WASM module...");
-                        loop();
-                    }
-                }, 1000);
-            };
-            loop();
+            console.log("Server started before Client");
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) =>
+        {
+            this._startupResolver = resolve;
         });
     }
 
     //#region Client-Invocable Methods
+
+    OnServerStartup()
+    {
+        console.log("Client started before server");
+        if (this._startupResolver)
+            this._startupResolver();
+    }
 
     GetRootObject(objectid: string): Promise<ModelObjectReference>
     {
@@ -135,6 +135,8 @@ export class WebassemblyServer implements IServer
         let method: any = this._cachedMethods.get(methodKey);
         if (!method)
         {
+            if (!this.Module.mono_bind_static_method)
+                throw "how can this be?";
             method = this.Module.mono_bind_static_method(methodKey);
             if (method)
                 this._cachedMethods.set(methodKey, method);
@@ -185,23 +187,29 @@ export class WebassemblyServer implements IServer
         return guid;
     }
 
-    getValueU64(ptr: number): bigint
-    {
-        // There is no Module.HEAPU64, and Module.getValue(..., 'i64') doesn't work because the implementation
-        // treats 'i64' as being the same as 'i32'. Also we must take care to read both halves as unsigned.
-        const heapU32Index = ptr >> 2;
-        const highPart = BigInt(this.Module.HEAPU32[heapU32Index + 1]);
-        //if (highPart > maxSafeNumberHighPart)
-        //{
-        //    throw new Error(`Cannot read uint64 with high order part ${highPart}, because the result would exceed Number.MAX_SAFE_INTEGER.`);
-        //}
+    //getValueU64(ptr: number): bigint
+    //{
+    //    // There is no Module.HEAPU64, and Module.getValue(..., 'i64') doesn't work because the implementation
+    //    // treats 'i64' as being the same as 'i32'. Also we must take care to read both halves as unsigned.
+    //    const heapU32Index = ptr >> 2;        
+    //    const highPart = BigInt(this.Module.HEAPU32[heapU32Index + 1]);
+    //    //if (highPart > maxSafeNumberHighPart)
+    //    //{
+    //    //    throw new Error(`Cannot read uint64 with high order part ${highPart}, because the result would exceed Number.MAX_SAFE_INTEGER.`);
+    //    //}
 
-        return (highPart * uint64HighOrderShift) + BigInt(this.Module.HEAPU32[heapU32Index]);
-    }
+    //    return (highPart * uint64HighOrderShift) + BigInt(this.Module.HEAPU32[heapU32Index]);
+    //}
 
     getValueFloat(ptr: number)
     {
         return this.Module.HEAPF32[ptr >> 2];
+    }
+
+    getValueDouble(ptr: number)
+    {
+        var val = this.Module.getValue(ptr, 'double');
+        return val;
     }
 
     getArrayValue(ptrptr: number)
@@ -258,7 +266,7 @@ export class WebassemblyServer implements IServer
             case ModelValueType.Guid:
                 return this.getValueGuid(valuePtr + 16);
             case ModelValueType.DateTime:
-                return Utilities.DateFromTicks(this.getValueU64(valuePtr + 16));
+                return Utilities.DateFromTicks(this.getValueDouble(valuePtr + 16));
         }
         return undefined;
     }

@@ -7,6 +7,7 @@ using System.Linq;
 
 using Antimatter.Net.Internal;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Antimatter.Net
 {
@@ -98,6 +99,15 @@ namespace Antimatter.Net
             Reactor.Client.NavigateTo(this.ClientID, route);
         }
 
+        /// <summary>
+        /// Invoked by model servers to signal to clients that
+        /// they are ready to start.
+        /// </summary>   
+        public async Task StartupAsync()
+        {
+            await Reactor.Client.StartupAsync();
+        }
+                
         public static object SessionContext => _currentSessionContext.Value;
 
         #endregion
@@ -440,7 +450,8 @@ namespace Antimatter.Net
                     dnv.LongValue = Convert.ToInt64(value),
                 (mgr, dnv, value) =>
                     dnv.FloatValue = Convert.ToSingle(value),
-                null, // (mgr, dnv, value) => dnv.DoubleValue = (double)value,
+                (mgr, dnv, value) => 
+                    dnv.DoubleValue = Convert.ToDouble(value),
                 (mgr, dnv, value) =>
                 {
                     var dnr = mgr.GetOrCreateReference(value);
@@ -454,8 +465,10 @@ namespace Antimatter.Net
                 (mgr, dnv, value) => dnv.BoolValue = (bool)value,
                 (mgr, dnv, value) => dnv.StringValue = ((Guid)value).ToString(),
                 (mgr, dnv, value) =>
-                    dnv.LongValue = ((DateTime)value).Ticks,
-                (mgr, dnv, value) => dnv.LongValue = ((TimeSpan)value).Ticks,
+                {
+                    dnv.DoubleValue = ((DateTime)value).ToUniversalTime().Ticks / 10000.0d; 
+                },
+                (mgr, dnv, value) => dnv.DoubleValue = ((TimeSpan)value).Ticks / 10000.0d,
                 (mgr, dnv, value) => dnv.StringValue = (string)value
             };
         private static Dictionary<Type, ModelValueType> _typeConv = new Dictionary<Type, ModelValueType>

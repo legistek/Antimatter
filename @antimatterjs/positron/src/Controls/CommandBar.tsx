@@ -5,10 +5,10 @@ import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } fro
 import { Style } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
-import { CommandButton } from './CommandButton';
-import { IPanelProps, IPanelState, Panel } from './Panel';
+import { CommandButton, CommandButtonBase } from './CommandButton';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
-class CommandBarPanel extends Panel<IPanelProps, IPanelState>
+class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
 {
     _allCommandItems?: ICommandBarItemProps[];
     _visibleCommandItems?: ICommandBarItemProps[];
@@ -43,7 +43,8 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
         var items = itemsParent?.state.ItemsSource;
         if (!items || items.length === 0)
             return;
-        
+
+        let i = 0;
         for (const item of items)
         {
             var cmd = item as ModelObjectReference;
@@ -52,14 +53,15 @@ class CommandBarPanel extends Panel<IPanelProps, IPanelState>
 
             const cmdProps: ICommandBarItemProps = {
                 key: cmd.Handle.toString(),
-                data: cmd,
+                data: { index: i++, command: cmd },
                 onRender: (item: ICommandBarItemProps, dismissMenu) =>
                 {
                     return itemsParent?.OnRenderItem(
-                        item.data,
+                        item.data.command,
+                        item.data.index,
                         {
-                            Command: item.data,
-                        }) || <></>;
+                            Command: item.data.command,
+                        }) || (<></>);
                 },
             };
 
@@ -105,7 +107,7 @@ export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlSt
 
     /* override */ GetContainerForItemOverride(): typeof FrameworkElement
     {
-        return CommandButton;
+        return CommandButtonBase;
     }
 
     /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)

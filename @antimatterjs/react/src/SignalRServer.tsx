@@ -15,6 +15,11 @@ export class SignalRServer implements IServer
 
     //#region Client-Invocable Methods
 
+    OnServerStartup()
+    {
+        // nothing special needed here
+    }
+
     public async StartupAsync(): Promise<void>
     {
         this._connection.on("UpdateBinding", this.UpdateBinding.bind(this));
@@ -89,7 +94,7 @@ export class SignalRServer implements IServer
             case ModelValueType.Bool:
                 return valuePtr.BoolValue;
             case ModelValueType.DateTime:
-                return Utilities.DateFromTicks(valuePtr.LongValue || BigInt(0));
+                return Utilities.DateFromTicks(valuePtr.DoubleValue || 0);
             case ModelValueType.Collection:
                 return valuePtr.Collection?.map(item => this.getDotNetValue(item));
             case ModelValueType.ObjectHandle:

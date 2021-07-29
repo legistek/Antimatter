@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Antimatter.Net.Model;
@@ -41,6 +42,51 @@ namespace AntimatterJS.Sample.AppModel
             this.Age = age;
         }
 
+        #region double TaskProgress property
+        private double? _TaskProgress;
+        public double? TaskProgress
+        {
+            get
+            {
+                return _TaskProgress;
+            }
+            set
+            {
+                if (_TaskProgress != value)
+                {
+                    _TaskProgress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
+        #region IUICommand LongTask Command
+
+        private Command _LongTaskCommand;
+        public ICommand LongTaskCommand
+        {
+            get
+            {
+                return _LongTaskCommand ?? (_LongTaskCommand = new Command(
+                    (param) =>
+                    {
+                        Task.Run(async () =>
+                        {
+                            for (int i = 0; i < 100; i++)
+                            {
+                                this.TaskProgress = i;
+                                await Task.Delay(500);
+                            }
+                        });
+                    })
+                {
+                    Name = "Long Task",
+                });
+            }
+        }
+
+        #endregion
 
         #region ObservableCollection Underlings property
         private ObservableCollection<Employee> _Underlings;
@@ -215,10 +261,20 @@ namespace AntimatterJS.Sample.AppModel
                     _Age = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FullName));
+                    OnPropertyChanged(nameof(RelevantAge));
                 }
             }
         }
         #endregion
+
+        public double RelevantAge
+        {
+            get
+            {
+                return _Age / 40.0;
+            }
+        }
+
 
         #region IUICommand Edit Command
 
@@ -235,7 +291,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Edit",
                     ToolTip = "",
-                    Icon = 0xE9B1,
+                    Icon = 0xF022,
                 });
             }
         }
@@ -275,7 +331,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Increase Age",
-                    Icon = 0xE983,
+                    Icon = 0xF08C,
                     ToolTip = "Increase this person's age"
                 });
             }
@@ -298,7 +354,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Decrease Age",
                     ToolTip = "Decrease this person's age",
-                    Icon = 0xE982,
+                    Icon = 0xF08D,
                 });
             }
         }
@@ -320,7 +376,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Throw the bum out",
-                    Icon = 0xE959
+                    Icon = 0xF082
                 });
             }
         }
@@ -341,7 +397,7 @@ namespace AntimatterJS.Sample.AppModel
                     })
                 {
                     Name = "Make Bonus Eligible",
-                    Icon = 0,
+                    Icon = 0xE91A,
                 });
             }
         }
@@ -363,7 +419,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Do Something Else",
                     ToolTip = "",
-                    Icon = 0xE900
+                    Icon = 0xF000
                 });
             }
         }
