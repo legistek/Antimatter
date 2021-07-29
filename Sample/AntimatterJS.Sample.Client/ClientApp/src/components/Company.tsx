@@ -13,6 +13,7 @@ import
     //ProgressBarBase,
     Spinner,
 
+    DatePicker,
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -76,6 +77,20 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
                     <TextBlock Text="Edit Info" FontWeight="bold" />
+
+                    <DatePicker
+                        Label="Start Date (#1)"
+                        Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate), Mode: BindingMode.TwoWay })}
+                        HasTime={true}
+                    />
+
+                    <DatePicker
+                        Label="Start date (#2)"
+                        Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate) })}
+                        UseInternationalFormat={true}
+                        HasTime={true}
+                    />
+
 
                     <WrapPanel>
                         <TextBox
