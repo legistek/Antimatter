@@ -52,6 +52,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                         onSelectDate={(date: Date | null | undefined) => templatedParent.OnSelectDate(date)}
                         formatDate={(date?: Date) => templatedParent.FormatDate(date)}
                         allowTextInput={true}
+                        disableAutoFocus={true}
                         disabled={templatedParent.state.IsEnabled == false}
                         minDate={templatedParent.state.MinDate}
                         maxDate={templatedParent.state.MaxDate}
