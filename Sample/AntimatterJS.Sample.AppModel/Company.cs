@@ -145,8 +145,10 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        public ObservableCollection<Employee> SelectedEmployees { get; } =
-            new ObservableCollection<Employee>();
+        public ObservableCollection<Employee> SelectedEmployees {
+            get;
+            set;
+        } = new ObservableCollection<Employee>();
 
         public string SelectedEmployeesDisplayText
         {
@@ -235,7 +237,7 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
-      
+
         #region IUICommand NewEmployee Command
 
         private Command _NewEmployeeCommand;

@@ -245,7 +245,8 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             items.push(item);
         else
             items.splice(currentIndex, 1);
-        this.SetValue(nameof(this.state.SelectedItems), items);
+        const itemsCopy: any[] = items.slice();
+        this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
         this.OnSelectionChanged();
         this._lastClickedOrSelected = index;
     }

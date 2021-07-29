@@ -54,7 +54,7 @@ body {
 */
 
 
-.amx-ptn-root {    
+.amx-ptn-root {
     max-height: 100%;
     overflow: hidden;
     flex-direction: column;
@@ -298,4 +298,8 @@ code {
 .ms-ComboBox-Input::selection {
     color: transparent;
     text-shadow: none;
+}
+.SelectableItemControlBase {
+    display: flex;
+    align-items: center;
 }

@@ -258,19 +258,19 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemTemplate={this._comboBoxOptionTemplate}
 
-                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
 
 
-                //SelectionMode={SelectionMode.Multiple}
-                //SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
-                //TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                SelectionMode={SelectionMode.Multiple}
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
 
-                //SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
 
                 //IsEnabled={false}
 
                 Label="Employee Selector Thingy"
-                //Placeholder="if you can see this, nothing is selected"
+                Placeholder="if you can see this, nothing is selected"
             />
         );
         return elem;
