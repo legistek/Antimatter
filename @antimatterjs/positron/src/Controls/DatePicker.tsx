@@ -5,11 +5,11 @@ import
     DatePicker as FluentDatePicker, IStyle, TextField
 } from '@fluentui/react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-import { Control, IControlProps, IControlState } from '@antimatterjs/positron/src/Controls/Control';
-import { StackPanel } from '@antimatterjs/positron/src/Controls/StackPanel';
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { Orientation } from '@antimatterjs/positron/src/Enums';
-import { Style } from '@antimatterjs/positron/src/Style';
+import { Control, IControlProps, IControlState } from './Control';
+import { StackPanel } from './StackPanel';
+import { ControlTemplate } from '../FrameworkTemplate';
+import { Orientation } from '../Enums';
+import { Style } from '../Style';
 
 export interface IDatePickerProps extends IControlProps
 {
@@ -44,7 +44,6 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
     {
         return new ControlTemplate((templatedParent: DatePicker) =>
         {
-            const disabled: boolean = (templatedParent.state.IsEnabled != null) && !templatedParent.state.IsEnabled;
             return (
                 <StackPanel Orientation={Orientation.Horizontal}>
                     <FluentDatePicker
@@ -53,7 +52,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                         onSelectDate={(date: Date | null | undefined) => templatedParent.OnSelectDate(date)}
                         formatDate={(date?: Date) => templatedParent.FormatDate(date)}
                         allowTextInput={true}
-                        disabled={disabled}
+                        disabled={templatedParent.state.IsEnabled == false}
                         minDate={templatedParent.state.MinDate}
                         maxDate={templatedParent.state.MaxDate}
                         isRequired={templatedParent.state.Required}
@@ -85,11 +84,6 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         {
             marginTop: 'auto'
         };
-        //const styles: ITextFieldStyles = {
-        const styles =
-        {
-            root: style
-        }
 
         return (
             <TextField
@@ -97,7 +91,9 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                 value={timeString}
                 onChange={(event, newValue?: string) => this.OnSelectTime(newValue)}
                 required={this.state.Required}
-                styles={styles}
+                styles={{
+                    root: style
+                }}
             />
         );
     }
@@ -157,7 +153,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         //Align bottom in case of label (which for some reason yields a small whitespace below w/ time input present)
         const flexStyle: IStyle =
         {
-            display: 'flex',
+            display: 'flex'
         };
         //Prevent huge red "Invalid date..." message from appearing to the left after unparseable text input
         const hideStyle: IStyle =
