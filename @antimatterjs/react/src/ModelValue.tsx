@@ -8,7 +8,7 @@ export class ModelValue
     ObjectHandle?: number;
     FloatValue?: number;
     DoubleValue?: number;
-    IntValue?: number;    
+    IntValue?: number;
     Collection?: ModelValue[];
     BoolValue?: boolean;
 
@@ -23,7 +23,7 @@ export class ModelValue
         else if (jsValue instanceof Date)
         {
             val.Type = ModelValueType.DateTime;
-            val.LongValue = Utilities.TicksFromDate(jsValue);
+            val.DoubleValue = Utilities.TicksMSFromDate(jsValue);
         }
         else
         {
