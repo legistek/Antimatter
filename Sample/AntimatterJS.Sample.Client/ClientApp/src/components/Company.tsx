@@ -53,6 +53,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         MinValue={0}
                         Label="The Age-O-Tron"
                     />
+
+                    {/*
+
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         IsEnabled={false}
@@ -66,7 +69,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Label="Thing to toggle"
                     />
 
-
                     <ToggleButton
                         IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
                         CheckedText="Switched on (elsewhere)"
@@ -75,6 +77,8 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         LabelIsInline={true}
                         IsEnabled={false}
                     />
+
+                     */}
 
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
 
@@ -238,12 +242,21 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     }
 
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
-        <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
+        <TextBlock
+            Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
             VerticalAlignment={VerticalAlignment.Center}
         />
     );
     _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
         <TextBlock Text={item} />
+    );
+    _comboBoxOptionTemplate_CustomMultiselect: DataTemplate = new DataTemplate((item) =>
+        <CheckBox
+            IsEnabled={new Binding({ Path: nameof<Model.Employee>(e => e.IsBonusEligible), Source: item })}
+            IsChecked={new Binding({ Path: nameof<Model.Employee>(e => e.IsMultiSelected), Source: item })}
+            Label={new Binding({ Path: nameof<Model.Employee>(e => e.LastName), Source: item })}
+            VerticalAlignment={VerticalAlignment.Center}
+        />
     );
 
     private get comboBoxElem(): JSX.Element
@@ -254,28 +267,65 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
                 //ItemTemplate={this._comboBoxRedundantStringTemplate}
 
-
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemTemplate={this._comboBoxOptionTemplate}
 
-                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                Label="Employee Selector Thingy (Single)"
+                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val})}
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
 
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
 
-                SelectionMode={SelectionMode.Multiple}
-                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
-                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
-
-                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeChangedCommand))}
-
-                //IsEnabled={false}
-
-                Label="Employee Selector Thingy"
-                Placeholder="if you can see this, nothing is selected"
+                Placeholder="if you can see this, nothing is (single-)selected"
             />
         );
         return elem;
     }
+    private get comboBoxElem_FluentMultiSelect(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                ItemTemplate={this._comboBoxOptionTemplate}
 
+                Label="Employee Selector Thingy (Multi)"
+                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
+
+                SelectionMode={SelectionMode.Multiple}
+
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
+
+                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                Placeholder={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+            />
+        );
+        return elem;
+    }
+    private get comboBoxElem_CustomMultiSelect(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                ItemTemplate={this._comboBoxOptionTemplate_CustomMultiselect}
+
+                Label="Employee Selector Thingy (CUSTOM Multi)"
+                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
+
+                SelectionMode={SelectionMode.Multiple}
+                UseCustomMultiselectTemplate={true}
+
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
+
+                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                Placeholder={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+            />
+        );
+        return elem;
+    }
 
     renderElement()
     {
@@ -287,6 +337,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
                     {this.comboBoxElem}
+                    {this.comboBoxElem_FluentMultiSelect}
+                    {this.comboBoxElem_CustomMultiSelect}
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -313,7 +365,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 </StackPanel>
 
 
-                {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                         RowHeight={44}
@@ -357,7 +408,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 </div>
 
 
-                */}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

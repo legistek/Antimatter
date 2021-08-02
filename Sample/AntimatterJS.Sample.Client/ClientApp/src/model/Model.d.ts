@@ -10,6 +10,7 @@ export class Company {
 	public Employees?: Employee[];
 	public SelectedEmployee?: Employee;
 	public SelectedEmployees?: Employee[];
+	public IsAllSelected?: boolean;
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
@@ -22,6 +23,7 @@ export class Company {
 	public SelectedEmployeeName?: string;
 	public SelectedEmployeesDisplayText?: string;
 	public SelectedEmployeeChangedCommand?: ICommand;
+	public SelectedEmployeesChangedCommand?: ICommand;
 }
 
 export class Employee {
@@ -32,6 +34,9 @@ export class Employee {
 	public Age?: number;
 	public IncreaseAgeCommand?: ICommand;
 	public RelevantAge?: number;
+	public IsExpanded?: boolean;
+	public IsSelected?: boolean;
+	public IsMultiSelected?: boolean;
 }
 
 export class ICommand {

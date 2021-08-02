@@ -1,26 +1,26 @@
 ﻿import * as React from 'react';
-import {
-    //IDropdownStyles,
-    Dropdown, IDropdownOption, IStyle
-} from '@fluentui/react';
-import { Binding, BindingMode, ModelObjectReference } from "@antimatterjs/react";
-import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { SelectionMode } from '@antimatterjs/positron/src/Enums';
-import { Style } from '@antimatterjs/positron/src/Style';
-import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector }
-    from '@antimatterjs/positron/src/Controls/Primitives/Selector';
+import { Dropdown, IDropdownOption, IDropdownSubComponentStyles, IStyle } from '@fluentui/react';
+import { Binding, BindingMode, BindingParameters, ModelObjectReference } from "@antimatterjs/react";
+import { ControlTemplate } from '../FrameworkTemplate';
+import { SelectionMode } from '../Enums';
+import { Style } from '../Style';
+import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 
 export interface IComboBoxProps extends ISelectorProps
 {
     Label?: string | Binding,
     TitleStringOverride?: string | Binding,
-    Placeholder?: string | Binding
+    Placeholder?: string | Binding,
+    IsEnabledPath?: string,
+    UseCustomMultiselectTemplate?: boolean | Binding
 }
 export interface IComboBoxState extends ISelectorState
 {
     Label?: string,
     TitleStringOverride?: string,
-    Placeholder?: string
+    Placeholder?: string,
+    IsEnabledPath?: string,
+    UseCustomMultiselectTemplate?: boolean
 }
 
 class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState> extends Selector<P, S>
@@ -50,8 +50,7 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
 
     private get Template(): JSX.Element
     {
-        if (this._options.length == 0)
-            this.PopulateOptions();
+        this.PopulateOptions();
 
         var key: string | undefined;
         var keys: string[] | undefined;
@@ -66,6 +65,9 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
             color: this.state.Foreground,
             fontSize: this.state.FontSize
         };
+        const subcomponentStyles: IDropdownSubComponentStyles | any = {};
+        if (this.state.UseCustomMultiselectTemplate)
+            subcomponentStyles.multiSelectItem = { checkbox: {display: 'none'}}
 
         const placeholder: string = this.state.Placeholder ?? this.state.TitleStringOverride ?? '';
 
@@ -82,7 +84,10 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
                 label={this.state.Label}
                 placeholder={placeholder}
                 notifyOnReselect={false}
-                styles={{ label: textStyle }}
+                styles={{
+                    label: textStyle,
+                    subComponentStyles: subcomponentStyles
+                }}
             />
         );
     }
@@ -101,7 +106,7 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
 
     private OnRenderOption(option?: IDropdownOption): JSX.Element | null
     {
-        const index: number = this._options?.findIndex(o => o == option);
+        const index: number = this._options?.findIndex(o => o.key == option?.key);
         return this.OnRenderItem(option?.data, index);
     };
 
@@ -145,29 +150,20 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
 
     private GetItemOption(item?: any): IDropdownOption
     {
+        const key: string = this.GetItemKey(item);
+        const disabledBindParams: BindingParameters = {
+            Path: this.state.IsEnabledPath,
+            Source: item,
+            Converter: (val) => !val
+        };
+
         const option: IDropdownOption = {
-            key: this.GetItemKey(item),
-            text: this.GetItemKey(item),
-            data: item
+            key: key,
+            text: key,
+            data: item,
+            disabled: this.BindState(disabledBindParams, `${key}:IsEnabled`)
         };
         return option;
-    }
-
-    private get SelectedKey(): string | null
-    {
-        if (this.IsMultiSelect)
-            return null;
-        return this.GetItemKey(this.state.SelectedItem);
-    }
-
-    private get SelectedKeys(): string[] | null | undefined
-    {
-        //if (this.IsMultiSelect)
-            return this.state.SelectedItems?.map(item => this.GetItemKey(item));
-
-        //if (!this.IsMultiSelect)
-        //    return undefined;
-        //return this.state.SelectedItems?.map(item => this.GetItemKey(item));
     }
 }
 

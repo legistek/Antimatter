@@ -145,19 +145,33 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        public ObservableCollection<Employee> SelectedEmployees {
-            get;
-            set;
-        } = new ObservableCollection<Employee>();
+        //public ObservableCollection<Employee> SelectedEmployees {
+        //    get;
+        //    set;
+        //} = new ObservableCollection<Employee>();
+
+        private ObservableCollection<Employee> _SelectedEmployees = new ObservableCollection<Employee>();
+        public ObservableCollection<Employee> SelectedEmployees
+        {
+            get { return _SelectedEmployees; }
+            set {
+                if (_SelectedEmployees == value)
+                    return;
+                _SelectedEmployees = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+            }
+        }
+
 
         public string SelectedEmployeesDisplayText
         {
             get
             {
                 if (SelectedEmployees == null)
-                    return String.Empty;
+                    return "No employees (plural) selected";
 
-                string joined = string.Join(",", SelectedEmployees.Select(e => e.LastName));
+                string joined = string.Join(", ", SelectedEmployees.Select(e => e?.LastName ?? "[NOT FOUND]"));
                 return joined;
             }
         }
@@ -298,7 +312,31 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectedEmployeeChangedCommand ?? (_SelectedEmployeeChangedCommand = new Command(
                     (arg) =>
                     {
+                    })
+                {
+                });
+            }
+        }
+
+        #endregion
+
+        #region IUICommand SelectedEmployeesChanged Command
+
+        private Command _SelectedEmployeesChangedCommand;
+        public Command SelectedEmployeesChangedCommand
+        {
+            get
+            {
+                return _SelectedEmployeesChangedCommand ?? (_SelectedEmployeesChangedCommand = new Command(
+                    (arg) =>
+                    {
                         OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+
+                        foreach (Employee e in Employees)
+                        {
+                            e.IsMultiSelected = SelectedEmployees.Contains(e);
+                        }
+
                     })
                 {
                 });

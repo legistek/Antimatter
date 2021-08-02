@@ -103,7 +103,6 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
 
 
 
-                        {/*
 
                         <ResizePanel Size={new Binding("UnderlingPanelWidth")}
                             Background={"blue"}
@@ -119,7 +118,6 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                             </TreeView>
                         </ResizePanel>
 
-                        */}
 
 
 
