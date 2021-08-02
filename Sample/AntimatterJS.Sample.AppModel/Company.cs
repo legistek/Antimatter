@@ -145,24 +145,24 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        //public ObservableCollection<Employee> SelectedEmployees {
-        //    get;
-        //    set;
-        //} = new ObservableCollection<Employee>();
-
-        private ObservableCollection<Employee> _SelectedEmployees = new ObservableCollection<Employee>();
         public ObservableCollection<Employee> SelectedEmployees
         {
-            get { return _SelectedEmployees; }
-            set {
-                if (_SelectedEmployees == value)
-                    return;
-                _SelectedEmployees = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
-            }
-        }
+            get;
+            set;
+        } = new ObservableCollection<Employee>();
 
+        //private ObservableCollection<Employee> _SelectedEmployees = new ObservableCollection<Employee>();
+        //public ObservableCollection<Employee> SelectedEmployees
+        //{
+        //    get { return _SelectedEmployees; }
+        //    set {
+        //        if (_SelectedEmployees == value)
+        //            return;
+        //        _SelectedEmployees = value;
+        //        OnPropertyChanged();
+        //        OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+        //    }
+        //}
 
         public string SelectedEmployeesDisplayText
         {
@@ -330,13 +330,13 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectedEmployeesChangedCommand ?? (_SelectedEmployeesChangedCommand = new Command(
                     (arg) =>
                     {
+                        OnPropertyChanged(nameof(SelectedEmployees));
                         OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
 
                         foreach (Employee e in Employees)
                         {
                             e.IsMultiSelected = SelectedEmployees.Contains(e);
                         }
-
                     })
                 {
                 });

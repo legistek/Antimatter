@@ -91,12 +91,14 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         HasTime={true}
                     />
 
+                    {/*
                     <DatePicker
                         Label="Start date (#2)"
                         Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate) })}
                         UseInternationalFormat={true}
                         HasTime={true}
                     />
+                     */}
 
 
                     <WrapPanel>

@@ -140,12 +140,11 @@ namespace AntimatterJS.Sample.AppModel
                 if (includes == value)
                     return;
 
-                var selectionCopy = new ObservableCollection<Employee>(Company.SelectedEmployees);
                 if (value)
-                    selectionCopy.Add(this);
+                    Company.SelectedEmployees.Add(this);
                 else
-                    selectionCopy.Remove(this);
-                Company.SelectedEmployees = selectionCopy;
+                    Company.SelectedEmployees.Remove(this);
+                Company.SelectedEmployeesChangedCommand.Execute(Company);
             }
         }
         #endregion

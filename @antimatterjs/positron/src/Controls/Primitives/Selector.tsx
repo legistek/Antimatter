@@ -233,24 +233,6 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this._lastClickedOrSelected = index;
     }
 
-    //(Multi-selection only) toggles selected state of an item by index
-    /* protected */ ToggleMultiItemSelection(index: number)
-    {
-        var item: any = this.state.ItemsSource ? this.state.ItemsSource[index] : null;
-        if (!item || (this.SelectionMode == SelectionMode.Single))
-            return;
-        const items: any[] = this.state.SelectedItems ?? [];
-        const currentIndex: number = items.indexOf(item);
-        if (currentIndex == -1)
-            items.push(item);
-        else
-            items.splice(currentIndex, 1);
-        const itemsCopy: any[] = items.slice();
-        this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
-        this.OnSelectionChanged();
-        this._lastClickedOrSelected = index;
-    }
-
     /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
         super.OnPropertyChanged(prop, value, oldValue);

@@ -120,6 +120,35 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
             this.SetSingleItemSelection(index);
     }
 
+    //The multi-selection analog to Selector.SetSingleItemSelection()
+    /* private*/ ToggleMultiItemSelection(index: number)
+    {
+        var item: any = this.state.ItemsSource ? this.state.ItemsSource[index] : null;
+        if (!item || (this.SelectionMode == SelectionMode.Single))
+            return;
+        const items: any[] = this.state.SelectedItems ?? [];
+
+        //const currentIndex: number = items.indexOf(item);
+        const currentIndex: number = items.findIndex(i => this.CheckItemEquality(item, i));
+
+        if (currentIndex == -1)
+            items.push(item);
+        else
+            items.splice(currentIndex, 1);
+        const itemsCopy: any[] = items.slice();
+        this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
+        this.OnSelectionChanged();
+        this._lastClickedOrSelected = index;
+    }
+
+    //For checking if SelectedItems contains a given (ItemSource) item, actual objects may be different so compare keys
+    CheckItemEquality(item1: any, item2: any): boolean
+    {
+        const key1: string = this.GetItemKey(item1);
+        const key2: string = this.GetItemKey(item2);
+        return (key1 != '') && (key1 === key2);
+    }
+
     //Fluent's click area exceeds Selector templates', so cancel Selector's handlers & use OnChange to process manually
     /* override */ OnItemPointerDown(event: MouseEvent, item: any): void { }
     /* override */ OnItemClick(event: MouseEvent, item: any): void { }
