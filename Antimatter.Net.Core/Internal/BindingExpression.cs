@@ -7,11 +7,11 @@ using System.Linq;
 namespace Antimatter.Net.Internal
 {
     internal class BindingExpression
-    {        
+    {
         ModelValue _lastValue;
         Reactor _reactor;
         bool _suspendPropertyChangeReport;
-        
+
         internal BindingExpression(Reactor manager, string path)
         {
             _reactor = manager;
@@ -66,7 +66,7 @@ namespace Antimatter.Net.Internal
                 _lastValue = modelValue;
 
                 this.PathComponents.Last()
-                    .OnTargetPropertyChanged(modelValue, _reactor);                
+                    .OnTargetPropertyChanged(modelValue, _reactor);
             }
             finally
             {
@@ -81,10 +81,10 @@ namespace Antimatter.Net.Internal
             var pocoSource = this.ResolvedSource = sourceRef.Object;
             if (pocoSource == null)
                 return false;
-            
+
             SubscribePropertyChange(0);
 
-            // Notify the binding target of the new value just as 
+            // Notify the binding target of the new value just as
             // if it had changed.
             SetTargetValue(0);
 
@@ -105,7 +105,7 @@ namespace Antimatter.Net.Internal
         }
 
         private object SetTargetValue(int pathStart)
-        {           
+        {
             object newVal = null;
             newVal = this.GetEffectiveValue(pathStart);
             this.ReportSourcePropertyUpdate(newVal);
@@ -140,7 +140,7 @@ namespace Antimatter.Net.Internal
         }
 
         private object GetEffectiveValue(int pathStart)
-        {            
+        {
             if (!(this.PathComponents?.Length > 0))
                 return this.ResolvedSource;
 
@@ -207,7 +207,7 @@ namespace Antimatter.Net.Internal
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
                 incc.CollectionChanged += OnSourceCollectionChanged;
-                        
+
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
             _lastValue = dnv;
 
@@ -250,7 +250,7 @@ namespace Antimatter.Net.Internal
             {
                 var reference = _reactor.GetReference(_lastValue.ObjectHandle);
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)
-                    oldIncc.CollectionChanged -= OnSourceCollectionChanged;                   
+                    oldIncc.CollectionChanged -= OnSourceCollectionChanged;
             }
             _reactor.Release(_lastValue);
             _lastValue = null;

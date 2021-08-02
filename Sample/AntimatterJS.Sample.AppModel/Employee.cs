@@ -190,6 +190,24 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        public DateTime? _StartDate;
+        public DateTime? StartDate
+        {
+            get
+            {
+                if (_StartDate == null)
+                    _StartDate = DateTime.Now;
+                return _StartDate;
+            }
+            set
+            {
+                if (_StartDate == value)
+                    return;
+                _StartDate = value;
+                OnPropertyChanged();
+            }
+        }
+
         #region bool IsBonusEligible property
         private bool _IsBonusEligible =  true;
         public bool IsBonusEligible

@@ -44,4 +44,6 @@ export * from './src/Documents/DocumentViewer';
 export * from './src/Documents/IDocument';
 export * from './src/Documents/PDFJSDocument';
 export * from './src/Controls/ProgressBar';
+export * from './src/Controls/DatePicker';
+export * from './src/Controls/ProgressBar';
 export * from './src/Controls/ComboBox';

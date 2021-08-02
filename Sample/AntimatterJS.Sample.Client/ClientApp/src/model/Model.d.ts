@@ -34,6 +34,7 @@ export class Employee {
 	public Age?: number;
 	public IncreaseAgeCommand?: ICommand;
 	public RelevantAge?: number;
+	public StartDate?: Date;
 	public IsExpanded?: boolean;
 	public IsSelected?: boolean;
 	public IsMultiSelected?: boolean;
