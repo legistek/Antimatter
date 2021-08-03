@@ -168,7 +168,7 @@ namespace AntimatterJS.Sample.AppModel
         {
             get
             {
-                if (SelectedEmployees == null)
+                if (SelectedEmployees == null || SelectedEmployees.Count == 0)
                     return "No employees (plural) selected";
 
                 string joined = string.Join(", ", SelectedEmployees.Select(e => e?.LastName ?? "[NOT FOUND]"));
