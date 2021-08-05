@@ -298,7 +298,10 @@ code {
     color: transparent;
     text-shadow: none;
 }
-.SelectableItemControlBase {
-    display: flex;
-    align-items: center;
+
+.ms-Dropdown-items .SelectableItemControlBase,
+.ms-Dropdown-item .SelectableItemControlBase,
+.ms-Dropdown-title .SelectableItemControlBase {
+    display: grid;
+    width: 100%
 }

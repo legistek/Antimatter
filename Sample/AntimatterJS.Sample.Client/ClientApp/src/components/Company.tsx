@@ -259,21 +259,32 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     }
 
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
-        <TextBlock
-            Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
-            VerticalAlignment={VerticalAlignment.Center}
-        />
+        <Grid
+            Background="hotpink"
+        >
+            <TextBlock
+                Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+                VerticalAlignment={VerticalAlignment.Center}
+            />
+
+        </Grid>
+
     );
     _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
         <TextBlock Text={item} />
     );
     _comboBoxOptionTemplate_CustomMultiselect: DataTemplate = new DataTemplate((item) =>
+        <Grid
+            Background="limegreen"
+        >
         <CheckBox
             IsEnabled={new Binding({ Path: nameof<Model.Employee>(e => e.IsBonusEligible), Source: item })}
             IsChecked={new Binding({ Path: nameof<Model.Employee>(e => e.IsMultiSelected), Source: item })}
             Label={new Binding({ Path: nameof<Model.Employee>(e => e.LastName), Source: item })}
             VerticalAlignment={VerticalAlignment.Center}
-        />
+            />
+
+        </Grid>
     );
 
     private get comboBoxElem(): JSX.Element
