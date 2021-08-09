@@ -5,6 +5,9 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights }
 import * as Model from '../model/Model';
 import
 {
+    MessageBar,
+    MessageBarType,
+
     ToggleButton,
     Coachmark,
     TeachingBubble,
@@ -211,6 +214,61 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return button;
     }
 
+    private get MessageBar1(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Message="testing simple success bubble"
+                MessageBarType={MessageBarType.success}
+                ShowCloseButton={true}
+            />
+        );
+        return elem;
+    }
+    private get MessageBar2(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Message="Large error message"
+                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                MessageBarType={MessageBarType.error}
+                PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                SecondaryCommand={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                FontSize={20}
+                FontWeight="bold"
+            />
+        );
+        return elem;
+    }
+    private get MessageBar3(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Content={this._messageBarCustomContent}
+                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                ShowCloseButton={true}
+            />
+        );
+        return elem;
+    }
+
+    _messageBarCustomContent: DataTemplate = new DataTemplate(() => (
+        <StackPanel Orientation={Orientation.Vertical}>
+            <TextBlock
+                Text="Custom template here"
+                FontSize={16}
+            />
+            <CheckBox
+                Label="(Custom template line #2 is a checkbox)"
+                FontSize={16}
+            />
+            <TextBlock
+                Text="Custom template line #3"
+                FontSize={16}
+            />
+        </StackPanel>
+    ));
+
     private get Bubble(): JSX.Element
     {
         const bubble: JSX.Element = (
@@ -250,8 +308,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
             />
         );
-        return elem;
-        //return <></>;
+        //return elem;
+        return <></>;
     }
 
     renderElement()
@@ -264,9 +322,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <StackPanel>
 
-
-
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
+
+
+                    {this.MessageBar1}
+                    {this.MessageBar2}
+                    {this.MessageBar3}
+
+
 
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <TextBlock Text="Employee Count:" />
