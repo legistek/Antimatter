@@ -37,7 +37,7 @@ export class WebassemblyServer implements IServer
     }
 
     GetRootObject(objectid: string): Promise<ModelObjectReference>
-    {       
+    {
         var handle = this.CallStaticMethod(
             WebassemblyServer.c_ServerAssembly,
             WebassemblyServer.c_ServerType,
@@ -116,7 +116,7 @@ export class WebassemblyServer implements IServer
     public UpdateBinding(bxIndex: number, valuePtr: number)
     {
         var type = this.getValueI32(valuePtr + 8) as ModelValueType;
-        var value = this.getModelValue(valuePtr, type);        
+        var value = this.getModelValue(valuePtr, type);
         BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
     }
 
@@ -183,7 +183,7 @@ export class WebassemblyServer implements IServer
             + `${this.Module.HEAP32[ptr + 10].toString(16)}${this.Module.HEAP32[ptr + 11].toString(16)}`
             + `${this.Module.HEAP32[ptr + 12].toString(16)}${this.Module.HEAP32[ptr + 13].toString(16)}`
             + `${this.Module.HEAP32[ptr + 14].toString(16)}${this.Module.HEAP32[ptr + 15].toString(16)}`
-        
+
         return guid;
     }
 
@@ -202,7 +202,7 @@ export class WebassemblyServer implements IServer
     //}
 
     getValueFloat(ptr: number)
-    {        
+    {
         return this.Module.HEAPF32[ptr >> 2];
     }
 
@@ -240,7 +240,7 @@ export class WebassemblyServer implements IServer
 
     getModelValue(valuePtr: number, type: ModelValueType): any
     {
-        valuePtr += 8;  // C# class data is 8 bytes off from address        
+        valuePtr += 8;  // C# class data is 8 bytes off from address
         switch (type)
         {
             case ModelValueType.Null:

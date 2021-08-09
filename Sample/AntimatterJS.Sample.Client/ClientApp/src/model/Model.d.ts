@@ -26,6 +26,7 @@ export class Employee {
 	public Age?: number;
 	public IncreaseAgeCommand?: ICommand;
 	public RelevantAge?: number;
+	public StartDate?: Date;
 }
 
 export class ICommand {
