@@ -15,6 +15,7 @@ import
     ProgressBar,
     //ProgressBarBase,
     Spinner,
+    ToastControl,
 
     DatePicker,
     ListBox, SelectionMode,
@@ -27,7 +28,8 @@ import
     ColorPicker,
     IFrameworkElementState,
     IFrameworkElementProps,
-    MultitouchTransform
+    MultitouchTransform,
+    HorizontalAlignment
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -213,18 +215,24 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     {
         const elem: JSX.Element = (
             <MessageBar
-                Message="testing simple success bubble"
-                MessageBarType={MessageBarType.success}
-                ShowCloseButton={true}
+                Params={new Binding(nameof<Model.Company>(c => c.MessageBarInfo))}
             />
         );
+
+        //const elem: JSX.Element = (
+        //    <MessageBar
+        //        Content="testing simple success bubble"
+        //        MessageBarType={MessageBarType.success}
+        //        ShowCloseButton={true}
+        //    />
+        //);
         return elem;
     }
     private get MessageBar2(): JSX.Element
     {
         const elem: JSX.Element = (
             <MessageBar
-                Message="Large error message"
+                Content="Large error message"
                 IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
                 MessageBarType={MessageBarType.error}
                 PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
@@ -319,6 +327,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
+
+
+                    <ToastControl
+                        ItemsSource={new Binding(nameof<Model.Company>(c => c.Toasts))}
+                        VerticalAlignment={VerticalAlignment.Bottom}
+                        HorizontalAlignment={HorizontalAlignment.Center}
+                    />
 
                     {this.MessageBar1}
                     {this.MessageBar2}

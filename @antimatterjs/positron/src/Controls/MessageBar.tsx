@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -12,21 +12,26 @@ export import MessageBarType = FluentMessageBarType;
 
 interface IMessageBarProps extends IControlProps
 {
-    Message?: string | Binding,
-    Content?: DataTemplate,
+    Params?: ModelObjectReference | Binding,
+    Content?: DataTemplate | string | Binding,
     MessageBarType?: MessageBarType | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,
     SecondaryCommand?: ModelObjectReference | Binding,
-    ShowCloseButton?: boolean | Binding
+    ShowCloseButton?: boolean | Binding,
+    Duration?: number | Binding,
+    Animate?: boolean | Binding
 }
 interface IMessageBarState extends IControlState
 {
-    Message?: string,
-    Content?: DataTemplate,
+    Params?: ModelObjectReference,
+    Content?: DataTemplate | string,
     MessageBarType?: MessageBarType,
     PrimaryCommand?: ModelObjectReference,
     SecondaryCommand?: ModelObjectReference,
-    ShowCloseButton?: boolean
+    ShowCloseButton?: boolean,
+    Duration?: number,
+    Animate?: boolean,
+    Expanded?: boolean
 }
 
 export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
@@ -38,18 +43,52 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
     };
 
+    public static BaseControlProps: IMessageBarProps = {
+        Content: new Binding({
+            Path: "Content", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        MessageBarType: new Binding({
+            Path: "MessageBarType", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        PrimaryCommand: new Binding({
+            Path: "PrimaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        SecondaryCommand: new Binding({
+            Path: "SecondaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        ShowCloseButton: new Binding({
+            Path: "ShowCloseButton", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        Duration: new Binding({
+            Path: "Duration", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        }),
+        IsVisible: new Binding({
+            Path: "IsVisible", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
+        })
+    }
+
     public static DefaultStyle: Style<IMessageBarProps> = new Style<IMessageBarProps>(
-        {
-            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
-        }
+        Object.assign(
+            Object.assign(MessageBar.BaseControlProps),
+            {
+                Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
+            }
+        )
     );
+
+    private _timeout;
 
     private get Template(): JSX.Element
     {
+        if (this.state.Duration && !this._timeout)
+        {
+            this._timeout = setTimeout(() => this.Close(), this.state.Duration * 1000);
+        }
+
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
             color: this.state.Foreground,
-            fontSize: this.state.FontSize
+            fontSize: this.state.FontSize ?? 16
         };
 
         return (
@@ -66,11 +105,11 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
 
     private get Content(): JSX.Element
     {
-        if (this.state.Content)
+        if (!this.state.Content)
+            return <></>;
+        if (this.state.Content instanceof DataTemplate)
             return this.state.Content.GetVisualTree()(this);
-        if (this.state.Message)
-            return (<>{this.state.Message}</>);
-        return <></>;
+        return (<>{this.state.Content}</>);
     }
 
     private get Commands(): JSX.Element | undefined
@@ -104,6 +143,46 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
     {
         if (!this.state.ShowCloseButton)
             return undefined;
-        return () => this.SetValue(nameof(this.state.IsVisible), false);
+        return () => this.Close();
     }
+
+    private Close(): void
+    {
+        this.SetValue(nameof(this.state.IsVisible), false);
+    }
+
+    private _expandTimeout;
+
+    /* override */ constructClasses(): string
+    {
+        return super.constructClasses();
+    }
+
+    /* override */ getCSSStyles(): React.CSSProperties
+    {
+        const collapse: boolean = (!!this.state.Animate && !this.state.Expanded);
+        const maxHeight: number = collapse ? 0 : 200;
+        if (collapse && !this._expandTimeout)
+            this._expandTimeout = setTimeout(() => this.SetValue(nameof(this.state.Expanded), true), 0);
+
+        var styles: React.CSSProperties = {
+            transitionProperty: "max-height",
+            transitionTimingFunction: "linear",
+            transitionDuration: "0.3s",
+            maxHeight: maxHeight
+        };
+        return Object.assign(super.getCSSStyles(), styles);
+    }
+}
+
+//Based on MessageBarParams C# class
+export class MessageBarParams
+{
+    public Content?: string;
+    public MessageBarType?: MessageBarType;
+    public PrimaryCommand?: any;
+    public SecondaryCommand?: any;
+    public ShowCloseButton?: boolean;
+    public IsVisible?: boolean;
+    public Duration?: number;
 }

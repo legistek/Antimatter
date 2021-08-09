@@ -1,4 +1,4 @@
-import { TeachingBubbleParams } from '@antimatterjs/positron';
+import { MessageBarParams, TeachingBubbleParams } from '@antimatterjs/positron';
 
 export class App
 {
@@ -16,6 +16,8 @@ export class Company {
 	public TeachingBubbleOpen?: boolean;
 	public TeachingBubblePrimaryCommand?: ICommand;
 	public TeachingBubbleInfo?: TeachingBubbleParams;
+	public MessageBarInfo?: MessageBarParams;
+	public Toasts?: MessageBarParams[];
 }
 
 export class Employee {
