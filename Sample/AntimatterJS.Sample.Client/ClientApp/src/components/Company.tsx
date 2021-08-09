@@ -44,110 +44,115 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
             >
 
                 <DataContext Value={this.state.Value}>
-                    <Spinner
-                        Value={new Binding(nameof<Model.Employee>(e => e.Age))}
-                        LabelIsInline={false}
-                        StepIncrement={5}
-                        MinValue={0}
-                        Label="The Age-O-Tron"
-                    />
-                    <Spinner
-                        Value={new Binding(nameof<Model.Employee>(e => e.Age))}
-                        IsEnabled={false}
-                        Label="The Borken Age-O-Tron"
-                    />
 
-                    <ToggleButton
-                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
-                        CheckedText="Switched on"
-                        UncheckedText="Switched off"
-                        Label="Thing to toggle"
-                    />
+                    <StackPanel>
+
+                        <Spinner
+                            Value={new Binding(nameof<Model.Employee>(e => e.Age))}
+                            LabelIsInline={false}
+                            StepIncrement={5}
+                            MinValue={0}
+                            Label="The Age-O-Tron"
+                        />
+                        <Spinner
+                            Value={new Binding(nameof<Model.Employee>(e => e.Age))}
+                            IsEnabled={false}
+                            Label="The Borken Age-O-Tron"
+                        />
+
+                        <ToggleButton
+                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                            CheckedText="Switched on"
+                            UncheckedText="Switched off"
+                            Label="Thing to toggle"
+                        />
 
 
-                    <ToggleButton
-                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
-                        CheckedText="Switched on (elsewhere)"
-                        UncheckedText="Switched off (elsewhere)"
-                        Label="Thing not to toggle because it's disabled"
-                        LabelIsInline={true}
-                        IsEnabled={false}
-                    />
+                        <ToggleButton
+                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                            CheckedText="Switched on (elsewhere)"
+                            UncheckedText="Switched off (elsewhere)"
+                            Label="Thing not to toggle because it's disabled"
+                            LabelIsInline={true}
+                            IsEnabled={false}
+                        />
 
-                    <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
-                    <TextBlock Text="Edit Info" FontWeight="bold" />
+                        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
+                        <TextBlock Text="Edit Info" FontWeight="bold" />
 
-                    <WrapPanel>
-                        <TextBox
-                            Label="First Name"
-                            Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
-                        <TextBox
-                            Label="Last Name"
-                            Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
+                        <WrapPanel>
+                            <TextBox
+                                Label="First Name"
+                                Text={new Binding(nameof<Model.Employee>(e => e.FirstName))} />
+                            <TextBox
+                                Label="Last Name"
+                                Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
 
-                        <TextBlock Text="Age" />
+                            <TextBlock Text="Age" />
 
-                        <CheckBox
-                            ref={
-                                r =>
-                                {
-                                    this._cb = r;
+                            <CheckBox
+                                ref={
+                                    r =>
+                                    {
+                                        this._cb = r;
+                                    }
                                 }
-                            }
-                            Label="Bonus Eligible"
-                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
-                        </CheckBox>
+                                Label="Bonus Eligible"
+                                IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
+                            </CheckBox>
 
-                        {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
-                        {/*    Background="rgba(255,255,255,.5)"*/}
-                        {/*    Blur={10}*/}
-                        {/*    Target={*/}
-                        {/*        (() =>*/}
-                        {/*            this._cb)*/}
-                        {/*            .bind(this)*/}
-                        {/*    }>*/}
-                        {/*    <TextBlock Text="Really Nice bonus" />*/}
-                        {/*</Popup>*/}
+                            {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
+                            {/*    Background="rgba(255,255,255,.5)"*/}
+                            {/*    Blur={10}*/}
+                            {/*    Target={*/}
+                            {/*        (() =>*/}
+                            {/*            this._cb)*/}
+                            {/*            .bind(this)*/}
+                            {/*    }>*/}
+                            {/*    <TextBlock Text="Really Nice bonus" />*/}
+                            {/*</Popup>*/}
 
-                        <ColorPicker
-                            ItemsSource={new Binding("Company.AvailableColors")}
-                            SelectedItem={new Binding("Color")} />
-                    </WrapPanel>
+                            <ColorPicker
+                                ItemsSource={new Binding("Company.AvailableColors")}
+                                SelectedItem={new Binding("Color")} />
+                        </WrapPanel>
 
-                    <TextBox
-                        IsVisible={new Binding("IsBonusEligible")}
-                        Label="Bonus Amount"
-                        Text={new Binding("BonusAmount")} />
-                    <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
+                        <TextBox
+                            IsVisible={new Binding("IsBonusEligible")}
+                            Label="Bonus Amount"
+                            Text={new Binding("BonusAmount")} />
+                        <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
-                    <CommandBar ItemsSource={new Binding("Commands")} />
+                        <CommandBar ItemsSource={new Binding("Commands")} />
 
-                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+                        <CommandButton Command={new Binding("LongTaskCommand")}/>
 
-                    <ProgressBar
-                        Progress={new Binding("TaskProgress")}
-                        Denominator={100}
-                    />
+                        <ProgressBar
+                            Progress={new Binding("TaskProgress")}
+                            Denominator={100}
+                        />
 
-                    <ProgressBar
-                        Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
-                        Denominator={100}
-                    />
+                        <ProgressBar
+                            Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
+                            Denominator={100}
+                        />
 
-                    <ProgressBar />
+                        <ProgressBar />
 
-                    {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding("EditCommand")} />*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.CommandBarButtonStyle}*/}
-                    {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
-                    {/*        CommandParameter={new Binding()} />*/}
-                    {/*</StackPanel>*/}
+                        {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding("EditCommand")} />*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.CommandBarButtonStyle}*/}
+                        {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
+                        {/*        CommandParameter={new Binding()} />*/}
+                        {/*</StackPanel>*/}
+
+                    </StackPanel>
 
                 </DataContext>
 
