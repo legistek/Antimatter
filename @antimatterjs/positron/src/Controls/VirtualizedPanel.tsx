@@ -57,7 +57,7 @@ export class VirtualizedPanelBase<P extends IVirtualizedPanelProps = {}, S exten
         return styles;
     }
 
-    /* override */ componentDidMount?(): void
+    /* override */ componentDidMount(): void
     {
         if (!this.Container)
             return;
