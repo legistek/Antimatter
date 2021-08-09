@@ -137,7 +137,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
-                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+                    <CommandButton Command={new Binding("IncreaseAgeCommand")}
+                        SecondaryCommandsSource={new Binding("Commands")}
+                        Style={CommandButton.DialogButtonStyle}
+                    />
+                    <CommandButton Command={new Binding("LongTaskCommand")} />
 
                     <ProgressBar
                         Progress={new Binding("TaskProgress")}

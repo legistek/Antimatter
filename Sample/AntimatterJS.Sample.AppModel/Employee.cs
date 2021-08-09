@@ -376,7 +376,8 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Throw the bum out",
-                    Icon = 0xF082
+                    Icon = 0xF082,
+                    Visibility = false
                 });
             }
         }
