@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, DataContext, ModelObjectReference, ReactDataContext } from '@antimatterjs/react';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
+import { TextBlock } from './TextBlock';
 
 export interface IViewProps extends IPanelProps
 {
@@ -8,7 +9,7 @@ export interface IViewProps extends IPanelProps
 }
 export interface IViewState extends IPanelState
 {
-    ViewModel?: ModelObjectReference
+    ViewModel?: ModelObjectReference,
 }
 
 export abstract class View<P extends IViewProps = {},
@@ -17,11 +18,12 @@ export abstract class View<P extends IViewProps = {},
 {
     /* protected */ abstract Template(): JSX.Element;
     
-    /* override */ renderElement(): JSX.Element
+    /* override sealed */ renderElement(): JSX.Element
     {
+        (this.state as any)["DataContext"] = this.state.ViewModel;
         return (
-            <DataContext Value={this.state.ViewModel}>
+            <ReactDataContext.Provider value={this.state.ViewModel}>
                 {this.Template()}
-            </DataContext>);
+            </ReactDataContext.Provider>);        
     }
 }
