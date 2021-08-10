@@ -65,6 +65,14 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
             color: this.state.Foreground,
             fontSize: this.state.FontSize
         };
+        const optionStyle: IStyle = {
+            selectors: {
+                ' .SelectableItemControlBase': {
+                    display: 'grid',
+                    width: '100%'
+                }
+            }
+        }
         const subcomponentStyles: IDropdownSubComponentStyles | any = {};
         if (this.state.UseCustomMultiselectTemplate)
             subcomponentStyles.multiSelectItem = { checkbox: {display: 'none'}}
@@ -85,6 +93,8 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
                 placeholder={placeholder}
                 notifyOnReselect={false}
                 styles={{
+                    dropdownItem: optionStyle,
+                    dropdownItems: optionStyle,
                     label: textStyle,
                     subComponentStyles: subcomponentStyles
                 }}

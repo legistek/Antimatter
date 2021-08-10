@@ -195,7 +195,7 @@ body {
         overflow-x: auto;
         overflow-y: hidden;
 
-        margin-left: 0px;        
+        margin-left: 0px;
         width: fit-content;
     }
 
@@ -299,16 +299,4 @@ code {
 .amx-ptn-pdf-textlayer::selection {
     background: rgba(46, 112, 223, 0.2);
     color: transparent;
-}
-
-.ms-ComboBox-Input::selection {
-    color: transparent;
-    text-shadow: none;
-}
-
-.ms-Dropdown-items .SelectableItemControlBase,
-.ms-Dropdown-item .SelectableItemControlBase,
-.ms-Dropdown-title .SelectableItemControlBase {
-    display: grid;
-    width: 100%
 }
