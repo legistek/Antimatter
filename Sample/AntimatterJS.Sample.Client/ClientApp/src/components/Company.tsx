@@ -176,8 +176,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         {/*        CommandParameter={new Binding()} />*/}
                         {/*</StackPanel>*/}
 
-                    </StackPanel>
-
                 </DataContext>
 
 
