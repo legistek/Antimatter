@@ -40,6 +40,7 @@ export * from './src/Controls/Coachmark';
 export * from './src/Controls/TeachingBubble';
 export * from './src/Controls/VirtualizedPanel';
 export * from './src/Controls/VirtualizingItemsControl';
+export * from './src/Controls/MessageBar';
 export * from './src/Documents/DocumentViewer';
 export * from './src/Documents/IDocument';
 export * from './src/Documents/PDFJSDocument';

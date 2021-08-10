@@ -384,8 +384,8 @@ namespace AntimatterJS.Sample.AppModel
                         TeachingBubbleOpen = true;
                     })
                 {
-                    Name = "Blow Bubbles",
-                    ToolTip = "Actually just the one bubble, and it's more of an 'open' than a 'blow'"
+                    Name = "Open thingy",
+                    ToolTip = "Show whatever example most recently needed a 'show' command"
                 });
             }
         }
@@ -419,7 +419,7 @@ namespace AntimatterJS.Sample.AppModel
                         TeachingBubbleOpen = false;
                     })
                 {
-                    Name = "Bubble CMD"
+                    Name = "Close thingy"
                 });
             }
         }

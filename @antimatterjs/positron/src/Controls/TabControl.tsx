@@ -74,6 +74,7 @@ export class TabControl<
             Selector: "@ .tab-item",
             Rules: {
                 color: TabControl.theme.semanticColors.bodySubtext,
+                fontFamily: TabControl.theme.fonts.medium.fontFamily,
                 fontWeight: "bold",
                 borderWidth: "0px 0px 0px 2px",
                 borderColor: "transparent",

@@ -5,6 +5,9 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights }
 import * as Model from '../model/Model';
 import
 {
+    MessageBar,
+    MessageBarType,
+
     ToggleButton,
     Coachmark,
     TeachingBubble,
@@ -63,12 +66,12 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Label="The Borken Age-O-Tron"
                     />
 
-                    <ToggleButton
-                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
-                        CheckedText="Switched on"
-                        UncheckedText="Switched off"
-                        Label="Thing to toggle"
-                    />
+                        <ToggleButton
+                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                            CheckedText="Switched on"
+                            UncheckedText="Switched off"
+                            Label="Thing to toggle"
+                        />
 
                     <ToggleButton
                         IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
@@ -109,69 +112,71 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             Label="Last Name"
                             Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
 
-                        <TextBlock Text="Age" />
+                            <TextBlock Text="Age" />
 
-                        <CheckBox
-                            ref={
-                                r =>
-                                {
-                                    this._cb = r;
+                            <CheckBox
+                                ref={
+                                    r =>
+                                    {
+                                        this._cb = r;
+                                    }
                                 }
-                            }
-                            Label="Bonus Eligible"
-                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
-                        </CheckBox>
+                                Label="Bonus Eligible"
+                                IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}>
+                            </CheckBox>
 
-                        {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
-                        {/*    Background="rgba(255,255,255,.5)"*/}
-                        {/*    Blur={10}*/}
-                        {/*    Target={*/}
-                        {/*        (() =>*/}
-                        {/*            this._cb)*/}
-                        {/*            .bind(this)*/}
-                        {/*    }>*/}
-                        {/*    <TextBlock Text="Really Nice bonus" />*/}
-                        {/*</Popup>*/}
+                            {/*<Popup IsOpen={new Binding("IsBonusEligible")}*/}
+                            {/*    Background="rgba(255,255,255,.5)"*/}
+                            {/*    Blur={10}*/}
+                            {/*    Target={*/}
+                            {/*        (() =>*/}
+                            {/*            this._cb)*/}
+                            {/*            .bind(this)*/}
+                            {/*    }>*/}
+                            {/*    <TextBlock Text="Really Nice bonus" />*/}
+                            {/*</Popup>*/}
 
-                        <ColorPicker
-                            ItemsSource={new Binding("Company.AvailableColors")}
-                            SelectedItem={new Binding("Color")} />
-                    </WrapPanel>
+                            <ColorPicker
+                                ItemsSource={new Binding("Company.AvailableColors")}
+                                SelectedItem={new Binding("Color")} />
+                        </WrapPanel>
 
-                    <TextBox
-                        IsVisible={new Binding("IsBonusEligible")}
-                        Label="Bonus Amount"
-                        Text={new Binding("BonusAmount")} />
-                    <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
+                        <TextBox
+                            IsVisible={new Binding("IsBonusEligible")}
+                            Label="Bonus Amount"
+                            Text={new Binding("BonusAmount")} />
+                        <TextBlock Text={new Binding(nameof<Model.Employee>(e => e.Age))} />
 
-                    <CommandBar ItemsSource={new Binding("Commands")} />
+                        <CommandBar ItemsSource={new Binding("Commands")} />
 
-                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+                        <CommandButton Command={new Binding("LongTaskCommand")}/>
 
-                    <ProgressBar
-                        Progress={new Binding("TaskProgress")}
-                        Denominator={100}
-                    />
+                        <ProgressBar
+                            Progress={new Binding("TaskProgress")}
+                            Denominator={100}
+                        />
 
-                    <ProgressBar
-                        Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
-                        Denominator={100}
-                    />
+                        <ProgressBar
+                            Progress={new Binding(nameof<Model.Employee>(e => e.Age))}
+                            Denominator={100}
+                        />
 
-                    <ProgressBar />
+                        <ProgressBar />
 
-                    {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding("EditCommand")} />*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.CommandBarButtonStyle}*/}
-                    {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
-                    {/*        CommandParameter={new Binding()} />*/}
-                    {/*</StackPanel>*/}
+                        {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding("EditCommand")} />*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.CommandBarButtonStyle}*/}
+                        {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
+                        {/*        CommandParameter={new Binding()} />*/}
+                        {/*</StackPanel>*/}
+
+                    </StackPanel>
 
                 </DataContext>
 
@@ -215,6 +220,61 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return button;
     }
 
+    private get MessageBar1(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Message="testing simple success bubble"
+                MessageBarType={MessageBarType.success}
+                ShowCloseButton={true}
+            />
+        );
+        return elem;
+    }
+    private get MessageBar2(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Message="Large error message"
+                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                MessageBarType={MessageBarType.error}
+                PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+                SecondaryCommand={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                FontSize={20}
+                FontWeight="bold"
+            />
+        );
+        return elem;
+    }
+    private get MessageBar3(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <MessageBar
+                Content={this._messageBarCustomContent}
+                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
+                ShowCloseButton={true}
+            />
+        );
+        return elem;
+    }
+
+    _messageBarCustomContent: DataTemplate = new DataTemplate(() => (
+        <StackPanel Orientation={Orientation.Vertical}>
+            <TextBlock
+                Text="Custom template here"
+                FontSize={16}
+            />
+            <CheckBox
+                Label="(Custom template line #2 is a checkbox)"
+                FontSize={16}
+            />
+            <TextBlock
+                Text="Custom template line #3"
+                FontSize={16}
+            />
+        </StackPanel>
+    ));
+
     private get Bubble(): JSX.Element
     {
         const bubble: JSX.Element = (
@@ -254,8 +314,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
             />
         );
-        return elem;
-        //return <></>;
+        //return elem;
+        return <></>;
     }
 
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
@@ -369,6 +429,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     {this.comboBoxElem_CustomMultiSelect}
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
+
+
+                    {this.MessageBar1}
+                    {this.MessageBar2}
+                    {this.MessageBar3}
+
+
 
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <TextBlock Text="Employee Count:" />
