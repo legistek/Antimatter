@@ -69,9 +69,10 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
             selectors: {
                 ' .SelectableItemControlBase': {
                     display: 'grid',
-                    width: '100%'
+                    width: '100%',
                 }
-            }
+            },
+            padding: 0,
         }
         const subcomponentStyles: IDropdownSubComponentStyles | any = {};
         if (this.state.UseCustomMultiselectTemplate)
@@ -94,9 +95,15 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
                 notifyOnReselect={false}
                 styles={{
                     dropdownItem: optionStyle,
+                    title: {
+                        padding: "0px 28px 0px 0px"
+                    },
+                    dropdownItemSelected: {
+                        padding: 0
+                    },
                     dropdownItems: optionStyle,
                     label: textStyle,
-                    subComponentStyles: subcomponentStyles
+                    subComponentStyles: subcomponentStyles,
                 }}
             />
         );

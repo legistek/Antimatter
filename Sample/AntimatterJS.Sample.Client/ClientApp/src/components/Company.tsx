@@ -29,7 +29,8 @@ import
     ColorPicker,
     IFrameworkElementState,
     IFrameworkElementProps,
-    MultitouchTransform
+    MultitouchTransform,
+    HorizontalAlignment
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -320,10 +321,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     }
 
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
-        <Grid
-            Background="hotpink"
+        <Grid Background="hotpink"
         >
             <TextBlock
+                FontSize={14}
                 Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
                 VerticalAlignment={VerticalAlignment.Center}
             />
@@ -355,7 +356,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
                 //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
                 //ItemTemplate={this._comboBoxRedundantStringTemplate}
-
+                HorizontalAlignment={HorizontalAlignment.Stretch}
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemTemplate={this._comboBoxOptionTemplate}
 
