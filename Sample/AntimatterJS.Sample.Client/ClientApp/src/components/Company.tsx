@@ -233,7 +233,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         const elem: JSX.Element = (
             <MessageBar
                 Content="Large error message"
-                IsVisible={new Binding(nameof<Model.Company>(c => c.TeachingBubbleOpen))}
                 MessageBarType={MessageBarType.error}
                 PrimaryCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
                 SecondaryCommand={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
