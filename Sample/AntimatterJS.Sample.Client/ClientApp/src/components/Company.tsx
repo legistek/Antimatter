@@ -211,21 +211,33 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return button;
     }
 
+    private get ToastContent(): DataTemplate
+    {
+        const template: DataTemplate = new DataTemplate((params: ModelObjectReference) => (
+            <MessageBar
+                Content={new Binding({ Path: "Content", Source: params })}
+                MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
+                PrimaryCommand={new Binding({ Path: "PrimaryCommand", Source: params })}
+                SecondaryCommand={new Binding({ Path: "SecondaryCommand", Source: params })}
+                ShowCloseButton={new Binding({ Path: "ShowCloseButton", Source: params })}
+                Duration={new Binding({ Path: "Duration", Source: params })}
+                IsVisible={new Binding({ Path: "IsVisible", Source: params })}
+                Animate={true}
+                Margin="1px"
+            />));
+        return template;
+    }
+
+
     private get MessageBar1(): JSX.Element
     {
         const elem: JSX.Element = (
             <MessageBar
-                Params={new Binding(nameof<Model.Company>(c => c.MessageBarInfo))}
+                Content="testing simple success bubble"
+                MessageBarType={MessageBarType.success}
+                ShowCloseButton={true}
             />
         );
-
-        //const elem: JSX.Element = (
-        //    <MessageBar
-        //        Content="testing simple success bubble"
-        //        MessageBarType={MessageBarType.success}
-        //        ShowCloseButton={true}
-        //    />
-        //);
         return elem;
     }
     private get MessageBar2(): JSX.Element
@@ -330,6 +342,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
 
                     <ToastControl
                         ItemsSource={new Binding(nameof<Model.Company>(c => c.Toasts))}
+                        ItemTemplate={this.ToastContent}
                         VerticalAlignment={VerticalAlignment.Bottom}
                         HorizontalAlignment={HorizontalAlignment.Center}
                     />

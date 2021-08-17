@@ -12,7 +12,6 @@ export import MessageBarType = FluentMessageBarType;
 
 interface IMessageBarProps extends IControlProps
 {
-    Params?: ModelObjectReference | Binding,
     Content?: DataTemplate | string | Binding,
     MessageBarType?: MessageBarType | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,
@@ -23,7 +22,6 @@ interface IMessageBarProps extends IControlProps
 }
 interface IMessageBarState extends IControlState
 {
-    Params?: ModelObjectReference,
     Content?: DataTemplate | string,
     MessageBarType?: MessageBarType,
     PrimaryCommand?: ModelObjectReference,
@@ -43,37 +41,10 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
     };
 
-    public static BaseControlProps: IMessageBarProps = {
-        Content: new Binding({
-            Path: "Content", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        MessageBarType: new Binding({
-            Path: "MessageBarType", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        PrimaryCommand: new Binding({
-            Path: "PrimaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        SecondaryCommand: new Binding({
-            Path: "SecondaryCommand", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        ShowCloseButton: new Binding({
-            Path: "ShowCloseButton", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        Duration: new Binding({
-            Path: "Duration", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        }),
-        IsVisible: new Binding({
-            Path: "IsVisible", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Params"
-        })
-    }
-
     public static DefaultStyle: Style<IMessageBarProps> = new Style<IMessageBarProps>(
-        Object.assign(
-            Object.assign(MessageBar.BaseControlProps),
-            {
-                Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
-            }
-        )
+        {
+            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
+        }
     );
 
     private _timeout;
@@ -173,16 +144,4 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         };
         return Object.assign(super.getCSSStyles(), styles);
     }
-}
-
-//Based on MessageBarParams C# class
-export class MessageBarParams
-{
-    public Content?: string;
-    public MessageBarType?: MessageBarType;
-    public PrimaryCommand?: any;
-    public SecondaryCommand?: any;
-    public ShowCloseButton?: boolean;
-    public IsVisible?: boolean;
-    public Duration?: number;
 }
