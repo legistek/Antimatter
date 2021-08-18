@@ -50,6 +50,8 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
             >
 
                 <DataContext Value={this.state.Value}>
+                    <StackPanel>
+
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         LabelIsInline={false}
@@ -168,7 +170,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
                     {/*        CommandParameter={new Binding()} />*/}
                     {/*</StackPanel>*/}
-
+                    </StackPanel>
                 </DataContext>
 
 
