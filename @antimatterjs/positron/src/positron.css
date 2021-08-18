@@ -113,10 +113,9 @@ body {
     width: 100%;
 }
 
-
-
 .amx-ptn-va-stretch {
-    max-height: 100%;
+    max-height: -moz-available;
+    max-height: -webkit-fill-available;
     overflow: hidden;
     top: 0px;
     bottom: 0px;
@@ -131,6 +130,7 @@ body {
 /* VA Stretch Children of Vertical Stack Panels should be height auto */
 .amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
     height: auto;
+    max-height: unset;
 }
 
 .amx-ptn-va-bottom {
@@ -195,14 +195,17 @@ body {
         overflow-x: auto;
         overflow-y: hidden;
 
-        margin-left: 0px;
-        margin-right: auto !important;
+        margin-left: 0px;        
         width: fit-content;
     }
 
-    .amx-ptn-stack-panel.horizontal.amx-ptn-ha-right {
-        margin-right: 0px !important;
-    }
+        .amx-ptn-stack-panel.horizontal:not(.amx-ptn-ha-right) {
+            margin-right: auto !important;
+        }
+
+        .amx-ptn-stack-panel.horizontal.amx-ptn-ha-right {
+            margin-right: 0px !important;
+        }
 
     .amx-ptn-stack-panel.horizontal > .amx-ptn-fe {
         width: auto;

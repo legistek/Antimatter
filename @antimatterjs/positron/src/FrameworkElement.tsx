@@ -34,7 +34,7 @@ interface IFrameworkElementCommon
     OnManipulationStarting?: (event: ManipulationEventArgs) => void,
     OnManipulationStarted?: (event: ManipulationEventArgs) => void,
     OnManipulationDelta?: (event: ManipulationEventArgs) => void,
-    OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
+    OnManipulationCompleted?: (event: ManipulationEventArgs) => void,    
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element,
@@ -47,7 +47,9 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
-    IsLoading?: boolean | Binding    
+    IsLoading?: boolean | Binding,
+    MountCommand?: ModelObjectReference | Binding,
+    OnWillUnmountCommand?: ModelObjectReference | Binding,
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -57,7 +59,9 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
-    IsLoading?: boolean
+    IsLoading?: boolean,
+    MountCommand?: ModelObjectReference,
+    OnWillUnmountCommand?: ModelObjectReference,
 }
 
 export class FrameworkElement<
@@ -303,6 +307,14 @@ export class FrameworkElement<
             this.state.LoadedCommand as ModelObjectReference,
             ModelValue.Get(this.GetLoadedCommandParameter()));        
         this.OnLoaded();
+    }
+
+    componentDidMount()
+    {
+        if (this.state.MountCommand)
+        {
+            Antimatter.Server.ExecuteICommand(this.state.MountCommand as ModelObjectReference);
+        }
     }
 
     constructClasses(): string

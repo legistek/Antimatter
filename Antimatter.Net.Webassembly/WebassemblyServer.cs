@@ -47,7 +47,9 @@ namespace Antimatter.Net.Webassembly
         [AMXClientInvocable]
         public static void ExecuteICommand(int netRef, string commandParameterJson)
         {
-            var value = JsonConvert.DeserializeObject<ModelValue>(commandParameterJson);
+            ModelValue value = ModelValue.Null;
+            if (!string.IsNullOrEmpty(commandParameterJson))
+                value = JsonConvert.DeserializeObject<ModelValue>(commandParameterJson);
             Reactor.ExecuteICommand(netRef, value);
         }
     }
