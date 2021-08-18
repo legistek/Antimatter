@@ -1,10 +1,17 @@
 ﻿import * as React from 'react';
 import { Dropdown, IDropdownOption, IDropdownSubComponentStyles, IStyle } from '@fluentui/react';
 import { Binding, BindingMode, BindingParameters, ModelObjectReference } from "@antimatterjs/react";
-import { ControlTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { SelectionMode } from '../Enums';
 import { Style } from '../Style';
 import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
+import { TextBlock } from './TextBlock';
+import { TextBox } from './TextBox';
+import { PlacementMode, Popup } from './Popup';
+import { StackPanel } from './StackPanel';
+import { WrapPanel } from './WrapPanel';
+import { FrameworkElement } from '../FrameworkElement';
+import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 
 export interface IComboBoxProps extends ISelectorProps
 {
@@ -20,13 +27,16 @@ export interface IComboBoxState extends ISelectorState
     TitleStringOverride?: string,
     Placeholder?: string,
     IsEnabledPath?: string,
-    UseCustomMultiselectTemplate?: boolean
+    UseCustomMultiselectTemplate?: boolean,
+    PopupIsOpen?: boolean
 }
 
-class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState> extends Selector<P, S>
+export class ComboBoxBase extends Selector<IComboBoxProps, IComboBoxState>
+//class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState> extends Selector<P, S>
 {
     public static DefaultBindings = {
         ItemsSource: {
+            FallbackValue: [],
             NotifyCollectionChanged: true
         },
         SelectedItem: {
@@ -39,11 +49,51 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
         }
     };
 
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    private static ItemTemplate_STATIC = new DataTemplate((item: any) => (
+        <TextBlock
+            Text="hobo"
+
+            OnClick={() => ComboBoxBase.TestClick_Static('Templ')}
+        />
+    ));
+
+    private static ItemContainerStyle_STATIC = new Style<ISelectableItemControlProps>(
         {
-            Template: new ControlTemplate((templatedParent: ComboBoxBase) => templatedParent.Template)
+            Margin: "0px",
+            Template: new ControlTemplate((templatedParent: SelectableItemControl) =>
+            (
+                <>{templatedParent.props.children}</>
+
+                //<StackPanel OnClick={() => ComboBoxBase.TestClick_Static('ContStyle')}>{templatedParent.props.children}</StackPanel>
+            ))
+        },
+        {
+            Rules: {
+                cursor: "pointer"
+            }
         }
     );
+
+    public static TestClick_Static(arg: string): void
+    {
+        console.log(`click test: ${arg}`);
+    }
+
+    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+        {
+            //SelectionMode: SelectionMode.Single,
+            //ItemsSource: [],
+            Template: new ControlTemplate((templatedParent: ComboBoxBase) => templatedParent.Template),
+            //ItemTemplate: ComboBoxBase.ItemTemplate_STATIC,
+            //ItemContainerStyle: ComboBoxBase.ItemContainerStyle_STATIC
+        }
+    );
+
+    public OnRenderItem(item: any, index: number): JSX.Element | null
+    {
+        console.log(`RENDER ${index}`);
+        return super.OnRenderItem(item, index);
+    }
 
     private _options: IDropdownOption[] = [];
     private get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
@@ -79,7 +129,7 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
 
         const placeholder: string = this.state.Placeholder ?? this.state.TitleStringOverride ?? '';
 
-        return (
+        const fluent: JSX.Element = (
             <Dropdown
                 options={this._options}
                 selectedKey={key}
@@ -100,6 +150,88 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
                 }}
             />
         );
+
+        if (fluent)
+            return fluent;
+
+
+        const fluentEmpty: JSX.Element = (
+            <Dropdown
+                label={this.state.Label}
+                options={this._options}
+                selectedKey={key}
+                onRenderList={() => null}
+                onRenderTitle={(items) => this.OnRenderTitle(items)}
+                onClick={() => this.Open()}
+                ref={r => this._root = (r as any) }
+            />
+        );
+        const customRoot: JSX.Element = (
+            <TextBox
+                Text="ROOT TEXT"
+                OnClick={() => this.Open()}
+                IsEnabled={this.state.IsEnabled}
+                //ref={r => this._root = r}
+            />
+        );
+
+        if (this._root)
+        {
+            const rootElem: HTMLElement = (this._root as any) as HTMLElement;
+            const width: number = rootElem.clientWidth;
+        }
+
+        const panel_Stack: JSX.Element = (
+            <StackPanel
+                ItemsParent={this}
+            />
+        );
+        const panel_Wrap: JSX.Element = (
+            <WrapPanel
+                ItemsParent={this}
+            />
+        );
+
+
+
+
+
+        //const root: JSX.Element = customRoot;
+        const root: JSX.Element = fluentEmpty;
+
+        const panel: JSX.Element = panel_Stack;
+        //const panel: JSX.Element = panel_Wrap;
+
+        const custom: JSX.Element = (
+            <>
+                {root}
+                <Popup
+                    IsOpen={this.state.PopupIsOpen}
+                    Target={() => this._root}
+                    Placement={PlacementMode.Below}
+                    Padding="0"
+                >
+                    {panel}
+                </Popup>
+            </>
+        );
+
+        //return fluent;
+        return custom;
+    }
+
+    private Open(): void
+    {
+        if (this.state.IsEnabled == false)
+            return;
+        this.setState({ PopupIsOpen: true });
+    }
+    private Close(): void { this.setState({ PopupIsOpen: false }); }
+
+    /* protected override */ OnSelectionChanged()
+    {
+        console.log(`SELECTION ACTUALLY CHANGED OMG OMG`);
+        this.Close();
     }
 
     //For rendering current selection in main (non-expanded) control element
@@ -159,10 +291,6 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
         return (key1 != '') && (key1 === key2);
     }
 
-    //Fluent's click area exceeds Selector templates', so cancel Selector's handlers & use OnChange to process manually
-    /* override */ OnItemPointerDown(event: MouseEvent, item: any): void { }
-    /* override */ OnItemClick(event: MouseEvent, item: any): void { }
-
     public PopulateOptions(): void
     {
         this._options = this.state.ItemsSource?.map(item => this.GetItemOption(item)) ?? [];
@@ -204,6 +332,13 @@ class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = Emp
         };
         return option;
     }
+
+    private _root?: FrameworkElement | null;
+    private get RootWidth(): number | null
+    {
+        return null;
+    }
 }
 
-export class ComboBox extends ComboBoxBase<IComboBoxProps, IComboBoxState> { }
+//export class ComboBox extends ComboBoxBase<IComboBoxProps, IComboBoxState> { }
+export class ComboBox extends ComboBoxBase { }

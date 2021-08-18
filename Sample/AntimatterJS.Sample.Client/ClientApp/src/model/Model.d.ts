@@ -21,9 +21,12 @@ export class Company {
 	public SomeEmployees?: Employee[];
 	public SomeEmployeeNames?: string[];
 	public SelectedEmployeeName?: string;
+	public SelectedEmployeeNames?: string;
 	public SelectedEmployeesDisplayText?: string;
 	public SelectedEmployeeChangedCommand?: ICommand;
 	public SelectedEmployeesChangedCommand?: ICommand;
+	public SomeMoreEmployees?: Employee[];
+	public SomeMoreEmployeeNames?: string[];
 }
 
 export class Employee {

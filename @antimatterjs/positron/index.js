@@ -47,3 +47,4 @@ export * from './src/Documents/PDFJSDocument';
 export * from './src/Controls/ProgressBar';
 export * from './src/Controls/DatePicker';
 export * from './src/Controls/ComboBox';
+export * from './src/Controls/ComboBox_v2';

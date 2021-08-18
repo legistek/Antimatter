@@ -28,6 +28,11 @@ export class Utilities
             return item?.toString();
     }
 
+    public static GetStringKey(item: any): string
+    {
+        return `${this.SmartGetKey(item)}`;
+    }
+
     public static SleepAsync(ms): Promise<any>
     {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -61,11 +66,11 @@ export class Utilities
      * this information is entrusted to the comparer function. The only requirement
      * is that the items (virtual or otherwise) are sorted.
      * @param comparer The comparer function, which receives an item index to
-     * evaluate. The function must return 0 if the item has been located at that 
+     * evaluate. The function must return 0 if the item has been located at that
      * index, < 0 if the algorithm should look at a lower index, and > 0 if
      * the algorithm should look at a higher index.
      * @param upperBound The upper bound to search. If the entire set is to
-     * be searched, this should be equal to the number of items - 1. 
+     * be searched, this should be equal to the number of items - 1.
      * @param lowerBound The lower bound to search. When used with upperBound,
      * this allows a narrower search of a collection to be conducted when some
      * boundaries are already known.
@@ -97,7 +102,7 @@ export class Utilities
             currentIndex = newIndex;
         } while (true);
     }
-    
+
     public static GetBrowser(): { Name: string, Version: number }
     {
         // Thanks to https://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser

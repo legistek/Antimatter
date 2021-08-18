@@ -100,12 +100,17 @@ namespace AntimatterJS.Sample.AppModel
         public IEnumerable<Employee> SomeEmployees => Employees.Take(10);
 
         public IEnumerable<string> SomeEmployeeNames
-        {
-            get
-            {
-                return SomeEmployees.Select(e => e.FullName);
-            }
-        }
+            => SomeEmployees.Select(e => e.FullName);
+        //{
+        //    get
+        //    {
+        //        return SomeEmployees.Select(e => e.FullName);
+        //    }
+        //}
+
+
+        public IEnumerable<Employee> SomeMoreEmployees => Employees.Take(200);
+        public IEnumerable<string> SomeMoreEmployeeNames => SomeMoreEmployees.Select(e => e.FullName);
 
         #region Employee SelectedEmployeeName property
         private string _SelectedEmployeeName;
@@ -124,6 +129,12 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
+
+        public ObservableCollection<string> SelectedEmployeeNames
+        {
+            get;
+            set;
+        } = new ObservableCollection<string>();
 
         //#region Employee[] SelectedEmployees property
         //private Employee[] _SelectedEmployees = new Employee[] { };

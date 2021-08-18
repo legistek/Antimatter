@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
-import { Grid, IColumNDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
+import { Grid, IColumnDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { getTheme } from '@fluentui/react';
 import { ControlTemplate } from '../FrameworkTemplate';
@@ -159,7 +159,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         this.InvalidateRender();
     }
 
-    /* private */ ComputeColumnDefinitions(): IColumNDefinition[]
+    /* private */ ComputeColumnDefinitions(): IColumnDefinition[]
     {
         if (this.state.ResizerSide === Side.Left)
             return [Grid.ColumnDefinition(this.state.Thickness), Grid.ColumnDefinition(this.state.Size)];
