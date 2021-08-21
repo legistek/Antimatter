@@ -28,6 +28,7 @@ export * from './src/Controls/DialogBox';
 export * from './src/Controls/CommandButton';
 export * from './src/Controls/CommandBar';
 export * from './src/Controls/TabControl';
+export * from './src/Controls/ToastControl';
 export * from './src/Controls/ProgressRing';
 export * from './src/Controls/TreeView';
 export * from './src/Controls/LoadingShimmer';

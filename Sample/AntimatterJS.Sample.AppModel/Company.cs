@@ -295,11 +295,13 @@ namespace AntimatterJS.Sample.AppModel
                 return _OpenTeachingBubbleCommand ?? (_OpenTeachingBubbleCommand = new Command(
                     (arg) =>
                     {
-                        TeachingBubbleOpen = true;
+                        var info = MessageBarInfo;
+                        info.Collection = Toasts;
+                        info.Duration = 5;
+                        Toasts.Add(info);
                     })
                 {
-                    Name = "Open thingy",
-                    ToolTip = "Show whatever example most recently needed a 'show' command"
+                    Name = "Make toast"
                 });
             }
         }
@@ -347,5 +349,17 @@ namespace AntimatterJS.Sample.AppModel
             ShowSecondaryButton = true,
             SecondaryButtonText = "DISMISS PLZ"
         };
+
+        public MessageBarParams MessageBarInfo => new MessageBarParams()
+        {
+            Content = "Message goes here",
+            MessageBarType = MessageBarType.success,
+            PrimaryCommand = TeachingBubblePrimaryCommand,
+            ShowCloseButton = true
+        };
+
+        public ObservableCollection<MessageBarParams> Toasts { get; } =
+            new ObservableCollection<MessageBarParams>();
+
     }
 }

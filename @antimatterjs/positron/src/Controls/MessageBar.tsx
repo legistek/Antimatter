@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -12,21 +12,24 @@ export import MessageBarType = FluentMessageBarType;
 
 interface IMessageBarProps extends IControlProps
 {
-    Message?: string | Binding,
-    Content?: DataTemplate,
+    Content?: DataTemplate | string | Binding,
     MessageBarType?: MessageBarType | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,
     SecondaryCommand?: ModelObjectReference | Binding,
-    ShowCloseButton?: boolean | Binding
+    ShowCloseButton?: boolean | Binding,
+    Duration?: number | Binding,
+    Animate?: boolean | Binding
 }
 interface IMessageBarState extends IControlState
 {
-    Message?: string,
-    Content?: DataTemplate,
+    Content?: DataTemplate | string,
     MessageBarType?: MessageBarType,
     PrimaryCommand?: ModelObjectReference,
     SecondaryCommand?: ModelObjectReference,
-    ShowCloseButton?: boolean
+    ShowCloseButton?: boolean,
+    Duration?: number,
+    Animate?: boolean,
+    Expanded?: boolean
 }
 
 export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
@@ -44,12 +47,19 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
     );
 
+    private _timeout;
+
     private get Template(): JSX.Element
     {
+        if (this.state.Duration && !this._timeout)
+        {
+            this._timeout = setTimeout(() => this.Close(), this.state.Duration * 1000);
+        }
+
         const textStyle: IStyle = {
             fontFamily: this.state.FontFamily,
             color: this.state.Foreground,
-            fontSize: this.state.FontSize
+            fontSize: this.state.FontSize ?? 16
         };
 
         return (
@@ -66,11 +76,11 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
 
     private get Content(): JSX.Element
     {
-        if (this.state.Content)
+        if (!this.state.Content)
+            return <></>;
+        if (this.state.Content instanceof DataTemplate)
             return this.state.Content.GetVisualTree()(this);
-        if (this.state.Message)
-            return (<>{this.state.Message}</>);
-        return <></>;
+        return (<>{this.state.Content}</>);
     }
 
     private get Commands(): JSX.Element | undefined
@@ -104,6 +114,34 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
     {
         if (!this.state.ShowCloseButton)
             return undefined;
-        return () => this.SetValue(nameof(this.state.IsVisible), false);
+        return () => this.Close();
+    }
+
+    private Close(): void
+    {
+        this.SetValue(nameof(this.state.IsVisible), false);
+    }
+
+    private _expandTimeout;
+
+    /* override */ constructClasses(): string
+    {
+        return super.constructClasses();
+    }
+
+    /* override */ getCSSStyles(): React.CSSProperties
+    {
+        const collapse: boolean = (!!this.state.Animate && !this.state.Expanded);
+        const maxHeight: number = collapse ? 0 : 200;
+        if (collapse && !this._expandTimeout)
+            this._expandTimeout = setTimeout(() => this.SetValue(nameof(this.state.Expanded), true), 0);
+
+        var styles: React.CSSProperties = {
+            transitionProperty: "max-height",
+            transitionTimingFunction: "linear",
+            transitionDuration: "0.3s",
+            maxHeight: maxHeight
+        };
+        return Object.assign(super.getCSSStyles(), styles);
     }
 }
