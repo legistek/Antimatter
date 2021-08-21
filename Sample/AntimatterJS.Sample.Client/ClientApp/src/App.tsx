@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
@@ -98,32 +98,56 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
                 <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
-                        <Company />
+                    <TabControl Style={TabControl.DefaultStyle}
+                        Tabs={
+                            [
+                                {
+                                    Label: "Company",
+                                    Icon: 0xF084,
+                                    IconForeground: "white",
+                                    IconBackground: "blue",
+                                    Key: "company",
+                                    Description: "Edit company details",
+                                    Content: (<Company />)
+                                },
+                                {
+                                    Label: "Control Gallery",
+                                    Icon: 0xF038,
+                                    IconForeground: "white",
+                                    IconBackground: "orange",
+                                    Key: "controlgallery",
+                                    Description: "View the different controls",
+                                    Content: (<></>)
+                                },
+                            ]} />
+
+
+                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
+                    {/*    <Company />*/}
 
 
 
-                        {/*
+                    {/*    */}{/**/}{/*
 
-                        <ResizePanel Size={new Binding("UnderlingPanelWidth")}
-                            Background={"blue"}
-                            ResizerSide={Side.Left}>
-                            <TreeView
-                                ItemsSource={new Binding("CEO.Underlings")}
-                                SelectedItem={new Binding("SelectedEmployee")}
-                                ChildrenPath="Underlings"
-                                SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                                IsExpandedPath="IsExpanded"
-                                IsSelectedPath="IsSelected"
-                                ItemTemplate={this.employeeTemplate}>
-                            </TreeView>
-                        </ResizePanel>
+                    */}{/*    <ResizePanel Size={new Binding("UnderlingPanelWidth")}*/}{/*
+                    */}{/*        Background={"blue"}*/}{/*
+                    */}{/*        ResizerSide={Side.Left}>*/}{/*
+                    */}{/*        <TreeView*/}{/*
+                    */}{/*            ItemsSource={new Binding("CEO.Underlings")}*/}{/*
+                    */}{/*            SelectedItem={new Binding("SelectedEmployee")}*/}{/*
+                    */}{/*            ChildrenPath="Underlings"*/}{/*
+                    */}{/*            SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}*/}{/*
+                    */}{/*            IsExpandedPath="IsExpanded"*/}{/*
+                    */}{/*            IsSelectedPath="IsSelected"*/}{/*
+                    */}{/*            ItemTemplate={this.employeeTemplate}>*/}{/*
+                    */}{/*        </TreeView>*/}{/*
+                    */}{/*    </ResizePanel>*/}{/*
 
-                        */}
+                    */}{/*    */}
 
 
 
-                    </Grid>
+                    {/*</Grid>*/}
                 </DataContext>
             </Window>
 
