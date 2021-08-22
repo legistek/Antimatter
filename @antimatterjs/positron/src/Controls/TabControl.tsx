@@ -13,13 +13,14 @@ import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Panel } from './Panel';
 import { CommandButton } from './CommandButton';
-import { withRouter } from 'react-router';
+import { Window } from './Window';
+import { RouteEventArgs } from '../RouteEventArgs';
 
 export interface ITabItem
 {
     Label: string,
     Route?: string,
-    Key?: string,
+    Key: string,
     Content: JSX.Element,
     Icon?: number,
     IconBackground?: string,
@@ -40,7 +41,6 @@ export interface ITabControlState extends IControlState, ITabControlCommon
 {
 }
 
-@withRouter
 export class TabControlBase<
     P extends ITabControlProps = { Tabs: [] },
     S extends ITabControlState = { Tabs: [] }> extends Control<P, S>
@@ -139,17 +139,18 @@ export class TabControlBase<
                     <Panel
                         Grid={{ Row: 0 }}
                         BoxShadow={DefaultEffects.elevation8}
-                        Margin="0px 0px 10px 0px">
+                        Margin="0px 0px 10px 0px"
+                        Padding="5px 5px">
                         <StackPanel
                             Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
                             <Glyph
                                 ClassName="mobile-tab-back"
                                 Foreground="black"
                                 Margin="10px 10px"
-                                FontSize={TabControl.theme.fonts.xLarge.fontSize}
+                                FontSize={TabControl.theme.fonts.xxLarge.fontSize}
                                 VerticalAlignment={VerticalAlignment.Center}
                                 OnClick={(e) => templatedParent.MobileBackButtonClick()}
-                                Icon="Back" />
+                                Icon="ChevronLeft" />
                             <TextBlock Text={templatedParent._selectedTab.Label}
                                 FontWeight="bold"
                                 VerticalAlignment={VerticalAlignment.Center}
@@ -186,20 +187,21 @@ export class TabControlBase<
     }
 
     componentDidMount()
-    {        
-        this._unlisten = (this.props as any).history.listen((location, action) =>
+    {
+        Window.RouteEvent.subscribe(this.OnRouteEvent = this.OnRouteEvent.bind(this));
+    }
+
+    private OnRouteEvent(sender: any, e: RouteEventArgs)
+    {
+        if (e.Action === 'POP' && this.state.Layout === WindowLayout.Tablet)
         {
-            if (action === 'POP' && this.state.Layout === WindowLayout.Tablet)
-            {
-                this.MobileGoBack();
-            }
-        });        
+            this.MobileGoBack();
+        }
     }
 
     componentWillUnmount()
     {
-        if (this._unlisten)
-            this._unlisten();
+        Window.RouteEvent.unsubscribe(this.OnRouteEvent);
     }
 
     private RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
@@ -252,7 +254,7 @@ export class TabControlBase<
         this._selectedTab = item;
         this.InvalidateRender();
         this._tabList?.InvalidateRender();
-        (this.props as any).history.push('/' + item.Key);
+        Window.PushRoute(item.Key);        
     }
 
     private GetTabIsVisible(item: ITabItem)
@@ -279,8 +281,7 @@ export class TabControlBase<
 
     private MobileBackButtonClick()
     {
-        (this.props as any).history.goBack();
-        //this.MobileGoBack();
+        Window.GoBack();
     }
 
     private MobileGoBack()
@@ -294,7 +295,6 @@ export class TabControlBase<
     _unlisten?: Function;
 }
 
-@withRouter
 export class TabControl extends TabControlBase<ITabControlProps, ITabControlState>
 {
 }
