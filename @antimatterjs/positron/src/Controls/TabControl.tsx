@@ -1,26 +1,19 @@
 import * as React from 'react';
 import { Binding, BindingParameters, ModelObjectReference } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import
-    {
-        INavLinkGroup, INavLink,
-        DefaultEffects,
-        Nav, Icon, MotionAnimations, Pivot, PivotItem, Fabric, getTheme, themeRulesStandardCreator, Stack
-    } from '@fluentui/react';
+import { DefaultEffects, MotionAnimations, getTheme } from '@fluentui/react';
 import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Ellipse } from '../Shapes/Ellipse';
 import { Glyph } from './Glyph';
-import { TeachingBubble } from './TeachingBubble';
-import { HorizontalAlignment, Orientation, VerticalAlignment } from '../Enums';
+import { HorizontalAlignment, Orientation, VerticalAlignment, WindowLayout } from '../Enums';
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Panel } from './Panel';
 import { CommandButton } from './CommandButton';
-
+import { withRouter } from 'react-router';
 
 export interface ITabItem
 {
@@ -47,67 +40,173 @@ export interface ITabControlState extends IControlState, ITabControlCommon
 {
 }
 
-export class TabControl<
+@withRouter
+export class TabControlBase<
     P extends ITabControlProps = { Tabs: [] },
     S extends ITabControlState = { Tabs: [] }> extends Control<P, S>
 {
     static theme = getTheme();
-    _groups: INavLinkGroup[] = [];
-    _tabList?: ItemsControl | null;
-    _selectedTab?: ITabItem;
 
-    public static VerticalMobileStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
+    public static DefaultStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
         {
-            Template: new ControlTemplate(TabControl.VerticalMobileTemplate),
-            Tabs: [],
-            FontSize: TabControl.theme.fonts.large.fontSize as number
-        },
-        {
-            Selector: "@",
-            Rules: {
-                
-            }
-        },
-        {
-            Selector: "@ .menu-content",
-            Rules:
-            {
-                animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
-            Selector: "@ .tab-content",
-            Rules:
-            {
-                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
+            Template: new ControlTemplate(
+                TabControlBase.VerticalDesktopTemplate,
+                {
+                    Layout: WindowLayout.Tablet,
+                    VisualTree: TabControlBase.VerticalMobileTemplate
+                }),
+            FontSize: TabControlBase.theme.fonts.large.fontSize as number,
+            Tabs: []
         },
         {
             Selector: "@ .tab-item",
             Rules: {
-                cursor: "pointer"
+                color: TabControlBase.theme.semanticColors.bodySubtext,
+                fontFamily: TabControlBase.theme.fonts.medium.fontFamily,
+                borderWidth: "0px 0px 0px 3px",
+                borderColor: "transparent",
+                padding: "10px 45px 10px 10px",
+                background: "transparent",
+                cursor: "pointer",
+                margin: "0px 0px 0px 10px"
+            }
+        },
+        {
+            Selector: "@ .tab-label",
+            Rules: {
+                fontWeight: "bold"
             }
         },
         {
             Selector: "@ .tab-item:hover",
             Rules: {
-                background: TabControl.theme.palette.neutralLight
+                background: TabControlBase.theme.palette.neutralLight
+            },
+        },
+        {
+            Selector: "@ .tab-item.selected",
+            Rules: {
+                color: TabControlBase.theme.semanticColors.bodyText,
+                borderColor: TabControlBase.theme.semanticColors.link,
+                borderWidth: "0px 0px 0px 3px",
+                borderStyle: "solid"
+            }
+        },
+        {
+            Selector: "@ .tab-content",
+            Rules: {
+                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
+            }
+        },
+        {
+            Selector: "@ .menu-content",
+            Rules: {
+                animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }
         },
         {
             Selector: "@ .mobile-tab-back",
-            Rules: {                
+            Rules: {
                 cursor: "pointer"
             }
         }
-
     );
+
+    private static VerticalMobileTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
+    {
+        if (!templatedParent._selectedTab)
+        {
+            // Menu page            
+            return (
+                <ItemsControl
+                    ref={ic => templatedParent._tabList = ic}
+                    ClassName="menu-content"
+                    ItemsSource={templatedParent.state.Tabs}
+                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                    {
+                        if (!templatedParent.GetTabIsVisible(tab))
+                            return (<></>);
+                        return templatedParent.RenderTabLabel(tab, true);
+                    })} />
+            );
+        }
+        else
+        {
+            return (
+                <Grid
+                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                    ClassName="tab-content">
+                    <Panel
+                        Grid={{ Row: 0 }}
+                        BoxShadow={DefaultEffects.elevation8}
+                        Margin="0px 0px 10px 0px">
+                        <StackPanel
+                            Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
+                            <Glyph
+                                ClassName="mobile-tab-back"
+                                Foreground="black"
+                                Margin="10px 10px"
+                                FontSize={TabControl.theme.fonts.xLarge.fontSize}
+                                VerticalAlignment={VerticalAlignment.Center}
+                                OnClick={(e) => templatedParent.MobileBackButtonClick()}
+                                Icon="Back" />
+                            <TextBlock Text={templatedParent._selectedTab.Label}
+                                FontWeight="bold"
+                                VerticalAlignment={VerticalAlignment.Center}
+                                FontSize={TabControl.theme.fonts.xLarge.fontSize} />
+                        </StackPanel>
+                    </Panel>
+                    <Panel Grid={{ Row: 1 }}>
+                        {templatedParent._selectedTab?.Content}
+                    </Panel>
+                </Grid>);
+        }
+    }
+
+    private static VerticalDesktopTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
+    {
+        return (
+            <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
+                <ItemsControl
+                    Grid={{Column: 0}}
+                    Margin="0px 20px 0px 0px"
+                    ref={ic => templatedParent._tabList = ic}
+                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                    {
+                        if (!templatedParent.GetTabIsVisible(tab))
+                            return (<></>);
+                        return templatedParent.RenderTabLabel(tab, false);
+                    })}
+                    ItemsSource={templatedParent.state.Tabs} />
+
+                <Panel ClassName="tab-content" Padding="10px" Grid={{Column: 1}}>
+                    {templatedParent._selectedTab?.Content}
+                </Panel>
+            </Grid>);
+    }
+
+    componentDidMount()
+    {        
+        this._unlisten = (this.props as any).history.listen((location, action) =>
+        {
+            if (action === 'POP' && this.state.Layout === WindowLayout.Tablet)
+            {
+                this.MobileGoBack();
+            }
+        });        
+    }
+
+    componentWillUnmount()
+    {
+        if (this._unlisten)
+            this._unlisten();
+    }
 
     private RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
     {
         return (
             <Grid
-                ClassName={this.ConstructTabItemClassList(tab)}
+                ClassName={this.ConstructTabItemClassList(tab, mobile)}
                 ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
                 OnClick={(e) => this.OnTabItemClick(tab)}
                 Margin={mobile ? undefined : "0px 0px 0px 15px"}
@@ -138,146 +237,25 @@ export class TabControl<
             </Grid>);
     }
 
-    private static VerticalMobileTemplate(templatedParent: TabControl<ITabControlProps, ITabControlState>): JSX.Element
-    {
-        if (!templatedParent._selectedTab)
-        {
-            // Menu page            
-            return (
-                <ItemsControl
-                    ref={ic => templatedParent._tabList = ic}
-                    ClassName="menu-content"
-                    ItemsSource={templatedParent.state.Tabs}
-                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
-                    {
-                        if (!templatedParent.GetTabIsVisible(tab))
-                            return (<></>);
-                        return templatedParent.RenderTabLabel(tab, true);                           
-                    })}/>
-            );
-        }
-        else
-        {
-            return (
-                <Grid
-                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
-                    ClassName="tab-content">
-                    <Panel
-                        Grid={{Row: 0}}
-                        BoxShadow={DefaultEffects.elevation8}
-                        Margin="0px 0px 10px 0px">
-                        <StackPanel                            
-                            Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
-                            <Glyph
-                                ClassName="mobile-tab-back"
-                                Foreground="black"
-                                Margin="10px 10px"
-                                FontSize={TabControl.theme.fonts.xLarge.fontSize}
-                                VerticalAlignment={VerticalAlignment.Center}
-                                OnClick={(e) => templatedParent.MobileGoBack()}
-                                Icon="Back" />
-                            <TextBlock Text={templatedParent._selectedTab.Label}
-                                FontWeight="bold"
-                                VerticalAlignment={VerticalAlignment.Center}
-                                FontSize={TabControl.theme.fonts.xLarge.fontSize}/>
-                        </StackPanel>
-                    </Panel>
-                    <TabPanel
-                        Grid={{Row: 1}}
-                        TabItem={templatedParent._selectedTab} />
-                </Grid>);
-        }
-    }
-
-    public static DefaultStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
-        {
-            Template: new ControlTemplate((templatedParent: TabControl<ITabControlProps, ITabControlState>) =>
-            {
-                return (
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
-                        <ItemsControl ref={ic => templatedParent._tabList = ic}
-                            ItemTemplate={new DataTemplate((tab: ITabItem) =>
-                            {
-                                if (!templatedParent.GetTabIsVisible(tab))
-                                    return (<></>);
-                                return templatedParent.RenderTabLabel(tab, false);
-                            })}
-                            ItemsSource={templatedParent.state.Tabs} />
-
-                        <TabPanel
-                            ClassName="tab-content"
-                            TabItem={templatedParent._selectedTab} />
-
-                    </Grid>);
-            }),
-            FontSize: TabControl.theme.fonts.large.fontSize as number,
-            Tabs: []
-        },
-        {
-            Selector: "@ .tab-item",
-            Rules: {
-                color: TabControl.theme.semanticColors.bodySubtext,
-                fontFamily: TabControl.theme.fonts.medium.fontFamily,
-                borderWidth: "0px 0px 0px 3px",
-                borderColor: "transparent",
-                padding: "10px 45px 10px 10px",
-                background: "transparent",
-                cursor: "pointer",
-                margin: "0px 0px 0px 10px"
-            }
-        },
-        {
-            Selector: "@ .tab-label",
-            Rules: {
-                fontWeight: "bold"
-            }
-        },
-        {
-            Selector: "@ .tab-item:hover",
-            Rules: {
-                background: TabControl.theme.palette.neutralLight
-            },
-        },
-        {
-            Selector: "@ .tab-item.selected",
-            Rules: {
-                color: TabControl.theme.semanticColors.bodyText,
-                borderColor: TabControl.theme.semanticColors.link,
-                borderWidth: "0px 0px 0px 3px",
-                borderStyle: "solid"
-            }
-        },
-        {
-            Selector: "@ .tab-content",
-            Rules: {
-                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        }
-    );
-
-    constructor(props)
-    {
-        super(props);        
-    }
-
-    ConstructTabItemClassList(item: ITabItem)
+    private ConstructTabItemClassList(item: ITabItem, mobile: boolean)
     {
         let classes: string = "tab-item ";
         if (!this.GetTabIsEnabled(item))
             classes += "disabled ";
-        if (this._selectedTab == item)
+        if (!mobile && this._selectedTab == item)
             classes += "selected ";
         return classes;
     }
 
-    OnTabItemClick(item: ITabItem): void
+    private OnTabItemClick(item: ITabItem): void
     {
         this._selectedTab = item;
         this.InvalidateRender();
         this._tabList?.InvalidateRender();
+        (this.props as any).history.push('/' + item.Key);
     }
 
-    GetTabIsVisible(item: ITabItem)
+    private GetTabIsVisible(item: ITabItem)
     {
         if (item.IsVisible === undefined)
             return true;
@@ -288,7 +266,7 @@ export class TabControl<
         return this.BindState(item.IsVisible as BindingParameters, item.Key + "_visible");
     }
 
-    GetTabIsEnabled(item: ITabItem)
+    private GetTabIsEnabled(item: ITabItem)
     {
         if (item.IsEnabled === undefined)
             return true;
@@ -299,33 +277,24 @@ export class TabControl<
         return this.BindState(item.IsEnabled as BindingParameters, item.Key + "_enabled");
     }
 
+    private MobileBackButtonClick()
+    {
+        (this.props as any).history.goBack();
+        //this.MobileGoBack();
+    }
+
     private MobileGoBack()
     {
         this._selectedTab = undefined;
         this.InvalidateRender();
     }
+        
+    _tabList?: ItemsControl | null;
+    _selectedTab?: ITabItem;
+    _unlisten?: Function;
 }
 
-interface ITabPanelProps extends IFrameworkElementProps
+@withRouter
+export class TabControl extends TabControlBase<ITabControlProps, ITabControlState>
 {
-    TabItem?: ITabItem,
-}
-
-interface ITabPanelState extends IFrameworkElementState
-{
-    TabItem?: ITabItem,
-}
-
-class TabPanel extends FrameworkElement<ITabPanelProps, ITabPanelState>
-{
-    static _renderKey: number = 0;
-    /* override */ renderElement(): JSX.Element | null
-    {
-        return (
-            <Panel Padding="10px"                
-                key={this.state.TabItem?.Key}>            
-                {this.state.TabItem?.Content}
-            </Panel>
-        );
-    }
 }
