@@ -53,6 +53,8 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
         Window._router = (props as any).history;
         Window._route = location.pathname;
+        if (!Window._route.endsWith('/'))
+            Window._route += '/';
         (props as any).history.listen((location, action) =>
         {
             Window._route = location.pathname;
@@ -62,8 +64,10 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
     public static PushRoute(route: string, relative: boolean = true)
     {
+        if (!route.endsWith('/'))
+            route += '/';
         Window._router.push(relative
-            ? Window.Route + '/' + route
+            ? Window.Route + route
             : route);
     }
 

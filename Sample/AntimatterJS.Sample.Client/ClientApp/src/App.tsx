@@ -12,6 +12,7 @@ import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import ViewerTest from './components/ViewerTest';
 
 
 const theme = createTheme({
@@ -111,13 +112,13 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Content: (<Company />)
                                 },
                                 {
-                                    Label: "Control Gallery",
+                                    Label: "PDF Viewer",
                                     Icon: 0xF038,
                                     IconForeground: "white",
-                                    IconBackground: "orange",
-                                    Key: "controlgallery",
-                                    Description: "View the different controls",
-                                    Content: (<></>)
+                                    IconBackground: "red",
+                                    Key: "pdfviewer",
+                                    Description: "Test PDF Viewer",
+                                    Content: (<ViewerTest/>)
                                 },
                             ]} />
 
