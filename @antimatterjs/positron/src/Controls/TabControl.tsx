@@ -8,7 +8,7 @@ import { ItemsControl } from './ItemsControl';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { Glyph } from './Glyph';
-import { HorizontalAlignment, Orientation, VerticalAlignment, WindowLayout } from '../Enums';
+import { HorizontalAlignment, Orientation, ScrollBarVisibility, VerticalAlignment, WindowLayout } from '../Enums';
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Panel } from './Panel';
@@ -180,7 +180,7 @@ export class TabControlBase<
                     })}
                     ItemsSource={templatedParent.state.Tabs} />
 
-                <Panel ClassName="tab-content" Padding="10px" Grid={{Column: 1}}>
+                <Panel ClassName="tab-content" Padding="10px" Grid={{ Column: 1 }}>
                     {templatedParent._selectedTab?.Content}
                 </Panel>
             </Grid>);

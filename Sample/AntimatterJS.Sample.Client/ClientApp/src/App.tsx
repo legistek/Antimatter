@@ -7,10 +7,10 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
-import './custom.css'
+//import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
 
@@ -109,7 +109,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "blue",
                                     Key: "company",
                                     Description: "Edit company details",
-                                    Content: (<Company />)
+                                    Content: (<Company  />)
                                 },
                                 {
                                     Label: "PDF Viewer",
