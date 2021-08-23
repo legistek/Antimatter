@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 //import './custom.css'
@@ -63,7 +63,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             "EmployeeDialog",
             (vm) =>
             (
-                <Employee Value={new Binding({ Path: "Employee", Source: vm })} />
+                <Panel VerticalAlignment={VerticalAlignment.Top} >
+                    <Employee Value={new Binding({ Path: "Employee", Source: vm })}/>
+                </Panel>
             )
         )
     }
@@ -98,7 +100,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                
                     <TabControl Style={TabControl.DefaultStyle}
                         Tabs={
                             [
@@ -109,7 +111,11 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "blue",
                                     Key: "company",
                                     Description: "Edit company details",
-                                    Content: (<Company  />)
+                                    Content: (
+                                        <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                                            <Company />
+                                        </DataContext>
+                                    )
                                 },
                                 {
                                     Label: "PDF Viewer",
@@ -118,7 +124,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "red",
                                     Key: "pdfviewer",
                                     Description: "Test PDF Viewer",
-                                    Content: (<ViewerTest/>)
+                                    Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
                                 },
                             ]} />
 
@@ -149,7 +155,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
 
 
                     {/*</Grid>*/}
-                </DataContext>
+                
             </Window>
 
             //<Layout>

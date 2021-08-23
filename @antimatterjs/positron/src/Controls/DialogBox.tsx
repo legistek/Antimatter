@@ -12,7 +12,8 @@ import { CommandButton } from './CommandButton';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { HorizontalAlignment, VerticalAlignment } from '../Enums';
+import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from '../Enums';
+import { Panel } from './Panel';
 
 interface IDialogBoxCommon
 {    
@@ -47,10 +48,18 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                 <Modal
                     isOpen={true}
                     styles={{
+                        
+                        scrollableContent: {
+                            overflow: 'hidden',
+                            height: "100%",
+                            maxHeight: "100%",
+                        },
                         main: {
                             minHeight: "50px",
                             minWidth: "50vw",
                             borderRadius: "5px",
+                            overflow: "hidden",
+                            height: "100%",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
                         }}}>
                     <DataContext Value={templatedParent.state.ViewModel}>
@@ -63,7 +72,9 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                         ]}>
 
                             {/*Header*/}
-                            <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                            <Grid
+                                Grid={{Row: 0}}
+                                ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
                                 Margin="10px 10px 5px 10px">
                                 {/*Icon*/}
                                 <Icon
@@ -75,7 +86,8 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                     iconName={templatedParent.BindState({ Path: "Icon", Converter: CommandButton.ModelIconConverter, Source: templatedParent.state.ViewModel })} />
 
                                 {/*Title Header*/}
-                                <TextBlock Text={new Binding("Title")}
+                                <TextBlock                                    
+                                    Text={new Binding("Title")}
                                     Margin="0px"
                                     Style={TextBlock.DialogHeaderStyle}/>
 
@@ -88,25 +100,26 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             </Grid>
 
                             {/*Separator*/}
-                            <Separator />
+                            <Separator Grid={{ Row: 1 }} />
 
                             {/*Body*/}
-                            
-                            <div style={{ margin: "10px" }}>
-                            {
-                                DialogBox
-                                    ._templates
-                                    .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
-                                    ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
-                            }
-                            </div>
-                            
+                            <Grid Margin="10px" Grid={{ Row: 2 }} 
+                                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                                {
+                                    DialogBox
+                                        ._templates
+                                        .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
+                                        ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
+                                }
+                            </Grid>
 
                             {/*Separator*/}
-                            <Separator />
+                            <Separator Grid={{ Row: 3 }}/>
 
                             {/*Buttons*/}
-                            <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
+                            <Grid
+                                Grid={{ Row: 4 }}
+                                ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
                                 Margin="0px 10px 0px 10px">
                                 <CommandBar ItemsSource={new Binding("SecondaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Left}
