@@ -39,8 +39,13 @@ body {
 
 .amx-ptn-grid {
     display: grid;
-    height: auto;
+    
 }
+
+    .amx-ptn-grid.amx-ptn-panel {
+        display: grid;
+        
+    }
 
 /*
 .amx-ptn-listbox .cell-94 {
@@ -83,14 +88,32 @@ body {
 
 .amx-ptn-ha-left {
     margin-left: 0px;
-    margin-right: auto !important;
+    margin-right: auto;
     width: fit-content;
 }
 
 .amx-ptn-ha-stretch {
     left: 0px;
     right: 0px;
+    width: 100%;
+}
+
+    .amx-ptn-ha-stretch.amx-ptn-grid
+    {
+        /*width: auto;*/
+    }
+
+    .amx-ptn-grid > .amx-ptn-ha-stretch.amx-ptn-grid
+    {
+        width: auto;
+    }
+
+.amx-ptn-wrap-panel > .amx-ptn-ha-stretch {
     width: auto;
+}
+
+.amx-ptn-va-top {
+    height: fit-content;    
 }
 
 .amx-ptn-va-center {
@@ -122,10 +145,17 @@ body {
     height: 100%;
 }
 
-/* VA Stretch Children of grids should be height auto */
 .amx-ptn-grid > .amx-ptn-va-stretch {
-    height: auto;
+    height: 100%;
+    max-height:100%;
 }
+
+.amx-ptn-grid > .amx-ptn-grid.amx-ptn-va-stretch
+{
+    height: auto;
+    max-height:auto;
+}
+
 
 /* VA Stretch Children of Vertical Stack Panels should be height auto */
 .amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
@@ -156,6 +186,7 @@ body {
 }*/
 
 .amx-ptn-panel {
+    display: flex;
 }
 
 .amx-ptn-panel > .amx-ptn-fe {
@@ -183,6 +214,7 @@ body {
 
 .amx-ptn-stack-panel {
     padding: 0px;
+    display: block;
 }
 
     .amx-ptn-stack-panel.scrollable {

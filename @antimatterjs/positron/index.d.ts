@@ -1,5 +1,6 @@
 export * from './src/Enums';
 export * from './src/Foundation';
+export * from './src/RouteEventArgs';
 export * from './src/Media/MultitouchTransform';
 export * from './src/Media/Matrix';
 export * from './src/FrameworkElement';

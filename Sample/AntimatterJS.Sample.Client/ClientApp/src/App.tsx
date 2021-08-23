@@ -7,11 +7,12 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
-import './custom.css'
+//import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import ViewerTest from './components/ViewerTest';
 
 
 const theme = createTheme({
@@ -62,7 +63,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             "EmployeeDialog",
             (vm) =>
             (
-                <Employee Value={new Binding({ Path: "Employee", Source: vm })} />
+                <Panel VerticalAlignment={VerticalAlignment.Top} >
+                    <Employee Value={new Binding({ Path: "Employee", Source: vm })}/>
+                </Panel>
             )
         )
     }
@@ -97,34 +100,62 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
-                        <Company />
+                
+                    <TabControl Style={TabControl.DefaultStyle}
+                        Tabs={
+                            [
+                                {
+                                    Label: "Company",
+                                    Icon: 0xF084,
+                                    IconForeground: "white",
+                                    IconBackground: "blue",
+                                    Key: "company",
+                                    Description: "Edit company details",
+                                    Content: (
+                                        <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                                            <Company />
+                                        </DataContext>
+                                    )
+                                },
+                                {
+                                    Label: "PDF Viewer",
+                                    Icon: 0xF038,
+                                    IconForeground: "white",
+                                    IconBackground: "red",
+                                    Key: "pdfviewer",
+                                    Description: "Test PDF Viewer",
+                                    Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
+                                },
+                            ]} />
+
+
+                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
+                    {/*    <Company />*/}
 
 
 
-                        {/*
+                    {/*    */}{/**/}{/*
 
-                        <ResizePanel Size={new Binding("UnderlingPanelWidth")}
-                            Background={"blue"}
-                            ResizerSide={Side.Left}>
-                            <TreeView
-                                ItemsSource={new Binding("CEO.Underlings")}
-                                SelectedItem={new Binding("SelectedEmployee")}
-                                ChildrenPath="Underlings"
-                                SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                                IsExpandedPath="IsExpanded"
-                                IsSelectedPath="IsSelected"
-                                ItemTemplate={this.employeeTemplate}>
-                            </TreeView>
-                        </ResizePanel>
+                    */}{/*    <ResizePanel Size={new Binding("UnderlingPanelWidth")}*/}{/*
+                    */}{/*        Background={"blue"}*/}{/*
+                    */}{/*        ResizerSide={Side.Left}>*/}{/*
+                    */}{/*        <TreeView*/}{/*
+                    */}{/*            ItemsSource={new Binding("CEO.Underlings")}*/}{/*
+                    */}{/*            SelectedItem={new Binding("SelectedEmployee")}*/}{/*
+                    */}{/*            ChildrenPath="Underlings"*/}{/*
+                    */}{/*            SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}*/}{/*
+                    */}{/*            IsExpandedPath="IsExpanded"*/}{/*
+                    */}{/*            IsSelectedPath="IsSelected"*/}{/*
+                    */}{/*            ItemTemplate={this.employeeTemplate}>*/}{/*
+                    */}{/*        </TreeView>*/}{/*
+                    */}{/*    </ResizePanel>*/}{/*
 
-                        */}
+                    */}{/*    */}
 
 
 
-                    </Grid>
-                </DataContext>
+                    {/*</Grid>*/}
+                
             </Window>
 
             //<Layout>

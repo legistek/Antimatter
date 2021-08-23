@@ -29,7 +29,8 @@ import
     IFrameworkElementState,
     IFrameworkElementProps,
     MultitouchTransform,
-    HorizontalAlignment
+    HorizontalAlignment,
+    ScrollBarVisibility
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -335,7 +336,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
                 <StackPanel>
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />

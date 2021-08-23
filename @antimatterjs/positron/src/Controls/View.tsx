@@ -12,7 +12,7 @@ export interface IViewState extends IPanelState
     ViewModel?: ModelObjectReference,
 }
 
-export abstract class View<P extends IViewProps = {},
+export abstract class ViewBase<P extends IViewProps = {},
     S extends IViewState = {}>
     extends PanelBase<P,S>
 {
@@ -26,4 +26,8 @@ export abstract class View<P extends IViewProps = {},
                 {this.Template()}
             </ReactDataContext.Provider>);        
     }
+}
+
+export abstract class View extends ViewBase<IViewProps, IViewState>
+{
 }

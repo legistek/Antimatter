@@ -78,10 +78,7 @@ loadTheme(theme);
 
     ReactDOM.render(
         <div>
-            <BrowserRouter basename={baseUrl}>
-                {/*<DataContext Value={appModel} >*/}
-                {/*    <ViewerTestApp />*/}
-                {/*</DataContext>*/}
+            <BrowserRouter basename={baseUrl}>                
                 <App Model={appModel}/>
             </BrowserRouter>
         </div>,
