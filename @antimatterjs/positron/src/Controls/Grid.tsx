@@ -25,6 +25,7 @@ export enum GridUnitType
     Auto = 0,
     Pixel = 1,
     Star = 2,
+    Fit = 3,
 }
 
 export interface IGridLength
@@ -49,7 +50,16 @@ export interface IRowDefinition extends IGridDefinition
 }
 
 export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> extends PanelBase<P,S>
-{    
+{
+    public static FittedRow(): IRowDefinition
+    {
+        return {
+            Height: {
+                GridUnitType: GridUnitType.Fit
+            }
+        };
+    }
+
     public static RowDefinition(height?: number , star?: boolean): IRowDefinition
     {
         return {
@@ -103,6 +113,8 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
                     rowTemplate += "max-content ";
                 else if (row.Height.GridUnitType === GridUnitType.Pixel)
                     rowTemplate += `${row.Height.Value}px `;
+                else if (row.Height.GridUnitType === GridUnitType.Fit)
+                    rowTemplate += `fit-content(100%) `;
                 else
                     rowTemplate += `${row.Height.Value}fr `;
             }
