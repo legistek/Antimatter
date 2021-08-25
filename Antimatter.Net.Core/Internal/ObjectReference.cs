@@ -27,7 +27,8 @@ namespace Antimatter.Net.Internal
             if (_refCount == 0)
             {
                 mgr.FinalDispose(this);
-                this.Object = null; // free for GC
+                Console.WriteLine($"Fully releasing {this.Object?.ToString()}");
+                this.Object = null; // free for GC                
             }
         }
     }

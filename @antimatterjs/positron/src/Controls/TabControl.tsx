@@ -23,6 +23,7 @@ export interface ITabItem
     Key: string,
     Content: JSX.Element,
     Icon?: number,
+    Padding?: string,
     IconBackground?: string,
     IconForeground?: string,
     Description?: string,
@@ -55,6 +56,7 @@ export class TabControlBase<
                     Layout: WindowLayout.Tablet,
                     VisualTree: TabControlBase.VerticalMobileTemplate
                 }),
+            Padding: "5px",
             FontSize: TabControlBase.theme.fonts.large.fontSize as number,
             Tabs: []
         },
@@ -134,12 +136,15 @@ export class TabControlBase<
         {
             return (
                 <Grid
-                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}                    
                     ClassName="tab-content">
+                    <Panel Grid={{ Row: 1 }}
+                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                        {templatedParent._selectedTab?.Content}
+                    </Panel>
                     <Panel
                         Grid={{ Row: 0 }}
-                        BoxShadow={DefaultEffects.elevation8}
-                        Margin="0px 0px 10px 0px"
+                        BoxShadow={DefaultEffects.elevation8}                        
                         Padding="5px 5px">
                         <StackPanel
                             Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
@@ -157,9 +162,7 @@ export class TabControlBase<
                                 FontSize={TabControl.theme.fonts.xLarge.fontSize} />
                         </StackPanel>
                     </Panel>
-                    <Panel Grid={{ Row: 1 }}>
-                        {templatedParent._selectedTab?.Content}
-                    </Panel>
+
                 </Grid>);
         }
     }
@@ -180,7 +183,11 @@ export class TabControlBase<
                     })}
                     ItemsSource={templatedParent.state.Tabs} />
 
-                <Panel ClassName="tab-content" Padding="10px" Grid={{ Column: 1 }}>
+                <Panel
+                    ClassName="tab-content"                    
+                    Grid={{ Column: 1 }}
+                    Padding={templatedParent._selectedTab?.Padding || templatedParent.state.Padding}
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}  >
                     {templatedParent._selectedTab?.Content}
                 </Panel>
             </Grid>);

@@ -58,7 +58,12 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
 
     /* override */ constructClasses() : string
     {
-        return "amx-ptn-panel " + super.constructClasses();
+        return "amx-ptn-panel " +
+            ((this.state.HorizontalScrollBarVisibility && this.state.HorizontalScrollBarVisibility !== ScrollBarVisibility.Hidden)
+                ? "amx-ptn-hscroll " : "") +
+            ((this.state.VerticalScrollBarVisibility && this.state.VerticalScrollBarVisibility !== ScrollBarVisibility.Hidden)
+                ? "amx-ptn-vscroll " : "") +
+            super.constructClasses();
     }
 
     /* override */ renderElement(): JSX.Element | null
@@ -71,11 +76,12 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         this.InvalidateRender();
     }
 
-    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
+    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" | undefined
     {
         switch (v)
         {            
             case undefined:
+                return undefined;
             case ScrollBarVisibility.Hidden:
                 return "hidden";
             case ScrollBarVisibility.Visible:

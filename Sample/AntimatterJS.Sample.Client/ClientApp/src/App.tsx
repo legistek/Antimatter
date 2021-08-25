@@ -79,7 +79,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                         margin: "0px 5px 0px 0px"
                     }}/>
                 <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
-                    Foreground={new Binding({ Path: "Color", Source: item })}                />
+                    Foreground={new Binding({ Path: "Color", Source: item })}  />
             </StackPanel>),
         {
             Layout: WindowLayout.Tablet,
@@ -113,13 +113,14 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Description: "Edit company details",
                                     Content: (
                                         <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                                            <Company />
+                                            <Company VerticalAlignment={VerticalAlignment.Stretch} />
                                         </DataContext>
                                     )
                                 },
                                 {
                                     Label: "PDF Viewer",
                                     Icon: 0xF038,
+                                    Padding: "0px",
                                     IconForeground: "white",
                                     IconBackground: "red",
                                     Key: "pdfviewer",
@@ -134,23 +135,11 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
 
 
 
-                    {/*    */}{/**/}{/*
+                        
 
-                    */}{/*    <ResizePanel Size={new Binding("UnderlingPanelWidth")}*/}{/*
-                    */}{/*        Background={"blue"}*/}{/*
-                    */}{/*        ResizerSide={Side.Left}>*/}{/*
-                    */}{/*        <TreeView*/}{/*
-                    */}{/*            ItemsSource={new Binding("CEO.Underlings")}*/}{/*
-                    */}{/*            SelectedItem={new Binding("SelectedEmployee")}*/}{/*
-                    */}{/*            ChildrenPath="Underlings"*/}{/*
-                    */}{/*            SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}*/}{/*
-                    */}{/*            IsExpandedPath="IsExpanded"*/}{/*
-                    */}{/*            IsSelectedPath="IsSelected"*/}{/*
-                    */}{/*            ItemTemplate={this.employeeTemplate}>*/}{/*
-                    */}{/*        </TreeView>*/}{/*
-                    */}{/*    </ResizePanel>*/}{/*
 
-                    */}{/*    */}
+
+                        
 
 
 

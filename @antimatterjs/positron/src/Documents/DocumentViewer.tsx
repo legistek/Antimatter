@@ -82,6 +82,7 @@ export class DocumentViewerBase<
                     HorizontalAlignment={HorizontalAlignment.Center}
                     VerticalAlignment={VerticalAlignment.Top}
                     ItemsParent={this}
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Hidden}
                     OnManipulationStarted={((e) =>
                     {
                         var pagesPanel = this._pagesPanel?.Container;
