@@ -1,0 +1,233 @@
+﻿<html>
+
+<style>
+
+    body {
+        margin: 0px;
+    }
+
+    .amx-ptn-root {
+        background: transparent;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .amx-ptn-fe {
+        all: unset;
+        touch-action: pan-x pan-y;
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+        border-width: 0px;
+        border-style: solid;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+    }
+
+    .amx-ptn-hstack {
+        flex-direction: row;
+        width: fit-content;
+    }
+
+    .amx-ptn-vscroll {        
+    }
+
+        .amx-ptn-vscroll > .amx-ptn-fe {
+            overflow-y: inherit;
+        }
+
+    .amx-ptn-hscroll {        
+    }
+
+        .amx-ptn-hscroll > .amx-ptn-fe {
+            overflow-x: inherit;
+        }
+
+    .amx-ptn-vstack {
+        display: block;
+    }
+
+        .amx-ptn-vstack > .amx-ptn-fe {
+            min-height: fit-content;
+        }
+
+    .amx-ptn-hstack > .amx-ptn-fe {
+        min-width: fit-content;
+    }
+
+    :not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-stretch {
+        width: auto;
+    }
+
+    :not(.amx-ptn-hstack).amx-ptn-grid > .amx-ptn-ha-stretch {
+        width: auto;
+    }
+
+    :not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-left {
+        margin-right: auto !important;
+    }
+
+    :not(.amx-ptn-hstack) > .amx-ptn-ha-right {
+        margin-left: auto !important;
+    }
+
+    .amx-ptn-ha-left {
+        width: max-content;
+    }
+
+    .amx-ptn-ha-right {
+        width: max-content;
+    }
+
+    .amx-ptn-fixed-width.amx-ptn-ha-stretch {
+        width: max-content;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    :not(.amx-ptn-hstack) > .amx-ptn-ha-stretch {
+        width: 100%;
+    }
+
+    :not(.amx-ptn-hstack) > .amx-ptn-ha-center {
+        width: max-content;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    :not(.amx-ptn-vstack) > .amx-ptn-va-top {
+        align-self: flex-start;
+    }
+
+    :not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-va-stretch {
+        align-self: stretch;
+    }
+
+    :not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-fixed-height.amx-ptn-va-stretch {
+        height: max-content;
+        align-self: center;
+    }
+
+    :not(.amx-ptn-vstack) > .amx-ptn-va-center {
+        align-self: center;
+    }
+
+    :not(.amx-ptn-vstack) > .amx-ptn-va-bottom {
+        align-self: flex-end;
+    }
+
+    .amx-ptn-grid {
+        display: grid;
+    }
+
+    .amx-ptn-fixed-width {
+    }
+
+    .amx-ptn-fixed-height {
+    }
+
+    .fixed-size-box {
+        width: 100px !important;
+        height: 100px !important;
+        background: red;
+    }
+
+    .var-size-box {
+        background: green;
+    }
+</style>
+
+
+<body>
+
+    <div class="amx-ptn-fe amx-ptn-root amx-ptn-ha-stretch amx-ptn-va-stretch">
+
+        <div class="amx-ptn-fe amx-ptn-ha-center amx-ptn-va-center amx-ptn-grid"
+             style="max-width: 90%; max-height: 90%; background: white; border-radius: 5px; grid-template-rows: max-content 1fr max-content;">
+
+            <div class="amx-ptn-fe amx-ptn-grid" amx-ptn-ha-stretch amx-ptn-va-stretch" style="grid-row: 1; background: green; grid-template-columns: max-content 1fr max-content">
+                <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch">Icon</div>
+                <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch" style="grid-column: 2; background: orange;">Title</div>
+                <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch" style="grid-column: 3">Close</div>
+            </div>
+
+            <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-hscroll amx-ptn-vscroll amx-ptn-hscroll"
+                 style="grid-row: 2; overflow-x: auto; overflow-y: auto">
+
+                <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-grid"
+                     style="background: red; grid-template-rows: 200px max-content; grid-template-columns: max-content max-content">
+
+                    <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-hstack"
+                         style="background: purple; margin: 5px; grid-row: 1">
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-stretch amx-ptn-va-stretch"
+                             style="margin: 15px;">
+                            VStretch content
+                        </div>
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-stretch amx-ptn-va-top"
+                             style="background: orange; margin: 15px">
+                            VTop content
+                        </div>
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-stretch amx-ptn-va-center"
+                             style="background: blue; margin: 15px">
+                            VCenter content
+                        </div>
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-stretch amx-ptn-va-bottom"
+                             style="background: red; margin: 15px">
+                            VBottom content
+                        </div>
+                    </div>
+
+                    <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch"
+                         style="background: yellow; grid-row: 2; margin: 20px">
+                        <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-fixed-height amx-ptn-fixed-width" 
+                             style="width: 100px; height: 100px; background: green">
+                            
+                        </div> 
+                    </div>
+
+                    <div class="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-vstack"
+                         style="background: aqua; grid-row: 2; grid-column: 2; margin: 10px;">
+
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-stretch amx-ptn-va-stretch"
+                             style="margin: 15px; font-size: 64px">
+                            <p>HStreeeeeeeeetch content</p>
+                        </div>
+
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-left amx-ptn-va-stretch"
+                             style="margin: 15px; font-size: 64px">
+                            <p>HLeft content</p>
+                        </div>
+
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-center amx-ptn-va-stretch"
+                             style="margin: 15px; font-size: 64px">
+                            <p>HCnter content</p>
+                        </div>
+
+                        <div class="amx-ptn-fe var-size-box amx-ptn-ha-right amx-ptn-va-stretch"
+                             style="margin: 15px; font-size: 64px">
+                            <p>HRight content</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+            <div class="amx-ptn-fe amx-ptn-ha-right amx-ptn-va-stretch" style="grid-row: 3; background: orange">
+                Buttons
+            </div>
+        </div>
+
+
+    </div>
+
+
+</body>
+
+
+</html>

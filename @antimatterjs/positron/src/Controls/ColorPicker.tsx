@@ -13,6 +13,8 @@ import { ISelectableItemControlProps, SelectableItemControl, SelectableItemContr
 import { getTheme } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
 import { Style } from '../Style';
+import { CommandButton } from './CommandButton';
+import { Panel } from './Panel';
 
 export interface IColorPickerProps extends ISelectorProps
 {
@@ -45,19 +47,23 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
             IconForeground: "white",
             Template: new ControlTemplate((templatedParent: ColorPicker) => (
                 <>
-                    <Ellipse
-                        ref={r => templatedParent._button = r}
-                        OnClick={() => templatedParent.setPopupState(true)}
-                        Fill={templatedParent.state.SelectedItem}
-                        Width={ColorPicker.ELLIPSE_SIZE}
-                        Height={ColorPicker.ELLIPSE_SIZE} />
-                    <Glyph
-                        Icon={"Edit"}
-                        IsHitTestVisible={false}
-                        Foreground={templatedParent.state.IconForeground}
-                        Overlaps={true}
-                        VerticalAlignment={VerticalAlignment.Center}
-                        HorizontalAlignment={HorizontalAlignment.Center} />
+                    <Panel>
+                        <Ellipse
+                            ref={r => templatedParent._button = r}
+                            OnClick={() => templatedParent.setPopupState(true)}
+                            Fill={templatedParent.state.SelectedItem}
+                            VerticalAlignment={VerticalAlignment.Center}
+                            HorizontalAlignment={HorizontalAlignment.Center}
+                            Width={ColorPicker.ELLIPSE_SIZE}
+                            Height={ColorPicker.ELLIPSE_SIZE} />
+                        <Glyph
+                            Icon={"Edit"}
+                            IsHitTestVisible={false}
+                            Foreground={templatedParent.state.IconForeground}
+                            Overlaps={true}
+                            VerticalAlignment={VerticalAlignment.Center}
+                            HorizontalAlignment={HorizontalAlignment.Center} />
+                    </Panel>
                     <Popup
                         IsOpen={templatedParent.state.PopupIsOpen}
                         Target={() => templatedParent._button}

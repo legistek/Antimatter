@@ -7,11 +7,12 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, ResizePanel, Side, StackPanel, TextBlock, TreeView, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
-import './custom.css'
+//import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import ViewerTest from './components/ViewerTest';
 
 
 const theme = createTheme({
@@ -62,7 +63,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             "EmployeeDialog",
             (vm) =>
             (
-                <Employee Value={new Binding({ Path: "Employee", Source: vm })} />
+                <Panel VerticalAlignment={VerticalAlignment.Top} >
+                    <Employee Value={new Binding({ Path: "Employee", Source: vm })}/>
+                </Panel>
             )
         )
     }
@@ -76,7 +79,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                         margin: "0px 5px 0px 0px"
                     }}/>
                 <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
-                    Foreground={new Binding({ Path: "Color", Source: item })}                />
+                    Foreground={new Binding({ Path: "Color", Source: item })}  />
             </StackPanel>),
         {
             Layout: WindowLayout.Tablet,
@@ -97,9 +100,42 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
-                        <Company />
+                
+                    <TabControl Style={TabControl.DefaultStyle}
+                        Tabs={
+                            [
+                                {
+                                    Label: "Company",
+                                    Icon: 0xF084,
+                                    IconForeground: "white",
+                                    IconBackground: "blue",
+                                    Key: "company",
+                                    Description: "Edit company details",
+                                    Content: (
+                                        <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                                            <Company VerticalAlignment={VerticalAlignment.Stretch} />
+                                        </DataContext>
+                                    )
+                                },
+                                {
+                                    Label: "PDF Viewer",
+                                    Icon: 0xF038,
+                                    Padding: "0px",
+                                    IconForeground: "white",
+                                    IconBackground: "red",
+                                    Key: "pdfviewer",
+                                    Description: "Test PDF Viewer",
+                                    Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
+                                },
+                            ]} />
+
+
+                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
+                    {/*    <Company />*/}
+
+
+
+                        
 
 
 
@@ -120,9 +156,8 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
 
 
 
-
-                    </Grid>
-                </DataContext>
+                    {/*</Grid>*/}
+                
             </Window>
 
             //<Layout>

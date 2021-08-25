@@ -1,4 +1,4 @@
-import { TeachingBubbleParams } from '@antimatterjs/positron';
+import { MessageBarParams, TeachingBubbleParams } from '@antimatterjs/positron';
 
 export class App
 {
@@ -27,6 +27,8 @@ export class Company {
 	public SelectedEmployeesChangedCommand?: ICommand;
 	public SomeMoreEmployees?: Employee[];
 	public SomeMoreEmployeeNames?: string[];
+	public MessageBarInfo?: MessageBarParams;
+	public Toasts?: MessageBarParams[];
 }
 
 export class Employee {

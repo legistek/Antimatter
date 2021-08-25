@@ -76,15 +76,10 @@ loadTheme(theme);
     const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
     const rootElement = document.getElementById('root');
 
-    ReactDOM.render(
-        <div>
-            <BrowserRouter basename={baseUrl}>
-                {/*<DataContext Value={appModel} >*/}
-                {/*    <ViewerTestApp />*/}
-                {/*</DataContext>*/}
-                <App Model={appModel}/>
-            </BrowserRouter>
-        </div>,
+    ReactDOM.render(        
+        <BrowserRouter basename={baseUrl}>                
+            <App Model={appModel}/>
+        </BrowserRouter>,
         rootElement);
 
     registerServiceWorker();

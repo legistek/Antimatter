@@ -5,17 +5,20 @@ import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentComma
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { HorizontalAlignment } from '../Enums';
+import { HorizontalAlignment, VerticalAlignment } from '../Enums';
+import { Ellipse } from '../Shapes/Ellipse';
+import { Panel } from './Panel';
+import { Glyph } from './Glyph';
 
 export interface ICommandButtonProps extends IButtonBaseProps
 {
-    Icon?: number | Binding,
+    Icon?: number | string | Binding,
     Label?: string | Binding,
     IsDefault?: boolean | Binding
 }
 export interface ICommandButtonState extends IButtonBaseState
 {
-    Icon?: number,
+    Icon?: number | string,
     Label?: string,
     IsDefault?: boolean
 }
@@ -137,10 +140,44 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             }
         ));
 
+    public static CircleButtonStyle = new Style<ICommandButtonProps>(
+        Object.assign(
+            Object.assign({}, CommandButton.BaseCommandButtonProps),
+            {                
+                Template: new ControlTemplate((templatedParent: CommandButton) =>
+                {
+                    return (
+                        <Panel>
+                            <Ellipse
+                                HorizontalAlignment={HorizontalAlignment.Center}
+                                    VerticalAlignment={VerticalAlignment.Center}
+                                    Fill={templatedParent.state.Background}
+                                Width={40} Height={40} />
+                            <Glyph
+                                HorizontalAlignment={HorizontalAlignment.Center}
+                                VerticalAlignment={VerticalAlignment.Center}
+                                    Overlaps={true}
+                                    FontSize={templatedParent.state.FontSize}
+                                    Foreground={templatedParent.state.Foreground}
+                                    Icon={templatedParent.state.Icon} />
+                        </Panel>);
+                }),
+                Foreground: "white"
+            }
+        ),
+        {
+            Rules: {
+                cursor: "pointer"
+            }
+        }
+    );
+
     public static DefaultStyle = CommandButton.PrimaryButtonStyle;
 
-    public static ModelIconConverter(icon: number | undefined): string | undefined
+    public static ModelIconConverter(icon: string | number | undefined): string | undefined
     {
+        if (typeof (icon) == "string")
+            return icon;
         return (!icon) ? undefined : icon.toString(16);
     }
 }

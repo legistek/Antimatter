@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 
+import { Binding, Antimatter, BindingParameters, INotifyPropertyChanged, PropertyChangedEventArgs, Event, ModelObjectReference, ModelValue } from '@antimatterjs/react';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from './Enums';
 
 import './positron.css';
@@ -13,6 +13,7 @@ import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEv
 import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
 import { Style } from './Style';
+
 
 interface IFrameworkElementCommon
 {
@@ -75,6 +76,8 @@ export class FrameworkElement<
     _isMeasureValid: boolean = false;
     _gestureHandlers: boolean = false;
 
+    //protected readonly CurrentRoute: string = "";
+
     public Container: HTMLElement | null = null;
 
     constructor(props)
@@ -82,6 +85,8 @@ export class FrameworkElement<
         super(props);
         Antimatter.InitializeComponent(this);
         this.ApplyStyle();
+
+        //this.CurrentRoute = (this.state as any).history.location
 
         if (this.state.LoadedCommand)
             this.callLoadedCommand();

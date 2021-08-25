@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { Antimatter, Binding, ModelObjectReference } from '@antimatterjs/react';
+import { withRouter } from 'react-router';
+
+import { Antimatter, Binding, Event, ModelObjectReference } from '@antimatterjs/react';
 
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
 import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
+import { RouteEventArgs } from '../RouteEventArgs';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
@@ -21,8 +24,17 @@ export interface IWindowState extends IPanelState
     Layout?: WindowLayout;
 }
 
+@withRouter
 export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> extends PanelBase<IWindowProps, IWindowState>
 {
+    private static _router: any;
+
+    private static _route: string = "/";
+    public static get Route(): string
+    {
+        return Window._route;
+    }
+
     constructor(props)
     {
         super(props);
@@ -38,7 +50,33 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
                     Layout: layout
                 });
         };
+
+        Window._router = (props as any).history;
+        Window._route = location.pathname;
+        if (!Window._route.endsWith('/'))
+            Window._route += '/';
+        (props as any).history.listen((location, action) =>
+        {
+            Window._route = location.pathname;
+            Window.RouteEvent.invoke(this, new RouteEventArgs(action, location.pathname));
+        });
     }
+
+    public static PushRoute(route: string, relative: boolean = true)
+    {
+        if (!route.endsWith('/'))
+            route += '/';
+        Window._router.push(relative
+            ? Window.Route + route
+            : route);
+    }
+
+    public static GoBack(): void
+    {
+        this._router.goBack();
+    }
+
+    public static readonly RouteEvent: Event<RouteEventArgs> = new Event<RouteEventArgs>();
 
     /* override */ constructClasses() : string
     {

@@ -1,5 +1,6 @@
 export * from './src/Enums';
 export * from './src/Foundation';
+export * from './src/RouteEventArgs';
 export * from './src/Media/MultitouchTransform';
 export * from './src/Media/Matrix';
 export * from './src/FrameworkElement';
@@ -28,6 +29,7 @@ export * from './src/Controls/DialogBox';
 export * from './src/Controls/CommandButton';
 export * from './src/Controls/CommandBar';
 export * from './src/Controls/TabControl';
+export * from './src/Controls/ToastControl';
 export * from './src/Controls/ProgressRing';
 export * from './src/Controls/TreeView';
 export * from './src/Controls/LoadingShimmer';

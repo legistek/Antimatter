@@ -18,8 +18,7 @@ export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPan
 {
     /* override */ constructClasses(): string
     {        
-        return "amx-ptn-stack-panel "
-            + (this.state.Orientation === Orientation.Horizontal ? "horizontal " : "")
+        return (this.state.Orientation === Orientation.Horizontal ? "amx-ptn-hstack " : "amx-ptn-vstack ")
             + super.constructClasses();
     }
 
