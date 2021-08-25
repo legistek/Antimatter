@@ -20,7 +20,7 @@ import
 
     DatePicker,
     ComboBox,
-    ComboBox2,
+    ColorPicker,
     ITextBlockProps,
 
     ListBox, SelectionMode,
@@ -30,7 +30,6 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    ColorPicker,
     Style,
     IFrameworkElementState,
     IFrameworkElementProps,
@@ -53,35 +52,17 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
     private _cb?: CheckBox | null;
 
-    private get comboBox2(): JSX.Element
+    private get ColorPicker(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ColorPicker
                 ItemsSource={new Binding("Company.AvailableColors")}
                 SelectedItem={new Binding("Color")}
-
-                //SelectionMode={SelectionMode.Multiple}
             />
         );
 
         return elem;
         //return <></>;
-    }
-
-    private get comboBox_ThatOtherOne(): JSX.Element
-    {
-        const elem: JSX.Element = (
-            <ComboBox
-                Label="FLUENT VERSION"
-                ItemsSource={new Binding("Company.AvailableColors")}
-                //SelectedItem={new Binding("Color")}
-
-                SelectionMode={SelectionMode.Multiple}
-            />
-        );
-
-        //return elem;
-        return <></>;
     }
 
     render()
@@ -94,10 +75,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                 <DataContext Value={this.state.Value}>
                     <StackPanel>
-
-
-                        {this.comboBox2}
-                        {this.comboBox_ThatOtherOne}
 
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
@@ -185,9 +162,8 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         {/*    <TextBlock Text="Really Nice bonus" />*/}
                         {/*</Popup>*/}
 
-                        <ColorPicker
-                            ItemsSource={new Binding("Company.AvailableColors")}
-                            SelectedItem={new Binding("Color")} />
+                            {this.ColorPicker}
+
                     </WrapPanel>
 
                     <TextBox
@@ -310,7 +286,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 FontWeight="bold"
             />
         );
-        return elem;
+        //return elem;
+        return <></>;
     }
     private get MessageBar3(): JSX.Element
     {
@@ -393,8 +370,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 <TextBlock
                     Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
                     VerticalAlignment={VerticalAlignment.Center}
-                    Margin="0 6px"
-                    Style={ComboBox2.DefaultTextblockStyle}
+                    Style={ComboBox.DefaultTextblockStyle}
                 />
 
             </Grid>
@@ -423,81 +399,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         </Grid>
     );
 
-    private get comboBoxElem(): JSX.Element
-    {
-        const elem: JSX.Element = (
-            <ComboBox
-                //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
-                //SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
-                //ItemTemplate={this._comboBoxRedundantStringTemplate}
-
-                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-                ItemTemplate={this._comboBoxOptionTemplate}
-
-                Label="Employee Selector Thingy (Single)"
-                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
-                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
-
-                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
-
-                Placeholder="if you can see this, nothing is (single-)selected"
-            />
-        );
-        return elem;
-        //return <></>;
-    }
-    private get comboBoxElem_FluentMultiSelect(): JSX.Element
-    {
-        const elem: JSX.Element = (
-            <ComboBox
-                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-                ItemTemplate={this._comboBoxOptionTemplate}
-
-                Label="Employee Selector Thingy (Multi)"
-                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
-                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
-
-                SelectionMode={SelectionMode.Multiple}
-
-                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
-                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
-
-                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
-                Placeholder={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
-            />
-        );
-        return elem;
-        //return <></>;
-    }
-    private get comboBoxElem_CustomMultiSelect(): JSX.Element
-    {
-        const elem: JSX.Element = (
-            <ComboBox
-                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
-                ItemTemplate={this._comboBoxOptionTemplate_CustomMultiselect}
-
-                Label="Employee Selector Thingy (CUSTOM Multi)"
-                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
-                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
-
-                SelectionMode={SelectionMode.Multiple}
-                UseCustomMultiselectTemplate={true}
-
-                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
-                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
-
-                TitleStringOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
-                Placeholder={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
-            />
-        );
-        //return elem;
-        return <></>;
-    }
-
     private get comboBox2_Strings(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ComboBox
                 Label="Name/String Selector Thingy (Single)"
 
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
@@ -514,7 +419,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     private get comboBox2_Objects(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ComboBox
                 Label="Employee Selector Thingy (Single)"
 
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
@@ -528,11 +433,12 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             />
         );
         return elem;
+        //return <></>;
     }
     private get comboBox2_Multi(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ComboBox
                 Label="Dude Selector Thingy (Multi!)"
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
 
@@ -552,11 +458,12 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             />
         );
         return elem;
+        //return <></>;
     }
     private get comboBox2_Strings_Multi(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ComboBox
                 Label="HERE, HAVE SOME NAMES TO SELECT"
 
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
@@ -568,13 +475,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 PlaceholderText="A placeholder is me"
             />
         );
-        //return elem;
-        return <></>;
+        return elem;
+        //return <></>;
     }
     private get comboBox2_Custom_Multi(): JSX.Element
     {
         const elem: JSX.Element = (
-            <ComboBox2
+            <ComboBox
                 Label="The one with the checkboxes inside the template"
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
 
@@ -593,6 +500,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             />
         );
         return elem;
+        //return <></>;
     }
 
     renderElement()
@@ -606,10 +514,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 <StackPanel
                     Margin="8px"
                 >
-                    {this.comboBoxElem}
-                    {this.comboBoxElem_FluentMultiSelect}
-                    {this.comboBoxElem_CustomMultiSelect}
-
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 

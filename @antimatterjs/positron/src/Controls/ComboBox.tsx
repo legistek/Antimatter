@@ -1,39 +1,43 @@
-﻿import * as React from 'react';
-import { Dropdown, IDropdownOption, IDropdownSubComponentStyles, IStyle } from '@fluentui/react';
-import { Binding, BindingMode, BindingParameters, ModelObjectReference } from "@antimatterjs/react";
-import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { SelectionMode } from '../Enums';
-import { Style } from '../Style';
-import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
-import { TextBlock } from './TextBlock';
-import { TextBox } from './TextBox';
-import { PlacementMode, Popup } from './Popup';
-import { StackPanel } from './StackPanel';
-import { WrapPanel } from './WrapPanel';
+import * as React from 'react';
+import { getTheme } from '@fluentui/react';
+import { Binding, BindingMode, Utilities } from '@antimatterjs/react';
+import { Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
-import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { Style } from '../Style';
+import { CheckBox } from './CheckBox';
+import { Glyph } from './Glyph';
+import { Grid, IColumnDefinition } from './Grid';
+import { Panel } from './Panel';
+import { Popup } from './Popup';
+import { StackPanel } from './StackPanel';
+import { ITextBlockProps, TextBlock } from './TextBlock';
+import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
+    from './Primitives/SelectableItemControl';
+import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 
 export interface IComboBoxProps extends ISelectorProps
 {
     Label?: string | Binding,
-    TitleStringOverride?: string | Binding,
-    Placeholder?: string | Binding,
-    IsEnabledPath?: string,
-    UseCustomMultiselectTemplate?: boolean | Binding
+    TitleOverride?: DataTemplate | string | Binding,
+    PreventAutoCheckboxes?: boolean | Binding,
+    PlaceholderText?: string | Binding
 }
 export interface IComboBoxState extends ISelectorState
 {
     Label?: string,
-    TitleStringOverride?: string,
-    Placeholder?: string,
-    IsEnabledPath?: string,
-    UseCustomMultiselectTemplate?: boolean,
+    TitleOverride?: DataTemplate | string,
+    PreventAutoCheckboxes?: boolean,
+    PlaceholderText?: string,
     PopupIsOpen?: boolean
 }
 
-export class ComboBoxBase extends Selector<IComboBoxProps, IComboBoxState>
-//class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState> extends Selector<P, S>
+export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
+    extends Selector<P, S>
 {
+    private static DROPDOWN_MAX_HEIGHT: number = 400;
+    protected static theme = getTheme();
+
     public static DefaultBindings = {
         ItemsSource: {
             FallbackValue: [],
@@ -44,301 +48,318 @@ export class ComboBoxBase extends Selector<IComboBoxProps, IComboBoxState>
         },
         SelectedItems: {
             Mode: BindingMode.TwoWay,
-            NotifyCollectionChanged: true,
-            FallbackValue: []
+            NotifyCollectionChanged: true
         }
     };
 
-    private static ItemTemplate_STATIC = new DataTemplate((item: any) => (
-        <TextBlock
-            Text="hobo"
-
-            OnClick={() => ComboBoxBase.TestClick_Static('Templ')}
-        />
-    ));
-
-    private static ItemContainerStyle_STATIC = new Style<ISelectableItemControlProps>(
-        {
-            Margin: "0px",
-            Template: new ControlTemplate((templatedParent: SelectableItemControl) =>
-            (
-                <>{templatedParent.props.children}</>
-
-                //<StackPanel OnClick={() => ComboBoxBase.TestClick_Static('ContStyle')}>{templatedParent.props.children}</StackPanel>
-            ))
-        },
-        {
-            Rules: {
-                cursor: "pointer"
-            }
-        }
-    );
-
-    public static TestClick_Static(arg: string): void
-    {
-        console.log(`click test: ${arg}`);
-    }
+    protected _button?: FrameworkElement | null;
+    public get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
 
     public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
         {
-            //SelectionMode: SelectionMode.Single,
-            //ItemsSource: [],
-            Template: new ControlTemplate((templatedParent: ComboBoxBase) => templatedParent.Template),
-            //ItemTemplate: ComboBoxBase.ItemTemplate_STATIC,
-            //ItemContainerStyle: ComboBoxBase.ItemContainerStyle_STATIC
+            SelectionMode: SelectionMode.Single,
+            ItemsSource: [],
+            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.Template),
+            ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
+        },
+        {
+            Selector: "@ .panel",
+            Rules: {
+                cursor: 'pointer',
+                userSelect: 'none'
+            }
+        },
+        {
+            Selector: "@ .panel:focus::after",
+            Rules: {
+                content: "''",
+                pointerEvents: "none",
+                position: "absolute",
+                boxSizing: "border-box",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                borderRadius: "0",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: ComboBox.theme.palette.themeSecondary //Fluent equivalent: rgb(46, 112, 224) or #2e70e0
+            }
         }
     );
 
-    public OnRenderItem(item: any, index: number): JSX.Element | null
+    protected get Template(): JSX.Element
     {
-        console.log(`RENDER ${index}`);
-        return super.OnRenderItem(item, index);
-    }
+        //console.log(`Current neutralSecondary ${ComboBox.theme.palette.neutralSecondary}`);
 
-    private _options: IDropdownOption[] = [];
-    private get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
+        const dropdown: JSX.Element = (
+            <Panel
+                ref={r => this._button = r}
+                OnClick={() => this.TogglePopup()}
+                OnKeyPress={(event) => this.OnKeyPressed(event)}
+                BorderBrush={ComboBox.theme.palette.neutralSecondary} //Fluent equivalent: rgb(96, 96, 96) or #606060
+                BorderThickness="1px"
+                Padding="0"
+                Background={ComboBox.theme.palette.white}
+                ClassName="panel"
+                TabIndex={0}
+            >
+                <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}>
+                    {this.TitleElem}
+                    <Glyph
+                        Icon="ChevronDown"
+                        Foreground={ComboBox.theme.palette.neutralSecondary}
+                        VerticalAlignment={VerticalAlignment.Center}
+                    />
+                </Grid>
+            </Panel>
+        );
 
-    private get Template(): JSX.Element
-    {
-        this.PopulateOptions();
-
-        var key: string | undefined;
-        var keys: string[] | undefined;
-        if (this.IsMultiSelect)
-            keys = this.state.SelectedItems?.map(item => this.GetItemKey(item));
-        else
-            key = this.GetItemKey(this.state.SelectedItem);
-
-        const textStyle: IStyle =
-        {
-            fontFamily: this.state.FontFamily,
-            color: this.state.Foreground,
-            fontSize: this.state.FontSize
-        };
-        const optionStyle: IStyle = {
-            selectors: {
-                ' .SelectableItemControlBase': {
-                    display: 'grid',
-                    width: '100%'
+        const labelStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>({},
+            {
+                Rules: {
+                    fontFamily: TextBlock.theme.fonts.medium.fontFamily,
+                    cursor: 'default'
                 }
             }
-        }
-        const subcomponentStyles: IDropdownSubComponentStyles | any = {};
-        if (this.state.UseCustomMultiselectTemplate)
-            subcomponentStyles.multiSelectItem = { checkbox: {display: 'none'}}
-
-        const placeholder: string = this.state.Placeholder ?? this.state.TitleStringOverride ?? '';
-
-        const fluent: JSX.Element = (
-            <Dropdown
-                options={this._options}
-                selectedKey={key}
-                selectedKeys={keys}
-                onRenderOption={(item?: IDropdownOption) => this.OnRenderOption(item)}
-                onChange={(event, option, index?: number) => this.OnChange(index)}
-                onRenderTitle={(items) => this.OnRenderTitle(items)}
-                multiSelect={this.IsMultiSelect}
-                disabled={this.state.IsEnabled === false}
-                label={this.state.Label}
-                placeholder={placeholder}
-                notifyOnReselect={false}
-                styles={{
-                    dropdownItem: optionStyle,
-                    dropdownItems: optionStyle,
-                    label: textStyle,
-                    subComponentStyles: subcomponentStyles
-                }}
-            />
         );
 
-        if (fluent)
-            return fluent;
-
-
-        const fluentEmpty: JSX.Element = (
-            <Dropdown
-                label={this.state.Label}
-                options={this._options}
-                selectedKey={key}
-                onRenderList={() => null}
-                onRenderTitle={(items) => this.OnRenderTitle(items)}
-                onClick={() => this.Open()}
-                ref={r => this._root = (r as any) }
-            />
-        );
-        const customRoot: JSX.Element = (
-            <TextBox
-                Text="ROOT TEXT"
-                OnClick={() => this.Open()}
-                IsEnabled={this.state.IsEnabled}
-                //ref={r => this._root = r}
-            />
+        const labeledDropdown: JSX.Element = (
+            <StackPanel Orientation={Orientation.Vertical}>
+                <TextBlock
+                    Text={this.state.Label}
+                    FontSize={this.state.FontSize ?? ComboBox.theme.fonts.medium.fontSize}
+                    FontWeight={this.state.FontWeight ?? 600}
+                    FontFamily={this.state.FontFamily}
+                    Margin="5px 0"
+                    Style={labelStyle}
+                />
+                {dropdown}
+            </StackPanel>
         );
 
-        if (this._root)
-        {
-            const rootElem: HTMLElement = (this._root as any) as HTMLElement;
-            const width: number = rootElem.clientWidth;
-        }
-
-        const panel_Stack: JSX.Element = (
-            <StackPanel
-                ItemsParent={this}
-            />
-        );
-        const panel_Wrap: JSX.Element = (
-            <WrapPanel
-                ItemsParent={this}
-            />
-        );
-
-
-
-
-
-        //const root: JSX.Element = customRoot;
-        const root: JSX.Element = fluentEmpty;
-
-        const panel: JSX.Element = panel_Stack;
-        //const panel: JSX.Element = panel_Wrap;
-
-        const custom: JSX.Element = (
+        const root: JSX.Element = this.state.Label ? labeledDropdown : dropdown;
+        const elem: JSX.Element = (
             <>
                 {root}
                 <Popup
                     IsOpen={this.state.PopupIsOpen}
-                    Target={() => this._root}
-                    Placement={PlacementMode.Below}
+                    Target={() => this._button}
+                    Width={this._button?.Container?.clientWidth}
+                    MaxHeight={ComboBox.DROPDOWN_MAX_HEIGHT}
                     Padding="0"
                 >
-                    {panel}
+                    <StackPanel ItemsParent={this} />
                 </Popup>
             </>
         );
 
-        //return fluent;
-        return custom;
+        return elem;
     }
 
-    private Open(): void
+    public /* override */ GetContainerForItemOverride()
     {
-        if (this.state.IsEnabled == false)
-            return;
-        this.setState({ PopupIsOpen: true });
+        return ComboBoxItem;
     }
-    private Close(): void { this.setState({ PopupIsOpen: false }); }
+
+    public static DefaultTextblockStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+        {
+            FontFamily: ComboBox.theme.fonts.medium.fontFamily,
+            FontSize: ComboBox.theme.fonts.medium.fontSize,
+            Margin: "7px 6px"
+        },
+        {
+            Rules: {
+                userSelect: 'none'
+            }
+        }
+    );
+
+    protected static DefaultItemTemplate(item: any): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <TextBlock
+                Text={Utilities.GetStringKey(item)}
+                Style={ComboBox.DefaultTextblockStyle}
+            />
+        );
+        return elem;
+    }
 
     /* protected override */ OnSelectionChanged()
     {
-        console.log(`SELECTION ACTUALLY CHANGED OMG OMG`);
-        this.Close();
+        if (!this.IsMultiSelect)
+            this.setState({ PopupIsOpen: false });
+        super.OnSelectionChanged();
     }
 
-    //For rendering current selection in main (non-expanded) control element
-    //Unless provided explicitly, uses same template as DD options (if single-select), or comma-separated string (o/w)
-    private OnRenderTitle(options?: IDropdownOption[]): JSX.Element | null
+    protected TogglePopup(): void
     {
-        if (this.state.TitleStringOverride != null)
-            return <>{this.state.TitleStringOverride}</>;
-
-        if (!this.IsMultiSelect && options?.length == 1)
-            return this.OnRenderOption(options[0]);
-        return null;
-    }
-
-    private OnRenderOption(option?: IDropdownOption): JSX.Element | null
-    {
-        const index: number = this._options?.findIndex(o => o.key == option?.key);
-        return this.OnRenderItem(option?.data, index);
-    };
-
-    private OnChange(index?: number): void
-    {
-        if (index == null)
+        if (this.state.IsEnabled == false)
             return;
+        this.setState({ PopupIsOpen: !this.state.PopupIsOpen });
+    }
+
+    private OnKeyPressed(event: KeyboardEvent): void
+    {
+        if (event.key != "Enter" && event.key != " ")
+            return;
+        this.TogglePopup();
+    }
+
+    private get TitleElem(): JSX.Element | undefined
+    {
+        if (this.state.TitleOverride)
+        {
+            if (this.state.TitleOverride instanceof DataTemplate)
+                return this.state.TitleOverride.GetVisualTree()(this);
+            else if (typeof this.state.TitleOverride == 'string')
+                return this.ConstructTitleFromString(this.state.TitleOverride);
+        }
+
         if (this.IsMultiSelect)
-            this.ToggleMultiItemSelection(index);
-        else
-            this.SetSingleItemSelection(index);
+        {
+            const keys: string[] = this.state.SelectedItems?.map(i => Utilities.GetStringKey(i)).filter(i => !!i) ?? [];
+            if (!keys || keys.length == 0)
+                return this.PlaceholderElem;
+            const joined: string = keys.join(', ');
+            return this.ConstructTitleFromString(joined);
+        }
+
+        //For standard single-selection, use the item template for the selected item w/o the ItemContainerStyle applied
+        if (this.state.SelectedItem)
+            return this.GetTemplateForItem(this.state.SelectedItem)(this.state.SelectedItem);
+        return this.PlaceholderElem;
     }
 
-    //The multi-selection analog to Selector.SetSingleItemSelection()
-    /* private*/ ToggleMultiItemSelection(index: number)
+    private get PlaceholderElem(): JSX.Element | undefined
     {
-        var item: any = this.state.ItemsSource ? this.state.ItemsSource[index] : null;
-        if (!item || (this.SelectionMode == SelectionMode.Single))
-            return;
-        const items: any[] = this.state.SelectedItems ?? [];
-
-        //const currentIndex: number = items.indexOf(item);
-        const currentIndex: number = items.findIndex(i => this.CheckItemEquality(item, i));
-
-        if (currentIndex == -1)
-            items.push(item);
-        else
-            items.splice(currentIndex, 1);
-        const itemsCopy: any[] = items.slice();
-        this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
-        this.OnSelectionChanged();
-        this._lastClickedOrSelected = index;
+        if (this.state.PlaceholderText)
+            return this.ConstructTitleFromString(this.state.PlaceholderText)
     }
 
-    //For checking if SelectedItems contains a given (ItemSource) item, actual objects may be different so compare keys
-    CheckItemEquality(item1: any, item2: any): boolean
+    //Format string as title-friendly element that looks consistent (whitespace-wise) w/ DefaultItemTemplate
+    private ConstructTitleFromString(text?: string): JSX.Element | undefined
     {
-        const key1: string = this.GetItemKey(item1);
-        const key2: string = this.GetItemKey(item2);
-        return (key1 != '') && (key1 === key2);
-    }
-
-    public PopulateOptions(): void
-    {
-        this._options = this.state.ItemsSource?.map(item => this.GetItemOption(item)) ?? [];
-    }
-
-    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
-    {
-        if (property === nameof(this.state.ItemsSource))
-            this.PopulateOptions();
-        super.OnPropertyChanged(property, value, oldValue);
-    }
-
-    //Convert an arbitrary ItemsSource member into a key (compatible w/ default template) for use in Fluent dropdown
-    private GetItemKey(item?: any): string
-    {
-        if (item == null)
-            return '';
-        const ref: ModelObjectReference = item as ModelObjectReference;
-        if (ref?.IsModelObjectReference)
-            return ref?.Handle.toString();
-        else
-            return item.toString();
-    }
-
-    private GetItemOption(item?: any): IDropdownOption
-    {
-        const key: string = this.GetItemKey(item);
-        const disabledBindParams: BindingParameters = {
-            Path: this.state.IsEnabledPath,
-            Source: item,
-            Converter: (val) => !val
-        };
-
-        const option: IDropdownOption = {
-            key: key,
-            text: key,
-            data: item,
-            disabled: this.BindState(disabledBindParams, `${key}:IsEnabled`)
-        };
-        return option;
-    }
-
-    private _root?: FrameworkElement | null;
-    private get RootWidth(): number | null
-    {
-        return null;
+        if (!text)
+            return undefined;
+        const elem: JSX.Element = (
+            <TextBlock
+                Text={text}
+                Margin="5px 6px"
+            />
+        );
+        return elem;
     }
 }
 
-//export class ComboBox extends ComboBoxBase<IComboBoxProps, IComboBoxState> { }
-export class ComboBox extends ComboBoxBase { }
+class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelectableItemControlState = {}>
+    extends SelectableItemControlBase<P, S>
+{
+    private static ROOT_CLASS: string = 'option-wrapper';
+    private static SELECTED_CLASS: string = 'selected';
+    private static DISABLED_CLASS: string = 'disabled';
+    private static theme = getTheme();
+
+    public static DefaultBindings = {
+        IsSelected: {
+            Mode: BindingMode.TwoWay
+        },
+        IsEnabled: {
+            Mode: BindingMode.TwoWay
+        }
+    };
+
+    private get Parent(): ComboBox<IComboBoxProps, IComboBoxState>
+    {
+        return this.state.Parent as ComboBox<IComboBoxProps, IComboBoxState>;
+    }
+    private get RenderAutoCheckbox(): boolean
+    {
+        return this.Parent.IsMultiSelect && !this.Parent.state.PreventAutoCheckboxes;
+    }
+
+    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+        {
+            SelectionMode: SelectionMode.Single,
+            ItemsSource: [],
+            Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.Template)
+        },
+        {
+            Selector: `.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
+            Rules:
+            {
+                cursor: 'pointer'
+            },
+        },
+        {
+            Selector: `.${ComboBoxItem.ROOT_CLASS}:hover:not(.${ComboBoxItem.DISABLED_CLASS})`,
+            Rules: {
+                backgroundColor: ComboBoxItem.theme.semanticColors.listItemBackgroundHovered
+            }
+        },
+        {
+            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.SELECTED_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
+            Rules: {
+                //backgroundColor: ComboBoxItem.theme.palette.neutralQuaternaryAlt
+                backgroundColor: ComboBoxItem.theme.palette.themeLighter
+            }
+        },
+        {
+            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.DISABLED_CLASS}`,
+            Rules: {
+                color: ComboBoxItem.theme.semanticColors.disabledBodyText
+            }
+        },
+    );
+
+    private get Template(): JSX.Element
+    {
+        const contentElem: JSX.Element = this.Parent.GetTemplateForItem(this.state.Item)(this.state.Item);
+
+        var checkboxElem: JSX.Element | undefined;
+        const colDefs: IColumnDefinition[] = [Grid.ColumnDefinition(1, true)];
+
+        if (this.RenderAutoCheckbox)
+        {
+            colDefs.unshift(Grid.ColumnDefinition());
+            checkboxElem = (
+                <CheckBox
+                    IsChecked={this.state.IsSelected}
+                    OnClick={(event) => this.OnCheckboxClicked(event)}
+                    VerticalAlignment={VerticalAlignment.Center}
+                    Margin="0 0 0 4px"
+                    IsEnabled={this.props.IsEnabled}
+                />
+            );
+        }
+
+        const combinedElem: JSX.Element = (
+            <Grid
+                ClassName={this.ConstructGridClasses}
+                ColumnDefinitions={colDefs}
+            >
+                {checkboxElem}
+                {contentElem}
+            </Grid>
+        );
+        return combinedElem;
+    }
+
+    private OnCheckboxClicked(event: MouseEvent): void
+    {
+        //this.Parent.SelectItemAtIndex(this.state.ItemIndex);
+
+        event.preventDefault();
+    }
+
+    private get ConstructGridClasses(): string
+    {
+        var classNames: string = ComboBoxItem.ROOT_CLASS;
+        if (this.state.IsEnabled == false)
+            classNames += ` ${ComboBoxItem.DISABLED_CLASS}`;
+        if (this.state.IsSelected)
+            classNames += ` ${ComboBoxItem.SELECTED_CLASS}`;
+        return classNames;
+    }
+}

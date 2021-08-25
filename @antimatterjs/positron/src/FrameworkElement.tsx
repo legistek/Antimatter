@@ -36,10 +36,12 @@ interface IFrameworkElementCommon
     OnManipulationStarted?: (event: ManipulationEventArgs) => void,
     OnManipulationDelta?: (event: ManipulationEventArgs) => void,
     OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
+    OnKeyPress?: (event: KeyboardEvent) => void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element,
-    Transform?: MultitouchTransform
+    Transform?: MultitouchTransform,
+    TabIndex?: number
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -118,6 +120,9 @@ export class FrameworkElement<
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
+                onKeyPress={this.state.OnKeyPress
+                    ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
+                    : undefined}
                 onPointerMove={this.state.OnPointerMove || this._gestureHandlers
                     ? (event) => this.OnPointerMove(event)
                     : undefined}
@@ -139,7 +144,9 @@ export class FrameworkElement<
                 onPointerOut={this.state.OnPointerOut || this._gestureHandlers
                     ? (event) => this.OnPointerOut(event)
                     : undefined}
-                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
+                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
+                tabIndex={this.state.TabIndex}
+            >
                 {
                     this.state.IsLoading && this.state.LoadingTemplate
                         ? this.state.LoadingTemplate()

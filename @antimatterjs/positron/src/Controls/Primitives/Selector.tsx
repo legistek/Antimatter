@@ -13,7 +13,6 @@ export interface ISelectorProps extends IItemsControlProps
     CanSelect?: boolean | Binding,
     SelectionMode?: SelectionMode,
     SelectionChangedCommand?: ModelObjectReference | Binding,
-
     IsEnabledPath?: string
 }
 
@@ -25,7 +24,6 @@ export interface ISelectorState extends IItemsControlState
     IsSelectAll?: boolean,
     CanSelect?: boolean,
     SelectionChangedCommand?: ModelObjectReference,
-
     IsEnabledPath?: string
 }
 
