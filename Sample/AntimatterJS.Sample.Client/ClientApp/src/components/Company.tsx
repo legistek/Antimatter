@@ -1,6 +1,6 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Icon } from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -30,7 +30,12 @@ import
     IFrameworkElementProps,
     MultitouchTransform,
     HorizontalAlignment,
-    ScrollBarVisibility
+    ScrollBarVisibility,
+    ResizePanel,
+    TreeView,
+    Side,
+    WindowLayout,
+    Glyph
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
@@ -336,26 +341,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
-                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+            <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                 <StackPanel>
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
-
-
-                    <ToastControl
-                        ItemsSource={new Binding(nameof<Model.Company>(c => c.Toasts))}
-                        ItemTemplate={this.ToastContent}
-                        VerticalAlignment={VerticalAlignment.Bottom}
-                        HorizontalAlignment={HorizontalAlignment.Center}
-                    />
-
                     {this.MessageBar1}
                     {this.MessageBar2}
                     {this.MessageBar3}
-
-
 
                     <StackPanel Orientation={Orientation.Horizontal}>
                         <TextBlock Text="Employee Count:" />
@@ -379,7 +372,51 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
+                <ResizePanel Size={new Binding("UnderlingPanelWidth")}
+                    Grid={{ Column: 1}}
+                    Background={"blue"}
+                    ResizerSide={Side.Left}>
+                    <TreeView
+                        ItemsSource={new Binding("CEO.Underlings")}
+                        SelectedItem={new Binding("SelectedEmployee")}
+                        ChildrenPath="Underlings"
+                        SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
+                        IsExpandedPath="IsExpanded"
+                        IsSelectedPath="IsSelected"
+                        ItemTemplate={new DataTemplate(
+                            (item) => (
+                                <StackPanel Orientation={Orientation.Horizontal}>
+                                    <Glyph Icon="Contact"
+                                        VerticalAlignment={VerticalAlignment.Center}
+                                        HorizontalAlignment={HorizontalAlignment.Center}
+                                        Margin={"5px"}/>
+                                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
+                                        Foreground={new Binding({ Path: "Color", Source: item })} />
+                                </StackPanel>),
+                            {
+                                Layout: WindowLayout.Tablet,
+                                VisualTree: (item) => (
+                                    <StackPanel Orientation={Orientation.Horizontal}>
+                                        <Icon iconName="e96a"
+                                            style={{
+                                                alignSelf: "center",
+                                                margin: "0px 5px 0px 0px"
+                                            }} />
+                                        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                                        <TextBlock Text="Tablet!" />
+                                    </StackPanel>
+                                )
+                            })}>
+                    </TreeView>
+                </ResizePanel>
 
+                <ToastControl
+                    Overlaps={true}
+                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Toasts))}
+                    ItemTemplate={this.ToastContent}
+                    VerticalAlignment={VerticalAlignment.Bottom}
+                    HorizontalAlignment={HorizontalAlignment.Center}
+                />
                 {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
                     <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}

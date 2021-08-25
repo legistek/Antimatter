@@ -22,12 +22,11 @@ export class ToastControl extends ItemsControl<IItemsControlProps, IItemsControl
         },
         {
             Selector: "@",
-            Rules: {
-                position: "fixed",
-                top: "auto",
-                bottom: 0,
-                width: "75vw",
-                maxWidth: "800px",
+            Rules: {                
+                //top: "auto",
+                //bottom: 0,
+                minWidth: "50vw",
+                maxWidth: "75vw",
                 zIndex: 1000,
                 marginBottom: "10px"
             }

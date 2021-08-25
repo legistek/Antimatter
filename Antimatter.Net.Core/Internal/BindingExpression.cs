@@ -62,8 +62,22 @@ namespace Antimatter.Net.Internal
                     // No two-way binding if no path
                     return;
 
+                if (_lastValue?.Type == modelValue.Type &&
+                    _lastValue?.ObjectHandle == modelValue.ObjectHandle)
+                {
+                    // Unchanged value
+                    return;
+                }
+
                 ReleaseLastValue();
-                _lastValue = modelValue;
+
+                if (modelValue.IsReferenceCounted)
+                {
+                    var reference = _reactor.GetReference(modelValue.ObjectHandle);
+                    reference?.AddRef();    // Add ref before releasing old value
+                }
+
+                _lastValue = modelValue;                
 
                 this.PathComponents.Last()
                     .OnTargetPropertyChanged(modelValue, _reactor);
@@ -245,8 +259,7 @@ namespace Antimatter.Net.Internal
 
         private void ReleaseLastValue()
         {
-            if (_lastValue?.Type == ModelValueType.Object ||
-                _lastValue?.Type == ModelValueType.Collection)
+            if (_lastValue?.IsReferenceCounted == true)
             {
                 var reference = _reactor.GetReference(_lastValue.ObjectHandle);
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)

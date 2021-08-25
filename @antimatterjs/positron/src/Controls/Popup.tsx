@@ -83,7 +83,8 @@ export class PopupBase<
         return Object.assign(
             super.getCSSStyles(),
             {
-                padding: "0px"
+                padding: "0px",
+                position: "absolute"
             });
     }
 

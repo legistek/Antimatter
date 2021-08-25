@@ -135,7 +135,7 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
             if (column.CoercedSize)
                 columnTemplate += `${column.CoercedSize}px `;
             else if (column.Width.GridUnitType === GridUnitType.Auto)
-                columnTemplate += "auto ";
+                columnTemplate += "max-content ";
             else if (column.Width.GridUnitType === GridUnitType.Pixel)
                 columnTemplate += `${column.Width.Value}px `;
             else

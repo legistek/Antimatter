@@ -174,7 +174,7 @@ namespace AntimatterJS.Sample.AppModel
         #endregion
 
         #region double UnderlingPanelWidth property
-        private double _UnderlingPanelWidth = 200;
+        private double _UnderlingPanelWidth = 300;
         public double UnderlingPanelWidth
         {
             get

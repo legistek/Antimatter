@@ -51,15 +51,15 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                         
                         scrollableContent: {
                             overflow: 'hidden',
-                            height: "100%",
-                            maxHeight: "100%",
+                            height: "auto",
+                            display: "flex",
                         },
                         main: {
+                            display: "flex",
                             minHeight: "50px",
                             minWidth: "50vw",
                             borderRadius: "5px",
                             overflow: "hidden",
-                            height: "100%",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
                         }}}>
                     <DataContext Value={templatedParent.state.ViewModel}>
@@ -103,11 +103,10 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             <Separator Grid={{ Row: 1 }} />
 
                             {/*Body*/}
-                            <Grid Margin="10px" Grid={{ Row: 2 }} 
+                            <Grid Padding="10px" Grid={{ Row: 2 }}
                                 VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
                                 {
-                                    DialogBox
-                                        ._templates
+                                    DialogBox._templates
                                         .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
                                         ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
                                 }
@@ -119,14 +118,18 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             {/*Buttons*/}
                             <Grid
                                 Grid={{ Row: 4 }}
-                                ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
+                                ColumnDefinitions={[Grid.ColumnDefinition(1,true), Grid.ColumnDefinition()]}
                                 Margin="0px 10px 0px 10px">
-                                <CommandBar ItemsSource={new Binding("SecondaryCommands")}
+                                <CommandBar
+                                    Grid={{ Column: 0 }}
+                                    ItemsSource={new Binding("SecondaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Left}
                                     ItemContainerStyle={CommandButton.DialogButtonStyle}/>                                
 
                                 {/* Primary Buttons */}
-                                <CommandBar ItemsSource={new Binding("PrimaryCommands")}
+                                <CommandBar
+                                    Grid={{ Column: 1 }}
+                                    ItemsSource={new Binding("PrimaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Right}
                                     ItemContainerStyle={CommandButton.DialogButtonStyle}/>
                             </Grid>

@@ -1,11 +1,134 @@
-/* Provide sufficient contrast against white background */
 body {
-    /*all: unset;*/
     margin: 0px;
-    /*line-height: normal;
-    -webkit-user-drag: none;
-    user-select: none;*/
 }
+
+.amx-ptn-root {
+    background: transparent;    
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
+}
+
+.amx-ptn-fe {    
+    position: relative;
+    touch-action: pan-x pan-y;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    border-width: 0px;
+    border-style: solid;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.amx-ptn-hstack {
+    flex-direction: row;
+    width: fit-content;
+}
+
+.amx-ptn-vscroll {
+}
+
+    .amx-ptn-vscroll > .amx-ptn-fe {
+        overflow-y: inherit;
+    }
+
+.amx-ptn-hscroll {
+}
+
+    .amx-ptn-hscroll > .amx-ptn-fe {
+        overflow-x: inherit;
+    }
+
+.amx-ptn-vstack {
+    display: block;
+}
+
+    .amx-ptn-vstack > .amx-ptn-fe {
+        min-height: fit-content;
+    }
+
+.amx-ptn-hstack > .amx-ptn-fe {
+    min-width: fit-content;
+}
+
+:not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-stretch {
+    width: auto;
+}
+
+:not(.amx-ptn-hstack).amx-ptn-grid > .amx-ptn-ha-stretch {
+    width: auto;
+}
+
+:not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-left {
+    margin-right: auto !important;
+}
+
+:not(.amx-ptn-hstack) > .amx-ptn-ha-right {
+    margin-left: auto !important;
+}
+
+.amx-ptn-ha-left {
+    width: max-content;
+}
+
+.amx-ptn-ha-right {
+    width: max-content;
+}
+
+.amx-ptn-fixed-width.amx-ptn-ha-stretch {
+    width: max-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel):not(.amx-ptn-grid)  > .amx-ptn-ha-stretch {
+    width: 100%;
+}
+
+:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel) > .amx-ptn-ha-center {
+    width: max-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-top {
+    align-self: flex-start;
+}
+
+:not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-va-stretch {
+    align-self: stretch;
+}
+
+:not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-fixed-height.amx-ptn-va-stretch {
+    height: max-content;
+    align-self: center;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-center {
+    align-self: center;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-bottom {
+    align-self: flex-end;
+}
+
+.amx-ptn-grid {
+    display: grid;
+}
+
+.amx-ptn-fixed-width {
+}
+
+.amx-ptn-fixed-height {
+}
+
+
+
+
 
 /* For some reason this is necessary for MS DetailsList resizing and
     any other Layer's to work I guess. */
@@ -13,114 +136,8 @@ body {
     /*height: 100%;*/
 }
 
-.amx-ptn-fe .ms-List-cell
-{
+.amx-ptn-fe .ms-List-cell {
     min-height: 0px;
-}
-
-.amx-ptn-fe {
-    touch-action: pan-x pan-y;  /* disable any kind of pinch to zoom recognition (esp. for phones/tablets; we take care of this) */
-    position: relative;
-    border-style: solid;
-    border-width: 0px;
-    box-shadow: unset;
-    box-sizing: border-box;
-    overflow: hidden;
-    width: auto;
-    left: 0;
-    right: 0;
-    /*max-width: 100%;
-    max-height: 100%;*/
-    /*display: flex;
-    flex-direction: column;*/
-    top: 0px;
-    bottom: 0px;
-}
-
-.amx-ptn-grid {
-    display: grid;
-    
-}
-
-    .amx-ptn-grid.amx-ptn-panel {
-        display: grid;
-        
-    }
-
-/*
-.amx-ptn-listbox .cell-94 {
-    padding: 0px;
-    min-height: 0px;
-}
-
-.amx-ptn-listbox .ms-List-cell {
-    min-height: 0px;
-}
-*/
-
-
-.amx-ptn-root {
-    max-height: 100%;
-    overflow: hidden;
-    flex-direction: column;
-    top: 0px;
-    bottom: 0px;
-    display: flex;
-    position: fixed;
-    overflow: hidden;
-    width: auto;
-    left: 0;
-    right: 0;
-    max-width: 100%;
-}
-
-.amx-ptn-ha-center {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    width: fit-content;
-}
-
-.amx-ptn-ha-right {
-    margin-left: auto !important;
-    margin-right: 0px !important;
-    width: unset;
-}
-
-.amx-ptn-ha-left {
-    margin-left: 0px;
-    margin-right: auto;
-    width: fit-content;
-}
-
-.amx-ptn-ha-stretch {
-    left: 0px;
-    right: 0px;
-    width: 100%;
-}
-
-    .amx-ptn-ha-stretch.amx-ptn-grid
-    {
-        /*width: auto;*/
-    }
-
-    .amx-ptn-grid > .amx-ptn-ha-stretch.amx-ptn-grid
-    {
-        width: auto;
-    }
-
-.amx-ptn-wrap-panel > .amx-ptn-ha-stretch {
-    width: auto;
-}
-
-.amx-ptn-va-top {
-    height: fit-content;    
-}
-
-.amx-ptn-va-center {
-    align-self: center;
-    height: fit-content;
-    margin-top: auto;
-    margin-bottom: auto;
 }
 
 .ms-DetailsRow-check.ms-Check-checkHost {
@@ -132,130 +149,23 @@ body {
     height: 100%;
 }
 
-.amx-ptn-datagridcell > .amx-ptn-ha-stretch {
-    width: 100%;
-}
-
-.amx-ptn-va-stretch {
-    max-height: -moz-available;
-    max-height: -webkit-fill-available;
-    overflow: hidden;
-    top: 0px;
-    bottom: 0px;
-    height: 100%;
-}
-
-.amx-ptn-grid > .amx-ptn-va-stretch {
-    height: 100%;
-    max-height:100%;
-}
-
-.amx-ptn-grid > .amx-ptn-grid.amx-ptn-va-stretch
-{
-    height: auto;    
-}
-
-
-/* VA Stretch Children of Vertical Stack Panels should be height auto */
-.amx-ptn-stack-panel:not(.horizontal) > .amx-ptn-va-stretch {
-    height: auto;
-    max-height: unset;
-}
-
-.amx-ptn-va-bottom {
-    margin-top: auto;
-    margin-bottom: 0px;
-}
+    .amx-ptn-datagridcell > .amx-ptn-ha-stretch {
+        width: 100%;
+    }
 
 .amx-ptn-overlaps {
     position: absolute;
 }
 
-.amx-ptn-border {
+.amx-ptn-overlaps.amx-ptn-ha-center {
+    left: 50%;
+    transform: translate(-50%,0);
 }
-
-/*:not(.amx-ptn-ha-left):not(.amx-ptn-ha-center):not(.amx-ptn-ha-right).amx-ptn-border {*/
-/* amx-ptn-border relies on margin, not padding, which is ordinarily fine as
-    long as it's inside a flex box, but if it's inside a CSS grid,
-    a different hack is needed to both honor the margin and stretch
-    out to maximum width */
-/*width: auto;
-    left: 0px;
-    right: 0px;
-}*/
-
-.amx-ptn-panel {
-    display: flex;
-}
-
-.amx-ptn-panel > .amx-ptn-fe {
-    /*margin-right: 5px;
-    margin-bottom: 5px;*/
-}
-
-    .amx-ptn-panel > .amx-ptn-fe:first-child {
-        margin-left: 0px;
-        /*margin-top: 0px;*/
-    }
-
-    .amx-ptn-panel > .amx-ptn-fe:last-child {
-        margin-right: 0px;
-    }
-
-.amx-ptn-stack-panel:not(horizontal) {
-    height: auto;
-    display:block;
-}
-
-    .amx-ptn-stack-panel:not(horizontal) > * {
-        height: auto;
-    }
-
-.amx-ptn-stack-panel {
-    padding: 0px;
-    display: block;
-}
-
-    .amx-ptn-stack-panel.scrollable {
-        overflow-y: auto;
-    }
-
-    .amx-ptn-stack-panel.horizontal {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        margin-left: 0px;        
-        width: fit-content;
-    }
-
-        .amx-ptn-stack-panel.horizontal:not(.amx-ptn-ha-right) {
-            margin-right: auto !important;
-        }
-
-        .amx-ptn-stack-panel.horizontal.amx-ptn-ha-right {
-            margin-right: 0px !important;
-        }
-
-    .amx-ptn-stack-panel.horizontal > .amx-ptn-fe {
-        width: auto;
-        /*margin-bottom: 0px;*/
-    }
 
 .amx-ptn-wrap-panel {
     display: flex;
     flex-wrap: wrap;
 }
-
-.amx-ptn-headered-grid {
-    display: grid;
-    grid-template-rows: auto 1fr;
-}
-
-/*.amx-ptn-headered-grid > div {
-    padding: 5px;
-}*/
 
 a {
     color: #0366d6;
@@ -265,11 +175,6 @@ code {
     color: #E01A76;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
 
 @keyframes slideInFromLeft {
     0% {
@@ -311,23 +216,22 @@ code {
     bottom: 0px;
 }
 
-.amx-ptn-pdf-textlayer span
-{
-    color: transparent;
-    cursor: unset;
-    position: absolute;
-    font-family: monospace;
-    white-space: pre;
-    transform-origin: 0px 0px;
-    line-height: 1;
-}
+    .amx-ptn-pdf-textlayer span {
+        color: transparent;
+        cursor: unset;
+        position: absolute;
+        font-family: monospace;
+        white-space: pre;
+        transform-origin: 0px 0px;
+        line-height: 1;
+    }
 
-.amx-ptn-pdf-textlayer:active > span {
-    padding-right: 20px;
-    padding-bottom: 20px;
-}
+    .amx-ptn-pdf-textlayer:active > span {
+        padding-right: 20px;
+        padding-bottom: 20px;
+    }
 
-.amx-ptn-pdf-textlayer::selection {
-    background: rgba(46, 112, 223, 0.2);
-    color: transparent;
-}
+    .amx-ptn-pdf-textlayer::selection {
+        background: rgba(46, 112, 223, 0.2);
+        color: transparent;
+    }

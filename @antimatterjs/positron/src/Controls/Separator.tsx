@@ -20,6 +20,7 @@ export class Separator extends Control<ISeparatorProps, ISeparatorState>
             (
                 <FluentSeparator styles={{
                     root: {
+                        width: "100%",
                         lineHeight: "0",
                         padding: "0px"
                     },
