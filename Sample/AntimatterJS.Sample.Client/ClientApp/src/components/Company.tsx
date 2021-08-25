@@ -1,7 +1,7 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, ICheckboxProps } from '@fluentui/react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Icon } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, ICheckboxProps, Icon }
+    from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
