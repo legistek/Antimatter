@@ -5,16 +5,16 @@ import { DefaultEffects, MotionAnimations, getTheme } from '@fluentui/react';
 import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { Glyph } from './Glyph';
 import { HorizontalAlignment, Orientation, ScrollBarVisibility, VerticalAlignment, WindowLayout } from '../Enums';
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
-import { Panel } from './Panel';
+import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 import { Window } from './Window';
-import { RouteEventArgs } from '../RouteEventArgs';
+
+import { Route, Switch, Redirect } from 'react-router-dom';
 
 export interface ITabItem
 {
@@ -95,12 +95,6 @@ export class TabControlBase<
             }
         },
         {
-            Selector: "@ .tab-content",
-            Rules: {
-                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
             Selector: "@ .menu-content",
             Rules: {
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
@@ -116,35 +110,39 @@ export class TabControlBase<
 
     private static VerticalMobileTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
     {
-        if (!templatedParent._selectedTab)
-        {
-            // Menu page            
-            return (
-                <ItemsControl
-                    ref={ic => templatedParent._tabList = ic}
-                    ClassName="menu-content"
-                    ItemsSource={templatedParent.state.Tabs}
-                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
-                    {
-                        if (!templatedParent.GetTabIsVisible(tab))
-                            return (<></>);
-                        return templatedParent.RenderTabLabel(tab, true);
-                    })} />
-            );
-        }
-        else
-        {
-            return (
+        return (<Switch>{TabControl.GetMobileTabRoutes(templatedParent)}</Switch>);
+    }
+
+    private static GetMobileTabRoutes(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element[]
+    {        
+        let routes: JSX.Element[] =
+            [
+                (<Route exact path={templatedParent._startingRoute}>
+                    <ItemsControl
+                        ref={ic => templatedParent._tabList = ic}
+                        ClassName="menu-content"
+                        ItemsSource={templatedParent.state.Tabs}
+                        ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                        {
+                            if (!templatedParent.GetTabIsVisible(tab))
+                                return (<></>);
+                            return templatedParent.RenderTabLabel(tab, true);
+                        })} />
+                </Route>)
+            ];
+
+        var otherRoutes = templatedParent.state.Tabs.map(
+            t =>
+            (<Route path={Window.CombineRoute(templatedParent._startingRoute, t.Key)} key={t.Key}>
                 <Grid
-                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}                    
-                    ClassName="tab-content">
-                    <Panel Grid={{ Row: 1 }}
-                        VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-                        {templatedParent._selectedTab?.Content}
-                    </Panel>
+                    RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                    <TabContentPanel
+                        Grid={{ Row: 1 }}
+                        TabItem={t}
+                        TabControlParent={templatedParent}/>                                            
                     <Panel
                         Grid={{ Row: 0 }}
-                        BoxShadow={DefaultEffects.elevation8}                        
+                        BoxShadow={DefaultEffects.elevation8}
                         Padding="5px 5px">
                         <StackPanel
                             Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
@@ -156,15 +154,17 @@ export class TabControlBase<
                                 VerticalAlignment={VerticalAlignment.Center}
                                 OnClick={(e) => templatedParent.MobileBackButtonClick()}
                                 Icon="ChevronLeft" />
-                            <TextBlock Text={templatedParent._selectedTab.Label}
+                            <TextBlock Text={t.Label}
                                 FontWeight="bold"
                                 VerticalAlignment={VerticalAlignment.Center}
                                 FontSize={TabControl.theme.fonts.xLarge.fontSize} />
                         </StackPanel>
                     </Panel>
+                </Grid>
+            </Route>));
 
-                </Grid>);
-        }
+        routes = routes.concat(otherRoutes);
+        return routes;
     }
 
     private static VerticalDesktopTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
@@ -172,7 +172,7 @@ export class TabControlBase<
         return (
             <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
                 <ItemsControl
-                    Grid={{Column: 0}}
+                    Grid={{ Column: 0 }}
                     Margin="0px 20px 0px 0px"
                     ref={ic => templatedParent._tabList = ic}
                     ItemTemplate={new DataTemplate((tab: ITabItem) =>
@@ -183,32 +183,47 @@ export class TabControlBase<
                     })}
                     ItemsSource={templatedParent.state.Tabs} />
 
-                <Panel
-                    ClassName="tab-content"                    
-                    Grid={{ Column: 1 }}
-                    Padding={templatedParent._selectedTab?.Padding || templatedParent.state.Padding}
-                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}  >
-                    {templatedParent._selectedTab?.Content}
+                <Panel Grid={{ Column: 1 }}>
+                    <Switch>
+                        {TabControl.GetDesktopTabRoutes(templatedParent)}
+                    </Switch>
                 </Panel>
             </Grid>);
     }
 
-    componentDidMount()
+    private static GetDesktopTabRoutes(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element[]
     {
-        Window.RouteEvent.subscribe(this.OnRouteEvent = this.OnRouteEvent.bind(this));
+        var defaultTab = templatedParent.state.Tabs?.find(t => templatedParent.GetTabIsEnabled(t) && templatedParent.GetTabIsVisible(t));
+        let routes: JSX.Element[] =
+            [
+                (<Redirect exact
+                    push={true}
+                    from={templatedParent._startingRoute}
+                    to={Window.CombineRoute(templatedParent._startingRoute, defaultTab?.Key || "")} />)
+            ];
+
+        var otherRoutes = templatedParent.state.Tabs.map(
+            t =>
+            (<Route path={Window.CombineRoute(templatedParent._startingRoute, t.Key)} key={t.Key}>
+                <TabContentPanel
+                    TabControlParent={templatedParent}
+                    TabItem={t}
+                    OnDidMount={(content) => templatedParent.SetSelectedTab((content as TabContentPanel).state.TabItem)} />
+            </Route>));
+
+        routes = routes.concat(otherRoutes);
+        return routes;
     }
 
-    private OnRouteEvent(sender: any, e: RouteEventArgs)
+    componentWillMount()
     {
-        if (e.Action === 'POP' && this.state.Layout === WindowLayout.Tablet)
-        {
-            this.MobileGoBack();
-        }
-    }
+        this._startingRoute = Window.Route;
+    }    
 
-    componentWillUnmount()
+    private SetSelectedTab(tab?: ITabItem)
     {
-        Window.RouteEvent.unsubscribe(this.OnRouteEvent);
+        this._selectedTab = tab;
+        this._tabList?.InvalidateRender();
     }
 
     private RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
@@ -246,12 +261,22 @@ export class TabControlBase<
             </Grid>);
     }
 
+    private GetActualSelectedTab(mobile: boolean): ITabItem | undefined
+    {
+        let t: ITabItem | undefined = undefined;
+        if (mobile)
+            t = this._selectedTab;
+        else
+            t = this._selectedTab || this.state.Tabs?.find(t => this.GetTabIsEnabled(t) && this.GetTabIsVisible(t));
+        return t;
+    }
+
     private ConstructTabItemClassList(item: ITabItem, mobile: boolean)
     {
         let classes: string = "tab-item ";
         if (!this.GetTabIsEnabled(item))
             classes += "disabled ";
-        if (!mobile && this._selectedTab == item)
+        if (!mobile && this.GetActualSelectedTab(mobile) == item)
             classes += "selected ";
         return classes;
     }
@@ -259,9 +284,7 @@ export class TabControlBase<
     private OnTabItemClick(item: ITabItem): void
     {
         this._selectedTab = item;
-        this.InvalidateRender();
-        this._tabList?.InvalidateRender();
-        Window.PushRoute(item.Key);        
+        Window.PushRoute(Window.CombineRoute(this._startingRoute, item.Key));
     }
 
     private GetTabIsVisible(item: ITabItem)
@@ -291,17 +314,51 @@ export class TabControlBase<
         Window.GoBack();
     }
 
-    private MobileGoBack()
-    {
-        this._selectedTab = undefined;
-        this.InvalidateRender();
-    }
-        
     _tabList?: ItemsControl | null;
     _selectedTab?: ITabItem;
     _unlisten?: Function;
+    _startingRoute: string = "/";
 }
 
 export class TabControl extends TabControlBase<ITabControlProps, ITabControlState>
 {
+}
+
+interface ITabContentPanelProps extends IPanelProps
+{
+    TabItem?: ITabItem;
+    TabControlParent?: TabControl;
+}
+interface ITabContentPanelState extends IPanelState
+{
+    TabItem?: ITabItem;
+    TabControlParent?: TabControl;
+}
+class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelState>
+{
+    public static DefaultStyle: Style<ITabContentPanelProps> = new Style<ITabContentPanelProps>(
+        {
+            VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+        }
+    );
+
+    /* override */ renderElement(): JSX.Element
+    {
+        return this.state.TabItem?.Content || (<></>);
+    }
+
+    /* override */ constructClasses()
+    {
+        return super.constructClasses() + " tab-content";
+    }
+
+    /* override */ getCSSStyles()
+    {
+        return Object.assign(
+            super.getCSSStyles(),
+            {
+                padding: this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding,
+                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
+            });
+    }
 }
