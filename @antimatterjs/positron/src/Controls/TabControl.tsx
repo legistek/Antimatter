@@ -311,7 +311,7 @@ export class TabControlBase<
 
     private MobileBackButtonClick()
     {
-        Window.GoBack();
+        Window.PushRoute(this._startingRoute);
     }
 
     _tabList?: ItemsControl | null;
