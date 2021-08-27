@@ -100,7 +100,6 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                {/*
                     <TabControl Style={TabControl.DefaultStyle}
                         Tabs={
                             [
@@ -128,35 +127,23 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
                                 },
                             ]} />
-                */}
 
-                    <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
-                        <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                            <Company VerticalAlignment={VerticalAlignment.Stretch} />
-                        </DataContext>
+
+                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
+                    {/*    <Company />*/}
 
 
 
-
-
-                        <ResizePanel Size={new Binding("UnderlingPanelWidth")}
-                            Background={"blue"}
-                            ResizerSide={Side.Left}>
-                            <TreeView
-                                ItemsSource={new Binding("CEO.Underlings")}
-                                SelectedItem={new Binding("SelectedEmployee")}
-                                ChildrenPath="Underlings"
-                                SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
-                                IsExpandedPath="IsExpanded"
-                                IsSelectedPath="IsSelected"
-                                ItemTemplate={this.employeeTemplate}>
-                            </TreeView>
-                        </ResizePanel>
+                        
 
 
 
-                    </Grid>
+                        
 
+
+
+                    {/*</Grid>*/}
+                
             </Window>
 
             //<Layout>

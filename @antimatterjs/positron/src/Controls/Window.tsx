@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { withRouter } from 'react-router';
 
+import { Route } from 'react-router-dom'
+
 import { Antimatter, Binding, Event, ModelObjectReference } from '@antimatterjs/react';
 
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
@@ -52,9 +54,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         };
 
         Window._router = (props as any).history;
-        Window._route = location.pathname;
-        if (!Window._route.endsWith('/'))
-            Window._route += '/';
+        Window._route = location.pathname;        
         (props as any).history.listen((location, action) =>
         {
             Window._route = location.pathname;
@@ -62,13 +62,27 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         });
     }
 
-    public static PushRoute(route: string, relative: boolean = true)
+    public static CombineRoute(components: string[]): string
     {
-        if (!route.endsWith('/'))
-            route += '/';
-        Window._router.push(relative
-            ? Window.Route + route
-            : route);
+        if (!components || components.length === 0)
+            return '/';
+        let route: string = '';
+
+        for (let j = 0; j < components.length; j++)
+        {
+            var component = components[j];
+            if (!component || component.length === 0 || component === '/')
+                continue;
+            else if (!component.startsWith('/'))
+                component = '/' + component;
+            route += component;
+        }
+        return route;
+    }
+
+    public static PushRoute(...components: string[])
+    {
+        Window._router.push(Window.CombineRoute(components));
     }
 
     public static GoBack(): void
@@ -86,7 +100,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
     /* override */ renderElement(): JSX.Element | null
     {
         return (
-            <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>
+            <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>                
                 <ItemsControl
                     ItemsSource={this.state.Dialogs || []}
                     VerticalAlignment={VerticalAlignment.Bottom}

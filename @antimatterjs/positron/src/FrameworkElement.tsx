@@ -51,8 +51,9 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,
     IsLoading?: boolean | Binding,
-    MountCommand?: ModelObjectReference | Binding,
-    OnWillUnmountCommand?: ModelObjectReference | Binding,
+    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
+    OnWillMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
+    OnWillUnmount?: ModelObjectReference | Binding,
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -63,8 +64,9 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,
     IsLoading?: boolean,
-    MountCommand?: ModelObjectReference,
-    OnWillUnmountCommand?: ModelObjectReference,
+    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
+    OnWillMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
+    OnWillUnmount?: ModelObjectReference,
 }
 
 export class FrameworkElement<
@@ -321,12 +323,33 @@ export class FrameworkElement<
         this.OnLoaded();
     }
 
+    protected ExecutePropCommandHandler(handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void))
+    {
+        if (!handler)
+            return;
+        if (typeof (handler) == "function")
+        {
+            (handler as ((sender: FrameworkElement) => void))(this);
+        }
+        else if (handler instanceof ModelObjectReference)
+        {
+            Antimatter.Server.ExecuteICommand(handler as ModelObjectReference);
+        }
+    }
+
     componentDidMount()
     {
-        if (this.state.MountCommand)
-        {
-            Antimatter.Server.ExecuteICommand(this.state.MountCommand as ModelObjectReference);
-        }
+        this.ExecutePropCommandHandler(this.state.OnDidMount);
+    }
+
+    componentWillMount()
+    {
+        this.ExecutePropCommandHandler(this.state.OnWillMount);
+    }
+
+    componentWillUnmount()
+    {
+        this.ExecutePropCommandHandler(this.state.OnWillUnmount);
     }
 
     constructClasses(): string
