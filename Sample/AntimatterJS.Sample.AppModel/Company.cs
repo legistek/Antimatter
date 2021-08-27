@@ -97,7 +97,7 @@ namespace AntimatterJS.Sample.AppModel
         #endregion
         //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
 
-        public IEnumerable<Employee> SomeEmployees => Employees.Take(10);
+        public IEnumerable<Employee> SomeEmployees => Employees.Take(50);
 
         public IEnumerable<string> SomeEmployeeNames
             => SomeEmployees.Select(e => e.FullName);
