@@ -5,67 +5,7 @@
     src: url("/Legistek-Custom.woff") format('woff');
 }
 
-.amx-panel > .amx-standard-control:last-child {
-    margin-right: 0px;
-    margin-bottom: 0px;
-}
-
-.amx-stack-panel {
-    display: block;
-    flex-direction: column;
-    padding: 0px;
-}
-
-    .amx-stack-panel.scrollable {
-        overflow-y: auto;
-    }
-
-    .amx-stack-panel.horizontal {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-    }
-
-        .amx-stack-panel.horizontal > .amx-standard-control {
-            width: auto;
-            margin-bottom: 0px;
-        }*/
-
-        /*.amx-stack-panel.horizontal > * {
-            margin-left: 5px;
-            margin-right: 0px;
-            margin-bottom: 0px;
-            margin-top: 0px;
-        }
-
-            .amx-stack-panel.horizontal > *:first-child {*/
-                /*padding-left: 0px;*/
-                /*margin-left: 0px;
-            }
-
-            .amx-stack-panel.horizontal > *:last-child {*/
-                /*padding-right: 0px;*/
-                /*margin-right: 0px;
-            }*/
-
-    /*.amx-stack-panel > *:first-child {
-        padding-top: 0px;
-        margin-top: 0px;
-    }
-
-    .amx-stack-panel > *:last-child {*/
-        /*padding-bottom: 0px;*/
-        /*margin-bottom: 0px;
-    }*/
-
-/*.amx-headered-grid {
-    display: grid;
-    grid-template-rows: auto 1fr;
-}*/
-
-
-/* Vertically centers toggle button relative to checked/unchecked text (e.g., with custom font sizes) */
-.ms-Toggle-innerContainer {
-    align-items: center;
+span {
+    font
+    transform: translate(0px, 2%);
 }
