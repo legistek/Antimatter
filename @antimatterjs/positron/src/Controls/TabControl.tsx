@@ -22,7 +22,7 @@ export interface ITabItem
     Route?: string,
     Key: string,
     Content: JSX.Element,
-    Icon?: number,
+    Icon?: number|string,
     Padding?: string,
     IconBackground?: string,
     IconForeground?: string,

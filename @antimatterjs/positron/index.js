@@ -4,6 +4,7 @@ export * from './src/RouteEventArgs';
 export * from './src/Media/MultitouchTransform';
 export * from './src/Media/Matrix';
 export * from './src/FrameworkElement';
+export * from './src/FrameworkTemplate';
 export * from './src/Style';
 export * from './src/DialogTemplate';
 export * from './src/Controls/View';

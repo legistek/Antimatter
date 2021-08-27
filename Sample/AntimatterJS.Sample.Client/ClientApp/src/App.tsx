@@ -13,6 +13,7 @@ import { initializeIcons } from '@fluentui/react/lib/Icons';
 //import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
+import DataGridTest from './components/DataGridTest';
 
 
 const theme = createTheme({
@@ -126,23 +127,23 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Description: "Test PDF Viewer",
                                     Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
                                 },
+                                {
+                                    Label: "Data Grid",
+                                    Icon: "GridViewSmall",
+                                    IconBackground: "green",
+                                    IconForeground: "white",
+                                    Key: "datagrid",
+                                    Content: (                                        
+                                        <DataGridTest ViewModel={
+                                            new Binding(
+                                            {
+                                                Path: "Company", Source: this.state.Model
+                                            })} />                                        
+                                    )
+                                }
                             ]} />
 
 
-                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
-                    {/*    <Company />*/}
-
-
-
-                        
-
-
-
-                        
-
-
-
-                    {/*</Grid>*/}
                 
             </Window>
 

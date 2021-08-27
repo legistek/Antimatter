@@ -419,45 +419,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 />
                 {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
-                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}
-                        SelectedItems={new Binding("SelectedEmployees")}
-                        IsSelectAll={new Binding("IsAllSelected")}
-                        OnManipulationStarted={(e) =>
-                        {
-                            this._tr.CenterX = e.CenterX;
-                            this._tr.CenterY = e.CenterY;
-                        }}
-                        OnManipulationDelta={(e) =>
-                        {
-                            this._tr.TranslateX = e.CumulativeX;
-                            this._tr.TranslateY = e.CumulativeY;
-                            this._tr.ScaleX = e.CumulativeScale;
-                            this._tr.ScaleY = e.CumulativeScale;
-                        }}
-                        OnManipulationCompleted={(e) =>
-                        {
-                            this._tr.Reset();
-                        }}
-                        Transform={this._tr}
-                        Columns={[
-                            {
-                                Header: "First Name",
-                                Key: "firstName",
-                                Template: this._firstNameTemplate
-                            },
-                            {
-                                Header: "Last Name",
-                                Key: "lastName",
-                                Template: this._lastNameTemplate
-                            },
-                            {
-                                Header: "Age",
-                                Key: "age",
-                                Template: this._ageTemplate
-                            }
-                        ]}
-                    />
+                    
                 </div>
 
 
