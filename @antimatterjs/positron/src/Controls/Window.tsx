@@ -62,24 +62,27 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         });
     }
 
-    public static CombineRoute(baseRoute: string|undefined|null, addedRoute: string): string
+    public static CombineRoute(components: string[]): string
     {
-        if (!baseRoute)
-            return "/" + addedRoute;
-        else if (baseRoute.endsWith("/"))
-            return baseRoute + addedRoute;
-        else
-            return baseRoute + "/" + addedRoute;
+        if (!components || components.length === 0)
+            return '/';
+        let route: string = '';
+
+        for (let j = 0; j < components.length; j++)
+        {
+            var component = components[j];
+            if (!component || component.length === 0 || component === '/')
+                continue;
+            else if (!component.startsWith('/'))
+                component = '/' + component;
+            route += component;
+        }
+        return route;
     }
 
-    public static PushRoute(route: string, replace: boolean = false)
+    public static PushRoute(...components: string[])
     {
-        if (route !== "/" && route.endsWith('/'))
-            route = route.substr(0, route.length - 1);
-        if (replace)
-            Window._router.replace(route);
-        else
-            Window._router.push(route);
+        Window._router.push(Window.CombineRoute(components));
     }
 
     public static GoBack(): void

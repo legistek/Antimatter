@@ -133,7 +133,7 @@ export class TabControlBase<
 
         var otherRoutes = templatedParent.state.Tabs.map(
             t =>
-            (<Route path={Window.CombineRoute(templatedParent._startingRoute, t.Key)} key={t.Key}>
+            (<Route path={Window.CombineRoute([templatedParent._startingRoute, t.Key])} key={t.Key}>
                 <Grid
                     RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                     <TabContentPanel
@@ -199,12 +199,12 @@ export class TabControlBase<
                 (<Redirect exact
                     push={true}
                     from={templatedParent._startingRoute}
-                    to={Window.CombineRoute(templatedParent._startingRoute, defaultTab?.Key || "")} />)
+                    to={Window.CombineRoute([templatedParent._startingRoute, defaultTab?.Key || ""])} />)
             ];
 
         var otherRoutes = templatedParent.state.Tabs.map(
             t =>
-            (<Route path={Window.CombineRoute(templatedParent._startingRoute, t.Key)} key={t.Key}>
+            (<Route path={Window.CombineRoute([templatedParent._startingRoute, t.Key])} key={t.Key}>
                 <TabContentPanel
                     TabControlParent={templatedParent}
                     TabItem={t}
@@ -284,7 +284,7 @@ export class TabControlBase<
     private OnTabItemClick(item: ITabItem): void
     {
         this._selectedTab = item;
-        Window.PushRoute(Window.CombineRoute(this._startingRoute, item.Key));
+        Window.PushRoute(this._startingRoute, item.Key);
     }
 
     private GetTabIsVisible(item: ITabItem)
