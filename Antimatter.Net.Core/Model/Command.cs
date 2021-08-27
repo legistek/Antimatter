@@ -22,7 +22,7 @@ namespace Antimatter.Net.Model
         public bool IsEnabled 
         {
             get => _isEnabled;
-            private set
+            set
             {
                 if (_isEnabled != value)
                 {

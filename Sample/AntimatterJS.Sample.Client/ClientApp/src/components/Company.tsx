@@ -350,12 +350,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     {this.MessageBar2}
                     {this.MessageBar3}
 
-                    <StackPanel Orientation={Orientation.Horizontal}>
-                        <TextBlock Text="Employee Count:" />
-                        <TextBlock Text={new Binding("Employees.Count")} />
-                    </StackPanel>
-                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
-                        Style={CommandButton.CommandBarButtonStyle} />
+
 
 
                     {this.OpenBubbleButton}

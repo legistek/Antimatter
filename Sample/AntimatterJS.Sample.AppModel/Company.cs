@@ -96,7 +96,6 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-
         #region Employee[] SelectedEmployees property
         private Employee[] _SelectedEmployees;
         public Employee[] SelectedEmployees
@@ -111,6 +110,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _SelectedEmployees = value;
                     OnPropertyChanged();
+                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Length > 0;
                 }
             }
         }
@@ -212,6 +212,35 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        #region IUICommand DeleteSelectedEmployees Command
+
+        private Command _DeleteSelectedEmployeesCommand;
+        public ICommand DeleteSelectedEmployeesCommand
+        {
+            get
+            {
+                return _DeleteSelectedEmployeesCommand ?? (_DeleteSelectedEmployeesCommand = new Command(
+                    (arg) =>
+                    {
+                        if (this.SelectedEmployees == null || this.SelectedEmployees.Length == 0)
+                            return;
+                        var empls = this.SelectedEmployees.ToArray();
+                        foreach (var empl in empls)
+                            this.Employees.Remove(empl);
+                        this.SelectedEmployees = null;
+                    })
+                {
+                    Name = "Fire",
+                    IsEnabled = false,
+                    ToolTip = "Fire the selected employees",
+                    Icon = 0xF082,
+                });
+            }
+        }
+
+        #endregion
+
 
         #region IUICommand DeleteEmployee Command
 

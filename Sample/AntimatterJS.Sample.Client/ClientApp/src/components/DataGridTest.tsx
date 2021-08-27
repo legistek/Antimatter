@@ -10,7 +10,6 @@ import
 import React from "react";
 import { DefaultEffects } from "@fluentui/react";
 
-
 export default class DataGridTest extends View
 {
     _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
@@ -25,28 +24,48 @@ export default class DataGridTest extends View
 
     Template(): JSX.Element
     {
-        return (<DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-            RowHeight={44}
-            SelectedItems={new Binding("SelectedEmployees")}
-            IsSelectAll={new Binding("IsAllSelected")}
-            Columns={[
-                {
-                    Header: "First Name",
-                    Key: "firstName",
-                    Template: this._firstNameTemplate
-                },
-                {
-                    Header: "Last Name",
-                    Key: "lastName",
-                    Template: this._lastNameTemplate
-                },
-                {
-                    Header: "Age",
-                    Key: "age",
-                    Template: this._ageTemplate
-                }
-            ]}
-        />);
+        return (
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                <StackPanel
+                    Grid={{Row:0}}
+                    Orientation={Orientation.Horizontal}>
+                    <TextBlock
+                        Text="Employee Count:"
+                        VerticalAlignment={VerticalAlignment.Center}/>
+                    <TextBlock
+                        Text={new Binding("Employees.Count")}
+                        VerticalAlignment={VerticalAlignment.Center} />
+                    <CommandButton
+                        Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
+                        Style={CommandButton.CommandBarButtonStyle} />
+                    <CommandButton
+                        Command={new Binding("DeleteSelectedEmployeesCommand")}
+                        Style={CommandButton.CommandBarButtonStyle} />
+                </StackPanel>                
+                <DataGrid
+                    Grid={{Row: 1}}
+                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
+                    RowHeight={44}
+                    SelectedItems={new Binding("SelectedEmployees")}
+                    IsSelectAll={new Binding("IsAllSelected")}
+                    Columns={[
+                        {
+                            Header: "First Name",
+                            Key: "firstName",
+                            Template: this._firstNameTemplate
+                        },
+                        {
+                            Header: "Last Name",
+                            Key: "lastName",
+                            Template: this._lastNameTemplate
+                        },
+                        {
+                            Header: "Age",
+                            Key: "age",
+                            Template: this._ageTemplate
+                        }]} />
+            </Grid>
+        );
     }
 
 }

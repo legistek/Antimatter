@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as Fluent from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
+import { CheckBox } from './CheckBox';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
-import { SelectionMode } from '../Enums';
+import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 
 interface IDataGridCellCommon
@@ -124,6 +125,14 @@ export class DataGridBase<
                             cellLeftPadding: 0,
                             cellRightPadding: 0,
                             cellExtraRightPadding: 0,
+                        }}
+                        onRenderCheckbox={(props, defaultRender) =>
+                        {
+                            return (
+                                <CheckBox
+                                    VerticalAlignment={VerticalAlignment.Center}
+                                    HorizontalAlignment={HorizontalAlignment.Center}
+                                    IsHitTestVisible={false} IsChecked={props?.checked} />);
                         }}
                         selectionPreservedOnEmptyClick={false}
                         selection={templatedParent._selection}
