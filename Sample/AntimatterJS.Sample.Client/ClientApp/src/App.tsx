@@ -100,7 +100,6 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                
                     <TabControl Style={TabControl.DefaultStyle}
                         Tabs={
                             [
