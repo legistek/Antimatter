@@ -13,7 +13,7 @@ body {
 .amx-ptn-fe {    
     position: relative;
     touch-action: pan-x pan-y;
-    margin: 0px;
+    margin: 5px;
     padding: 0px;
     box-sizing: border-box;
     border-width: 0px;
@@ -116,8 +116,13 @@ body {
     align-self: flex-end;
 }
 
+.amx-ptn-panel {
+    margin: 0px;
+}
+
 .amx-ptn-grid {
     display: grid;
+    margin: 0px;
 }
 
 .amx-ptn-fixed-width {

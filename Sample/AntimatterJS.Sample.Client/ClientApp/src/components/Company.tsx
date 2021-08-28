@@ -34,12 +34,14 @@ import
     ResizePanel,
     TreeView,
     Side,
+    Panel,
     WindowLayout,
     Glyph
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -51,10 +53,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <GroupBox
+            <GroupBox 
             /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
-            >
-
+            >                
                 <DataContext Value={this.state.Value}>
                     <StackPanel>
 
@@ -113,9 +114,10 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             Label="Last Name"
                             Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
 
-                        <TextBlock Text="Age" />
+                        <TextBlock Text="Age" VerticalAlignment={VerticalAlignment.Center} />
 
                         <CheckBox
+                            VerticalAlignment={VerticalAlignment.Center}
                             ref={
                                 r =>
                                 {
@@ -178,9 +180,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                     {/*</StackPanel>*/}
                     </StackPanel>
                 </DataContext>
-
-
-
+                
             </GroupBox>
         );
     }
@@ -341,7 +341,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
+            <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
                 <StackPanel>
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />

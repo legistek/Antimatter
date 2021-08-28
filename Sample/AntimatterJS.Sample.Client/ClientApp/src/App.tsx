@@ -113,7 +113,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Description: "Edit company details",
                                     Content: (
                                         <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                                            <Company VerticalAlignment={VerticalAlignment.Stretch} />
+                                            <Company />
                                         </DataContext>
                                     )
                                 },

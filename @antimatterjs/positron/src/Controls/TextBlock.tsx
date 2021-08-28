@@ -32,9 +32,24 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
             Selector: "@",
             Rules: {
                 fontFamily: TextBlock.theme.fonts.medium.fontFamily,
+                //margin: "5px",
                 transform: "translate(0, -6%)"
-            }
-        });
+            },
+        },
+        //{
+        //    Selector: ".amx-ptn-wrap-panel:first-child@",
+        //    Rules: {
+        //        marginLeft: "0px",
+        //    }
+        //},
+        //{
+        //    Selector: ".amx-ptn-vstack > @",
+        //    Rules: {
+        //        marginLeft: "0px",
+        //    }
+        //}
+
+    );
 
     public static DialogHeaderStyle = new Style(
         {
