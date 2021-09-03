@@ -225,8 +225,7 @@ namespace AntimatterJS.Sample.AppModel
                     {
                         if (this.SelectedEmployees == null || this.SelectedEmployees.Length == 0)
                             return;
-                        var empls = this.SelectedEmployees.ToArray();
-                        foreach (var empl in empls)
+                        foreach (var empl in SelectedEmployees)
                             this.Employees.Remove(empl);
                         this.SelectedEmployees = null;
                     })

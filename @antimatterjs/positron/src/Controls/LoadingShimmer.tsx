@@ -23,7 +23,7 @@ export class LoadingShimmer<
 {
     public static DefaultStyle: Style<ILoadingShimmerProps> = new Style<ILoadingShimmerProps>(
         {
-            Template: new ControlTemplate((templatedParent: LoadingShimmer) =>
+            Template: (templatedParent: LoadingShimmer) =>
             {
                 if (!templatedParent.state.Lines)
                     return (<></>);
@@ -39,7 +39,7 @@ export class LoadingShimmer<
                         width={percent}/>));
                 }
                 return (<StackPanel>{shimmers}</StackPanel>);
-            })
+            }
         },
         {
             Selector: "@ .shimmer",

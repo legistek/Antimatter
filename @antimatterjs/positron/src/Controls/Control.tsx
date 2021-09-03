@@ -10,7 +10,7 @@ interface IControlCommon
 {
     FontWeight?: undefined | "bold" | "normal",
     Padding?: string,
-    Template?: ControlTemplate,
+    Template?: ControlTemplate | ((templatedParent: any) => JSX.Element),
     Layout?: WindowLayout
 }
 
@@ -60,7 +60,15 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
                         if (!this.state.Template)
                             return null;
                         (this.state as any).Layout = layout;
-                        return this.state.Template.GetVisualTree(layout)(this);
+                        if (typeof (this.state.Template) === "function")
+                        {
+                            var vt = (this.state.Template as ((templatedParent: Control) => JSX.Element));
+                            return vt(this);
+                        }
+                        else
+                        {
+                            return this.state.Template.GetVisualTree(layout)(this);
+                        }
                     }
                 }
             </WindowLayoutContext.Consumer>
