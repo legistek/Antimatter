@@ -57,7 +57,7 @@ export class VirtualizedPanelBase<P extends IVirtualizedPanelProps = {}, S exten
         return styles;
     }
 
-    /* override */ componentDidMount(): void
+    protected /* override */ OnComponentMount(): void
     {
         if (!this.Container)
             return;
@@ -71,7 +71,7 @@ export class VirtualizedPanelBase<P extends IVirtualizedPanelProps = {}, S exten
         this._observer.observe(this.Container);
     }
 
-    /* override */ componentWillUnmount(): void
+    /* override */ OnComponentWillUnmount(): void
     {
         this._observer?.disconnect();
     }

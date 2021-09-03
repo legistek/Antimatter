@@ -20,6 +20,7 @@ export interface IControlProps extends IFrameworkElementProps, IControlCommon
     Foreground?: string | Binding,
     Background?: string | Binding,
     BorderBrush?: string | Binding,
+    BoxShadow?: string | Binding,
     BorderThickness?: string | Binding,
     FontFamily?: string | Binding,
     FontSize?: number | Binding,
@@ -33,6 +34,7 @@ export interface IControlState extends IFrameworkElementState, IControlCommon
     Background?: string,
     Foreground?: string,
     BorderBrush?: string,
+    BoxShadow?: string,
     BorderThickness?: string,
     FontFamily?: string,
     FontSize?: number,
@@ -50,7 +52,7 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         }
     };
 
-    /* override sealed */ renderElement(): JSX.Element | null
+    protected /* override */ renderElement(): JSX.Element | null
     {
         const baseElem: JSX.Element = (
             <WindowLayoutContext.Consumer>

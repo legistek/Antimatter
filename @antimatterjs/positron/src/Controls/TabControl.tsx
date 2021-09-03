@@ -215,7 +215,7 @@ export class TabControlBase<
         return routes;
     }
 
-    componentWillMount()
+    protected /* override */ OnComponentWillMount()
     {
         this._startingRoute = Window.Route;
     }    

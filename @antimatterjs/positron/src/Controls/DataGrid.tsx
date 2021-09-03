@@ -37,7 +37,7 @@ export class DataGridCell<
     //        }
     //    });
 
-    /* protected override */ constructClasses(): string
+    protected /* override */ constructClasses(): string
     {
         return super.constructClasses() + " amx-ptn-datagridcell ";
     }

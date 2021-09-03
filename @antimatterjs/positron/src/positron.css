@@ -162,6 +162,10 @@ body {
         transform: translate(-50%,0);
     }
 
+    .amx-ptn-overlaps.amx-ptn-ha-right {
+        right: 0;
+    }
+
 .amx-ptn-wrap-panel {
     display: flex;
     flex-wrap: wrap;

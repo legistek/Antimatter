@@ -33,7 +33,7 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
             Rules: {
                 fontFamily: TextBlock.theme.fonts.medium.fontFamily,
                 //margin: "5px",
-                transform: "translate(0, -6%)"
+                //transform: "translate(0, -6%)"
             },
         },
         //{

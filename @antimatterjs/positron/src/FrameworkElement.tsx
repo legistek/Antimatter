@@ -49,8 +49,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
     IsLoading?: boolean | Binding,
-    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
-    OnWillMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
+    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference | Binding,
 }
 
@@ -62,8 +61,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
     IsLoading?: boolean,
-    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
-    OnWillMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
+    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference,
 }
 
@@ -94,9 +92,9 @@ export class FrameworkElement<
             this.callLoadedCommand();
         if (this.state.Transform)
             this.state.Transform.AssignTarget(this);
-    }    
+    }
 
-    render(): JSX.Element | null
+    readonly render = (): JSX.Element | null =>
     {
         if (this.state.IsVisible === false)
             return null;
@@ -168,7 +166,7 @@ export class FrameworkElement<
     public InvalidateRender()
     {
         if (!this._isRenderValid)
-            return;
+            return;        
         this._isRenderValid = false;
         this.OnInvalidateRender();
         this.setState((state, props) => 
@@ -259,24 +257,24 @@ export class FrameworkElement<
      * reflects typed text; there is no need to re-render when updating the 
      * Model side with the new text).
      */
-    public SetValue(stateVar: string, newValue: any, reRender?: boolean): void
+    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean): void =>
     {
         if (this.state[stateVar] === newValue)
             return;
         Antimatter.TargetChanged(this, stateVar, newValue, reRender);
     }
 
-    /* protected */ GetValue(property: string): any
+    protected readonly GetValue = (property: string): any =>
     {
         return (this.state as any)[property];
     }
 
-    /* virtual */ renderElement(): JSX.Element | null
+    protected /* virtual */ renderElement(): JSX.Element | null
     {
         return null;
     }
 
-    /* virtual */ getCSSStyles(): React.CSSProperties
+    protected /* virtual */ getCSSStyles(): React.CSSProperties
     {
         let styles: React.CSSProperties = {
             margin: this.state.Margin
@@ -297,7 +295,7 @@ export class FrameworkElement<
         return styles;
     }
 
-    /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
+    public /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (!this._calledLoaded && value && property === nameof(this.state.LoadedCommand))
             this.callLoadedCommand();
@@ -316,7 +314,7 @@ export class FrameworkElement<
         this.OnLoaded();
     }
 
-    protected ExecutePropCommandHandler(handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void))
+    private readonly ExecutePropCommandHandler = (handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void)) =>
     {
         if (!handler)
             return;
@@ -330,22 +328,31 @@ export class FrameworkElement<
         }
     }
 
-    componentDidMount()
+    protected /* virtual */ OnComponentMount()
     {
+    }
+
+    protected /* virtual */ OnComponentWillMount()
+    {
+    }
+
+    protected /* virtual */ OnComponentWillUnmount()
+    {
+    }
+
+    readonly componentDidMount = () =>
+    {
+        this.OnComponentMount();
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 
-    componentWillMount()
+    readonly componentWillUnmount = () => 
     {
-        this.ExecutePropCommandHandler(this.state.OnWillMount);
-    }
-
-    componentWillUnmount()
-    {
+        this.OnComponentWillUnmount();
         this.ExecutePropCommandHandler(this.state.OnWillUnmount);
     }
-
-    constructClasses(): string
+    
+    protected /* virtual */ constructClasses(): string
     {
         let cls: string = ' amx-ptn-fe ';
 
@@ -389,7 +396,7 @@ export class FrameworkElement<
         return cls;
     }
 
-    ApplyStyle()
+    private ApplyStyle()
     {
         var style = this.props.Style ||
             (this.constructor as any).DefaultStyle
