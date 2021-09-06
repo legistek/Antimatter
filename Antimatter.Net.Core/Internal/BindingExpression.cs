@@ -53,6 +53,23 @@ namespace Antimatter.Net.Internal
             this.SourceReference = null;
         }
 
+        private void AddRef(ModelValue valueFromClient)
+        {
+            if (valueFromClient.IsReferenceCounted)
+            {
+                var reference = _reactor.GetReference(valueFromClient.ObjectHandle);
+                reference?.AddRef();    
+            }
+            if (valueFromClient.Type == ModelValueType.Collection)
+            {
+                foreach (var item in valueFromClient.Collection)
+                {
+                    var reference = _reactor.GetReference(item.ObjectHandle);
+                    reference?.AddRef();
+                }
+            }
+        }
+
         public void UpdateSource(ModelValue modelValue)
         {
             this._suspendPropertyChangeReport = true;
@@ -62,20 +79,18 @@ namespace Antimatter.Net.Internal
                     // No two-way binding if no path
                     return;
 
-                if (_lastValue?.Type == modelValue.Type &&
+                if (modelValue.Type != ModelValueType.Collection &&
+                    _lastValue?.Type == modelValue.Type &&
                     _lastValue?.ObjectHandle == modelValue.ObjectHandle)
                 {
                     // Unchanged value
                     return;
                 }
 
-                ReleaseLastValue();
+                // Add ref before releasing old value
+                AddRef(modelValue);
 
-                if (modelValue.IsReferenceCounted)
-                {
-                    var reference = _reactor.GetReference(modelValue.ObjectHandle);
-                    reference?.AddRef();    // Add ref before releasing old value
-                }
+                ReleaseLastValue();                                
 
                 _lastValue = modelValue;                
 

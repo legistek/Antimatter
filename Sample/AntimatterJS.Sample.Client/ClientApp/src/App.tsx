@@ -7,12 +7,14 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 //import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
+import DataGridTest from './components/DataGridTest';
+import PinnablePanelTest from './components/PinnablePanelTest';
 
 
 const theme = createTheme({
@@ -112,7 +114,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Description: "Edit company details",
                                     Content: (
                                         <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
-                                            <Company VerticalAlignment={VerticalAlignment.Stretch} />
+                                            <Company />
                                         </DataContext>
                                     )
                                 },
@@ -126,23 +128,34 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Description: "Test PDF Viewer",
                                     Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
                                 },
+                                {
+                                    Label: "Data Grid",
+                                    Icon: "GridViewSmall",
+                                    IconBackground: "green",
+                                    IconForeground: "white",
+                                    Key: "datagrid",
+                                    Content: (                                        
+                                        <DataGridTest ViewModel={
+                                            new Binding(
+                                            {
+                                                Path: "Company", Source: this.state.Model
+                                            })} />                                        
+                                    )
+                                },
+                                {
+                                    Label: "Panels",
+                                    Icon: "SidePanelMirrored",
+                                    IconBackground: "orange",
+                                    IconForeground: "white",
+                                    Key: "panels",
+                                    Padding: "0px",
+                                    Content: (
+                                        <PinnablePanelTest />
+                                    )
+                                }
                             ]} />
 
 
-                    {/*<Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>*/}
-                    {/*    <Company />*/}
-
-
-
-                        
-
-
-
-                        
-
-
-
-                    {/*</Grid>*/}
                 
             </Window>
 

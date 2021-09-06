@@ -18,14 +18,14 @@ export abstract class ViewBase<P extends IViewProps = {},
 {
     /* protected */ abstract Template(): JSX.Element;
     
-    /* override sealed */ renderElement(): JSX.Element
+    readonly renderElement = (): JSX.Element =>
     {
         (this.state as any)["DataContext"] = this.state.ViewModel;
         return (
             <ReactDataContext.Provider value={this.state.ViewModel}>
                 {this.Template()}
-            </ReactDataContext.Provider>);        
-    }
+            </ReactDataContext.Provider>);
+    };
 }
 
 export abstract class View extends ViewBase<IViewProps, IViewState>

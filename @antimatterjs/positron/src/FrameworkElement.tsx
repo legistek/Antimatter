@@ -20,9 +20,8 @@ interface IFrameworkElementCommon
     // Use only for control development; never use for cross-platform views
     ClassName?: string,
     Style?: Style<any>,    
-    Margin?: string,    
-    HorizontalAlignment?: HorizontalAlignment,
-    VerticalAlignment?: VerticalAlignment,
+    Margin?: string,
+    TabIndex?: number,
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -43,27 +42,29 @@ interface IFrameworkElementCommon
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
-{    
+{
+    HorizontalAlignment?: HorizontalAlignment |Binding,
+    VerticalAlignment?: VerticalAlignment|Binding,
     IsVisible?: boolean | Binding,
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,    
     IsLoading?: boolean | Binding,
-    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
-    OnWillMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
+    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference | Binding,
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
+    HorizontalAlignment?: HorizontalAlignment,
+    VerticalAlignment?: VerticalAlignment,
     IsVisible?: boolean,
     IsHitTestVisible?: boolean,
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,    
     IsLoading?: boolean,
-    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
-    OnWillMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
+    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference,
 }
 
@@ -94,9 +95,9 @@ export class FrameworkElement<
             this.callLoadedCommand();
         if (this.state.Transform)
             this.state.Transform.AssignTarget(this);
-    }    
+    }
 
-    render(): JSX.Element | null
+    readonly render = (): JSX.Element | null =>
     {
         if (this.state.IsVisible === false)
             return null;
@@ -113,6 +114,7 @@ export class FrameworkElement<
         return (
             <div
                 ref={r => this.Container = r}
+                tabIndex={this.state.TabIndex}
                 style={this.getCSSStyles()}                
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
@@ -168,7 +170,7 @@ export class FrameworkElement<
     public InvalidateRender()
     {
         if (!this._isRenderValid)
-            return;
+            return;        
         this._isRenderValid = false;
         this.OnInvalidateRender();
         this.setState((state, props) => 
@@ -259,24 +261,26 @@ export class FrameworkElement<
      * reflects typed text; there is no need to re-render when updating the 
      * Model side with the new text).
      */
-    public SetValue(stateVar: string, newValue: any, reRender?: boolean): void
+    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean): void =>
     {
         if (this.state[stateVar] === newValue)
             return;
         Antimatter.TargetChanged(this, stateVar, newValue, reRender);
+
+        // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }
 
-    /* protected */ GetValue(property: string): any
+    protected readonly GetValue = (property: string): any =>
     {
         return (this.state as any)[property];
     }
 
-    /* virtual */ renderElement(): JSX.Element | null
+    protected /* virtual */ renderElement(): JSX.Element | null
     {
         return null;
     }
 
-    /* virtual */ getCSSStyles(): React.CSSProperties
+    protected /* virtual */ getCSSStyles(): React.CSSProperties
     {
         let styles: React.CSSProperties = {
             margin: this.state.Margin
@@ -293,11 +297,11 @@ export class FrameworkElement<
         {
             //styles.transform = this.state.Transform.ToCSS();
             styles.transformOrigin = "0px 0px";
-        }
+        }        
         return styles;
     }
 
-    /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
+    public /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (!this._calledLoaded && value && property === nameof(this.state.LoadedCommand))
             this.callLoadedCommand();
@@ -316,7 +320,7 @@ export class FrameworkElement<
         this.OnLoaded();
     }
 
-    protected ExecutePropCommandHandler(handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void))
+    private readonly ExecutePropCommandHandler = (handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void)) =>
     {
         if (!handler)
             return;
@@ -330,26 +334,49 @@ export class FrameworkElement<
         }
     }
 
-    componentDidMount()
+    protected /* virtual */ OnComponentMount()
     {
+    }
+
+    protected /* virtual */ OnComponentWillMount()
+    {
+    }
+
+    protected /* virtual */ OnComponentWillUnmount()
+    {
+    }
+
+    protected /* virtual */ get ActualHorizontalAlignment(): HorizontalAlignment
+    {
+        return (this.state.HorizontalAlignment as HorizontalAlignment) === undefined
+            ? HorizontalAlignment.Stretch
+            : this.state.HorizontalAlignment as HorizontalAlignment;
+    }
+
+    protected /* virtual */ get ActualVerticalAlignment(): VerticalAlignment
+    {
+        return (this.state.VerticalAlignment as VerticalAlignment) === undefined
+            ? VerticalAlignment.Stretch
+            : this.state.VerticalAlignment as VerticalAlignment;
+    }
+
+    readonly componentDidMount = () =>
+    {
+        this.OnComponentMount();
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 
-    componentWillMount()
+    readonly componentWillUnmount = () => 
     {
-        this.ExecutePropCommandHandler(this.state.OnWillMount);
-    }
-
-    componentWillUnmount()
-    {
+        this.OnComponentWillUnmount();
         this.ExecutePropCommandHandler(this.state.OnWillUnmount);
     }
-
-    constructClasses(): string
+    
+    protected /* virtual */ constructClasses(): string
     {
         let cls: string = ' amx-ptn-fe ';
 
-        switch (this.state.HorizontalAlignment)
+        switch (this.ActualHorizontalAlignment)
         {
             case HorizontalAlignment.Center:
                 cls += "amx-ptn-ha-center ";
@@ -366,7 +393,7 @@ export class FrameworkElement<
                 break;
         }
 
-        switch (this.state.VerticalAlignment)
+        switch (this.ActualVerticalAlignment)
         {
             case VerticalAlignment.Center:
                 cls += "amx-ptn-va-center ";
@@ -389,7 +416,7 @@ export class FrameworkElement<
         return cls;
     }
 
-    ApplyStyle()
+    private ApplyStyle()
     {
         var style = this.props.Style ||
             (this.constructor as any).DefaultStyle

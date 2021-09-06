@@ -319,7 +319,7 @@ namespace Antimatter.Net
                 this._references.Add(obj, reference);
                 this._nextHandle++;
 
-                Console.WriteLine($"Creating ref {this._nextHandle} to {obj?.ToString()}");
+                //Console.WriteLine($"Creating ref {this._nextHandle} to {obj?.ToString()}");
             }
 
             reference.AddRef();
