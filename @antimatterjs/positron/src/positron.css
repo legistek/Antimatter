@@ -85,7 +85,7 @@ body {
     margin-right: auto !important;
 }
 
-:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel):not(.amx-ptn-grid) > .amx-ptn-ha-stretch {
+:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel):not(.amx-ptn-grid):not(.amx-ptn-vstack) > .amx-ptn-ha-stretch {
     width: 100%;
 }
 

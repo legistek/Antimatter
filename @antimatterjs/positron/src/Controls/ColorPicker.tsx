@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Binding, BindingMode } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
@@ -80,7 +81,11 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                         HorizontalAlignment={HorizontalAlignment.Center} />
                 </Panel>
                 <Popup
-                    IsOpen={this.state.PopupIsOpen}
+                    IsOpen={new Binding({
+                        Source: this,
+                        Path: nameof(this.state.PopupIsOpen),
+                        Mode: BindingMode.TwoWay
+                    })}
                     Target={() => this._button}
                     Placement={PlacementMode.Below}
                     Width={ColorPicker.COLUMNS_SIZE * ColorPicker.COLUMN_WIDTH + 8}

@@ -156,9 +156,9 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        #region Employee[] SelectedEmployees property
-        private Employee[] _SelectedEmployees;
-        public Employee[] SelectedEmployees
+        #region ObservableCollection<Employee> SelectedEmployees property
+        private ObservableCollection<Employee> _SelectedEmployees;
+        public ObservableCollection<Employee> SelectedEmployees
         {
             get
             {
@@ -170,7 +170,7 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _SelectedEmployees = value;
                     OnPropertyChanged();
-                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Length > 0;
+                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Count > 0;
                 }
             }
         }
@@ -310,7 +310,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _DeleteSelectedEmployeesCommand ?? (_DeleteSelectedEmployeesCommand = new Command(
                     (arg) =>
                     {
-                        if (this.SelectedEmployees == null || this.SelectedEmployees.Length == 0)
+                        if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
                             return;
                         foreach (var empl in SelectedEmployees)
                             this.Employees.Remove(empl);

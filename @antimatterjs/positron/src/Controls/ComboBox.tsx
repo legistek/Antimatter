@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getTheme } from '@fluentui/react';
-import { Binding, BindingMode, Utilities } from '@antimatterjs/react';
-import { Orientation, SelectionMode, VerticalAlignment } from '../Enums';
+import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
+import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
@@ -58,7 +58,7 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
-            ItemsSource: [],
+            ItemsSource: [],            
             Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.Template),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
@@ -109,6 +109,7 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
                     <Glyph
                         Icon="ChevronDown"
                         Foreground={ComboBox.theme.palette.neutralSecondary}
+                        HorizontalAlignment={HorizontalAlignment.Center}
                         VerticalAlignment={VerticalAlignment.Center}
                     />
                 </Grid>
@@ -143,12 +144,15 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
             <>
                 {root}
                 <Popup
-                    IsOpen={this.state.PopupIsOpen}
+                    IsOpen={new Binding({
+                        Source: this,
+                        Path: nameof(this.state.PopupIsOpen),
+                        Mode: BindingMode.TwoWay
+                    })}
                     Target={() => this._button}
                     Width={this._button?.Container?.clientWidth}
                     MaxHeight={ComboBox.DROPDOWN_MAX_HEIGHT}
-                    Padding="0"
-                >
+                    Padding="0">
                     <StackPanel ItemsParent={this} />
                 </Popup>
             </>
@@ -161,6 +165,8 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     {
         return ComboBoxItem;
     }
+
+
 
     public static DefaultTextblockStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
         {
@@ -189,15 +195,27 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     /* protected override */ OnSelectionChanged()
     {
         if (!this.IsMultiSelect)
-            this.setState({ PopupIsOpen: false });
+            this.PopupIsOpen = false;
         super.OnSelectionChanged();
     }
+
+    public get PopupIsOpen(): boolean
+    {
+        if (this.state.PopupIsOpen !== undefined)
+            return this.state.PopupIsOpen as boolean;
+        return false;
+    }
+    public set PopupIsOpen(value: boolean)
+    {
+        this.SetValue(nameof(this.state.PopupIsOpen), value, false);
+        this.PropertyChanged.invoke(this, new PropertyChangedEventArgs(nameof(this.state.PopupIsOpen)));
+    }    
 
     protected TogglePopup(): void
     {
         if (this.state.IsEnabled == false)
             return;
-        this.setState({ PopupIsOpen: !this.state.PopupIsOpen });
+        this.PopupIsOpen = !this.PopupIsOpen;
     }
 
     private OnKeyPressed(event: KeyboardEvent): void

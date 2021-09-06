@@ -182,7 +182,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         this.InvalidateRender();
     }
 
-    private ComputeColumnDefinitions(): IColumNDefinition[]
+    private ComputeColumnDefinitions(): IColumnDefinition[]
     {
         if (this.state.ResizerSide === Side.Left)
             return [Grid.ColumnDefinition(this.state.Thickness), Grid.ColumnDefinition(this.state.Size)];
