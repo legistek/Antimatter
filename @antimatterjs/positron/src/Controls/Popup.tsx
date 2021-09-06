@@ -20,6 +20,8 @@ export interface IPopupProps extends IPanelProps
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
+    MaxHeight?: number,
+    Width?: number
 }
 export interface IPopupState extends IPanelState
 {
@@ -28,6 +30,8 @@ export interface IPopupState extends IPanelState
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
+    MaxHeight?: number,
+    Width?: number
 }
 
 export class PopupBase<
@@ -71,6 +75,9 @@ export class PopupBase<
                     if (!this.state.StaysOpen)
                         this.SetValue(nameof(this.state.IsOpen), false)
                 }}
+                calloutWidth={this.state.Width}
+                calloutMaxHeight={this.state.MaxHeight}
+                minPagePadding={0}
                 setInitialFocus>
                 {this.props.children}
             </Callout>

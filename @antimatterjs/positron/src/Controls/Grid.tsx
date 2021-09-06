@@ -3,12 +3,12 @@ import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IGridProps extends IPanelProps
 {
-    ColumnDefinitions?: IColumNDefinition[],
+    ColumnDefinitions?: IColumnDefinition[],
     RowDefinitions?: IRowDefinition[],
 }
 export interface IGridState extends IPanelState
 {
-    ColumnDefinitions?: IColumNDefinition[],
+    ColumnDefinitions?: IColumnDefinition[],
     RowDefinitions?: IRowDefinition[]
 }
 
@@ -39,7 +39,7 @@ export interface IGridDefinition
     CoercedSize?: number
 }
 
-export interface IColumNDefinition extends IGridDefinition
+export interface IColumnDefinition extends IGridDefinition
 {
     Width: IGridLength,
 }
@@ -71,7 +71,7 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
             }
         };
     }
-    public static ColumnDefinition(width?: number, star?: boolean): IColumNDefinition
+    public static ColumnDefinition(width?: number, star?: boolean): IColumnDefinition
     {
         return {
             Width: {
@@ -130,7 +130,7 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
 
         let columnTemplate: string = "";
 
-        for (const column of this.state.ColumnDefinitions as Array<IColumNDefinition>)
+        for (const column of this.state.ColumnDefinitions as Array<IColumnDefinition>)
         {
             if (column.CoercedSize)
                 columnTemplate += `${column.CoercedSize}px `;

@@ -171,6 +171,9 @@ export class BindingExpression
         if (this.SuspendPOJOSourceChangeHandler)
             return;
 
+        if (e.propertyName !== this.Parameters.Path)
+            return;
+
         var value = sender[e.propertyName];
         if (this.Parameters.Converter)
             value = this.Parameters.Converter(value);

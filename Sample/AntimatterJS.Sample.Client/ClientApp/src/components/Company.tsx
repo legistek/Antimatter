@@ -1,6 +1,7 @@
 import { Binding, DataContext, AntimatterComponent, ModelObjectReference, BindingMode } from '@antimatterjs/react';
 import * as React from 'react';
-import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, Icon } from '@fluentui/react';
+import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, ICheckboxProps, Icon }
+    from '@fluentui/react';
 
 import * as Model from '../model/Model';
 import
@@ -18,6 +19,10 @@ import
     ToastControl,
 
     DatePicker,
+    ComboBox,
+    ColorPicker,
+    ITextBlockProps,
+
     ListBox, SelectionMode,
     ItemsStackPanel, GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
@@ -25,7 +30,7 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    ColorPicker,
+    Style,
     IFrameworkElementState,
     IFrameworkElementProps,
     MultitouchTransform,
@@ -49,6 +54,19 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
     private _cb?: CheckBox | null;
 
+    private get ColorPicker(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ColorPicker
+                ItemsSource={new Binding("Company.AvailableColors")}
+                SelectedItem={new Binding("Color")}
+            />
+        );
+
+        return elem;
+        //return <></>;
+    }
+
     render()
     {
         // amx-grow-entrance
@@ -66,6 +84,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         MinValue={0}
                         Label="The Age-O-Tron"
                     />
+
+                    {/*
+
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         IsEnabled={false}
@@ -79,7 +100,6 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Label="Thing to toggle"
                     />
 
-
                     <ToggleButton
                         IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
                         CheckedText="Switched on (elsewhere)"
@@ -89,7 +109,10 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         IsEnabled={false}
                     />
 
+                     */}
+
                     <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName) })} />
+
                     <TextBlock Text="Edit Info" FontWeight="bold" />
 
                     <DatePicker
@@ -98,12 +121,14 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         HasTime={true}
                     />
 
+                    {/*
                     <DatePicker
                         Label="Start date (#2)"
                         Date={new Binding({ Path: nameof<Model.Employee>(e => e.StartDate) })}
                         UseInternationalFormat={true}
                         HasTime={true}
                     />
+                     */}
 
 
                     <WrapPanel>
@@ -139,9 +164,8 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         {/*    <TextBlock Text="Really Nice bonus" />*/}
                         {/*</Popup>*/}
 
-                        <ColorPicker
-                            ItemsSource={new Binding("Company.AvailableColors")}
-                            SelectedItem={new Binding("Color")} />
+                            {this.ColorPicker}
+
                     </WrapPanel>
 
                     <TextBox
@@ -166,19 +190,20 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <ProgressBar />
 
-                    {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding("EditCommand")} />*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.IconButtonStyle}*/}
-                    {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
-                    {/*    <CommandButton*/}
-                    {/*        Style={CommandButton.CommandBarButtonStyle}*/}
-                    {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
-                    {/*        CommandParameter={new Binding()} />*/}
-                    {/*</StackPanel>*/}
-                    </StackPanel>
+                        {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding("EditCommand")} />*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.IconButtonStyle}*/}
+                        {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
+                        {/*    <CommandButton*/}
+                        {/*        Style={CommandButton.CommandBarButtonStyle}*/}
+                        {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
+                        {/*        CommandParameter={new Binding()} />*/}
+                        {/*</StackPanel>*/}
+
+                        </StackPanel>
                 </DataContext>
                 
             </GroupBox>
@@ -212,7 +237,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         const button: JSX.Element = (
             <CommandButton
                 Command={new Binding(nameof<Model.Company>(c => c.OpenTeachingBubbleCommand))}
-                ref={r => this.openButtonElem = r }
+                ref={r => this.openButtonElem = r}
             />
         );
 
@@ -246,7 +271,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 ShowCloseButton={true}
             />
         );
-        return elem;
+        //return elem;
+        return <></>;
     }
     private get MessageBar2(): JSX.Element
     {
@@ -260,7 +286,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 FontWeight="bold"
             />
         );
-        return elem;
+        //return elem;
+        return <></>;
     }
     private get MessageBar3(): JSX.Element
     {
@@ -326,12 +353,154 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 TeachingBubbleIsOpen={{ Path: nameof<Model.Company>(c => c.TeachingBubbleOpen) }}
 
                 TeachingBubbleParams={new Binding(nameof<Model.Company>(c => c.TeachingBubbleInfo))}
-                //TeachingBubbleHeaderText="i am bubble header"
-                //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
+            //TeachingBubbleHeaderText="i am bubble header"
+            //TeachingBubbleCommand={new Binding(nameof<Model.Company>(c => c.TeachingBubblePrimaryCommand))}
             />
         );
         //return elem;
         return <></>;
+    }
+
+    _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
+    {
+        const elem: JSX.Element = (
+            <Grid
+                //Background="hotpink"
+            >
+                <TextBlock
+                    Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+                    VerticalAlignment={VerticalAlignment.Center}
+                    Style={ComboBox.DefaultTextblockStyle}
+                />
+
+            </Grid>
+
+        );
+        return elem;
+    }
+
+    );
+    _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
+        <TextBlock Text={item} />
+    );
+    _comboBoxOptionTemplate_CustomMultiselect: DataTemplate = new DataTemplate((item) =>
+        <Grid
+            //Background="limegreen"
+            RowDefinitions={[Grid.RowDefinition(30)]}
+        >
+            <CheckBox
+                IsEnabled={new Binding({ Path: nameof<Model.Employee>(e => e.IsBonusEligible), Source: item })}
+                IsChecked={new Binding({ Path: nameof<Model.Employee>(e => e.IsMultiSelected), Source: item })}
+                Label={new Binding({ Path: nameof<Model.Employee>(e => e.LastName), Source: item })}
+                VerticalAlignment={VerticalAlignment.Center}
+                Margin="0 6px"
+            />
+
+        </Grid>
+    );
+
+    private get comboBox2_Strings(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                Label="Name/String Selector Thingy (Single)"
+
+                //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployeeNames))}
+
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
+
+                PlaceholderText="[nothing to see here]"
+            />
+        );
+        //return elem;
+        return <></>;
+    }
+    private get comboBox2_Objects(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                Label="Employee Selector Thingy (Single)"
+
+                //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployees))}
+
+
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}
+                ItemTemplate={this._comboBoxOptionTemplate}
+
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
+            />
+        );
+        return elem;
+        //return <></>;
+    }
+    private get comboBox2_Multi(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                Label="Dude Selector Thingy (Multi!)"
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+
+                ItemTemplate={this._comboBoxOptionTemplate}
+                //ItemTemplate={this._comboBoxOptionTemplate_CustomMultiselect}
+                PreventAutoCheckboxes={false}
+
+
+                SelectionMode={SelectionMode.Multiple}
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+
+                TitleOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
+
+                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
+            />
+        );
+        return elem;
+        //return <></>;
+    }
+    private get comboBox2_Strings_Multi(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                Label="HERE, HAVE SOME NAMES TO SELECT"
+
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
+                SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeName))}
+
+                SelectionMode={SelectionMode.Multiple}
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployeeNames))}
+
+                PlaceholderText="A placeholder is me"
+            />
+        );
+        return elem;
+        //return <></>;
+    }
+    private get comboBox2_Custom_Multi(): JSX.Element
+    {
+        const elem: JSX.Element = (
+            <ComboBox
+                Label="The one with the checkboxes inside the template"
+                ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+
+                ItemTemplate={this._comboBoxOptionTemplate_CustomMultiselect}
+                PreventAutoCheckboxes={true}
+
+
+                SelectionMode={SelectionMode.Multiple}
+                SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+
+                TitleOverride={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesDisplayText))}
+                SelectionChangedCommand={new Binding(nameof<Model.Company>(c => c.SelectedEmployeesChangedCommand))}
+
+                IsEnabled={new Binding({ Path: nameof<Model.Company>(c => c.IsAllSelected), Converter: (val) => !val })}
+                IsEnabledPath={nameof<Model.Employee>(e => e.IsBonusEligible)}
+            />
+        );
+        return elem;
+        //return <></>;
     }
 
     renderElement()
@@ -346,6 +515,12 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 <StackPanel>
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
+
+                    {this.comboBox2_Strings}
+                    {this.comboBox2_Objects}
+                    {this.comboBox2_Multi}
+                    {this.comboBox2_Strings_Multi}
+                    {this.comboBox2_Custom_Multi}
 
                     {this.MessageBar1}
                     {this.MessageBar2}
@@ -419,7 +594,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 </div>
 
 
-                */}
 
                 {/*<ListBox                    */}
                 {/*    SelectionMode={SelectionMode.Single}                    */}

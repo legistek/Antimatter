@@ -20,8 +20,7 @@ interface IFrameworkElementCommon
     // Use only for control development; never use for cross-platform views
     ClassName?: string,
     Style?: Style<any>,    
-    Margin?: string,
-    TabIndex?: number,
+    Margin?: string,    
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -34,11 +33,13 @@ interface IFrameworkElementCommon
     OnManipulationStarting?: (event: ManipulationEventArgs) => void,
     OnManipulationStarted?: (event: ManipulationEventArgs) => void,
     OnManipulationDelta?: (event: ManipulationEventArgs) => void,
-    OnManipulationCompleted?: (event: ManipulationEventArgs) => void,    
+    OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
+    OnKeyPress?: (event: KeyboardEvent) => void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element,
-    Transform?: MultitouchTransform
+    Transform?: MultitouchTransform,
+    TabIndex?: number
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
@@ -48,7 +49,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     IsVisible?: boolean | Binding,
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
-    LoadedCommand?: ModelObjectReference | Binding,    
+    LoadedCommand?: ModelObjectReference | Binding,
     IsLoading?: boolean | Binding,
     OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference | Binding,
@@ -62,7 +63,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     IsHitTestVisible?: boolean,
     ToolTip?: string | JSX.Element,
     DataContext?: ModelObjectReference,
-    LoadedCommand?: ModelObjectReference,    
+    LoadedCommand?: ModelObjectReference,
     IsLoading?: boolean,
     OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference,
@@ -70,10 +71,10 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
 
 export class FrameworkElement<
     P extends IFrameworkElementProps = {},
-    S extends IFrameworkElementState = {}>    
+    S extends IFrameworkElementState = {}>
     extends React.Component<P, S>
     implements INotifyPropertyChanged
-{    
+{
     _calledLoaded: boolean = false;
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
@@ -85,7 +86,7 @@ export class FrameworkElement<
 
     constructor(props)
     {
-        super(props);        
+        super(props);
         Antimatter.InitializeComponent(this);
         this.ApplyStyle();
 
@@ -103,7 +104,7 @@ export class FrameworkElement<
             return null;
 
         this._isRenderValid = true;
-        
+
         if (this.state.OnManipulationStarting ||
             this.state.OnManipulationStarted ||
             this.state.OnManipulationDelta ||
@@ -113,8 +114,7 @@ export class FrameworkElement<
         //onContextMenu={(event) => event.preventDefault()}
         return (
             <div
-                ref={r => this.Container = r}
-                tabIndex={this.state.TabIndex}
+                ref={r => this.Container = r}                
                 style={this.getCSSStyles()}                
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
@@ -122,16 +122,19 @@ export class FrameworkElement<
                 onClick={this.state.OnClick
                     ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
                     : undefined}
+                onKeyPress={this.state.OnKeyPress
+                    ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
+                    : undefined}
                 onPointerMove={this.state.OnPointerMove || this._gestureHandlers
-                    ? (event) => this.OnPointerMove(event)                        
+                    ? (event) => this.OnPointerMove(event)
                     : undefined}
                 onPointerDown={this.state.OnPointerDown || this._gestureHandlers
-                    ? (event) => this.OnPointerDown(event)                        
+                    ? (event) => this.OnPointerDown(event)
                     : undefined}
                 onPointerUp={this.state.OnPointerUp || this._gestureHandlers
-                    ? (event) => this.OnPointerUp(event)                        
+                    ? (event) => this.OnPointerUp(event)
                     : undefined}
-                onLostPointerCapture={this.state.OnLostPointerCapture 
+                onLostPointerCapture={this.state.OnLostPointerCapture
                     ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
                     : undefined}
                 onPointerLeave={this.state.OnPointerLeave || this._gestureHandlers
@@ -143,7 +146,9 @@ export class FrameworkElement<
                 onPointerOut={this.state.OnPointerOut || this._gestureHandlers
                     ? (event) => this.OnPointerOut(event)
                     : undefined}
-                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}>
+                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
+                tabIndex={this.state.TabIndex}
+            >
                 {
                     this.state.IsLoading && this.state.LoadingTemplate
                         ? this.state.LoadingTemplate()
@@ -173,7 +178,7 @@ export class FrameworkElement<
             return;        
         this._isRenderValid = false;
         this.OnInvalidateRender();
-        this.setState((state, props) => 
+        this.setState((state, props) =>
         {
             return {};
         });
@@ -184,8 +189,8 @@ export class FrameworkElement<
      * having to expose bindable props, returning the most recent bound value.
      * As such it should typically called during render, the return value then
      * being used in place of an explicit state variable. (It is safe to call
-     * this during each render, as the binding is not duplicated provided the 
-     * parameters do not change). 
+     * this during each render, as the binding is not duplicated provided the
+     * parameters do not change).
      * @param parameters The binding parameters.
      * @param stateVar The name of the state variable to which to bind. If
      * not supplied, a name will be derived from the binding parameters. If
@@ -195,8 +200,8 @@ export class FrameworkElement<
      */
     public BindState(parameters: BindingParameters, stateVar?: string): any
     {
-        // Inline Binding. Binding function returns a value 
-        // immediately and also binds state for future update                
+        // Inline Binding. Binding function returns a value
+        // immediately and also binds state for future update
         return Antimatter.BindState(this, parameters, stateVar);
     }
 
@@ -239,26 +244,26 @@ export class FrameworkElement<
     }
 
     /**
-     * Sets a single state variable value for the element, replacing 
-     * Component.setState. This is most typically used for two-way binding 
-     * situations to notify the Model side of a UI-driven change (like a button 
-     * click). Any Model properties two-way bound to this state variable will 
-     * be updated Model-side, but will not result in a new render of this 
-     * element unless other bound Model values wind up updating Model-side as a 
+     * Sets a single state variable value for the element, replacing
+     * Component.setState. This is most typically used for two-way binding
+     * situations to notify the Model side of a UI-driven change (like a button
+     * click). Any Model properties two-way bound to this state variable will
+     * be updated Model-side, but will not result in a new render of this
+     * element unless other bound Model values wind up updating Model-side as a
      * consequence of this update. Also note that unlike setState, state
-     * variables are guaranteed to immediately reflect their new values after 
+     * variables are guaranteed to immediately reflect their new values after
      * calling this function. Finally note that this element's OnPropertyChanged
-     * function will NOT be called as a result of this function, since the 
+     * function will NOT be called as a result of this function, since the
      * function should only be called in response to UI-side events like input
      * rather than from prop or Model-side changes.
      * @param stateVar The name of the state variable to set.
      * @param newValue The new value.
      * @param reRender Whether to force a re-render. Unlike a source-drvien
-     * binding update, a target-driven update will not necessarily result in a new 
+     * binding update, a target-driven update will not necessarily result in a new
      * render of this element unless this argument is explicitly set to true. This
      * is because it is presumed that the UI has already given visual feedback
-     * in response to the user input. (For example, an input field immediately 
-     * reflects typed text; there is no need to re-render when updating the 
+     * in response to the user input. (For example, an input field immediately
+     * reflects typed text; there is no need to re-render when updating the
      * Model side with the new text).
      */
     public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean): void =>
@@ -316,7 +321,7 @@ export class FrameworkElement<
         this._calledLoaded = true;
         await Antimatter.Server.ExecuteICommand(
             this.state.LoadedCommand as ModelObjectReference,
-            ModelValue.Get(this.GetLoadedCommandParameter()));        
+            ModelValue.Get(this.GetLoadedCommandParameter()));
         this.OnLoaded();
     }
 
@@ -411,7 +416,7 @@ export class FrameworkElement<
         }
 
         if (this.state.Overlaps)
-            cls += "amx-ptn-overlaps ";       
+            cls += "amx-ptn-overlaps ";
 
         return cls;
     }

@@ -95,10 +95,70 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
+        //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
 
-        #region Employee[] SelectedEmployees property
-        private Employee[] _SelectedEmployees;
-        public Employee[] SelectedEmployees
+        public IEnumerable<Employee> SomeEmployees => Employees.Take(50);
+
+        public IEnumerable<string> SomeEmployeeNames
+            => SomeEmployees.Select(e => e.FullName);
+        //{
+        //    get
+        //    {
+        //        return SomeEmployees.Select(e => e.FullName);
+        //    }
+        //}
+
+
+        public IEnumerable<Employee> SomeMoreEmployees => Employees.Take(200);
+        public IEnumerable<string> SomeMoreEmployeeNames => SomeMoreEmployees.Select(e => e.FullName);
+
+        #region Employee SelectedEmployeeName property
+        private string _SelectedEmployeeName;
+        public string SelectedEmployeeName
+        {
+            get
+            {
+                return _SelectedEmployeeName;
+            }
+            set
+            {
+                if (_SelectedEmployeeName == value)
+                    return;
+                _SelectedEmployeeName = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        public ObservableCollection<string> SelectedEmployeeNames
+        {
+            get;
+            set;
+        } = new ObservableCollection<string>();
+
+        //#region Employee[] SelectedEmployees property
+        //private Employee[] _SelectedEmployees = new Employee[] { };
+        //public Employee[] SelectedEmployees
+        //{
+        //    get
+        //    {
+        //        return _SelectedEmployees;
+        //    }
+        //    set
+        //    {
+        //        if (_SelectedEmployees != value)
+        //        {
+        //            _SelectedEmployees = value;
+        //            OnPropertyChanged();
+        //            OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+        //        }
+        //    }
+        //}
+        //#endregion
+
+        #region ObservableCollection<Employee> SelectedEmployees property
+        private ObservableCollection<Employee> _SelectedEmployees;
+        public ObservableCollection<Employee> SelectedEmployees
         {
             get
             {
@@ -110,11 +170,36 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     _SelectedEmployees = value;
                     OnPropertyChanged();
-                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Length > 0;
+                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Count > 0;
                 }
             }
         }
         #endregion
+
+        //private ObservableCollection<Employee> _SelectedEmployees = new ObservableCollection<Employee>();
+        //public ObservableCollection<Employee> SelectedEmployees
+        //{
+        //    get { return _SelectedEmployees; }
+        //    set {
+        //        if (_SelectedEmployees == value)
+        //            return;
+        //        _SelectedEmployees = value;
+        //        OnPropertyChanged();
+        //        OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+        //    }
+        //}
+
+        public string SelectedEmployeesDisplayText
+        {
+            get
+            {
+                if (SelectedEmployees == null || SelectedEmployees.Count == 0)
+                    return "No employees (plural) selected";
+
+                string joined = string.Join(", ", SelectedEmployees.Select(e => e?.LastName ?? "[NOT FOUND]"));
+                return joined;
+            }
+        }
 
         #region bool IsAllSelected property
         private bool _IsAllSelected;
@@ -202,7 +287,9 @@ namespace AntimatterJS.Sample.AppModel
                 return _NewEmployeeCommand ?? (_NewEmployeeCommand = new Command(
                     (arg) =>
                     {
-                        this.Employees.Insert(0, new Employee(this, "New", "Employee", 20));
+                        var newEmployee = new Employee(this, "New", "Employee", 20);
+                        this.Employees.Insert(0, newEmployee);
+                        //SomeEmployees.Insert(0, newEmployee);
                     })
                 {
                     Name = "New Employee",
@@ -223,7 +310,7 @@ namespace AntimatterJS.Sample.AppModel
                 return _DeleteSelectedEmployeesCommand ?? (_DeleteSelectedEmployeesCommand = new Command(
                     (arg) =>
                     {
-                        if (this.SelectedEmployees == null || this.SelectedEmployees.Length == 0)
+                        if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
                             return;
                         foreach (var empl in SelectedEmployees)
                             this.Employees.Remove(empl);
@@ -278,7 +365,31 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectedEmployeeChangedCommand ?? (_SelectedEmployeeChangedCommand = new Command(
                     (arg) =>
                     {
-                        ;
+                    })
+                {
+                });
+            }
+        }
+
+        #endregion
+
+        #region IUICommand SelectedEmployeesChanged Command
+
+        private Command _SelectedEmployeesChangedCommand;
+        public Command SelectedEmployeesChangedCommand
+        {
+            get
+            {
+                return _SelectedEmployeesChangedCommand ?? (_SelectedEmployeesChangedCommand = new Command(
+                    (arg) =>
+                    {
+                        OnPropertyChanged(nameof(SelectedEmployees));
+                        OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+
+                        foreach (Employee e in Employees)
+                        {
+                            e.IsMultiSelected = SelectedEmployees.Contains(e);
+                        }
                     })
                 {
                 });
