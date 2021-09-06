@@ -4,6 +4,7 @@ import { Binding, BindingMode, INotifyPropertyChanged, PropertyChangedEventArgs 
 import { DefaultEffects } from "@fluentui/react";
 
 import { CommandButton, PinnablePanelState, DocumentViewer, Grid, HorizontalAlignment, IDocument, IViewProps, IViewState, Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility, Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase } from "@antimatterjs/positron";
+import { Employee } from "./Company";
 
 interface IPinnablePanelTestState extends IViewState
 {
@@ -33,14 +34,13 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
             new PropertyChangedEventArgs(nameof(this.PinState)));
     }  
     
-    Template(): JSX.Element
+    View(): JSX.Element
     {        
         return (
             <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                 <StackPanel
                     Grid={{ Column: 0 }}
                     VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-                    <TextBlock Text="Some Main Content" />
                     <CommandButton Label="Open Panel"
                         Command={() => this.PinState = PinnablePanelState.Floating}
                         IsEnabled={new Binding({
@@ -48,6 +48,10 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                             Source: this,
                             Converter: (state: PinnablePanelState) => state === PinnablePanelState.Collapsed
                         })} />
+
+                    <Employee Value={new Binding("Company.CEO")} />
+
+
                 </StackPanel>
 
                 <PinnablePanel

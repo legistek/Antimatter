@@ -22,7 +22,7 @@ export default class DataGridTest extends View
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     ));
 
-    Template(): JSX.Element
+    View(): JSX.Element
     {
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>

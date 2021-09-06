@@ -3,7 +3,7 @@ import { withRouter } from 'react-router';
 
 import { Route } from 'react-router-dom'
 
-import { Antimatter, Binding, Event, ModelObjectReference } from '@antimatterjs/react';
+import { Antimatter, Binding, Event, ModelObjectReference, ReactDataContext } from '@antimatterjs/react';
 
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
@@ -12,17 +12,20 @@ import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
 import { FrameworkElement } from '../FrameworkElement';
+import { CSSClasses } from '../CSSClasses';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
 export interface IWindowProps extends IPanelProps
 {
+    Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[] | Binding;
     Layout?: WindowLayout;
 }
 
 export interface IWindowState extends IPanelState
 {
+    Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[];
     Layout?: WindowLayout;
 }
@@ -95,21 +98,24 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
     /* override */ constructClasses() : string
     {
-        return super.constructClasses() + "amx-ptn-root ";
+        return super.constructClasses() + `${CSSClasses.Root} `;
     }
 
     /* override */ renderElement(): JSX.Element | null
     {
+        (this.state as any)["DataContext"] = this.state.Model;                                  
         return (
-            <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>                
-                <ItemsControl
-                    ItemsSource={this.state.Dialogs || []}
-                    VerticalAlignment={VerticalAlignment.Bottom}
-                    Overlaps={true}
-                    ItemTemplate={this._dialogTemplate}>
-                </ItemsControl>
-                {super.renderElement()}
-            </WindowLayoutContext.Provider>
+            <ReactDataContext.Provider value={this.state.Model}>
+                <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>                
+                    <ItemsControl
+                        ItemsSource={this.state.Dialogs || []}
+                        VerticalAlignment={VerticalAlignment.Bottom}
+                        Overlaps={true}
+                        ItemTemplate={this._dialogTemplate}>
+                    </ItemsControl>
+                    {super.renderElement()}
+                </WindowLayoutContext.Provider>
+            </ReactDataContext.Provider>
         );
     }
 

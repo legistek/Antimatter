@@ -13,6 +13,7 @@ import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEv
 import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
 import { Style } from './Style';
+import { CSSClasses } from './CSSClasses';
 
 
 interface IFrameworkElementCommon
@@ -67,6 +68,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     IsLoading?: boolean,
     OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),    
     OnWillUnmount?: ModelObjectReference,
+    TemplatedParent?: FrameworkElement
 }
 
 export class FrameworkElement<
@@ -114,8 +116,8 @@ export class FrameworkElement<
         //onContextMenu={(event) => event.preventDefault()}
         return (
             <div
-                ref={r => this.Container = r}                
-                style={this.getCSSStyles()}                
+                ref={r => this.Container = r}
+                style={this.getCSSStyles()}
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
                     : undefined}
@@ -379,44 +381,44 @@ export class FrameworkElement<
     
     protected /* virtual */ constructClasses(): string
     {
-        let cls: string = ' amx-ptn-fe ';
+        let cls: string = ` ${CSSClasses.Base} `;
 
         switch (this.ActualHorizontalAlignment)
         {
             case HorizontalAlignment.Center:
-                cls += "amx-ptn-ha-center ";
+                cls += `${CSSClasses.HACenter} `;
                 break;
             case HorizontalAlignment.Left:
-                cls += "amx-ptn-ha-left ";
+                cls += `${CSSClasses.HALeft} `;
                 break;
             case HorizontalAlignment.Right:
-                cls += "amx-ptn-ha-right ";
+                cls += `${CSSClasses.HARight} `;
                 break;
             case undefined:
             default:
-                cls += "amx-ptn-ha-stretch ";
+                cls += `${CSSClasses.HAStretch} `;
                 break;
         }
 
         switch (this.ActualVerticalAlignment)
         {
             case VerticalAlignment.Center:
-                cls += "amx-ptn-va-center ";
+                cls += `${CSSClasses.VACenter} `;
                 break;
             case VerticalAlignment.Top:
-                cls += "amx-ptn-va-top ";
+                cls += `${CSSClasses.VATop} `;
                 break;
             case VerticalAlignment.Bottom:
-                cls += "amx-ptn-va-bottom ";
+                cls += `${CSSClasses.VABottom} `;
                 break;
             case VerticalAlignment.Stretch:
             case undefined:
-                cls += "amx-ptn-va-stretch ";
+                cls += `${CSSClasses.VAStretch} `;
                 break;
         }
 
         if (this.state.Overlaps)
-            cls += "amx-ptn-overlaps ";
+            cls += `${CSSClasses.Overlaps} `;
 
         return cls;
     }

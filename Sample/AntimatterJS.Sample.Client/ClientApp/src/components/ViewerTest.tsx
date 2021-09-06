@@ -11,7 +11,7 @@ export default class ViewerTest extends View
         this.LoadPDFAsync();
     }
 
-    Template(): JSX.Element
+    View(): JSX.Element
     {
         return (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>

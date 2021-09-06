@@ -9,6 +9,7 @@ import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IResizePanelProps extends IControlProps
 {
+    SizerFill?: string,
     ResizerSide?: Side,
     Size?: number | Binding,
     CanResize?: boolean | Binding,
@@ -16,6 +17,7 @@ export interface IResizePanelProps extends IControlProps
 }
 export interface IResizePanelState extends IControlState
 {
+    SizerFill?: string,
     ResizerSide?: Side,
     Size?: number,
     CanResize?: boolean,
@@ -73,11 +75,15 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         {
             Thickness: 5,
             CanResize: true,
+            SizerFill: "transparent",
             Template: new ControlTemplate((templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>) =>
-            {
-                console.log(`Width now: ${templatedParent.state.Size}`);
+            {                
                 return (
                     <Grid
+                        Background={templatedParent.state.Background}
+                        BorderBrush={templatedParent.state.BorderBrush}
+                        BorderThickness={templatedParent.state.BorderThickness}
+                        BoxShadow={templatedParent.state.BoxShadow}
                         ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
                         RowDefinitions={templatedParent.ComputeRowDefinitions()}>
                         {
@@ -255,7 +261,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         return (
             <Grid
                 Grid={templatedParent.ComputeResizerGridPosition()}
-                Background={templatedParent.state.Background}
+                Background={templatedParent.state.SizerFill}
                 OnPointerDown={e => templatedParent.OnSizerPointerDown(e)}
                 OnPointerUp={e => templatedParent.OnSizerPointerUp(e)}
                 OnLostPointerCapture={e => templatedParent.OnSizerPointerUp(e)}
@@ -267,10 +273,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
 
     private ConstructChildElement(templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>): JSX.Element
     {
-        return (<Grid
-            BorderBrush={templatedParent.state.BorderBrush}
-            BorderThickness={templatedParent.state.BorderThickness}
-            BoxShadow={templatedParent.state.BoxShadow}
+        return (<Grid            
             Grid={templatedParent.ComputeChildGridPosition()}>
             {templatedParent.props.children}
         </Grid>);

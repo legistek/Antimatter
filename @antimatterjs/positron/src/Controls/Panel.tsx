@@ -4,6 +4,7 @@ import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
+import { CSSClasses } from '../CSSClasses';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
@@ -64,11 +65,11 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
 
     /* override */ constructClasses() : string
     {
-        return "amx-ptn-panel " +
+        return `${CSSClasses.Panel} ` +
             ((this.state.HorizontalScrollBarVisibility && this.state.HorizontalScrollBarVisibility !== ScrollBarVisibility.Hidden)
-                ? "amx-ptn-hscroll " : "") +
+                ? `${CSSClasses.HScroll} ` : "") +
             ((this.state.VerticalScrollBarVisibility && this.state.VerticalScrollBarVisibility !== ScrollBarVisibility.Hidden)
-                ? "amx-ptn-vscroll " : "") +
+                ? `${CSSClasses.VScroll} ` : "") +
             super.constructClasses();
     }
 

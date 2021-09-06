@@ -101,7 +101,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     render()
     {
         return (
-            <Window Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
+            <Window
+                Model={this.state.Model}
+                Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
                     <TabControl Style={TabControl.DefaultStyle}
                         Tabs={
                             [
@@ -113,7 +115,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Key: "company",
                                     Description: "Edit company details",
                                     Content: (
-                                        <DataContext Value={new Binding({ Path: "Company", Source: this.state.Model })}>
+                                        <DataContext Value={new Binding("Company")}>
                                             <Company />
                                         </DataContext>
                                     )
@@ -126,7 +128,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "red",
                                     Key: "pdfviewer",
                                     Description: "Test PDF Viewer",
-                                    Content: (<ViewerTest ViewModel={new Binding({ Source: this.state.Model })}/>)
+                                    Content: (<ViewerTest />)
                                 },
                                 {
                                     Label: "Data Grid",
@@ -135,11 +137,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconForeground: "white",
                                     Key: "datagrid",
                                     Content: (                                        
-                                        <DataGridTest ViewModel={
-                                            new Binding(
-                                            {
-                                                Path: "Company", Source: this.state.Model
-                                            })} />                                        
+                                        <DataGridTest ViewModel={new Binding("Company")} />                                        
                                     )
                                 },
                                 {

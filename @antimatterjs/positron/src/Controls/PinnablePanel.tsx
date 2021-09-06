@@ -11,7 +11,8 @@ import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { ResizePanel } from './ResizePanel';
 import { DefaultEffects, getTheme, MotionAnimations } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
-import { template } from '@babel/core';
+import { CSSClasses } from '../CSSClasses';
+
 
 export enum PinnablePanelState
 {
@@ -26,9 +27,12 @@ export interface IPinnablePanelProps extends IControlProps
     IsModal?: boolean,
     Side?: Side,
     Size?: number | Binding,
-    CanResizeWhenPinned?: boolean | Binding,
+    CanResize?: boolean | Binding,
     OnCollapse?: () => void,
+    IsCollapseButtonVisible?: boolean | Binding,
     CollapseButtonIcon?: number | string | Binding,
+    IsPinButtonVisible?: boolean | Binding,
+    PinButtonIcon?: number | string | Binding,
 }
 
 export interface IPinnablePanelState extends IControlState
@@ -36,10 +40,13 @@ export interface IPinnablePanelState extends IControlState
     State?: PinnablePanelState,
     IsModal?: boolean,
     Side?: Side,
-    Size?: number,
-    CanResizeWhenPinned?: boolean,
+    Size?: number,    
+    CanResize?: boolean,
     OnCollapse?: () => void,
     CollapseButtonIcon?: number | string,
+    IsCollapseButtonVisible?: boolean,
+    PinButtonIcon?: number | string,    
+    IsPinButtonVisible?: boolean,
 }
 
 export class PinnablePanelBase<P extends IPinnablePanelProps,
@@ -52,9 +59,12 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             State: PinnablePanelState.Pinned,
             Size: 200,
             IsModal: true,
+            IsCollapseButtonVisible: true,
+            IsPinButtonVisible: true,
             BorderThickness: "1px",
+            PinButtonIcon: "pin",
             BorderBrush: PinnablePanelBase.theme.semanticColors.bodyFrameDivider,
-            CanResizeWhenPinned: true,
+            CanResize: true,
             Background: PinnablePanelBase.theme.semanticColors.bodyBackground,
             Template: (templatedParent: PinnablePanel) =>
             {
@@ -79,17 +89,20 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                 Mode: BindingMode.TwoWay
                             })}
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
-                            CanResize={templatedParent.state.CanResizeWhenPinned}>
+                            CanResize={templatedParent.state.CanResize}>
                             {templatedParent.props.children}
-                            <CommandButton
-                                Margin="5px"
-                                Style={CommandButton.IconButtonStyle}
-                                Icon={templatedParent.GetCollapseButtonIcon()}
-                                Overlaps={true}
-                                Padding="0"
-                                HorizontalAlignment={templatedParent.GetCollapseButtonHAlign()}
-                                VerticalAlignment={templatedParent.GetCollapseButtonVAlign()}
-                                Command={() => templatedParent.Collapse(false)} />
+                            {
+                                templatedParent.state.IsCollapseButtonVisible &&
+                                (<CommandButton
+                                    Margin="5px"
+                                    Style={CommandButton.IconButtonStyle}
+                                    Icon={templatedParent.GetCollapseButtonIcon()}
+                                    Overlaps={true}
+                                    Padding="0"
+                                    HorizontalAlignment={templatedParent.GetCollapseButtonHAlign()}
+                                    VerticalAlignment={templatedParent.GetCollapseButtonVAlign()}
+                                    Command={() => templatedParent.Collapse(false)} />)
+                            }
                         </ResizePanel>
                     );
                 }
@@ -102,7 +115,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                 ClassName="modal-panel"
                                 Background="rgba(255,255,255,0.5"
                                 Grid={{ Column: 0 }} />)}
-                        <Panel
+                        <ResizePanel                            
                             Grid={{Column: 1}}
                             ref={(r) =>
                             {
@@ -122,30 +135,34 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             }}
                             ClassName={templatedParent.GetFloatPanelClassName()}
                             Background={templatedParent.state.Background}
-                            Width={(templatedParent.state.Side === Side.Left || templatedParent.state.Side === Side.Right)
-                                    ? templatedParent.Size
-                                : undefined}
-                            Height={(templatedParent.state.Side === Side.Top || templatedParent.state.Side === Side.Bottom)
-                                ? templatedParent.Size
-                                : undefined}
+                            Size={new Binding({
+                                Source: templatedParent,
+                                Path: nameof(templatedParent.state.Size),
+                                Mode: BindingMode.TwoWay
+                            })}                            
+                            ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
+                            CanResize={templatedParent.state.CanResize}
                             BorderBrush={templatedParent.state.BorderBrush}
                             BorderThickness={templatedParent.state.BorderThickness}>
                             {templatedParent.props.children}
-                            <CommandButton
-                                Margin="5px"
-                                Style={CommandButton.IconButtonStyle}
-                                Icon="pin"
-                                Overlaps={true}
-                                Padding="0"
-                                HorizontalAlignment={templatedParent.GetCollapseButtonHAlign()}
-                                VerticalAlignment={templatedParent.GetCollapseButtonVAlign()}
-                                Command={() => templatedParent.SetValue(nameof(templatedParent.state.State), PinnablePanelState.Pinned)} />
-                        </Panel>
+                            {
+                                templatedParent.state.IsPinButtonVisible &&
+                                <CommandButton
+                                    Margin="5px"
+                                    Style={CommandButton.IconButtonStyle}
+                                    Icon={templatedParent.state.PinButtonIcon}
+                                    Overlaps={true}
+                                    Padding="0"
+                                    HorizontalAlignment={templatedParent.GetCollapseButtonHAlign()}
+                                    VerticalAlignment={templatedParent.GetCollapseButtonVAlign()}
+                                    Command={() => templatedParent.SetValue(nameof(templatedParent.state.State), PinnablePanelState.Pinned)} />
+                            }
+                        </ResizePanel>
                     </Grid>);
             }
         },
         {
-            Selector: "@.amx-ptn-overlaps",
+            Selector: `@.${CSSClasses.Overlaps}`,
             Rules: {
                 zIndex: 99999,                
             },
@@ -274,7 +291,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
     constructClasses()
     {
         return super.constructClasses() +
-            (this.state.State === PinnablePanelState.Floating ? "amx-ptn-overlaps " : "");
+            (this.state.State === PinnablePanelState.Floating ? `${CSSClasses.Overlaps} ` : "");
     }
 
     getCSSStyles()
@@ -288,7 +305,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
         return styles;
     }
 
-    private _floatPanel: Panel | null = null;
+    private _floatPanel: ResizePanel | null = null;
     private _modalPanel: Panel | null = null;
 }
 
