@@ -266,6 +266,8 @@ export class FrameworkElement<
         if (this.state[stateVar] === newValue)
             return;
         Antimatter.TargetChanged(this, stateVar, newValue, reRender);
+
+        // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }
 
     protected readonly GetValue = (property: string): any =>

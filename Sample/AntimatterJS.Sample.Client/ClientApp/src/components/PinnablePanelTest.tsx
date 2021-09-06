@@ -40,7 +40,7 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                 <StackPanel
                     Grid={{ Column: 0 }}
                     VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-                    <TextBlock Text="Some Content" />
+                    <TextBlock Text="Some Main Content" />
                     <CommandButton Label="Open Panel"
                         Command={() => this.PinState = PinnablePanelState.Floating}
                         IsEnabled={new Binding({
@@ -58,7 +58,9 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                     })}
                     Side={Side.Right}
                     Grid={{ Column: 1 }}>
-                    <TextBlock Margin="5px 5px 5px 30px" Text="Pinned Content" />
+                    <TextBlock
+                        Margin="5px 5px 5px 30px"
+                        Text="Some Panel Content" />
                 </PinnablePanel>
 
 

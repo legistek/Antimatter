@@ -144,8 +144,8 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                 },
                                 {
                                     Label: "Panels",
-                                    Icon: "GridViewSmall",
-                                    IconBackground: "yellow",
+                                    Icon: "SidePanelMirrored",
+                                    IconBackground: "orange",
                                     IconForeground: "white",
                                     Key: "panels",
                                     Padding: "0px",

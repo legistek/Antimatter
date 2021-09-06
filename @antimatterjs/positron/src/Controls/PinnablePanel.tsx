@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, BindingMode, RelativeSourceMode, Utilities } from '@antimatterjs/react';
+import { Binding, BindingMode, PropertyChangedEventArgs, RelativeSourceMode, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 import { StackPanel } from './StackPanel';
@@ -9,7 +9,7 @@ import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { ResizePanel } from './ResizePanel';
-import { DefaultEffects, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, getTheme, MotionAnimations } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
 import { template } from '@babel/core';
 
@@ -45,15 +45,17 @@ export interface IPinnablePanelState extends IControlState
 export class PinnablePanelBase<P extends IPinnablePanelProps,
     S extends IPinnablePanelState> extends Control<P, S>
 {
+    static theme = getTheme();
+
     public static DefaultStyle: Style<IPinnablePanelProps> = new Style<IPinnablePanelProps>(
         {
             State: PinnablePanelState.Pinned,
             Size: 200,
             IsModal: true,
             BorderThickness: "1px",
-            BorderBrush: "lightgray",
+            BorderBrush: PinnablePanelBase.theme.semanticColors.bodyFrameDivider,
             CanResizeWhenPinned: true,
-            Background: "white",            
+            Background: PinnablePanelBase.theme.semanticColors.bodyBackground,
             Template: (templatedParent: PinnablePanel) =>
             {
                 if (!templatedParent.state.State)
@@ -71,7 +73,11 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             BorderThickness={templatedParent.state.BorderThickness}
                             BoxShadow={templatedParent.state.BoxShadow}
                             Thickness={7}
-                            Size={templatedParent.state.Size}
+                            Size={new Binding({
+                                Source: templatedParent,
+                                Path: nameof(templatedParent.state.Size),
+                                Mode: BindingMode.TwoWay
+                            })}
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResizeWhenPinned}>
                             {templatedParent.props.children}
@@ -83,7 +89,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                 Padding="0"
                                 HorizontalAlignment={templatedParent.GetCollapseButtonHAlign()}
                                 VerticalAlignment={templatedParent.GetCollapseButtonVAlign()}
-                                Command={() => templatedParent.SetValue(nameof(templatedParent.state.State), PinnablePanelState.Collapsed)} />
+                                Command={() => templatedParent.Collapse(false)} />
                         </ResizePanel>
                     );
                 }
@@ -91,7 +97,9 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                 return (
                     <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                         {templatedParent.state.IsModal &&
-                            (<Panel                            
+                            (<Panel
+                                ref={(r) => templatedParent._modalPanel = r}
+                                ClassName="modal-panel"
                                 Background="rgba(255,255,255,0.5"
                                 Grid={{ Column: 0 }} />)}
                         <Panel
@@ -108,17 +116,17 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                         if (!e.currentTarget)
                                             return;
                                         if (!(e.currentTarget as any).contains(e.relatedTarget))
-                                            templatedParent.Collapse();
+                                            templatedParent.Collapse(true);
                                     };
                                 }
                             }}
                             ClassName={templatedParent.GetFloatPanelClassName()}
                             Background={templatedParent.state.Background}
                             Width={(templatedParent.state.Side === Side.Left || templatedParent.state.Side === Side.Right)
-                                    ? templatedParent.state.Size
+                                    ? templatedParent.Size
                                 : undefined}
                             Height={(templatedParent.state.Side === Side.Top || templatedParent.state.Side === Side.Bottom)
-                                ? templatedParent.state.Size
+                                ? templatedParent.Size
                                 : undefined}
                             BorderBrush={templatedParent.state.BorderBrush}
                             BorderThickness={templatedParent.state.BorderThickness}>
@@ -147,7 +155,8 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             Rules: {
                 animation: `${MotionAnimations.slideRightIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",
-                marginRight: "10px"
+                //marginRight: "20px",
+                zIndex: 99999
             }
         },
         {
@@ -155,20 +164,48 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             Rules: {
                 animation: `${MotionAnimations.slideLeftIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "-4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",                
-                marginLeft: "10px"
+                //marginLeft: "20px",
+                zIndex: 99999
+            }
+        },
+        {
+            Selector: "@ .modal-panel",
+            Rules: {
+                animation: `${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }
         }
     );
+
+    public get Size(): number
+    {
+        return this.state.Size as number;
+    }
+    public set Size(value: number)
+    {
+        this.SetValue(nameof(this.state.Size), value);
+        this.PropertyChanged.invoke(
+            this,
+            new PropertyChangedEventArgs(nameof(this.state.Size)));
+    }
     
-    private async Collapse()
+    private async Collapse(floating: boolean)
     {        
-        if (this._floatPanel?.Container)
+        if (floating)
         {
-            this._floatPanel.Container.style.animation = `${MotionAnimations.slideRightOut.replace("100ms", "400ms")}, ${MotionAnimations.fadeOut.replace("100ms", "400ms")}`;
-            this._floatPanel.Container.style.animationFillMode = 'forwards';
+            if (this._floatPanel?.Container)
+            {
+                this._floatPanel.Container.style.animation = `${MotionAnimations.slideRightOut.replace("100ms", "400ms")}, ${MotionAnimations.fadeOut.replace("100ms", "400ms")}`;
+                this._floatPanel.Container.style.animationFillMode = 'forwards';
+            }
+            if (this._modalPanel?.Container)
+            {
+                this._modalPanel.Container.style.animation = `${MotionAnimations.fadeOut.replace("100ms", "400ms")}`;
+                this._modalPanel.Container.style.animationFillMode = 'forwards';
+            }
             await Utilities.SleepAsync(400);
-            this.SetValue(nameof(this.state.State), PinnablePanelState.Collapsed);
-        }
+        }               
+        
+        this.SetValue(nameof(this.state.State), PinnablePanelState.Collapsed);
     }
     
     private GetFloatPanelClassName(): string
@@ -252,6 +289,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
     }
 
     private _floatPanel: Panel | null = null;
+    private _modalPanel: Panel | null = null;
 }
 
 export class PinnablePanel extends PinnablePanelBase<IPinnablePanelProps, IPinnablePanelState>
