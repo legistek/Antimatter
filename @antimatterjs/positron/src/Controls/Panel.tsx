@@ -7,6 +7,8 @@ import { ScrollBarVisibility } from '../Enums';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
+    Width?: number | Binding,
+    Height?: number | Binding,
     Background?: string|Binding,
     BorderBrush?: string|Binding,
     BorderThickness?: string | Binding,
@@ -20,6 +22,8 @@ export interface IPanelProps extends IFrameworkElementProps
 
 export interface IPanelState extends IFrameworkElementState
 {
+    Width?: number | Binding,
+    Height?: number | Binding,
     Background?: string,
     BorderBrush?: string,
     BorderThickness?: string,
@@ -43,6 +47,8 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
     /* override */ getCSSStyles() : React.CSSProperties
     {
         var styles = {
+            width: this.state.Width,
+            height: this.state.Height,
             color: this.state.Foreground,
             background: this.state.Background,
             borderColor: this.state.BorderBrush,

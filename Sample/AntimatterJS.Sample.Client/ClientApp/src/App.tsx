@@ -148,6 +148,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "yellow",
                                     IconForeground: "white",
                                     Key: "panels",
+                                    Padding: "0px",
                                     Content: (
                                         <PinnablePanelTest />
                                     )

@@ -20,9 +20,8 @@ interface IFrameworkElementCommon
     // Use only for control development; never use for cross-platform views
     ClassName?: string,
     Style?: Style<any>,    
-    Margin?: string,    
-    HorizontalAlignment?: HorizontalAlignment,
-    VerticalAlignment?: VerticalAlignment,
+    Margin?: string,
+    TabIndex?: number,
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -43,7 +42,9 @@ interface IFrameworkElementCommon
 }
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
-{    
+{
+    HorizontalAlignment?: HorizontalAlignment |Binding,
+    VerticalAlignment?: VerticalAlignment|Binding,
     IsVisible?: boolean | Binding,
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
@@ -55,6 +56,8 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
+    HorizontalAlignment?: HorizontalAlignment,
+    VerticalAlignment?: VerticalAlignment,
     IsVisible?: boolean,
     IsHitTestVisible?: boolean,
     ToolTip?: string | JSX.Element,
@@ -111,6 +114,7 @@ export class FrameworkElement<
         return (
             <div
                 ref={r => this.Container = r}
+                tabIndex={this.state.TabIndex}
                 style={this.getCSSStyles()}                
                 onScroll={this.state.OnScroll
                     ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
@@ -291,7 +295,7 @@ export class FrameworkElement<
         {
             //styles.transform = this.state.Transform.ToCSS();
             styles.transformOrigin = "0px 0px";
-        }
+        }        
         return styles;
     }
 
@@ -340,6 +344,20 @@ export class FrameworkElement<
     {
     }
 
+    protected /* virtual */ get ActualHorizontalAlignment(): HorizontalAlignment
+    {
+        return (this.state.HorizontalAlignment as HorizontalAlignment) === undefined
+            ? HorizontalAlignment.Stretch
+            : this.state.HorizontalAlignment as HorizontalAlignment;
+    }
+
+    protected /* virtual */ get ActualVerticalAlignment(): VerticalAlignment
+    {
+        return (this.state.VerticalAlignment as VerticalAlignment) === undefined
+            ? VerticalAlignment.Stretch
+            : this.state.VerticalAlignment as VerticalAlignment;
+    }
+
     readonly componentDidMount = () =>
     {
         this.OnComponentMount();
@@ -356,7 +374,7 @@ export class FrameworkElement<
     {
         let cls: string = ' amx-ptn-fe ';
 
-        switch (this.state.HorizontalAlignment)
+        switch (this.ActualHorizontalAlignment)
         {
             case HorizontalAlignment.Center:
                 cls += "amx-ptn-ha-center ";
@@ -373,7 +391,7 @@ export class FrameworkElement<
                 break;
         }
 
-        switch (this.state.VerticalAlignment)
+        switch (this.ActualVerticalAlignment)
         {
             case VerticalAlignment.Center:
                 cls += "amx-ptn-va-center ";

@@ -117,7 +117,7 @@ export class WebassemblyServer implements IServer
     {
         var type = this.getValueI32(valuePtr + 8) as ModelValueType;
         var value = this.getModelValue(valuePtr, type);
-        BindingExpression.OnExternalSourceValueChanged(bxIndex, value, type);
+        BindingExpression.OnModelValueChanged(bxIndex, value, type);
     }
 
     public NavigateTo(route: string)

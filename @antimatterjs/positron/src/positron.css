@@ -157,6 +157,11 @@ body {
     position: absolute;
 }
 
+    .amx-ptn-overlaps.amx-ptn-ha-stretch {
+        left: 0;
+        right: 0;
+    }
+
     .amx-ptn-overlaps.amx-ptn-ha-center {
         left: 50%;
         transform: translate(-50%,0);
@@ -164,6 +169,11 @@ body {
 
     .amx-ptn-overlaps.amx-ptn-ha-right {
         right: 0;
+    }
+
+    .amx-ptn-overlaps.amx-ptn-va-stretch {
+        top: 0;
+        bottom: 0;
     }
 
 .amx-ptn-wrap-panel {

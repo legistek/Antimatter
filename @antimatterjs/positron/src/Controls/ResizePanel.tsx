@@ -78,9 +78,6 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
                 console.log(`Width now: ${templatedParent.state.Size}`);
                 return (
                     <Grid
-                        BorderBrush={templatedParent.state.BorderBrush}
-                        BorderThickness={templatedParent.state.BorderThickness}
-                        BoxShadow={templatedParent.state.BoxShadow}
                         ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
                         RowDefinitions={templatedParent.ComputeRowDefinitions()}>
                         {
@@ -270,7 +267,11 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
 
     private ConstructChildElement(templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>): JSX.Element
     {
-        return (<Grid Grid={templatedParent.ComputeChildGridPosition()}>
+        return (<Grid
+            BorderBrush={templatedParent.state.BorderBrush}
+            BorderThickness={templatedParent.state.BorderThickness}
+            BoxShadow={templatedParent.state.BoxShadow}
+            Grid={templatedParent.ComputeChildGridPosition()}>
             {templatedParent.props.children}
         </Grid>);
     }

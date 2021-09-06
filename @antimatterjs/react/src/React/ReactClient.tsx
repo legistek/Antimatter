@@ -14,6 +14,7 @@ import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue, ModelValueType } from '../ModelValue';
 
 import createHistory from "history/createBrowserHistory"
+import { BindingSourceType } from '../BindingSource';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -119,10 +120,27 @@ export class ReactClient implements IClient
             if (exp.Parameters.ConverterBack)
                 newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
             var index = exp.Index;
-            unstable_batchedUpdates(() =>
-            {            
-                Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
-            });
+
+            if (((exp._resolvedSource?.Type || 0) & BindingSourceType.INPC) > 0 &&
+                exp._resolvedSource?.POJO)
+            {
+                exp.SuspendPOJOSourceChangeHandler = true;
+                try
+                {
+                    exp._resolvedSource.POJO[exp.Parameters.Path as string] = newSourceValue;
+                }
+                finally
+                {
+                    exp.SuspendPOJOSourceChangeHandler = false;
+                }
+            }
+            else
+            {
+                unstable_batchedUpdates(() =>
+                {
+                    Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
+                });
+            }
         }
         if (reRender !== false)
         {
