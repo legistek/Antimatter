@@ -11,6 +11,7 @@ import { ItemsControl } from './ItemsControl';
 import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
+import { FrameworkElement } from '../FrameworkElement';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
@@ -112,7 +113,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         );
     }
 
-    /* override */ componentDidMount()
+    /* override */ OnComponentMount()
     {
         // Prevent accidental magnification
         this.Container?.addEventListener("wheel", (e) =>

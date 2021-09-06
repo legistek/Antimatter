@@ -4,7 +4,7 @@ export class BindingParameters
 {
     Target?: any;
     Path?: string;
-    Source?: ModelObjectReference;
+    Source?: any;
     Mode?: BindingMode;
     AffectsRender?: boolean;
     NotifyCollectionChanged?: boolean;

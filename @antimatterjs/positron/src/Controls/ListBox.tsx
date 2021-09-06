@@ -47,13 +47,13 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
             ItemContainerStyle: new Style<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
-                    Template: new ControlTemplate((templatedParent: SelectableItemControlBase) =>
+                    Template: (templatedParent: SelectableItemControlBase) =>
                     (
                         <div className="listboxitem">
                             <>{templatedParent.props.children}</>
                             <div className="listboxitem-border-layer" />
                         </div>
-                    ))
+                    )
                 },
                 {
                     Rules: {

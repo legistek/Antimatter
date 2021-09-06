@@ -113,7 +113,7 @@ export class DocumentPagesPanel extends
         }
     }
 
-    /* override */ componentDidMount()
+    protected /* override */ OnComponentMount()
     {
         var root = this.FindScroller();
         if (!root)

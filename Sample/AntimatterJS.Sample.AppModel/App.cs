@@ -54,7 +54,7 @@ namespace AntimatterJS.Sample.AppModel
                 Age = 50
             };
             this.Company.Employees.Add(this.Company.CEO);
-            AddUnderlings(this.Company.CEO, 8);
+            AddUnderlings(this.Company.CEO, 7);
             this.Company.SelectedEmployee = this.Company.Employees.First();
         }
 

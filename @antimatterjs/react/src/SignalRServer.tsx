@@ -68,7 +68,7 @@ export class SignalRServer implements IServer
     {
         var valueObj = JSON.parse(valueJson) as ModelValue;
         var value = this.getDotNetValue(valueObj);
-        BindingExpression.OnExternalSourceValueChanged(bxIndex, value, valueObj.Type || ModelValueType.Null);
+        BindingExpression.OnModelValueChanged(bxIndex, value, valueObj.Type || ModelValueType.Null);
     }
 
     NavigateTo(route: string)

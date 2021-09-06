@@ -10,21 +10,38 @@ import { ControlTemplate } from '../FrameworkTemplate';
 export interface IResizePanelProps extends IControlProps
 {
     ResizerSide?: Side,
-    Size?: number | Binding,            
+    Size?: number | Binding,
+    CanResize?: boolean | Binding,
     Thickness?: number
 }
 export interface IResizePanelState extends IControlState
 {
     ResizerSide?: Side,
     Size?: number,
+    CanResize?: boolean,
     Thickness?: number
 }
 
-export class ResizePanel<P extends IResizePanelProps = {},
+export class ResizePanelBase<P extends IResizePanelProps = {},
     S extends IResizePanelState = {}>
     extends Control<P,S>
 {
     static theme = getTheme();
+
+    public static Opposite(side: Side): Side
+    {
+        switch (side)
+        {
+            case Side.Bottom:
+                return Side.Top;
+            case Side.Top:
+                return Side.Bottom;
+            case Side.Left:
+                return Side.Right;
+            case Side.Right:
+                return Side.Left;
+        }
+    }
 
     constructor(props)
     {
@@ -55,32 +72,36 @@ export class ResizePanel<P extends IResizePanelProps = {},
     public static DefaultStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
         {
             Thickness: 5,
-            Template: new ControlTemplate((templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>) =>
-            (
-                <Grid
-                    ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
-                    RowDefinitions={templatedParent.ComputeRowDefinitions()}> 
-                    {
-                        // For some f-ed up reason CSS requires the grid children
-                        // to be in order even if you specify the grid-row/column explicitly
-                        templatedParent.state.ResizerSide === Side.Left || templatedParent.state.ResizerSide === Side.Top
-                            ? (<>
+            CanResize: true,
+            Template: new ControlTemplate((templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>) =>
+            {
+                console.log(`Width now: ${templatedParent.state.Size}`);
+                return (
+                    <Grid
+                        ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
+                        RowDefinitions={templatedParent.ComputeRowDefinitions()}>
+                        {
+                            // For some f-ed up reason CSS requires the grid children
+                            // to be in order even if you specify the grid-row/column explicitly
+                            templatedParent.state.ResizerSide === Side.Left || templatedParent.state.ResizerSide === Side.Top
+                                ? (<>
                                     {templatedParent.ConstructSizerElement(templatedParent)}
                                     {templatedParent.ConstructChildElement(templatedParent)}
                                 </>)
-                            : (<>
+                                : (<>
                                     {templatedParent.ConstructChildElement(templatedParent)}
                                     {templatedParent.ConstructSizerElement(templatedParent)}
                                 </>)
-                    }
-                </Grid>
-            )),
+                        }
+                    </Grid>
+                );
+            }),
         },
         {            
             Selector: "@ .sizer.resizing",
             Rules:
             {
-                background: ResizePanel.theme.semanticColors.menuItemBackgroundPressed
+                background: ResizePanelBase.theme.semanticColors.menuItemBackgroundPressed
             }
         },
         {
@@ -94,6 +115,8 @@ export class ResizePanel<P extends IResizePanelProps = {},
 
     /* private */ OnSizerPointerDown(e: PointerEvent)
     {
+        if (!this.state.CanResize)
+            return;
         if (this._isDragging)
             return; // should be impossible
 
@@ -118,7 +141,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
                 break;
         }
 
-        this.InvalidateRender();
+        //this.InvalidateRender();
     }
 
     /* private */ OnSizerPointerMove(e: PointerEvent)
@@ -145,7 +168,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
                 delta = e.pageX - this._dragStartCoord;
                 this.SetValue(nameof(this.state.Size), this._dragStartSize + delta);
                 break;
-        }
+        }        
     }
 
     /* private */ OnSizerPointerUp(e: PointerEvent)
@@ -159,7 +182,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         this.InvalidateRender();
     }
 
-    /* private */ ComputeColumnDefinitions(): IColumnDefinition[]
+    private ComputeColumnDefinitions(): IColumNDefinition[]
     {
         if (this.state.ResizerSide === Side.Left)
             return [Grid.ColumnDefinition(this.state.Thickness), Grid.ColumnDefinition(this.state.Size)];
@@ -169,7 +192,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
             return [];
     }
 
-    /* private */ ComputeRowDefinitions(): IRowDefinition[]
+    private ComputeRowDefinitions(): IRowDefinition[]
     {
         if (this.state.ResizerSide === Side.Top)
             return [Grid.RowDefinition(this.state.Thickness), Grid.RowDefinition(this.state.Size)];
@@ -179,7 +202,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
             return [];
     }
 
-    /* private */ ComputeResizerGridPosition(): IGridChildPosition       
+    private ComputeResizerGridPosition(): IGridChildPosition
     {
         switch (this.state.ResizerSide)
         {
@@ -203,7 +226,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         }
     }
 
-    /* private */ ComputeChildGridPosition(): IGridChildPosition
+    private ComputeChildGridPosition(): IGridChildPosition
     {
         switch (this.state.ResizerSide)
         {
@@ -227,7 +250,7 @@ export class ResizePanel<P extends IResizePanelProps = {},
         }
     }
 
-    /* private */ ConstructSizerElement(templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>): JSX.Element
+    private ConstructSizerElement(templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>): JSX.Element
     {
         return (
             <Grid
@@ -242,17 +265,25 @@ export class ResizePanel<P extends IResizePanelProps = {},
         );
     }
 
-    /* private */ ConstructChildElement(templatedParent: ResizePanel<IResizePanelProps, IResizePanelState>): JSX.Element
+    private ConstructChildElement(templatedParent: ResizePanelBase<IResizePanelProps, IResizePanelState>): JSX.Element
     {
-        return (<Grid Grid={templatedParent.ComputeChildGridPosition()}>
+        return (<Grid
+            BorderBrush={templatedParent.state.BorderBrush}
+            BorderThickness={templatedParent.state.BorderThickness}
+            BoxShadow={templatedParent.state.BoxShadow}
+            Grid={templatedParent.ComputeChildGridPosition()}>
             {templatedParent.props.children}
         </Grid>);
     }
 
-    /* private */ _isDragging: boolean = false;
-    /* private */ _element: HTMLElement | null = null;
-    /* private */ _capturedPointerID?: number;
-    /* private */ _dragStartSize?: number;
-    /* private */ _dragStartCoord?: number;
-    /* private */ _activeGridElement?: IGridDefinition;
+    private _isDragging: boolean = false;
+    private _element: HTMLElement | null = null;
+    private _capturedPointerID?: number;
+    private _dragStartSize?: number;
+    private _dragStartCoord?: number;
+    private _activeGridElement?: IGridDefinition;
+}
+
+export class ResizePanel extends ResizePanelBase<IResizePanelProps, IResizePanelState>
+{
 }

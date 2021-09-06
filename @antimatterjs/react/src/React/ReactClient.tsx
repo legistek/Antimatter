@@ -14,6 +14,7 @@ import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue, ModelValueType } from '../ModelValue';
 
 import createHistory from "history/createBrowserHistory"
+import { BindingSourceType } from '../BindingSource';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -119,10 +120,27 @@ export class ReactClient implements IClient
             if (exp.Parameters.ConverterBack)
                 newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
             var index = exp.Index;
-            unstable_batchedUpdates(() =>
-            {            
-                Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
-            });
+
+            if (((exp._resolvedSource?.Type || 0) & BindingSourceType.INPC) > 0 &&
+                exp._resolvedSource?.POJO)
+            {
+                exp.SuspendPOJOSourceChangeHandler = true;
+                try
+                {
+                    exp._resolvedSource.POJO[exp.Parameters.Path as string] = newSourceValue;
+                }
+                finally
+                {
+                    exp.SuspendPOJOSourceChangeHandler = false;
+                }
+            }
+            else
+            {
+                unstable_batchedUpdates(() =>
+                {
+                    Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
+                });
+            }
         }
         if (reRender !== false)
         {
@@ -130,8 +148,8 @@ export class ReactClient implements IClient
             newState[prop] = value;
             target.setState(newState);
         }
-        
-        target.state[prop] = value;        
+
+        target.state[prop] = value;
     }
 
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
@@ -152,7 +170,7 @@ export class ReactClient implements IClient
                 newState[targetProperty] = value;
                 target.setState(newState);
             }
-            target.state[targetProperty] = value;
+            target.state[targetProperty] = value;            
             if (target.OnPropertyChanged)
                 target.OnPropertyChanged(targetProperty, value, oldValue);
         }      
@@ -237,13 +255,15 @@ export class ReactClient implements IClient
         return any;
     }
 
-    ProcessPropChange(target: IBoundComponent, prop: string, value: any, force: boolean, nextState?: Readonly<{}>) : boolean
-    {        
+    ProcessPropChange(target: IBoundComponent, prop: string, nextPropValue: any, force: boolean, nextState?: Readonly<{}>) : boolean
+    {
+        var binding = nextPropValue instanceof Binding ? nextPropValue as Binding : undefined;
+
         var existingBinding = target.antimatterBindingBases.get(prop);
         if (existingBinding)
         {
-            if (value?.IsAntimatterBinding &&
-                BindingParameters.Equals(existingBinding.Parameters, value.Parameters))
+            if (binding &&
+                BindingParameters.Equals(existingBinding.Parameters, binding.Parameters))
                 // Same binding parameters = nothing to do
                 return false;
 
@@ -258,35 +278,48 @@ export class ReactClient implements IClient
             }
         }
 
-        if (!value || !value.IsAntimatterBinding)
+        if (binding)
         {
-            if (target.state[prop] === value)
-                // already done
-                return false;
+            var newExp = binding.CreateBindingExpression(target, prop);
+            target.antimatterBindingBases.set(prop, nextPropValue);
+            target.antimatterBindingExps.set(prop, newExp);
 
-            // Plain old value; set the state and continue
-            if (nextState)
-                nextState[prop] = value;
-            else
-                target.state[prop] = value;
-
-            // If the target has property change notification, execute
-            if ((target as any).OnPropertyChanged)
-                (target as any).OnPropertyChanged(prop, value);
+            if (!newExp.IsDataContextDependent)
+                // We can apply it now at prop assignment if it's not dctx dependent
+                // Otherwise we have to wait for render
+                newExp.Apply();
 
             return true;
         }
-        
-        var newExp = (value as Binding).CreateBindingExpression(target, prop);
-        target.antimatterBindingBases.set(prop, value);
-        target.antimatterBindingExps.set(prop, newExp);
-        
-        if (!newExp.IsDataContextDependent)
-            // We can apply it now at prop assignment if it's not dctx dependent
-            // Otherwise we have to wait for render
-            newExp.Apply();
 
-        return true;
+        let changed: boolean = false;
+
+        if (target.props[prop] !== nextPropValue)
+        {
+            // Prop always trickles to state if it's new or changing
+            if (nextState)
+                nextState[prop] = nextPropValue;
+            else
+                target.state[prop] = nextPropValue;
+            changed = true;
+        }
+        else if (!nextState)
+        {
+            target.state[prop] = nextPropValue;
+            changed = true;
+        }
+        else if (target.state[prop] !== nextState[prop])
+        {
+            // Otherwise React state change
+            target.state[prop] = nextState[prop];
+            changed = true;
+        }
+
+        // If the target has property change notification, execute
+        if (changed && (target as any).OnPropertyChanged)
+            (target as any).OnPropertyChanged(prop, nextPropValue);
+
+        return changed;
     }
 
     CheckReapplyDataContext(target: IBoundComponent, ctx: ModelObjectReference | undefined): boolean

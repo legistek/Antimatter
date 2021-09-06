@@ -156,11 +156,25 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        public ObservableCollection<Employee> SelectedEmployees
+        #region Employee[] SelectedEmployees property
+        private Employee[] _SelectedEmployees;
+        public Employee[] SelectedEmployees
         {
-            get;
-            set;
-        } = new ObservableCollection<Employee>();
+            get
+            {
+                return _SelectedEmployees;
+            }
+            set
+            {
+                if (_SelectedEmployees != value)
+                {
+                    _SelectedEmployees = value;
+                    OnPropertyChanged();
+                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Length > 0;
+                }
+            }
+        }
+        #endregion
 
         //private ObservableCollection<Employee> _SelectedEmployees = new ObservableCollection<Employee>();
         //public ObservableCollection<Employee> SelectedEmployees
@@ -285,6 +299,34 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+        #region IUICommand DeleteSelectedEmployees Command
+
+        private Command _DeleteSelectedEmployeesCommand;
+        public ICommand DeleteSelectedEmployeesCommand
+        {
+            get
+            {
+                return _DeleteSelectedEmployeesCommand ?? (_DeleteSelectedEmployeesCommand = new Command(
+                    (arg) =>
+                    {
+                        if (this.SelectedEmployees == null || this.SelectedEmployees.Length == 0)
+                            return;
+                        foreach (var empl in SelectedEmployees)
+                            this.Employees.Remove(empl);
+                        this.SelectedEmployees = null;
+                    })
+                {
+                    Name = "Fire",
+                    IsEnabled = false,
+                    ToolTip = "Fire the selected employees",
+                    Icon = 0xF082,
+                });
+            }
+        }
+
+        #endregion
+
 
         #region IUICommand DeleteEmployee Command
 

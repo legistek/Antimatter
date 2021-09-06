@@ -46,7 +46,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
                 Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
-                        ? (<PrimaryButton
+                        ? (<PrimaryButton                            
                             style={{ minWidth: "90px" }}
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}>

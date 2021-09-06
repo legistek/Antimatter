@@ -39,12 +39,14 @@ import
     ResizePanel,
     TreeView,
     Side,
+    Panel,
     WindowLayout,
     Glyph
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+
 
 export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
 {
@@ -69,10 +71,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <GroupBox
+            <GroupBox 
             /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
-            >
-
+            >                
                 <DataContext Value={this.state.Value}>
                     <StackPanel>
 
@@ -138,9 +139,10 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                             Label="Last Name"
                             Text={new Binding(nameof<Model.Employee>(e => e.LastName))} />
 
-                        <TextBlock Text="Age" />
+                        <TextBlock Text="Age" VerticalAlignment={VerticalAlignment.Center} />
 
                         <CheckBox
+                            VerticalAlignment={VerticalAlignment.Center}
                             ref={
                                 r =>
                                 {
@@ -203,9 +205,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                         </StackPanel>
                 </DataContext>
-
-
-
+                
             </GroupBox>
         );
     }
@@ -510,10 +510,9 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         //this.BindState({ Path: "Employees" }, "employees");
 
         return (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-                <StackPanel
-                    Margin="8px"
-                >
+            <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                <StackPanel>
 
                     <TextBlock Text={new Binding(nameof<Model.Company>(c => c.Name))} />
 
@@ -528,12 +527,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     {this.MessageBar3}
 
 
-                    <StackPanel Orientation={Orientation.Horizontal}>
-                        <TextBlock Text="Employee Count:" />
-                        <TextBlock Text={new Binding("Employees.Count")} />
-                    </StackPanel>
-                    <CommandButton Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))}
-                        Style={CommandButton.CommandBarButtonStyle} />
 
 
                     {this.OpenBubbleButton}
@@ -597,45 +590,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 />
                 {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
-                    <DataGrid ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
-                        RowHeight={44}
-                        SelectedItems={new Binding("SelectedEmployees")}
-                        IsSelectAll={new Binding("IsAllSelected")}
-                        OnManipulationStarted={(e) =>
-                        {
-                            this._tr.CenterX = e.CenterX;
-                            this._tr.CenterY = e.CenterY;
-                        }}
-                        OnManipulationDelta={(e) =>
-                        {
-                            this._tr.TranslateX = e.CumulativeX;
-                            this._tr.TranslateY = e.CumulativeY;
-                            this._tr.ScaleX = e.CumulativeScale;
-                            this._tr.ScaleY = e.CumulativeScale;
-                        }}
-                        OnManipulationCompleted={(e) =>
-                        {
-                            this._tr.Reset();
-                        }}
-                        Transform={this._tr}
-                        Columns={[
-                            {
-                                Header: "First Name",
-                                Key: "firstName",
-                                Template: this._firstNameTemplate
-                            },
-                            {
-                                Header: "Last Name",
-                                Key: "lastName",
-                                Template: this._lastNameTemplate
-                            },
-                            {
-                                Header: "Age",
-                                Key: "age",
-                                Template: this._ageTemplate
-                            }
-                        ]}
-                    />
+                    
                 </div>
 
 
