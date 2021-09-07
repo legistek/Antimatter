@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -118,6 +119,37 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        #region bool IsMultiSelected property
+        private bool _IsMultiSelected;
+        public bool IsMultiSelected
+        {
+            get
+            {
+                return _IsMultiSelected;
+            }
+            set
+            {
+                if (_IsMultiSelected == value)
+                    return;
+                _IsMultiSelected = value;
+                OnPropertyChanged();
+
+                if (Company == null || Company.SelectedEmployees == null)
+                    return;
+
+                bool includes = Company.SelectedEmployees.Contains(this);
+                if (includes == value)
+                    return;
+
+                if (value)
+                    Company.SelectedEmployees.Add(this);
+                else
+                    Company.SelectedEmployees.Remove(this);
+                Company.SelectedEmployeesChangedCommand.Execute(Company);
+            }
+        }
+        #endregion
+
         #region double BonusAmount property
         private double _BonusAmount = 10000.0;
         public double BonusAmount
@@ -177,7 +209,7 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #region bool IsBonusEligible property
-        private bool _IsBonusEligible;
+        private bool _IsBonusEligible =  true;
         public bool IsBonusEligible
         {
             get

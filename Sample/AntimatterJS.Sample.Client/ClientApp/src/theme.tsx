@@ -1,11 +1,11 @@
 import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
-import { Style } from '@antimatterjs/positron';
+
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
-    //defaultFontStyle: { fontFamily: 'Roboto' },
+    defaultFontStyle: { fontFamily: 'Roboto' },
     palette: {
         themePrimary: '#2e70e0',
         themeLighterAlt: '#f6f9fe',
@@ -32,17 +32,4 @@ const theme = createTheme({
     }
 });
 
-registerIcons(
-    {
-        fontFace: {
-            fontFamily: "IconFont",
-        },
-        icons: Style.CreateIconSet(0xE900, 0xF10D)
-        //{
-        //    'ThumbsUp': '\uE902',
-        //    'ThumbsDown': '\uE901',
-        //    'E90D': '\uE90D',
-        //}
-    })
-initializeIcons();
 loadTheme(theme);

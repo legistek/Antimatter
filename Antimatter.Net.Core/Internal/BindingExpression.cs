@@ -53,6 +53,23 @@ namespace Antimatter.Net.Internal
             this.SourceReference = null;
         }
 
+        private void AddRef(ModelValue valueFromClient)
+        {
+            if (valueFromClient.IsReferenceCounted)
+            {
+                var reference = _reactor.GetReference(valueFromClient.ObjectHandle);
+                reference?.AddRef();    
+            }
+            if (valueFromClient.Type == ModelValueType.Collection)
+            {
+                foreach (var item in valueFromClient.Collection)
+                {
+                    var reference = _reactor.GetReference(item.ObjectHandle);
+                    reference?.AddRef();
+                }
+            }
+        }
+
         public void UpdateSource(ModelValue modelValue)
         {
             this._suspendPropertyChangeReport = true;
@@ -62,8 +79,20 @@ namespace Antimatter.Net.Internal
                     // No two-way binding if no path
                     return;
 
-                ReleaseLastValue();
-                _lastValue = modelValue;
+                if (modelValue.Type != ModelValueType.Collection &&
+                    _lastValue?.Type == modelValue.Type &&
+                    _lastValue?.ObjectHandle == modelValue.ObjectHandle)
+                {
+                    // Unchanged value
+                    return;
+                }
+
+                // Add ref before releasing old value
+                AddRef(modelValue);
+
+                ReleaseLastValue();                                
+
+                _lastValue = modelValue;                
 
                 this.PathComponents.Last()
                     .OnTargetPropertyChanged(modelValue, _reactor);
@@ -245,8 +274,7 @@ namespace Antimatter.Net.Internal
 
         private void ReleaseLastValue()
         {
-            if (_lastValue?.Type == ModelValueType.Object ||
-                _lastValue?.Type == ModelValueType.Collection)
+            if (_lastValue?.IsReferenceCounted == true)
             {
                 var reference = _reactor.GetReference(_lastValue.ObjectHandle);
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)

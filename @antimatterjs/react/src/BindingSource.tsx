@@ -4,7 +4,7 @@ export class BindingSource
 {
     constructor(source: any)
     {
-        if (source.IsModelObjectReference)
+        if (source instanceof ModelObjectReference)
         {
             this.NetRef = source as ModelObjectReference;
             this.Type = BindingSourceType.NetRef;
@@ -15,7 +15,7 @@ export class BindingSource
             this.Type = BindingSourceType.POJO;
             if (source.IsDependencyObject)
                 this.Type |= BindingSourceType.DependencyObject;
-            if (source.propertyChanged)
+            if (source.PropertyChanged)
                 this.Type |= BindingSourceType.INPC;
         }
     }

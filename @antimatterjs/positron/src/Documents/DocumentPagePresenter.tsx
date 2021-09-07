@@ -7,6 +7,7 @@ import { IVirtualizedPanelProps, IVirtualizedPanelState, VirtualizedPanelBase } 
 import { LoadingShimmer } from "../Controls/LoadingShimmer";
 import { DocumentPagesPanel } from "./DocumentPagesPanel";
 import { FrameworkElement } from "../FrameworkElement";
+import { CSSClasses } from "../CSSClasses";
 
 interface IDocumentPagePresenterCommon
 {
@@ -51,7 +52,7 @@ export class DocumentPagePresenterBase<
         console.log(`Page ${this.state.PageIndex} rendering realized`);
         return (
             <>
-                <div className="amx-ptn-fe amx-ptn-ha-center"
+                <div className={`${CSSClasses.Base} ${CSSClasses.HACenter}`}
                     ref={r => this._outerDiv = r}
                     style={{
                         background: "white",
@@ -79,7 +80,7 @@ export class DocumentPagePresenterBase<
                             //top: 0
                         }}
                         ref={r => this.RenderHighResCanvas(r)} />
-                    <div className="amx-ptn-fe amx-ptn-ha-stretch amx-ptn-va-stretch amx-ptn-overlaps amx-ptn-pdf-textlayer"
+                    <div className={`${CSSClasses.Base} ${CSSClasses.HAStretch} ${CSSClasses.VAStretch} ${CSSClasses.Overlaps} amx-ptn-pdf-textlayer`}
                         style={{
                             zIndex: 3,
                         }}

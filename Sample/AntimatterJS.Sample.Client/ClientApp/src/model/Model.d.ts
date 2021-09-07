@@ -1,4 +1,4 @@
-import { TeachingBubbleParams } from '@antimatterjs/positron';
+import { MessageBarParams, TeachingBubbleParams } from '@antimatterjs/positron';
 
 export class App
 {
@@ -9,6 +9,8 @@ export class Company {
 	public Name?: string;
 	public Employees?: Employee[];
 	public SelectedEmployee?: Employee;
+	public SelectedEmployees?: Employee[];
+	public IsAllSelected?: boolean;
 	public CEO?: Employee;
 	public NewEmployeeCommand?: ICommand;
 	public DeleteEmployeeCommand?: ICommand;
@@ -16,6 +18,17 @@ export class Company {
 	public TeachingBubbleOpen?: boolean;
 	public TeachingBubblePrimaryCommand?: ICommand;
 	public TeachingBubbleInfo?: TeachingBubbleParams;
+	public SomeEmployees?: Employee[];
+	public SomeEmployeeNames?: string[];
+	public SelectedEmployeeName?: string;
+	public SelectedEmployeeNames?: string;
+	public SelectedEmployeesDisplayText?: string;
+	public SelectedEmployeeChangedCommand?: ICommand;
+	public SelectedEmployeesChangedCommand?: ICommand;
+	public SomeMoreEmployees?: Employee[];
+	public SomeMoreEmployeeNames?: string[];
+	public MessageBarInfo?: MessageBarParams;
+	public Toasts?: MessageBarParams[];
 }
 
 export class Employee {
@@ -27,6 +40,9 @@ export class Employee {
 	public IncreaseAgeCommand?: ICommand;
 	public RelevantAge?: number;
 	public StartDate?: Date;
+	public IsExpanded?: boolean;
+	public IsSelected?: boolean;
+	public IsMultiSelected?: boolean;
 }
 
 export class ICommand {

@@ -3,12 +3,12 @@ import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IGridProps extends IPanelProps
 {
-    ColumnDefinitions?: IColumNDefinition[],
+    ColumnDefinitions?: IColumnDefinition[],
     RowDefinitions?: IRowDefinition[],
 }
 export interface IGridState extends IPanelState
 {
-    ColumnDefinitions?: IColumNDefinition[],
+    ColumnDefinitions?: IColumnDefinition[],
     RowDefinitions?: IRowDefinition[]
 }
 
@@ -25,6 +25,7 @@ export enum GridUnitType
     Auto = 0,
     Pixel = 1,
     Star = 2,
+    Fit = 3,
 }
 
 export interface IGridLength
@@ -38,7 +39,7 @@ export interface IGridDefinition
     CoercedSize?: number
 }
 
-export interface IColumNDefinition extends IGridDefinition
+export interface IColumnDefinition extends IGridDefinition
 {
     Width: IGridLength,
 }
@@ -49,7 +50,16 @@ export interface IRowDefinition extends IGridDefinition
 }
 
 export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> extends PanelBase<P,S>
-{    
+{
+    public static FittedRow(): IRowDefinition
+    {
+        return {
+            Height: {
+                GridUnitType: GridUnitType.Fit
+            }
+        };
+    }
+
     public static RowDefinition(height?: number , star?: boolean): IRowDefinition
     {
         return {
@@ -61,7 +71,7 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
             }
         };
     }
-    public static ColumnDefinition(width?: number, star?: boolean): IColumNDefinition
+    public static ColumnDefinition(width?: number, star?: boolean): IColumnDefinition
     {
         return {
             Width: {
@@ -103,6 +113,8 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
                     rowTemplate += "max-content ";
                 else if (row.Height.GridUnitType === GridUnitType.Pixel)
                     rowTemplate += `${row.Height.Value}px `;
+                else if (row.Height.GridUnitType === GridUnitType.Fit)
+                    rowTemplate += `fit-content(100%) `;
                 else
                     rowTemplate += `${row.Height.Value}fr `;
             }
@@ -118,12 +130,12 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
 
         let columnTemplate: string = "";
 
-        for (const column of this.state.ColumnDefinitions as Array<IColumNDefinition>)
+        for (const column of this.state.ColumnDefinitions as Array<IColumnDefinition>)
         {
             if (column.CoercedSize)
                 columnTemplate += `${column.CoercedSize}px `;
             else if (column.Width.GridUnitType === GridUnitType.Auto)
-                columnTemplate += "auto ";
+                columnTemplate += "max-content ";
             else if (column.Width.GridUnitType === GridUnitType.Pixel)
                 columnTemplate += `${column.Width.Value}px `;
             else

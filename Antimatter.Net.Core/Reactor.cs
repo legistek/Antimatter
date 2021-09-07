@@ -240,7 +240,7 @@ namespace Antimatter.Net
         internal ObjectReference GetReference(int index)
         {
             ObjectReference dnor = null;
-            _dict.TryGetValue(index, out dnor);
+            _dict.TryGetValue(index, out dnor);                
             return dnor;
         }
 
@@ -318,6 +318,8 @@ namespace Antimatter.Net
                 this._dict[this._nextHandle] = reference;
                 this._references.Add(obj, reference);
                 this._nextHandle++;
+
+                //Console.WriteLine($"Creating ref {this._nextHandle} to {obj?.ToString()}");
             }
 
             reference.AddRef();

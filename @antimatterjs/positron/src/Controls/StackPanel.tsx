@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { PanelBase, IPanelProps, IPanelState } from './Panel';
 import { Orientation } from '../Enums';
+import { CSSClasses } from '../CSSClasses';
 
 export interface IStackPanelProps extends IPanelProps
 {
@@ -17,10 +18,9 @@ export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPan
     extends PanelBase<P, S>
 {
     /* override */ constructClasses(): string
-    {        
-        return "amx-ptn-stack-panel "
-            + (this.state.Orientation === Orientation.Horizontal ? "horizontal " : "")
-            + super.constructClasses();
+    {
+        return (this.state.Orientation === Orientation.Horizontal ? CSSClasses.HStack : CSSClasses.VStack)
+            + " " + super.constructClasses();
     }
 
     /* override */ renderElement(): JSX.Element

@@ -4,13 +4,13 @@ import { Binding } from '@antimatterjs/react';
 import { getTheme } from '@fluentui/react';
 import { Style } from '../Style';
 
-interface ITextBlockProps extends IFrameworkElementProps
+export interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
     Foreground?: string | Binding,
-    FontFamily?: string,    
+    FontFamily?: string,
     FontSize?: number|string,
-    FontWeight?: undefined | "bold" | "normal"
+    FontWeight?: undefined | "bold" | "normal" | number
 }
 interface ITextBlockState extends IFrameworkElementState
 {
@@ -18,7 +18,7 @@ interface ITextBlockState extends IFrameworkElementState
     Foreground?: string,
     FontFamily?: string,
     FontSize?: number|string,
-    FontWeight?: undefined | "bold" | "normal"
+    FontWeight?: undefined | "bold" | "normal" | number
 }
 export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState>
 {
@@ -32,8 +32,24 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
             Selector: "@",
             Rules: {
                 fontFamily: TextBlock.theme.fonts.medium.fontFamily,
-            }
-        });
+                //margin: "5px",
+                //transform: "translate(0, -6%)"
+            },
+        },
+        //{
+        //    Selector: ".amx-ptn-wrap-panel:first-child@",
+        //    Rules: {
+        //        marginLeft: "0px",
+        //    }
+        //},
+        //{
+        //    Selector: ".amx-ptn-vstack > @",
+        //    Rules: {
+        //        marginLeft: "0px",
+        //    }
+        //}
+
+    );
 
     public static DialogHeaderStyle = new Style(
         {
@@ -60,7 +76,7 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
                 color: this.state.Foreground,
                 fontFamily: this.state.FontFamily,
                 fontSize: this.state.FontSize,
-                fontWeight: this.state.FontWeight,                
+                fontWeight: this.state.FontWeight
             });
     }
 }

@@ -4,9 +4,12 @@ import { Binding } from '@antimatterjs/react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
+import { CSSClasses } from '../CSSClasses';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
+    Width?: number | Binding,
+    Height?: number | Binding,
     Background?: string|Binding,
     BorderBrush?: string|Binding,
     BorderThickness?: string | Binding,
@@ -20,6 +23,8 @@ export interface IPanelProps extends IFrameworkElementProps
 
 export interface IPanelState extends IFrameworkElementState
 {
+    Width?: number | Binding,
+    Height?: number | Binding,
     Background?: string,
     BorderBrush?: string,
     BorderThickness?: string,
@@ -43,6 +48,8 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
     /* override */ getCSSStyles() : React.CSSProperties
     {
         var styles = {
+            width: this.state.Width,
+            height: this.state.Height,
             color: this.state.Foreground,
             background: this.state.Background,
             borderColor: this.state.BorderBrush,
@@ -58,7 +65,12 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
 
     /* override */ constructClasses() : string
     {
-        return "amx-ptn-panel " + super.constructClasses();
+        return `${CSSClasses.Panel} ` +
+            ((this.state.HorizontalScrollBarVisibility && this.state.HorizontalScrollBarVisibility !== ScrollBarVisibility.Hidden)
+                ? `${CSSClasses.HScroll} ` : "") +
+            ((this.state.VerticalScrollBarVisibility && this.state.VerticalScrollBarVisibility !== ScrollBarVisibility.Hidden)
+                ? `${CSSClasses.VScroll} ` : "") +
+            super.constructClasses();
     }
 
     /* override */ renderElement(): JSX.Element | null
@@ -71,11 +83,12 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         this.InvalidateRender();
     }
 
-    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" 
+    static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" | undefined
     {
         switch (v)
         {            
             case undefined:
+                return undefined;
             case ScrollBarVisibility.Hidden:
                 return "hidden";
             case ScrollBarVisibility.Visible:

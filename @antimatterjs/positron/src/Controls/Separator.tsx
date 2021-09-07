@@ -16,14 +16,15 @@ export class Separator extends Control<ISeparatorProps, ISeparatorState>
 {
     public static DefaultStyle: Style<ISeparatorProps> = new Style<ISeparatorProps>(
         {
-            Template: new ControlTemplate((templatedParent: Separator) =>
+            Template: (templatedParent: Separator) =>
             (
                 <FluentSeparator styles={{
                     root: {
+                        width: "100%",
                         lineHeight: "0",
                         padding: "0px"
                     },
                 }} />
-            ))
+            )
         });
 }

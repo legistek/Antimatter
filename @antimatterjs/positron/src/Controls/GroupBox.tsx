@@ -7,6 +7,8 @@ import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { Panel } from './Panel';
+import { Grid } from './Grid';
 
 export interface IGroupBoxProps extends IControlProps
 {
@@ -34,22 +36,23 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
             Padding: "10px",
             Template: new ControlTemplate((templatedParent: GroupBox) =>
             (
-                <StackPanel
+                <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
                     Padding={(templatedParent.state.Header ? "0px 10px 10px 10px" : "10px")}>
+
                     {templatedParent.state.Header ? (() =>
                         <TextBlock FontWeight="bold" Text={templatedParent.state.Header} />)()
                         : null}
 
-                    <StackPanel
+                    <Panel
                         BoxShadow={DefaultEffects.elevation8}
                         Background={templatedParent.state.Background}
                         BorderBrush={templatedParent.state.BorderBrush}
                         BorderThickness={templatedParent.state.BorderThickness}
                         Padding={templatedParent.props.Padding}>
                         {templatedParent.props.children}
-                    </StackPanel>
+                    </Panel>
 
-                </StackPanel>
+                </Grid>
             ))
         }
     );

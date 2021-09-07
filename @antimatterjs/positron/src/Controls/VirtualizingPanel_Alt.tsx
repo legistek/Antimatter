@@ -242,7 +242,7 @@ export abstract class VirtualizingPanel<
         return height;
     }
 
-    /* override */ componentDidMount()
+    /* override */ OnComponentMount()
     {
         if (!this._spacerBefore || !this._spacerAfter || !this.Container)
             return;
@@ -287,7 +287,7 @@ export abstract class VirtualizingPanel<
         }
     }
 
-    /* override */ componentWillUnmount()
+    /* override */ OnComponentWillUnmount()
     {
         if (this._observers)
         {
@@ -296,7 +296,7 @@ export abstract class VirtualizingPanel<
             this._observers.after.disconnect();
             delete this._observers;
         }
-        super.componentWillUnmount?.call(this);
+        super.OnComponentWillUnmount();
     }
 
     /* override */ OnInvalidateRender()

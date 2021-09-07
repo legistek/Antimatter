@@ -13,6 +13,8 @@ import { Point, Rect } from "../Foundation";
 import { IVirtualizingItemsControlProps, IVirtualizingItemsControlState, VirtualizingItemsControl, VirtualizingItemsControlBase } from "../Controls/VirtualizingItemsControl";
 import { DocumentPagesPanel } from "./DocumentPagesPanel";
 import { DocumentPagePresenterBase, IDocumentPagePresenterProps } from "./DocumentPagePresenter";
+import { StackPanel } from "../Controls/StackPanel";
+import { Grid } from "../Controls/Grid";
 
 interface IDocumentViewerCommon
 {
@@ -62,7 +64,7 @@ export class DocumentViewerBase<
     private Template(): JSX.Element
     {
         return (
-            <Panel
+            <Grid
                 ref={r => this._scroller = r}
                 Background={this.state.Background}
                 OnScroll={(e) =>
@@ -80,6 +82,7 @@ export class DocumentViewerBase<
                     HorizontalAlignment={HorizontalAlignment.Center}
                     VerticalAlignment={VerticalAlignment.Top}
                     ItemsParent={this}
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Hidden}
                     OnManipulationStarted={((e) =>
                     {
                         var pagesPanel = this._pagesPanel?.Container;
@@ -124,7 +127,7 @@ export class DocumentViewerBase<
                     ref={r => this._sizeFaker = r}
                     style={{ height: 1, position: 'absolute' }} >
                 </div>
-            </Panel>);
+            </Grid>);
     }
 
     public CommitTransform(scrollOrigin: Point, updateState: boolean = true)

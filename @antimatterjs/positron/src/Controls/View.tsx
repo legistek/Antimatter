@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
+import { Binding, ModelObjectReference, ReactDataContext } from '@antimatterjs/react';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IViewProps extends IPanelProps
@@ -8,20 +8,32 @@ export interface IViewProps extends IPanelProps
 }
 export interface IViewState extends IPanelState
 {
-    ViewModel?: ModelObjectReference
+    ViewModel?: ModelObjectReference,
 }
 
-export abstract class View<P extends IViewProps = {},
+export abstract class ViewBase<P extends IViewProps = {},
     S extends IViewState = {}>
     extends PanelBase<P,S>
 {
-    /* protected */ abstract Template(): JSX.Element;
+    /* protected */ abstract View(): JSX.Element;
     
-    /* override */ renderElement(): JSX.Element
+    readonly renderElement = (): JSX.Element =>
     {
-        return (
-            <DataContext Value={this.state.ViewModel}>
-                {this.Template()}
-            </DataContext>);
-    }
+        if (this.state.ViewModel)
+        {
+            (this.state as any)["DataContext"] = this.state.ViewModel;
+            return (
+                <ReactDataContext.Provider value={this.state.ViewModel}>
+                    {this.View()}
+                </ReactDataContext.Provider>);
+        }
+        else
+        {
+            return this.View();
+        }
+    };
+}
+
+export abstract class View extends ViewBase<IViewProps, IViewState>
+{
 }

@@ -26,7 +26,13 @@ export class ProgressBar extends Control<IProgressBarProps, IProgressBarState>
         {
             Denominator: 1,
             Template: new ControlTemplate((templatedParent: ProgressBar) =>
-                <ProgressIndicator percentComplete={templatedParent.percentComplete} />)
+                <ProgressIndicator 
+                    styles={{
+                        root: {
+                            width: "100%"
+                        }
+                    }}
+                    percentComplete={templatedParent.percentComplete} />)
         }
     );
 

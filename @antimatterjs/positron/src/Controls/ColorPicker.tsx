@@ -1,78 +1,24 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
-
-import { PlacementMode, Popup } from './Popup';
-import { Ellipse } from '../Shapes/Ellipse';
-import { WrapPanel } from './WrapPanel';
-import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
-import { SelectionMode } from '../Enums';
-import { Glyph } from './Glyph';
-import { HorizontalAlignment, VerticalAlignment } from '../Enums';
+import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
-import { getTheme } from '@fluentui/react';
-import { FrameworkElement } from '../FrameworkElement';
 import { Style } from '../Style';
+import { Ellipse } from '../Shapes/Ellipse';
+import { ComboBox, IComboBoxProps, IComboBoxState } from './ComboBox';
+import { Glyph } from './Glyph';
+import { Panel } from './Panel';
+import { PlacementMode, Popup } from './Popup';
+import { WrapPanel } from './WrapPanel';
+import { ISelectableItemControlProps, SelectableItemControl } from './Primitives/SelectableItemControl';
 
-export interface IColorPickerProps extends ISelectorProps
+export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
 {
-    IconForeground?: string|Binding,
-}
-
-export interface IColorPickerState extends ISelectorState
-{
-    IconForeground?: string,
-    PopupIsOpen: boolean
-}
-
-export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
-{
-    private static theme = getTheme();
-
-    public static DefaultBindings = {
-        ItemsSource: {
-            FallbackValue: []
-        },
-        SelectedItem: {
-            Mode: BindingMode.TwoWay
-        }
-    };
-
-    public static DefaultStyle: Style<IColorPickerProps> = new Style<IColorPickerProps>(
+    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
-            IconForeground: "white",
-            Template: new ControlTemplate((templatedParent: ColorPicker) => (
-                <>
-                    <Ellipse
-                        ref={r => templatedParent._button = r}
-                        OnClick={() => templatedParent.setPopupState(true)}
-                        Fill={templatedParent.state.SelectedItem}
-                        Width={ColorPicker.ELLIPSE_SIZE}
-                        Height={ColorPicker.ELLIPSE_SIZE} />
-                    <Glyph
-                        Icon={"Edit"}
-                        IsHitTestVisible={false}
-                        Foreground={templatedParent.state.IconForeground}
-                        Overlaps={true}
-                        VerticalAlignment={VerticalAlignment.Center}
-                        HorizontalAlignment={HorizontalAlignment.Center} />
-                    <Popup
-                        IsOpen={templatedParent.state.PopupIsOpen}
-                        Target={() => templatedParent._button}
-                        Placement={PlacementMode.Below}>
-                        <div style={{ maxWidth: `${ColorPicker.COLUMNS_SIZE * ColorPicker.COLUMN_WIDTH}px` }}>
-                            <WrapPanel ItemsParent={templatedParent} />
-                        </div>
-                    </Popup>
-                </>)),
-            ItemTemplate: new DataTemplate((color: string) => (
-                <Ellipse
-                    Fill={color}
-                    Width={ColorPicker.ELLIPSE_SIZE}
-                    Height={ColorPicker.ELLIPSE_SIZE}
-                    Margin="5px" />)),
+            Template: new ControlTemplate((templatedParent: ColorPicker) => templatedParent.Template),
+            ItemTemplate: new DataTemplate((item: any) => ColorPicker.DefaultItemTemplate(item)),
             ItemContainerStyle: new Style<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
@@ -100,33 +46,70 @@ export class ColorPicker extends Selector<IColorPickerProps, IColorPickerState>
                 {
                     Selector: "@:hover",
                     Rules: {
-                        background: ColorPicker.theme.semanticColors.listItemBackgroundHovered
+                        background: ComboBox.theme.semanticColors.listItemBackgroundHovered
                     }
                 }
-            ),
+            )
         },
         {
-            Rules:
-            {
-                cursor: "pointer"
+            Rules: {
+                cursor: 'pointer',
+                userSelect: 'none'
             }
-        }
+        },
     );
 
-    /* protected override */ OnSelectionChanged()
+    protected get Template(): JSX.Element
     {
-        this.setPopupState(false);
+        const root: JSX.Element = (
+            <>
+                <Panel>
+                    <Ellipse
+                        ref={r => this._button = r}
+                        OnClick={() => this.TogglePopup()}
+                        Fill={this.state.SelectedItem}
+                        VerticalAlignment={VerticalAlignment.Center}
+                        HorizontalAlignment={HorizontalAlignment.Center}
+                        Width={ColorPicker.ELLIPSE_SIZE}
+                        Height={ColorPicker.ELLIPSE_SIZE} />
+                    <Glyph
+                        Icon={"Edit"}
+                        IsHitTestVisible={false}
+                        Foreground={ComboBox.theme.palette.white}
+                        Overlaps={true}
+                        VerticalAlignment={VerticalAlignment.Center}
+                        HorizontalAlignment={HorizontalAlignment.Center} />
+                </Panel>
+                <Popup
+                    IsOpen={new Binding({
+                        Source: this,
+                        Path: nameof(this.state.PopupIsOpen),
+                        Mode: BindingMode.TwoWay
+                    })}
+                    Target={() => this._button}
+                    Placement={PlacementMode.Below}
+                    Width={ColorPicker.COLUMNS_SIZE * ColorPicker.COLUMN_WIDTH + 8}
+                    Padding="4px">
+                    <WrapPanel ItemsParent={this} />
+                </Popup>
+            </>
+        );
+        return root;
     }
 
-    private setPopupState(open: boolean): void
+    protected static DefaultItemTemplate(color: string): JSX.Element
     {
-        this.setState({
-            PopupIsOpen: open
-        });
+        const elem: JSX.Element = (
+            <Ellipse
+                Fill={color}
+                Width={ColorPicker.ELLIPSE_SIZE}
+                Height={ColorPicker.ELLIPSE_SIZE}
+                Margin="5px" />
+        );
+        return elem;
     }
 
     private static COLUMNS_SIZE: number = 6;
     private static COLUMN_WIDTH: number = 40;
     private static get ELLIPSE_SIZE() { return ColorPicker.COLUMN_WIDTH - 10; }
-    private _button?: FrameworkElement | null;
 }

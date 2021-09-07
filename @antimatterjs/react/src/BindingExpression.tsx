@@ -1,5 +1,5 @@
-﻿import { INotifyPropertyChanged } from "@antimatterjs/react/src/INotifyPropertyChanged";
-import { PropertyChangedEventArgs } from "@antimatterjs/react/src/PropertyChangedEventArgs";
+﻿import { INotifyPropertyChanged } from "./INotifyPropertyChanged";
+import { PropertyChangedEventArgs } from "./PropertyChangedEventArgs";
 import { Antimatter } from "./Antimatter";
 import { BindingMode, BindingParameters, RelativeSourceMode } from "./BindingParameters";
 import { BindingSource, BindingSourceType } from "./BindingSource";
@@ -32,6 +32,7 @@ export class BindingExpression
         }
 
         this.OnTargetPropertyChanged = this.OnTargetPropertyChanged.bind(this);
+        this.OnPOJOValueChanged = this.OnPOJOValueChanged.bind(this);
     }
 
     public readonly Index: number;
@@ -71,7 +72,7 @@ export class BindingExpression
             this.ApplyNewSelfRelativeSourceValue();
         }
         else if (this.Parameters.Source)
-        {
+        {           
             this._resolvedSource = new BindingSource(this.Parameters.Source);
         }
         else 
@@ -97,10 +98,17 @@ export class BindingExpression
         if (!this._isApplied)
             return;
         (this._target as INotifyPropertyChanged)?.PropertyChanged?.unsubscribe(this.OnTargetPropertyChanged);
-        Antimatter.Server.Unbind(this);
+
+        if (!this._resolvedSource)
+            return;
+
+        if ((this._resolvedSource.Type & BindingSourceType.NetRef) > 0)
+            Antimatter.Server.Unbind(this);
+        else if ((this._resolvedSource.Type & BindingSourceType.INPC) > 0)
+            (this._resolvedSource.POJO as INotifyPropertyChanged)?.PropertyChanged.unsubscribe(this.OnPOJOValueChanged);
     }
 
-    public static OnExternalSourceValueChanged(bxIndex: number, value: any, type: ModelValueType): void
+    public static OnModelValueChanged(bxIndex: number, value: any, type: ModelValueType): void
     {
         var exp = this._globalBindings.get(bxIndex) as BindingExpression;
         if (!exp)
@@ -122,7 +130,7 @@ export class BindingExpression
             value,
             exp._isApplied && exp.AffectsRender);        
     }
-
+    
     SubscribeToSourcePropertyChanges(): boolean
     {
         if (this.Parameters.FallbackValue !== undefined)
@@ -141,7 +149,40 @@ export class BindingExpression
             return true;
         }
 
+        if ((this._resolvedSource.Type & BindingSourceType.INPC) > 0 &&
+            this._resolvedSource.POJO &&
+            this._resolvedSource.POJO.PropertyChanged)
+        {
+            var inpc = this._resolvedSource.POJO as INotifyPropertyChanged;
+            inpc.PropertyChanged.subscribe(this.OnPOJOValueChanged);
+
+            var value = inpc[this.Parameters.Path || ''];
+            if (this.Parameters.Converter)
+                value = this.Parameters.Converter(value);
+            this._target.state[this.TargetProperty] = value;
+            return true;
+        }
+
         return false;
+    }
+
+    OnPOJOValueChanged(sender: any, e: PropertyChangedEventArgs): void
+    {
+        if (this.SuspendPOJOSourceChangeHandler)
+            return;
+
+        if (e.propertyName !== this.Parameters.Path)
+            return;
+
+        var value = sender[e.propertyName];
+        if (this.Parameters.Converter)
+            value = this.Parameters.Converter(value);
+
+        Antimatter.UpdateTargetValue(
+            this._target,
+            this.TargetProperty,
+            value,
+            this._isApplied && this.AffectsRender);
     }
 
     OnTargetPropertyChanged(sender: any, e: PropertyChangedEventArgs)
@@ -165,6 +206,8 @@ export class BindingExpression
         }
         return false;
     }
+
+    public SuspendPOJOSourceChangeHandler: boolean = false;
 
     static _globalIndex: number = 0;
     static _globalBindings: Map<number, BindingExpression> = new Map<number, BindingExpression>();

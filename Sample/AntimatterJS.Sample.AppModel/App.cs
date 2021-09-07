@@ -54,7 +54,7 @@ namespace AntimatterJS.Sample.AppModel
                 Age = 50
             };
             this.Company.Employees.Add(this.Company.CEO);
-            AddUnderlings(this.Company.CEO, 8);
+            AddUnderlings(this.Company.CEO, 7);
             this.Company.SelectedEmployee = this.Company.Employees.First();
         }
 
@@ -63,9 +63,9 @@ namespace AntimatterJS.Sample.AppModel
             if (levels == 0)
                 return;
 
-            e.Underlings.Add(new Employee(this.Company, "Mickey", $"Mouse {levels}", 100));
-            e.Underlings.Add(new Employee(this.Company, "Santa", $"Clause {levels}", 500));
-            e.Underlings.Add(new Employee(this.Company, "Yoda", $"Parseghian {levels}", 900));
+            e.Underlings.Add(new Employee(this.Company, "Mickey", $"Mouse {e.FirstName[0]}{e.LastName[0]}{levels}", 100));
+            e.Underlings.Add(new Employee(this.Company, "Santa", $"Clause {e.FirstName[0]}{e.LastName[0]}{levels}", 500));
+            e.Underlings.Add(new Employee(this.Company, "Yoda", $"Parseghian {e.FirstName[0]}{e.LastName[0]}{levels}", 900));
             foreach (var underling in e.Underlings)
             {
                 this.Company.Employees.Add(underling);

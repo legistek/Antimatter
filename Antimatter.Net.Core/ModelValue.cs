@@ -111,6 +111,9 @@ namespace Antimatter.Net
             set => _collection = value;
         }
 
+        internal bool IsReferenceCounted => this.Type == ModelValueType.Collection ||
+            this.Type == ModelValueType.Object;
+
         internal object ToCSValue(Reactor mgr, Type desiredType = null)
         {
             switch (this.Type)
