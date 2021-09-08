@@ -71,6 +71,9 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
             this.BindState(visibleBindParams, `${key}:Visibility`);
 
             const ctxItem: IContextualMenuItem = {
+                style: {
+                    lineHeight: "unset"
+                },
                 key: key,
                 text: this.BindState(textBindParams, `${key}:Name`),
                 iconProps: { iconName: CommandButton.ModelIconConverter(this.BindState(iconBindParams, `${key}:Icon`)) },
@@ -83,7 +86,9 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
                 ctxItems.push(ctxItem);
         }
         if (ctxItems.length > 0)
-            this.menuProps = { items: ctxItems };
+            this.menuProps = {
+                items: ctxItems,
+            };
     }
 
     private Execute(cmd?: ModelObjectReference): void
@@ -104,7 +109,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
                         ? (<PrimaryButton                            
-                            style={{ minWidth: "90px" }}
+                            style={{ minWidth: "90px" }}                            
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}
                             menuProps={templatedParent.menuProps}>
@@ -179,7 +184,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                                 width: "fit-content",
                                 padding: templatedParent.state.Padding,
                                 height: "fit-content"
-                            },
+                            },                            
                             flexContainer: {
                                 height: "fit-content",
                                 margin: "0px"
@@ -188,7 +193,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                                 height: "fit-content",
                                 margin: "0px",
                                 fontSize: "20px"
-                            },
+                            },                            
                             splitButtonMenuButton: { backgroundColor: 'white', width: 28, border: 'none' },
                             splitButtonMenuIcon: { fontSize: '7px' },
                             splitButtonDivider: { backgroundColor: '#c8c8c8', width: 1, right: 26, position: 'absolute', top: 4, bottom: 4 },

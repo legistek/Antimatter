@@ -344,6 +344,12 @@ namespace AntimatterJS.Sample.AppModel
                     IncreaseAgeCommand,
                     DecreaseAgeCommand,
                     FireCommand,
+                    MakeBonusEligibleCommand,
+                    DoSomethingElseCommand,
+                    EditCommand,
+                    IncreaseAgeCommand,
+                    DecreaseAgeCommand,
+                    FireCommand,                   
                 });
             }
         }

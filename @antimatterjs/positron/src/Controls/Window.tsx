@@ -1,17 +1,13 @@
 import * as React from 'react';
-import { withRouter } from 'react-router';
-
-import { Route } from 'react-router-dom'
+import { withRouter, Route } from 'react-router-dom'
 
 import { Antimatter, Binding, Event, ModelObjectReference, ReactDataContext } from '@antimatterjs/react';
-
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
 import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
-import { FrameworkElement } from '../FrameworkElement';
 import { CSSClasses } from '../CSSClasses';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
@@ -101,7 +97,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         return super.constructClasses() + `${CSSClasses.Root} `;
     }
 
-    /* override */ renderElement(): JSX.Element | null
+    protected /* override */ renderElement(): JSX.Element | null
     {
         (this.state as any)["DataContext"] = this.state.Model;                                  
         return (

@@ -177,7 +177,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandButton Command={new Binding("IncreaseAgeCommand")}
                         SecondaryCommandsSource={new Binding("Commands")}
-                        Style={CommandButton.DialogButtonStyle}
+                            Style={CommandButton.IconButtonStyle}
                     />
                     <CommandButton Command={new Binding("LongTaskCommand")} />
 
