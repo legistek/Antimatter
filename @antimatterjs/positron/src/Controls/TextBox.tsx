@@ -44,8 +44,11 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                         }
                     }
                     deferredValidationTime={1000}
-                    styles={{                        
-                        field: {
+                    styles={{
+                        root: {
+                            width: "100%"
+                        },
+                        field: {                            
                             fontFamily: templatedParent.state.FontFamily,
                             fontSize: templatedParent.state.FontSize,
                             fontWeight: templatedParent.state.FontWeight,
@@ -53,8 +56,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             padding: templatedParent.state.Padding || "5px"
                         },
                         fieldGroup: {
-                            height: "auto",
-                            
+                            height: "auto",                            
                         }
                     }}                    
                     autoAdjustHeight={true}

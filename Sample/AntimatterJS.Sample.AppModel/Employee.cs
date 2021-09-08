@@ -344,6 +344,12 @@ namespace AntimatterJS.Sample.AppModel
                     IncreaseAgeCommand,
                     DecreaseAgeCommand,
                     FireCommand,
+                    MakeBonusEligibleCommand,
+                    DoSomethingElseCommand,
+                    EditCommand,
+                    IncreaseAgeCommand,
+                    DecreaseAgeCommand,
+                    FireCommand,                   
                 });
             }
         }
@@ -408,7 +414,8 @@ namespace AntimatterJS.Sample.AppModel
                 {
                     Name = "Fire",
                     ToolTip = "Throw the bum out",
-                    Icon = 0xF082
+                    Icon = 0xF082,
+                    Visibility = false
                 });
             }
         }

@@ -10,7 +10,6 @@ import
     MessageBarType,
 
     ToggleButton,
-    Coachmark,
     TeachingBubble,
 
     ProgressBar,
@@ -71,9 +70,9 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
     {
         // amx-grow-entrance
         return (
-            <GroupBox 
+            <GroupBox
             /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
-            >                
+            >
                 <DataContext Value={this.state.Value}>
                     <StackPanel>
 
@@ -176,7 +175,11 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandBar ItemsSource={new Binding("Commands")} />
 
-                    <CommandButton Command={new Binding("LongTaskCommand")}/>
+                    <CommandButton Command={new Binding("IncreaseAgeCommand")}
+                        SecondaryCommandsSource={new Binding("Commands")}
+                            Style={CommandButton.IconButtonStyle}
+                    />
+                    <CommandButton Command={new Binding("LongTaskCommand")} />
 
                     <ProgressBar
                         Progress={new Binding("TaskProgress")}
@@ -205,7 +208,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                         </StackPanel>
                 </DataContext>
-                
+
             </GroupBox>
         );
     }
@@ -590,7 +593,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 />
                 {/*
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
-                    
+
                 </div>
 
 
