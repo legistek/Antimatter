@@ -6,6 +6,7 @@ import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector'
 import { ISelectableItemControlProps, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { Control } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { Panel } from './Panel';
 
 export interface IListBoxProps extends ISelectorProps
 {
@@ -31,8 +32,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
     public static DefaultStyle: Style<IListBoxProps> = new Style<IListBoxProps>(
         {
             ItemsSource: [],
-            Margin: "5px",
-            BorderBrush: ListBox.theme.semanticColors.inputBorder,
+            BorderBrush: ListBox.theme.semanticColors.buttonBorder,
             BorderThickness: "1px",
             OnPointerMove: (e) =>
             {
@@ -49,10 +49,10 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                     Margin: "0px",
                     Template: (templatedParent: SelectableItemControlBase) =>
                     (
-                        <div className="listboxitem">
+                        <Panel ClassName="listboxitem">
                             <>{templatedParent.props.children}</>
                             <div className="listboxitem-border-layer" />
-                        </div>
+                        </Panel>
                     )
                 },
                 {

@@ -51,6 +51,14 @@ body {
         min-height: fit-content;
     }
 
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
+            margin-top: 5px;
+        }
+
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
+            margin-bottom: 5px;
+        }
+
 .amx-ptn-hstack > .amx-ptn-fe {
     min-width: fit-content;
 }

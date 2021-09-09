@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Autofill, TextField } from '@fluentui/react';
+import { Autofill, getTheme, TextField } from '@fluentui/react';
 import { Style } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 
@@ -26,6 +26,8 @@ export interface ITextBoxState extends IControlState, ITextBoxCommon
 
 export class TextBox extends Control<ITextBoxProps, ITextBoxState>
 {
+    static theme = getTheme();
+
     public static DefaultBindings = {
         Text: {
             Mode: BindingMode.TwoWay,
@@ -34,6 +36,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
     };
     static DefaultStyle: Style<ITextBoxProps> = new Style(
         {
+            BorderBrush: TextBox.theme.semanticColors.buttonBorder,
             Template: new ControlTemplate((templatedParent: TextBox) =>
             (
                 <TextField
@@ -46,9 +49,9 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                     deferredValidationTime={1000}
                     styles={{
                         root: {
-                            width: "100%"
+                            width: "100%",
                         },
-                        field: {                            
+                        field: {
                             fontFamily: templatedParent.state.FontFamily,
                             fontSize: templatedParent.state.FontSize,
                             fontWeight: templatedParent.state.FontWeight,
@@ -56,9 +59,11 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             padding: templatedParent.state.Padding || "5px"
                         },
                         fieldGroup: {
-                            height: "auto",                            
-                        }
-                    }}                    
+                            height: "auto",
+                            borderColor: templatedParent.state.BorderBrush,
+                        },
+
+                    }}
                     autoAdjustHeight={true}
                     label={templatedParent.state.Label}
                     value=
@@ -75,6 +80,13 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                         return templatedParent.state.ValidationError;
                     }} />
             ))
+        },
+        {
+            Selector: "@ .ms-Label",
+            Rules: {
+                padding: "0px"
+            }
+        
         }
     );
 

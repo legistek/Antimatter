@@ -70,7 +70,7 @@ export class TabControlBase<
                 padding: "10px 45px 10px 10px",
                 background: "transparent",
                 cursor: "pointer",
-                margin: "0px 0px 0px 10px"
+                margin: "5px 0px 5px 10px"
             }
         },
         {
@@ -86,11 +86,17 @@ export class TabControlBase<
             },
         },
         {
+            Selector: "@ .tab-item:not(.mobile)",
+            Rules: {
+                maxWidth: "250px"
+            }
+        },
+        {
             Selector: "@ .tab-item.selected",
             Rules: {
                 color: TabControlBase.theme.semanticColors.bodyText,
                 borderColor: TabControlBase.theme.semanticColors.link,
-                borderWidth: "0px 0px 0px 3px",
+                borderWidth: "0px 0px 0px 4px",
                 borderStyle: "solid"
             }
         },
@@ -232,13 +238,12 @@ export class TabControlBase<
             <Grid
                 ClassName={this.ConstructTabItemClassList(tab, mobile)}
                 ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}
-                OnClick={(e) => this.OnTabItemClick(tab)}
-                Margin={mobile ? undefined : "0px 0px 0px 15px"}
+                OnClick={(e) => this.OnTabItemClick(tab)}                
                 Padding="5px 0px">
 
                 <CommandButton
                     Style={CommandButton.CircleButtonStyle}
-                    Margin="0px 15px"
+                    Margin="0px 10px"
                     Background={mobile ? tab.IconBackground : undefined}
                     Icon={tab.Icon}
                     Foreground={mobile ? tab.IconForeground : "#808080"}
@@ -274,6 +279,8 @@ export class TabControlBase<
     private ConstructTabItemClassList(item: ITabItem, mobile: boolean)
     {
         let classes: string = "tab-item ";
+        if (mobile)
+            classes += "mobile ";
         if (!this.GetTabIsEnabled(item))
             classes += "disabled ";
         if (!mobile && this.GetActualSelectedTab(mobile) == item)
