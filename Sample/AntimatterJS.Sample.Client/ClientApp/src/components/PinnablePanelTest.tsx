@@ -3,7 +3,13 @@ import React from "react";
 import { Binding, BindingMode, INotifyPropertyChanged, PropertyChangedEventArgs } from "@antimatterjs/react";
 import { DefaultEffects } from "@fluentui/react";
 
-import { CommandButton, PinnablePanelState, DocumentViewer, Grid, HorizontalAlignment, IDocument, IViewProps, IViewState, Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility, Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase } from "@antimatterjs/positron";
+import
+    {
+        CommandButton, PinnablePanelState, DocumentViewer,
+        Grid, HorizontalAlignment, IDocument, IViewProps, IViewState,
+        Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility,
+        Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl
+    } from "@antimatterjs/positron";
 import { Employee } from "./Company";
 
 interface IPinnablePanelTestState extends IViewState
@@ -60,11 +66,43 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                         Source: this,
                         Mode: BindingMode.TwoWay
                     })}
+                    Size={400}
                     Side={Side.Right}
                     Grid={{ Column: 1 }}>
-                    <TextBlock
-                        Margin="5px 5px 5px 30px"
-                        Text="Some Panel Content" />
+                    <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                        <TextBlock
+                            Margin="5px 5px 5px 30px"
+                            Text="Some Panel Content"/>
+                        <TabControl Grid={{ Row: 1 }}
+                            MinTabWidth={125}
+                            Items={
+                                [
+                                    {
+                                        Key: "overview",
+                                        Label: "OVERVIEW",
+                                        Icon: 0xF0F5,
+                                        Content: (<TextBlock Text="Overview Tab"/>)
+                                    },
+                                    {
+                                        Key: "properties",
+                                        Label: "PROPERTIES",
+                                        Icon: 0xF021,
+                                        Content: (<TextBlock Text="Properties Tab" />)
+                                    },
+                                    {
+                                        Key: "annotations",
+                                        Label: "ANNOTATIONS",
+                                        Icon: 0xF0AB,
+                                        Content: (<TextBlock Text="Annotations Tab" />)
+                                    },
+                                    {
+                                        Key: "citations",
+                                        Label: "CITATIONS",
+                                        Icon: 0xF101,
+                                        Content: (<TextBlock Text="Citations Tab" />)
+                                    },
+                                ]} />
+                    </Grid>
                 </PinnablePanel>
 
 

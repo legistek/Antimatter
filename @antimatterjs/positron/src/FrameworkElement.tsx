@@ -353,6 +353,10 @@ export class FrameworkElement<
     {
     }
 
+    protected /* virtual */ OnElementUpdated(oldProps?: P)
+    {
+    }
+
     protected /* virtual */ get ActualHorizontalAlignment(): HorizontalAlignment
     {
         return (this.state.HorizontalAlignment as HorizontalAlignment) === undefined
@@ -367,9 +371,14 @@ export class FrameworkElement<
             : this.state.VerticalAlignment as VerticalAlignment;
     }
 
+    componentDidUpdate(prevProps)
+    {
+        this.OnElementUpdated(prevProps);
+    }
+
     readonly componentDidMount = () =>
     {
-        this.OnComponentMount();
+        this.OnComponentMount();        
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
 
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
 
@@ -10,13 +10,15 @@ export interface IPanelProps extends IFrameworkElementProps
 {
     Width?: number | Binding,
     Height?: number | Binding,
+    MinWidth?: number,
+    MinHeight?: number,
     Background?: string|Binding,
     BorderBrush?: string|Binding,
     BorderThickness?: string | Binding,
     Foreground?: string | Binding,
     Padding?: string,
     BoxShadow?: string,
-    ItemsParent?: ItemsControl<IItemsControlProps, IItemsControlState>,
+    ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
@@ -25,13 +27,15 @@ export interface IPanelState extends IFrameworkElementState
 {
     Width?: number | Binding,
     Height?: number | Binding,
+    MinWidth?: number,
+    MinHeight?: number,
     Background?: string,
     BorderBrush?: string,
     BorderThickness?: string,
     Foreground?: string,
     Padding?: string,
     BoxShadow?: string,
-    ItemsParent?: ItemsControl<IItemsControlProps, IItemsControlState>,
+    ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
@@ -50,6 +54,8 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         var styles = {
             width: this.state.Width,
             height: this.state.Height,
+            minWidth: this.state.MinWidth,
+            minHeight: this.state.MinHeight,
             color: this.state.Foreground,
             background: this.state.Background,
             borderColor: this.state.BorderBrush,

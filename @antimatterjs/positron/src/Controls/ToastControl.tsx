@@ -3,9 +3,9 @@ import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
 import { IStackPanelProps, StackPanel } from './StackPanel';
 import { VerticalAlignment } from '../Enums';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 
-export class ToastControl extends ItemsControl<IItemsControlProps, IItemsControlState>
+export class ToastControl extends ItemsControlBase<IItemsControlProps, IItemsControlState>
 {
     public static DefaultBindings = {
         ItemsSource: {

@@ -180,6 +180,9 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 (
                     <IconButton
                         styles={{
+                            rootDisabled: {
+                                backgroundColor: "transparent"
+                            },
                             root: {
                                 width: "fit-content",
                                 padding: templatedParent.state.Padding,

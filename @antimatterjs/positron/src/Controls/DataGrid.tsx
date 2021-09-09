@@ -3,7 +3,7 @@ import * as Fluent from '@fluentui/react';
 import { Style } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
@@ -77,7 +77,7 @@ export interface IDataGridColumn
 export class DataGridBase<
     P extends IDataGridProps = {},
     S extends IDataGridState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     /* private */ _selection: Fluent.Selection;
 

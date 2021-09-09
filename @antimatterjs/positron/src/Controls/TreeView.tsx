@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { Style } from '../Style';
 import { IPanelProps } from '../Controls/Panel';
 import { Grid } from './Grid';
@@ -31,7 +31,7 @@ export interface ITreeViewState extends IItemsControlState, ITreeViewCommon
 export class TreeView<
     P extends ITreeViewProps = {},
     S extends ITreeViewState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     /* private */ _selectedTVI?: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>;
     /* internal */ _dataMap: Map<any, TreeViewItem> = new Map<any, TreeViewItem>();
@@ -143,7 +143,7 @@ interface ITreeViewItemState extends IItemsControlState, ITreeViewItemCommon
 class TreeViewItem<
     P extends ITreeViewItemProps = {},
     S extends ITreeViewItemState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     constructor(props)
     {

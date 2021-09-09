@@ -33,7 +33,7 @@ export interface IItemsControlState extends IControlState
 /** Base class for components displaying collections of items. ItemsControl
  * does not render its own items directly but it and its sub-classes
  * handle the control logic. Items are always rendered inside an items panel.  **/
-export class ItemsControl<
+export class ItemsControlBase<
     P extends IItemsControlProps = {},
     S extends IItemsControlState = {}>
     extends Control<P, S>
@@ -133,4 +133,8 @@ export class ItemsControl<
     }
 
     private _itemContainers: FrameworkElement[] = [];
+}
+
+export class ItemsControl extends ItemsControlBase<IItemsControlProps, IItemsControlState>
+{
 }

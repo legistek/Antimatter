@@ -29,6 +29,7 @@ export * from './src/Controls/ListBox';
 export * from './src/Controls/DialogBox';
 export * from './src/Controls/CommandButton';
 export * from './src/Controls/CommandBar';
+export * from './src/Controls/TabControl';
 export * from './src/Controls/NavMenu';
 export * from './src/Controls/ToastControl';
 export * from './src/Controls/ProgressRing';

@@ -15,40 +15,22 @@ import { CommandButton } from './CommandButton';
 import { Window } from './Window';
 
 import { Route, Switch, Redirect } from 'react-router-dom';
+import { ITabControlCommon, ITabControlProps, ITabControlState, ITabItem, TabContentPanel, TabControl, TabControlBase } from './TabControl';
 
-export interface INavMenuItem
-{
-    Label: string,
-    Route?: string,
-    Key: string,
-    Content: JSX.Element,
-    Icon?: number|string,
-    Padding?: string,
-    IconBackground?: string,
-    IconForeground?: string,
-    Description?: string,
-    IsEnabled?: boolean | BindingParameters,
-    IsVisible?: boolean | BindingParameters,
-    IsSelected?: boolean
-}
-export interface INavMenuCommon
-{
-    Items: INavMenuItem[]
-}
-export interface INavMenuProps extends IControlProps, INavMenuCommon
+export interface INavMenuProps extends ITabControlProps
 {
 }
-export interface INavMenuState extends IControlState, INavMenuCommon
+export interface INavMenuState extends ITabControlState
 {
 }
 
 export class NavMenuBase<
     P extends INavMenuProps = { Items: [] },
-    S extends INavMenuState = { Items: [] }> extends Control<P, S>
+    S extends INavMenuState = { Items: [] }> extends TabControlBase<P, S>
 {
-    static theme = getTheme();
+    static /* override */ theme = getTheme();
 
-    public static DefaultStyle: Style<INavMenuProps> = new Style<INavMenuProps>(
+    public static /* override */ DefaultStyle: Style<INavMenuProps> = new Style<INavMenuProps>(
         {
             Template: new ControlTemplate(
                 NavMenuBase.VerticalDesktopTemplate,
@@ -61,11 +43,11 @@ export class NavMenuBase<
             Items: []
         },
         {
-            Selector: "@ .nav-menu-item",
+            Selector: "@ .tab-menu-item",
             Rules: {
                 color: NavMenuBase.theme.semanticColors.bodySubtext,
                 fontFamily: NavMenuBase.theme.fonts.medium.fontFamily,
-                borderWidth: "0px 0px 0px 3px",
+                borderWidth: "0px 0px 0px 4px",
                 borderColor: "transparent",
                 padding: "10px 45px 10px 10px",
                 background: "transparent",
@@ -74,25 +56,25 @@ export class NavMenuBase<
             }
         },
         {
-            Selector: "@ .nav-label",
+            Selector: "@ .tab-label",
             Rules: {
                 fontWeight: "bold"
             }
         },
         {
-            Selector: "@ .nav-menu-item:hover",
+            Selector: "@ .tab-menu-item:hover",
             Rules: {
                 background: NavMenuBase.theme.palette.neutralLight
             },
         },
         {
-            Selector: "@ .nav-menu-item:not(.mobile)",
+            Selector: "@ .tab-menu-item:not(.mobile)",
             Rules: {
                 maxWidth: "250px"
             }
         },
         {
-            Selector: "@ .nav-menu-item.selected",
+            Selector: "@ .tab-menu-item.selected",
             Rules: {
                 color: NavMenuBase.theme.semanticColors.bodyText,
                 borderColor: NavMenuBase.theme.semanticColors.link,
@@ -104,6 +86,12 @@ export class NavMenuBase<
             Selector: "@ .menu-content",
             Rules: {
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
+            }
+        },
+        {
+            Selector: "@ .tab-content",
+            Rules: {
+                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }
         },
         {
@@ -128,7 +116,7 @@ export class NavMenuBase<
                         ref={ic => templatedParent._tabList = ic}
                         ClassName="menu-content"
                         ItemsSource={templatedParent.state.Items}
-                        ItemTemplate={new DataTemplate((tab: INavMenuItem) =>
+                        ItemTemplate={new DataTemplate((tab: ITabItem) =>
                         {
                             if (!templatedParent.GetTabIsVisible(tab))
                                 return (<></>);
@@ -145,7 +133,7 @@ export class NavMenuBase<
                     <TabContentPanel
                         Grid={{ Row: 1 }}
                         TabItem={t}
-                        NavMenuParent={templatedParent}/>                                            
+                        TabControlParent={templatedParent}/>                                            
                     <Panel
                         Grid={{ Row: 0 }}
                         BoxShadow={DefaultEffects.elevation8}
@@ -181,7 +169,7 @@ export class NavMenuBase<
                     Grid={{ Column: 0 }}
                     Margin="0px 20px 0px 0px"
                     ref={ic => templatedParent._tabList = ic}
-                    ItemTemplate={new DataTemplate((tab: INavMenuItem) =>
+                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
                     {
                         if (!templatedParent.GetTabIsVisible(tab))
                             return (<></>);
@@ -212,7 +200,7 @@ export class NavMenuBase<
             t =>
             (<Route path={Window.CombineRoute([templatedParent._startingRoute, t.Key])} key={t.Key}>
                 <TabContentPanel
-                    NavMenuParent={templatedParent}
+                    TabControlParent={templatedParent}
                     TabItem={t}
                     OnDidMount={(content) => templatedParent.SetSelectedTab((content as TabContentPanel).state.TabItem)} />
             </Route>));
@@ -226,13 +214,7 @@ export class NavMenuBase<
         this._startingRoute = Window.Route;
     }    
 
-    private SetSelectedTab(tab?: INavMenuItem)
-    {
-        this._selectedTab = tab;
-        this._tabList?.InvalidateRender();
-    }
-
-    private RenderTabLabel(tab: INavMenuItem, mobile: boolean): JSX.Element
+    protected /* override */ RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
     {
         return (
             <Grid
@@ -253,67 +235,22 @@ export class NavMenuBase<
                     Orientation={Orientation.Vertical}
                     VerticalAlignment={VerticalAlignment.Center}>
                     <TextBlock Text={tab.Label}
-                        ClassName="nav-label"
+                        ClassName="tab-label"
                         Margin="0"
                         FontSize={this.state.FontSize}
                         FontWeight="bold" />
 
                     {tab.Description && (<TextBlock
-                        ClassName="nav-item-description"
                         Text={tab.Description}
                         FontSize={(this.state.FontSize as number) * 0.50} />)}
                 </StackPanel>
             </Grid>);
     }
 
-    private GetActualSelectedTab(mobile: boolean): INavMenuItem | undefined
-    {
-        let t: INavMenuItem | undefined = undefined;
-        if (mobile)
-            t = this._selectedTab;
-        else
-            t = this._selectedTab || this.state.Items?.find(t => this.GetTabIsEnabled(t) && this.GetTabIsVisible(t));
-        return t;
-    }
-
-    private ConstructTabItemClassList(item: INavMenuItem, mobile: boolean)
-    {
-        let classes: string = "nav-menu-item ";
-        if (mobile)
-            classes += "mobile ";
-        if (!this.GetTabIsEnabled(item))
-            classes += "disabled ";
-        if (!mobile && this.GetActualSelectedTab(mobile) == item)
-            classes += "selected ";
-        return classes;
-    }
-
-    private OnTabItemClick(item: INavMenuItem): void
+    protected /* override */ OnTabItemClick(item: ITabItem): void
     {
         this._selectedTab = item;
         Window.PushRoute(this._startingRoute, item.Key);
-    }
-
-    private GetTabIsVisible(item: INavMenuItem)
-    {
-        if (item.IsVisible === undefined)
-            return true;
-
-        if (typeof (item.IsVisible) == 'boolean')
-            return item.IsVisible;
-
-        return this.BindState(item.IsVisible as BindingParameters, item.Key + "_visible");
-    }
-
-    private GetTabIsEnabled(item: INavMenuItem)
-    {
-        if (item.IsEnabled === undefined)
-            return true;
-
-        if (typeof (item.IsEnabled) == 'boolean')
-            return item.IsEnabled;
-
-        return this.BindState(item.IsEnabled as BindingParameters, item.Key + "_enabled");
     }
 
     private MobileBackButtonClick()
@@ -321,8 +258,6 @@ export class NavMenuBase<
         Window.PushRoute(this._startingRoute);
     }
 
-    _tabList?: ItemsControl | null;
-    _selectedTab?: INavMenuItem;
     _unlisten?: Function;
     _startingRoute: string = "/";
 }
@@ -331,41 +266,3 @@ export class NavMenu extends NavMenuBase<INavMenuProps, INavMenuState>
 {
 }
 
-interface ITabContentPanelProps extends IPanelProps
-{
-    TabItem?: INavMenuItem;
-    NavMenuParent?: NavMenu;
-}
-interface ITabContentPanelState extends IPanelState
-{
-    TabItem?: INavMenuItem;
-    NavMenuParent?: NavMenu;
-}
-class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelState>
-{
-    public static DefaultStyle: Style<ITabContentPanelProps> = new Style<ITabContentPanelProps>(
-        {
-            VerticalScrollBarVisibility: ScrollBarVisibility.Auto
-        }
-    );
-
-    /* override */ renderElement(): JSX.Element
-    {
-        return this.state.TabItem?.Content || (<></>);
-    }
-
-    /* override */ constructClasses()
-    {
-        return super.constructClasses() + " nav-content";
-    }
-
-    /* override */ getCSSStyles()
-    {
-        return Object.assign(
-            super.getCSSStyles(),
-            {
-                padding: this.state.TabItem?.Padding || this.state.NavMenuParent?.state.Padding,
-                animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            });
-    }
-}

@@ -3,7 +3,7 @@ import { ModelObjectReference } from '@antimatterjs/react';
 import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } from '@fluentui/react';
 
 import { Style } from '../Style';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
 import { CommandButton, CommandButtonBase } from './CommandButton';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
@@ -96,7 +96,7 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
     }
 }
 
-export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlState>
+export class CommandBar extends ItemsControlBase<IItemsControlProps, IItemsControlState>
 {
     public static DefaultStyle: Style<IItemsControlProps> = new Style<IItemsControlProps>(
     {

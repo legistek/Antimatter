@@ -107,6 +107,7 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
                 <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}>
                     {this.TitleElem}
                     <Glyph
+                        Grid={{Column: 1}}
                         Icon="ChevronDown"
                         Foreground={ComboBox.theme.palette.neutralSecondary}
                         HorizontalAlignment={HorizontalAlignment.Center}
