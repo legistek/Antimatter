@@ -16,7 +16,7 @@ import { Window } from './Window';
 
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-export interface ITabItem
+export interface INavMenuItem
 {
     Label: string,
     Route?: string,
@@ -31,40 +31,40 @@ export interface ITabItem
     IsVisible?: boolean | BindingParameters,
     IsSelected?: boolean
 }
-export interface ITabControlCommon
+export interface INavMenuCommon
 {
-    Tabs: ITabItem[]
+    Items: INavMenuItem[]
 }
-export interface ITabControlProps extends IControlProps, ITabControlCommon
+export interface INavMenuProps extends IControlProps, INavMenuCommon
 {
 }
-export interface ITabControlState extends IControlState, ITabControlCommon
+export interface INavMenuState extends IControlState, INavMenuCommon
 {
 }
 
-export class TabControlBase<
-    P extends ITabControlProps = { Tabs: [] },
-    S extends ITabControlState = { Tabs: [] }> extends Control<P, S>
+export class NavMenuBase<
+    P extends INavMenuProps = { Items: [] },
+    S extends INavMenuState = { Items: [] }> extends Control<P, S>
 {
     static theme = getTheme();
 
-    public static DefaultStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
+    public static DefaultStyle: Style<INavMenuProps> = new Style<INavMenuProps>(
         {
             Template: new ControlTemplate(
-                TabControlBase.VerticalDesktopTemplate,
+                NavMenuBase.VerticalDesktopTemplate,
                 {
                     Layout: WindowLayout.Tablet,
-                    VisualTree: TabControlBase.VerticalMobileTemplate
+                    VisualTree: NavMenuBase.VerticalMobileTemplate
                 }),
             Padding: "5px",
-            FontSize: TabControlBase.theme.fonts.large.fontSize as number,
-            Tabs: []
+            FontSize: NavMenuBase.theme.fonts.large.fontSize as number,
+            Items: []
         },
         {
-            Selector: "@ .tab-item",
+            Selector: "@ .nav-menu-item",
             Rules: {
-                color: TabControlBase.theme.semanticColors.bodySubtext,
-                fontFamily: TabControlBase.theme.fonts.medium.fontFamily,
+                color: NavMenuBase.theme.semanticColors.bodySubtext,
+                fontFamily: NavMenuBase.theme.fonts.medium.fontFamily,
                 borderWidth: "0px 0px 0px 3px",
                 borderColor: "transparent",
                 padding: "10px 45px 10px 10px",
@@ -74,28 +74,28 @@ export class TabControlBase<
             }
         },
         {
-            Selector: "@ .tab-label",
+            Selector: "@ .nav-label",
             Rules: {
                 fontWeight: "bold"
             }
         },
         {
-            Selector: "@ .tab-item:hover",
+            Selector: "@ .nav-menu-item:hover",
             Rules: {
-                background: TabControlBase.theme.palette.neutralLight
+                background: NavMenuBase.theme.palette.neutralLight
             },
         },
         {
-            Selector: "@ .tab-item:not(.mobile)",
+            Selector: "@ .nav-menu-item:not(.mobile)",
             Rules: {
                 maxWidth: "250px"
             }
         },
         {
-            Selector: "@ .tab-item.selected",
+            Selector: "@ .nav-menu-item.selected",
             Rules: {
-                color: TabControlBase.theme.semanticColors.bodyText,
-                borderColor: TabControlBase.theme.semanticColors.link,
+                color: NavMenuBase.theme.semanticColors.bodyText,
+                borderColor: NavMenuBase.theme.semanticColors.link,
                 borderWidth: "0px 0px 0px 4px",
                 borderStyle: "solid"
             }
@@ -107,19 +107,19 @@ export class TabControlBase<
             }
         },
         {
-            Selector: "@ .mobile-tab-back",
+            Selector: "@ .mobile-nav-back",
             Rules: {
                 cursor: "pointer"
             }
         }
     );
 
-    private static VerticalMobileTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
+    private static VerticalMobileTemplate(templatedParent: NavMenuBase<INavMenuProps, INavMenuState>): JSX.Element
     {
-        return (<Switch>{TabControl.GetMobileTabRoutes(templatedParent)}</Switch>);
+        return (<Switch>{NavMenu.GetMobileTabRoutes(templatedParent)}</Switch>);
     }
 
-    private static GetMobileTabRoutes(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element[]
+    private static GetMobileTabRoutes(templatedParent: NavMenuBase<INavMenuProps, INavMenuState>): JSX.Element[]
     {        
         let routes: JSX.Element[] =
             [
@@ -127,8 +127,8 @@ export class TabControlBase<
                     <ItemsControl
                         ref={ic => templatedParent._tabList = ic}
                         ClassName="menu-content"
-                        ItemsSource={templatedParent.state.Tabs}
-                        ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                        ItemsSource={templatedParent.state.Items}
+                        ItemTemplate={new DataTemplate((tab: INavMenuItem) =>
                         {
                             if (!templatedParent.GetTabIsVisible(tab))
                                 return (<></>);
@@ -137,7 +137,7 @@ export class TabControlBase<
                 </Route>)
             ];
 
-        var otherRoutes = templatedParent.state.Tabs.map(
+        var otherRoutes = templatedParent.state.Items.map(
             t =>
             (<Route path={Window.CombineRoute([templatedParent._startingRoute, t.Key])} key={t.Key}>
                 <Grid
@@ -145,7 +145,7 @@ export class TabControlBase<
                     <TabContentPanel
                         Grid={{ Row: 1 }}
                         TabItem={t}
-                        TabControlParent={templatedParent}/>                                            
+                        NavMenuParent={templatedParent}/>                                            
                     <Panel
                         Grid={{ Row: 0 }}
                         BoxShadow={DefaultEffects.elevation8}
@@ -153,17 +153,17 @@ export class TabControlBase<
                         <StackPanel
                             Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
                             <Glyph
-                                ClassName="mobile-tab-back"
+                                ClassName="mobile-nav-back"
                                 Foreground="black"
                                 Margin="10px 10px"
-                                FontSize={TabControl.theme.fonts.xxLarge.fontSize}
+                                FontSize={NavMenu.theme.fonts.xxLarge.fontSize}
                                 VerticalAlignment={VerticalAlignment.Center}
                                 OnClick={(e) => templatedParent.MobileBackButtonClick()}
                                 Icon="ChevronLeft" />
                             <TextBlock Text={t.Label}
                                 FontWeight="bold"
                                 VerticalAlignment={VerticalAlignment.Center}
-                                FontSize={TabControl.theme.fonts.xLarge.fontSize} />
+                                FontSize={NavMenu.theme.fonts.xLarge.fontSize} />
                         </StackPanel>
                     </Panel>
                 </Grid>
@@ -173,7 +173,7 @@ export class TabControlBase<
         return routes;
     }
 
-    private static VerticalDesktopTemplate(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element
+    private static VerticalDesktopTemplate(templatedParent: NavMenuBase<INavMenuProps, INavMenuState>): JSX.Element
     {
         return (
             <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true)]}>
@@ -181,25 +181,25 @@ export class TabControlBase<
                     Grid={{ Column: 0 }}
                     Margin="0px 20px 0px 0px"
                     ref={ic => templatedParent._tabList = ic}
-                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                    ItemTemplate={new DataTemplate((tab: INavMenuItem) =>
                     {
                         if (!templatedParent.GetTabIsVisible(tab))
                             return (<></>);
                         return templatedParent.RenderTabLabel(tab, false);
                     })}
-                    ItemsSource={templatedParent.state.Tabs} />
+                    ItemsSource={templatedParent.state.Items} />
 
                 <Panel Grid={{ Column: 1 }}>
                     <Switch>
-                        {TabControl.GetDesktopTabRoutes(templatedParent)}
+                        {NavMenu.GetDesktopTabRoutes(templatedParent)}
                     </Switch>
                 </Panel>
             </Grid>);
     }
 
-    private static GetDesktopTabRoutes(templatedParent: TabControlBase<ITabControlProps, ITabControlState>): JSX.Element[]
+    private static GetDesktopTabRoutes(templatedParent: NavMenuBase<INavMenuProps, INavMenuState>): JSX.Element[]
     {
-        var defaultTab = templatedParent.state.Tabs?.find(t => templatedParent.GetTabIsEnabled(t) && templatedParent.GetTabIsVisible(t));
+        var defaultTab = templatedParent.state.Items?.find(t => templatedParent.GetTabIsEnabled(t) && templatedParent.GetTabIsVisible(t));
         let routes: JSX.Element[] =
             [
                 (<Redirect exact
@@ -208,11 +208,11 @@ export class TabControlBase<
                     to={Window.CombineRoute([templatedParent._startingRoute, defaultTab?.Key || ""])} />)
             ];
 
-        var otherRoutes = templatedParent.state.Tabs.map(
+        var otherRoutes = templatedParent.state.Items.map(
             t =>
             (<Route path={Window.CombineRoute([templatedParent._startingRoute, t.Key])} key={t.Key}>
                 <TabContentPanel
-                    TabControlParent={templatedParent}
+                    NavMenuParent={templatedParent}
                     TabItem={t}
                     OnDidMount={(content) => templatedParent.SetSelectedTab((content as TabContentPanel).state.TabItem)} />
             </Route>));
@@ -226,13 +226,13 @@ export class TabControlBase<
         this._startingRoute = Window.Route;
     }    
 
-    private SetSelectedTab(tab?: ITabItem)
+    private SetSelectedTab(tab?: INavMenuItem)
     {
         this._selectedTab = tab;
         this._tabList?.InvalidateRender();
     }
 
-    private RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
+    private RenderTabLabel(tab: INavMenuItem, mobile: boolean): JSX.Element
     {
         return (
             <Grid
@@ -247,38 +247,38 @@ export class TabControlBase<
                     Background={mobile ? tab.IconBackground : undefined}
                     Icon={tab.Icon}
                     Foreground={mobile ? tab.IconForeground : "#808080"}
-                    FontSize={TabControl.theme.fonts.xLarge.fontSize as number} />
+                    FontSize={NavMenu.theme.fonts.xLarge.fontSize as number} />
 
                 <StackPanel Grid={{ Column: 1 }}
                     Orientation={Orientation.Vertical}
                     VerticalAlignment={VerticalAlignment.Center}>
                     <TextBlock Text={tab.Label}
-                        ClassName="tab-label"
+                        ClassName="nav-label"
                         Margin="0"
                         FontSize={this.state.FontSize}
                         FontWeight="bold" />
 
                     {tab.Description && (<TextBlock
-                        ClassName="tab-description"
+                        ClassName="nav-item-description"
                         Text={tab.Description}
                         FontSize={(this.state.FontSize as number) * 0.50} />)}
                 </StackPanel>
             </Grid>);
     }
 
-    private GetActualSelectedTab(mobile: boolean): ITabItem | undefined
+    private GetActualSelectedTab(mobile: boolean): INavMenuItem | undefined
     {
-        let t: ITabItem | undefined = undefined;
+        let t: INavMenuItem | undefined = undefined;
         if (mobile)
             t = this._selectedTab;
         else
-            t = this._selectedTab || this.state.Tabs?.find(t => this.GetTabIsEnabled(t) && this.GetTabIsVisible(t));
+            t = this._selectedTab || this.state.Items?.find(t => this.GetTabIsEnabled(t) && this.GetTabIsVisible(t));
         return t;
     }
 
-    private ConstructTabItemClassList(item: ITabItem, mobile: boolean)
+    private ConstructTabItemClassList(item: INavMenuItem, mobile: boolean)
     {
-        let classes: string = "tab-item ";
+        let classes: string = "nav-menu-item ";
         if (mobile)
             classes += "mobile ";
         if (!this.GetTabIsEnabled(item))
@@ -288,13 +288,13 @@ export class TabControlBase<
         return classes;
     }
 
-    private OnTabItemClick(item: ITabItem): void
+    private OnTabItemClick(item: INavMenuItem): void
     {
         this._selectedTab = item;
         Window.PushRoute(this._startingRoute, item.Key);
     }
 
-    private GetTabIsVisible(item: ITabItem)
+    private GetTabIsVisible(item: INavMenuItem)
     {
         if (item.IsVisible === undefined)
             return true;
@@ -305,7 +305,7 @@ export class TabControlBase<
         return this.BindState(item.IsVisible as BindingParameters, item.Key + "_visible");
     }
 
-    private GetTabIsEnabled(item: ITabItem)
+    private GetTabIsEnabled(item: INavMenuItem)
     {
         if (item.IsEnabled === undefined)
             return true;
@@ -322,24 +322,24 @@ export class TabControlBase<
     }
 
     _tabList?: ItemsControl | null;
-    _selectedTab?: ITabItem;
+    _selectedTab?: INavMenuItem;
     _unlisten?: Function;
     _startingRoute: string = "/";
 }
 
-export class TabControl extends TabControlBase<ITabControlProps, ITabControlState>
+export class NavMenu extends NavMenuBase<INavMenuProps, INavMenuState>
 {
 }
 
 interface ITabContentPanelProps extends IPanelProps
 {
-    TabItem?: ITabItem;
-    TabControlParent?: TabControl;
+    TabItem?: INavMenuItem;
+    NavMenuParent?: NavMenu;
 }
 interface ITabContentPanelState extends IPanelState
 {
-    TabItem?: ITabItem;
-    TabControlParent?: TabControl;
+    TabItem?: INavMenuItem;
+    NavMenuParent?: NavMenu;
 }
 class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelState>
 {
@@ -356,7 +356,7 @@ class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelS
 
     /* override */ constructClasses()
     {
-        return super.constructClasses() + " tab-content";
+        return super.constructClasses() + " nav-content";
     }
 
     /* override */ getCSSStyles()
@@ -364,7 +364,7 @@ class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelS
         return Object.assign(
             super.getCSSStyles(),
             {
-                padding: this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding,
+                padding: this.state.TabItem?.Padding || this.state.NavMenuParent?.state.Padding,
                 animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             });
     }

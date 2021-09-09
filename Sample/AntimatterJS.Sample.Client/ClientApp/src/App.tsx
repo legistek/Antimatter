@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, NavMenu, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 //import './custom.css'
@@ -104,8 +104,8 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             <Window
                 Model={this.state.Model}
                 Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                    <TabControl Style={TabControl.DefaultStyle}
-                        Tabs={
+                    <NavMenu Style={NavMenu.DefaultStyle}
+                        Items={
                             [
                                 {
                                     Label: "Company",

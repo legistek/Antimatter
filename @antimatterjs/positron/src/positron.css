@@ -134,10 +134,6 @@ body {
 .amx-ptn-fixed-height {
 }
 
-
-
-
-
 /* For some reason this is necessary for MS DetailsList resizing and
     any other Layer's to work I guess. */
 .ms-Fabric.ms-Layer-content {
