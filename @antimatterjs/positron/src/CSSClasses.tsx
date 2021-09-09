@@ -16,4 +16,9 @@ export class CSSClasses
     public static readonly Overlaps: string = "amx-ptn-overlaps";
     public static readonly VScroll: string = "amx-ptn-vscroll";
     public static readonly HScroll: string = "amx-ptn-hscroll";
+
+    public static readonly SlideInFromLeft: string = "slideInFromLeft";
+    public static readonly SlideOutLeft: string = "slideOutLeft";
+    public static readonly SlideInFromRight: string = "slideInFromRight";
+    public static readonly SlideOutRight: string = "slideOutRight";
 }

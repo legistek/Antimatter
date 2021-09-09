@@ -18,8 +18,7 @@ import { CSSClasses } from './CSSClasses';
 
 interface IFrameworkElementCommon
 {
-    // Use only for control development; never use for cross-platform views
-    ClassName?: string,
+    // Use only for control development; never use for cross-platform views    
     Style?: Style<any>,    
     Margin?: string,    
     OnClick?: (event: MouseEvent) => void,
@@ -45,6 +44,7 @@ interface IFrameworkElementCommon
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {
+    ClassName?: string|Binding,
     HorizontalAlignment?: HorizontalAlignment |Binding,
     VerticalAlignment?: VerticalAlignment|Binding,
     IsVisible?: boolean | Binding,
@@ -58,6 +58,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
+    ClassName?: string,
     HorizontalAlignment?: HorizontalAlignment,
     VerticalAlignment?: VerticalAlignment,
     IsVisible?: boolean,
@@ -148,7 +149,7 @@ export class FrameworkElement<
                 onPointerOut={this.state.OnPointerOut || this._gestureHandlers
                     ? (event) => this.OnPointerOut(event)
                     : undefined}
-                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
+                className={this.constructor.name + " " + (this.state.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
                 tabIndex={this.state.TabIndex}
             >
                 {

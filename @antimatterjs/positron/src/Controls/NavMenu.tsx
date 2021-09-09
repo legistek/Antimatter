@@ -202,7 +202,7 @@ export class NavMenuBase<
                 <TabContentPanel
                     TabControlParent={templatedParent}
                     TabItem={t}
-                    OnDidMount={(content) => templatedParent.SetSelectedTab((content as TabContentPanel).state.TabItem)} />
+                    OnDidMount={(content) => templatedParent.SetSelectedTab((content as TabContentPanel).state.TabItem as ITabItem, true)} />
             </Route>));
 
         routes = routes.concat(otherRoutes);

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, BindingParameters, ModelObjectReference, PropertyChangedEventArgs } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingParameters, ModelObjectReference, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { DefaultEffects, MotionAnimations, getTheme } from '@fluentui/react';
 import { Style } from '../Style';
@@ -14,6 +14,7 @@ import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 
 import '../ResizeObserver';
+import { CSSClasses } from '../CSSClasses';
 
 export interface ITabItem
 {
@@ -36,11 +37,13 @@ export interface ITabControlCommon
 }
 export interface ITabControlProps extends IControlProps, ITabControlCommon
 {
-    SelectedItem?: string | Binding
+    SelectedItem?: string | Binding,
+    SelectedIndex?: number | Binding,
 }
 export interface ITabControlState extends IControlState, ITabControlCommon
 {
-    SelectedItem?: string
+    SelectedItem?: string,
+    SelectedIndex?: number,
 }
 
 export class TabControlBase<
@@ -54,6 +57,12 @@ export class TabControlBase<
             Orientation: Orientation.Horizontal,
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             ClassName: "tab-panel",
+        },
+        {
+            Selector: "@",
+            Rules: {
+                justifyContent: "space-around"
+            }
         },
         {
             Selector: "@::-webkit-scrollbar",
@@ -91,12 +100,19 @@ export class TabControlBase<
                                 })}
                             />
                             <ItemsControl
+                                ClassName={new Binding({
+                                    Source: templatedParent,
+                                    Path: nameof(templatedParent.TabPanelOverflows),
+                                    Converter: (overflows: boolean) =>
+                                        overflows ? "tab-panel-overflows" : ""
+                                })}
                                 Grid={{ Column: 1 }}
                                 ref={ic => templatedParent._tabList = ic}
                                 ItemsPanel={StackPanel}
                                 ItemsPanelStyle={TabControlBase.TabPanelStyle}
                                 ItemContainerStyle={new Style<IPanelProps>({
-                                    MinWidth: templatedParent.state.MinTabWidth
+                                    MinWidth: templatedParent.state.MinTabWidth,
+                                    Width: "100%"
                                 })}
                                 ItemTemplate={new DataTemplate((tab: ITabItem) =>
                                 {
@@ -124,6 +140,7 @@ export class TabControlBase<
                                 })} />
                         </Grid>
                         <TabContentPanel
+                            Animate={true}
                             TabControlParent={templatedParent}
                             Grid={{ Row: 1 }}
                             TabItem={templatedParent.GetActualSelectedTab(false)} />
@@ -136,7 +153,7 @@ export class TabControlBase<
         },
         {
             Selector: "@ .tab-menu-item",
-            Rules: {
+            Rules: {                
                 color: TabControlBase.theme.semanticColors.bodySubtext,
                 fontFamily: TabControlBase.theme.fonts.medium.fontFamily,
                 borderWidth: "0px 0px 3px 0px",
@@ -148,6 +165,12 @@ export class TabControlBase<
             }
         },
         {
+            Selector: "@ .tab-content",
+            Rules: {
+                animation: "unset"
+            }
+        },
+        {
             Selector: "@ .tab-menu-item.selected",
             Rules: {
                 color: TabControlBase.theme.semanticColors.bodyText,
@@ -156,6 +179,12 @@ export class TabControlBase<
                 borderStyle: "solid"
             }
         },
+        {
+            Selector: "@ .tab-panel-overflows .tab-panel",
+            Rules: {
+                justifyContent: "unset"
+            }
+        }
 
     );
 
@@ -295,14 +324,61 @@ export class TabControlBase<
 
         this.TabPanelOverflows = desiredWidth > elem.clientWidth;
         this.IsLeftTabPanelScrollEnabled = elem.scrollLeft > 0;
-        this.IsRightTabPanelScrollEnabled = elem.scrollLeft + elem.clientWidth < elem.scrollWidth;
+        this.IsRightTabPanelScrollEnabled = elem.scrollLeft + elem.clientWidth < elem.scrollWidth;        
     }
 
-    protected SetSelectedTab(tab?: ITabItem)
+    // Handle model-side changes
+    public /* virtual */ OnPropertyChanged(property: string, value: any, oldValue: any)
     {
+        let tab: ITabItem | undefined = undefined;
+        switch (property)
+        {
+            case nameof(this.state.SelectedItem):
+                tab = this.state.Items?.find(i => i.Key === value);
+                if (!tab)
+                    // Invalid key
+                    return;
+                this.SetSelectedTab(tab, false);
+                var index = this.state.Items?.indexOf(tab) || 0;                
+                Antimatter.TargetChanged(
+                    this,
+                    nameof(this.state.SelectedIndex),
+                    index,
+                    false);                
+                break;
+            case nameof(this.state.SelectedIndex):
+                var index = value as number;
+                if (index > (this.state.Items?.length || 0))
+                    // Invalid index
+                    return;
+                tab = this.state.Items[index];
+                this.SetSelectedTab(tab, false);
+                Antimatter.TargetChanged(
+                    this,
+                    nameof(this.state.SelectedItem),
+                    tab.Key,
+                    false);
+                break;
+        }
+    }
+
+    protected SetSelectedTab(tab: ITabItem, notify: boolean)
+    {
+        var oldIndex = this.state.SelectedIndex || 0;
+        var newIndex = this.state.Items?.indexOf(tab) || 0;
         this._selectedTab = tab;
         this._tabList?.InvalidateRender();
-        this.InvalidateRender();        
+        this.InvalidateRender();
+        if (notify)
+        {
+            // Notify two-way binding sources
+            Antimatter.TargetChanged(this, nameof(this.state.SelectedItem), tab.Key, false);
+            Antimatter.TargetChanged(
+                this,
+                nameof(this.state.SelectedIndex),
+                newIndex,
+                false);
+        }
     }
 
     protected GetActualSelectedTab(mobile: boolean): ITabItem | undefined
@@ -351,7 +427,7 @@ export class TabControlBase<
 
     protected /* virtual */ OnTabItemClick(item: ITabItem): void
     {
-        this.SetSelectedTab(item);
+        this.SetSelectedTab(item, true);
     }
 
     protected _tabList?: ItemsControl | null;
@@ -370,38 +446,109 @@ interface ITabContentPanelProps extends IPanelProps
 {
     TabItem?: ITabItem;
     TabControlParent?: TabControl;
+    Animate?: boolean;
 }
 interface ITabContentPanelState extends IPanelState
 {
     TabItem?: ITabItem;
     TabControlParent?: TabControl;
+    Animate?: boolean;
 }
 export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabContentPanelState>
-{
-    private _exitingContent?: JSX.Element;
+{    
+    private _lastIndex?: number;
+    private _renderCount: number = 0;
 
     public static DefaultStyle: Style<ITabContentPanelProps> = new Style<ITabContentPanelProps>(
         {
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto
+        },
+        {
+            Selector: "@ .entering-from-left",
+            Rules: {
+                animation: `${CSSClasses.SlideInFromLeft} 0.4s ease 0s 1 normal`,
+                animationFillMode: "forwards"
+            }
+        },
+        {
+            Selector: "@ .entering-from-right",
+            Rules: {
+                animation: `${CSSClasses.SlideInFromRight} 0.4s ease 0s 1 normal`,
+                animationFillMode: "forwards"
+            }
+        },
+        {
+            Selector: "@ .exiting-left",
+            Rules: {
+                animation: `${CSSClasses.SlideOutLeft} 0.4s ease 0s 1 normal`,
+                animationFillMode: "forwards"
+            }
+        },
+        {
+            Selector: "@ .exiting-right",
+            Rules: {
+                animation: `${CSSClasses.SlideOutRight} 0.4s ease 0s 1 normal`,
+                animationFillMode: "forwards"
+            }
         }
     );
 
-    /* override */ renderElement(): JSX.Element
+    /* override */ renderElement(): JSX.Element|null
     {
-        return this._exitingContent = this.state.TabItem?.Content || (<></>);
+        var currentIndex = this.state.TabControlParent?.state?.Items?.indexOf(this.state.TabItem as ITabItem) || 0;
+
+        var currentTab = this.state.TabControlParent?.state?.Items[currentIndex];
+        if (!currentTab)
+            return null; // should be impossible
+
+        let render: JSX.Element;              
+
+        if (this.state.Animate && this._lastIndex !== undefined && this._lastIndex != currentIndex)
+        {
+            var forwards = currentIndex > this._lastIndex;
+            
+            var priorTab = this.state.TabControlParent?.state?.Items[this._lastIndex];
+            if (!priorTab)
+                return null; // should be impossible
+
+            // animate
+            render = (<>
+                <Panel
+                    key={`tabcontent_${priorTab.Key}`}
+                    ClassName={forwards ? "exiting-left" : "exiting-right"}
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}>
+                    {priorTab.Content}
+                </Panel>
+                <Panel
+                    //key={`tab${this._renderCount}entering`}
+                    key={`tabcontent_${currentTab.Key}`}
+                    ClassName={forwards ? "entering-from-right" : "entering-from-left"}
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}
+                    Overlaps={true}>
+                    {currentTab.Content}
+                </Panel>
+            </>);
+            Utilities.SleepAsync(450).then(_ =>
+            {
+                this.InvalidateRender();
+            });
+        }
+        else
+        {
+            render = (
+                <Panel
+                    key={`tabcontent_${currentTab.Key}`}
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}>
+                    {this.state.TabControlParent?.state?.Items[currentIndex]?.Content}
+                </Panel>);                
+        }
+        this._lastIndex = currentIndex;
+        //this._renderCount++;
+        return render;
     }
 
     /* override */ constructClasses()
     {
         return super.constructClasses() + " tab-content";
-    }
-
-    /* override */ getCSSStyles()
-    {
-        return Object.assign(
-            super.getCSSStyles(),
-            {
-                padding: this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding,
-            });
     }
 }

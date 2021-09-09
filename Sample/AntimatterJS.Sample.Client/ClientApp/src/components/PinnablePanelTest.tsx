@@ -81,7 +81,7 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                                         Key: "overview",
                                         Label: "OVERVIEW",
                                         Icon: 0xF0F5,
-                                        Content: (<TextBlock Text="Overview Tab"/>)
+                                        Content: (<Employee Value={new Binding("Company.CEO")} />)
                                     },
                                     {
                                         Key: "properties",

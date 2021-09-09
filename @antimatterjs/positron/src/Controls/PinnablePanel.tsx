@@ -90,7 +90,9 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             })}
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResize}>
-                            {templatedParent.props.children}
+                            <React.Fragment key="panel-content">
+                                {templatedParent.props.children}
+                            </React.Fragment>
                             {
                                 templatedParent.state.IsCollapseButtonVisible &&
                                 (<CommandButton
@@ -144,7 +146,9 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             CanResize={templatedParent.state.CanResize}
                             BorderBrush={templatedParent.state.BorderBrush}
                             BorderThickness={templatedParent.state.BorderThickness}>
-                            {templatedParent.props.children}
+                            <React.Fragment key="panel-content">
+                                {templatedParent.props.children}
+                            </React.Fragment>
                             {
                                 templatedParent.state.IsPinButtonVisible &&
                                 <CommandButton

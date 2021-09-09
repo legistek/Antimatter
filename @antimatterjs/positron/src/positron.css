@@ -208,6 +208,44 @@ code {
     }
 }
 
+@keyframes slideOutLeft {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0%;
+        display: none;
+    }
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0%;
+        display: none;
+    }
+}
+
 @keyframes growFrom0 {
     0% {
         max-height: 0px;
@@ -255,3 +293,5 @@ code {
         background: rgba(46, 112, 223, 0.2);
         color: transparent;
     }
+
+

@@ -8,8 +8,8 @@ import { CSSClasses } from '../CSSClasses';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
-    Width?: number | Binding,
-    Height?: number | Binding,
+    Width?: number | string | Binding,
+    Height?: number | string | Binding,
     MinWidth?: number,
     MinHeight?: number,
     Background?: string|Binding,
@@ -25,8 +25,8 @@ export interface IPanelProps extends IFrameworkElementProps
 
 export interface IPanelState extends IFrameworkElementState
 {
-    Width?: number | Binding,
-    Height?: number | Binding,
+    Width?: number | string,
+    Height?: number | string,
     MinWidth?: number,
     MinHeight?: number,
     Background?: string,
