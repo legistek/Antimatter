@@ -67,7 +67,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             CanResize: true,
             Background: PinnablePanelBase.theme.semanticColors.bodyBackground,
             Template: (templatedParent: PinnablePanel) =>
-            {
+            {                
                 if (!templatedParent.state.State)
                 {
                     // Collapsed             

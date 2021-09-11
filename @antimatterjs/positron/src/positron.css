@@ -26,11 +26,6 @@ body {
     overflow: hidden;
 }
 
-.amx-ptn-hstack {
-    flex-direction: row;
-    width: fit-content;
-}
-
 .amx-ptn-vscroll {
 }
 
@@ -45,6 +40,19 @@ body {
         overflow-x: inherit;
     }
 
+.amx-ptn-hstack {
+    flex-direction: row;
+    width: fit-content;
+}
+
+    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
+        margin-left: 5px;
+    }
+
+    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
+        margin-right: 5px;
+    }
+
 .amx-ptn-vstack {
     display: block;
 }
@@ -53,12 +61,12 @@ body {
         min-height: fit-content;
     }
 
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
-            margin-top: 5px;
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child):not(.amx-ptn-panel) {
+            margin-top: 7.5px;
         }
 
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
-            margin-bottom: 5px;
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child):not(.amx-ptn-panel) {
+            margin-bottom: 7.5px;
         }
 
 .amx-ptn-hstack > .amx-ptn-fe {
@@ -185,6 +193,12 @@ body {
 .amx-ptn-wrap-panel {
     display: flex;
     flex-wrap: wrap;
+    margin: -5px;
+}
+
+.amx-ptn-wrap-panel > .amx-ptn-fe
+{
+    margin: 5px;
 }
 
 a {
@@ -293,5 +307,3 @@ code {
         background: rgba(46, 112, 223, 0.2);
         color: transparent;
     }
-
-

@@ -92,8 +92,10 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     {
         //console.log(`Current neutralSecondary ${ComboBox.theme.palette.neutralSecondary}`);
 
-        const dropdown: JSX.Element = (
-            <Panel
+        const dropdown: JSX.Element = (            
+            <Grid
+                Grid={{Row: this.state.Label ? 1 : 0}}
+                ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
                 ref={r => this._button = r}
                 OnClick={() => this.TogglePopup()}
                 OnKeyPress={(event) => this.OnKeyPressed(event)}
@@ -102,20 +104,16 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
                 Padding="0"
                 Background={ComboBox.theme.palette.white}
                 ClassName="panel"
-                TabIndex={0}
-            >
-                <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}>
-                    {this.TitleElem}
-                    <Glyph
-                        Grid={{Column: 1}}
-                        Icon="ChevronDown"
-                        Foreground={ComboBox.theme.palette.neutralSecondary}
-                        HorizontalAlignment={HorizontalAlignment.Center}
-                        VerticalAlignment={VerticalAlignment.Center}
-                    />
-                </Grid>
-            </Panel>
-        );
+                TabIndex={0}>
+                {this.TitleElem}
+                <Glyph
+                    Grid={{Column: 1}}
+                    Icon="ChevronDown"
+                    Foreground={ComboBox.theme.palette.neutralSecondary}
+                    HorizontalAlignment={HorizontalAlignment.Center}
+                    VerticalAlignment={VerticalAlignment.Center}
+                />
+            </Grid>);
 
         const labelStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>({},
             {
@@ -127,17 +125,17 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
         );
 
         const labeledDropdown: JSX.Element = (
-            <StackPanel Orientation={Orientation.Vertical}>
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <TextBlock
+                    Grid={{Row: 0}}
                     Text={this.state.Label}
                     FontSize={this.state.FontSize ?? ComboBox.theme.fonts.medium.fontSize}
                     FontWeight={this.state.FontWeight ?? 600}
                     FontFamily={this.state.FontFamily}
-                    Margin="5px 0"
-                    Style={labelStyle}
-                />
+                    Margin="0px"
+                    Style={labelStyle}/>
                 {dropdown}
-            </StackPanel>
+            </Grid>
         );
 
         const root: JSX.Element = this.state.Label ? labeledDropdown : dropdown;
@@ -344,6 +342,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             colDefs.unshift(Grid.ColumnDefinition());
             checkboxElem = (
                 <CheckBox
+                    Grid={{Column: 0}}
                     IsChecked={this.state.IsSelected}
                     OnClick={(event) => this.OnCheckboxClicked(event)}
                     VerticalAlignment={VerticalAlignment.Center}
@@ -351,18 +350,19 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
                     IsEnabled={this.props.IsEnabled}
                 />
             );
+            return (
+                <Grid
+                    ClassName={this.ConstructGridClasses}
+                    ColumnDefinitions={colDefs}>
+                    {checkboxElem}
+                    <Panel Grid={{ Column: 1 }}>
+                        {contentElem}
+                    </Panel>
+                </Grid>
+            );
         }
 
-        const combinedElem: JSX.Element = (
-            <Grid
-                ClassName={this.ConstructGridClasses}
-                ColumnDefinitions={colDefs}
-            >
-                {checkboxElem}
-                {contentElem}
-            </Grid>
-        );
-        return combinedElem;
+        return contentElem;            
     }
 
     private OnCheckboxClicked(event: MouseEvent): void
@@ -380,5 +380,10 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         if (this.state.IsSelected)
             classNames += ` ${ComboBoxItem.SELECTED_CLASS}`;
         return classNames;
+    }
+
+    /* override */ constructClasses(): string
+    {
+        return super.constructClasses() + this.ConstructGridClasses;
     }
 }

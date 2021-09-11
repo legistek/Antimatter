@@ -102,6 +102,12 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
     static DefaultStyle: Style<IDatePickerProps> = new Style<IDatePickerProps>(
         {
             Template: DatePickerBase.Template
+        },
+        {
+            Selector: "@ .ms-Label",
+            Rules: {
+                padding: "0px"
+            }            
         }
     );
 

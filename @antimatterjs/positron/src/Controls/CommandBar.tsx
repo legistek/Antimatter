@@ -25,6 +25,7 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                 styles={{
                     root: {
                         padding: "0px",
+                        height: "auto",
                         background: "transparent",
                         margin: this.state.Padding
                     }

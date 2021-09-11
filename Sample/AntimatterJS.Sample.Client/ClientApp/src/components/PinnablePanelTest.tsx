@@ -92,7 +92,7 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                                     {
                                         Key: "annotations",
                                         Label: "ANNOTATIONS",
-                                        Icon: 0xF0AB,
+                                        Icon: 0xF0A4,
                                         Content: (<TextBlock Text="Annotations Tab" />)
                                     },
                                     {

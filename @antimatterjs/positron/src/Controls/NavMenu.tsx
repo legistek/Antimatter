@@ -64,7 +64,7 @@ export class NavMenuBase<
         {
             Selector: "@ .tab-menu-item:hover",
             Rules: {
-                background: NavMenuBase.theme.palette.neutralLight
+                background: NavMenuBase.theme.semanticColors.buttonBackgroundHovered
             },
         },
         {

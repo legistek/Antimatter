@@ -13,7 +13,6 @@ import { TextBlock } from './TextBlock';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 
-import '../ResizeObserver';
 import { CSSClasses } from '../CSSClasses';
 
 export interface ITabItem
@@ -80,11 +79,16 @@ export class TabControlBase<
             {
                 return (
                     <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-                        <Grid ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
+                        <Grid
+                            BorderThickness="0px 0px 1px 0px"
+                            BorderBrush={TabControl.theme.semanticColors.bodyFrameDivider}
+                            ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+
+                        >
                             <CommandButton
                                 ref={r => templatedParent._scrollLeftButton = r}
                                 Padding="0px"
-                                Margin="0px"
+                                Margin="0px 0px 2px 0px"
                                 Command={(p) => templatedParent.OnScrollButtonClick(false)}
                                 VerticalAlignment={VerticalAlignment.Center}
                                 Style={CommandButton.IconButtonStyle}
@@ -125,7 +129,7 @@ export class TabControlBase<
                                 ref={r => templatedParent._scrollRightButton = r}
                                 VerticalAlignment={VerticalAlignment.Center}
                                 Padding="0px"
-                                Margin="0px"
+                                Margin="0px 0px 2px 0px"
                                 Command={(p) => templatedParent.OnScrollButtonClick(true)}
                                 Style={CommandButton.IconButtonStyle}
                                 Grid={{ Column: 2 }}
@@ -156,13 +160,19 @@ export class TabControlBase<
             Rules: {                
                 color: TabControlBase.theme.semanticColors.bodySubtext,
                 fontFamily: TabControlBase.theme.fonts.medium.fontFamily,
-                borderWidth: "0px 0px 3px 0px",
+                borderWidth: "0px 0px 2px 0px",
                 borderColor: "transparent",
                 //padding: "10px 45px 10px 10px",
                 background: "transparent",
                 cursor: "pointer",
                 margin: "0px 5px"
             }
+        },
+        {
+            Selector: "@ .tab-menu-item:hover",
+            Rules: {
+                background: TabControlBase.theme.semanticColors.buttonBackgroundHovered
+            },
         },
         {
             Selector: "@ .tab-content",
@@ -175,7 +185,7 @@ export class TabControlBase<
             Rules: {
                 color: TabControlBase.theme.semanticColors.bodyText,
                 borderColor: TabControlBase.theme.semanticColors.primaryButtonBackgroundPressed,
-                borderWidth: "0px 0px 3px 0px",
+                borderWidth: "0px 0px 2px 0px",
                 borderStyle: "solid"
             }
         },
@@ -262,7 +272,7 @@ export class TabControlBase<
                         VerticalAlignment={VerticalAlignment.Center}>
                         <TextBlock Text={tab.Label}
                             ClassName="tab-label"
-                            Margin="15px 0px 10px 0px"
+                            Margin="12px 0px 12px 0px"
                             FontSize={this.state.FontSize}
                             FontWeight="bold" />
 

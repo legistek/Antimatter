@@ -35,6 +35,12 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
                     styles={{
                         root: {
                             width: "fit-content"
+                        },
+                        text: {
+                            marginTop: "auto",
+                            marginBottom: "auto",
+                            marginLeft: "0px",
+                            lineHeight: "unset"
                         }
                     }}
                     disabled={templatedParent.state.IsEnabled === undefined ? false : !templatedParent.state.IsEnabled}

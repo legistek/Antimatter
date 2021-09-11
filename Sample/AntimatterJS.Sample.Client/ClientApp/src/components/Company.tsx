@@ -367,16 +367,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
     {
         const elem: JSX.Element = (
-            <Grid
-                //Background="hotpink"
-            >
+            
                 <TextBlock
                     Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
                     VerticalAlignment={VerticalAlignment.Center}
                     Style={ComboBox.DefaultTextblockStyle}
                 />
 
-            </Grid>
+            
 
         );
         return elem;

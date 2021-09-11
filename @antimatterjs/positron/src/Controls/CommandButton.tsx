@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, ModelValue, RelativeSourceMode } from '@antimatterjs/react';
-import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps, IContextualMenuItemProps, IContextualMenuProps, IContextualMenuItem, IButtonStyles, HighContrastSelector } from '@fluentui/react'
+import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps, IContextualMenuItemProps, IContextualMenuProps, IContextualMenuItem, IButtonStyles, HighContrastSelector, labelProperties, getTheme } from '@fluentui/react'
 
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
@@ -31,8 +31,7 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
     extends ButtonBase<P, S>
 {
     public static BaseCommandButtonProps: ICommandButtonProps = {
-        HorizontalAlignment: HorizontalAlignment.Left,
-        Margin: "5px",
+        HorizontalAlignment: HorizontalAlignment.Left,        
         IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true }),
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true  }),
@@ -101,6 +100,8 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
 
 export class CommandButton extends CommandButtonBase<ICommandButtonProps, ICommandButtonState>
 {
+    static theme = getTheme();
+
     public static DialogButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButtonBase.BaseCommandButtonProps),
@@ -148,11 +149,22 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Padding: "8px 0px 8px 0px",
+                Padding: "5px 0px 5px 0px",
                 IsVisible: true,
                 Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <CommandBarButton
+                        styles={{
+                            textContainer: {
+                                
+                            },
+                            label: {
+                                lineHeight: "unset",
+                            },
+                            root: {
+                                height: "100%",                                
+                            }
+                        }}
                         style={{
                             padding: templatedParent.state.Padding,
                             backgroundColor: 'transparent'
@@ -168,7 +180,13 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                     </CommandBarButton>
                 )),
             }
-        ));
+        ),
+        {
+            Selector: "@:hover",
+            Rules: {
+                background: CommandButton.theme.semanticColors.buttonBackgroundHovered
+            }
+        });
 
     public static IconButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
@@ -195,7 +213,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                             icon: {
                                 height: "fit-content",
                                 margin: "0px",
-                                fontSize: "20px"
+                                fontSize: "16px"
                             },                            
                             splitButtonMenuButton: { backgroundColor: 'white', width: 28, border: 'none' },
                             splitButtonMenuIcon: { fontSize: '7px' },
