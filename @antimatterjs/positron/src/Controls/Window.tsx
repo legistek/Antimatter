@@ -9,6 +9,8 @@ import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
 import { CSSClasses } from '../CSSClasses';
+import { Theme } from '../Theme';
+import { PositronTheme } from '../Themes/PositronTheme';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
@@ -24,6 +26,7 @@ export interface IWindowState extends IPanelState
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[];
     Layout?: WindowLayout;
+    Theme?: Theme;
 }
 
 @withRouter
@@ -41,9 +44,12 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
     {
         super(props);
         Antimatter._client.RegisterRoot(this);
-        (this.state as any)["HorizontalAlignment"] = HorizontalAlignment.Stretch;
-        (this.state as any)["VerticalAlignment"] = VerticalAlignment.Stretch;
-        (this.state as any)["Layout"] = this.GetLayout();
+        
+        this.SetValue(nameof(this.state.HorizontalAlignment), HorizontalAlignment.Stretch, false);
+        this.SetValue(nameof(this.state.VerticalAlignment), VerticalAlignment.Stretch, false);
+        this.SetValue(nameof(this.state.Layout), this.GetLayout(), false);
+        this.SetValue(nameof(this.state.Theme), new PositronTheme(), false);
+
         window.onresize = () =>
         {
             var layout = this.GetLayout();
@@ -60,6 +66,8 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
             Window._route = location.pathname;
             Window.RouteEvent.invoke(this, new RouteEventArgs(action, location.pathname));
         });
+
+        this.OnThemeChange(this.state.Theme);
     }
 
     public static CombineRoute(components: string[]): string
@@ -102,21 +110,21 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         (this.state as any)["DataContext"] = this.state.Model;                                  
         return (
             <ReactDataContext.Provider value={this.state.Model}>
-                <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>                
+                <WindowLayoutContext.Provider value={this.state.Layout || WindowLayout.Default}>                    
                     <ItemsControl
                         ItemsSource={this.state.Dialogs || []}
                         VerticalAlignment={VerticalAlignment.Bottom}
                         Overlaps={true}
                         ItemTemplate={this._dialogTemplate}>
                     </ItemsControl>
-                    {super.renderElement()}
+                    {super.renderElement()}                    
                 </WindowLayoutContext.Provider>
             </ReactDataContext.Provider>
         );
     }
 
     /* override */ OnComponentMount()
-    {
+    {        
         // Prevent accidental magnification
         this.Container?.addEventListener("wheel", (e) =>
         {
@@ -132,6 +140,13 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
             return WindowLayout.Tablet;
         else
             return WindowLayout.Default;
+    }
+
+    private OnThemeChange(newTheme?: Theme)
+    {
+        if (!newTheme)
+            return;
+        newTheme.Apply();
     }
 
     _dialogTemplate: DataTemplate = new DataTemplate((item) =>

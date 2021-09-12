@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
-import { DefaultEffects, Dialog, getTheme, Icon, Modal, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, Dialog, Icon, Modal, MotionAnimations } from '@fluentui/react';
 
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
@@ -86,13 +86,16 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                     iconName={templatedParent.BindState({ Path: "Icon", Converter: CommandButton.ModelIconConverter, Source: templatedParent.state.ViewModel })} />
 
                                 {/*Title Header*/}
-                                <TextBlock                                    
+                                <TextBlock
+                                    Grid={{Column: 1}}
                                     Text={new Binding("Title")}
                                     Margin="0px"
                                     Style={TextBlock.DialogHeaderStyle}/>
 
                                 {/*Close Butotn*/}
-                                <CommandButton Command={new Binding("CancelCommand")}
+                                <CommandButton
+                                    Grid={{ Column: 2 }}
+                                    Command={new Binding("CancelCommand")}
                                     VerticalAlignment={VerticalAlignment.Center}
                                     Padding="0px"
                                     Margin="0px"
@@ -119,7 +122,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             <Grid
                                 Grid={{ Row: 4 }}
                                 ColumnDefinitions={[Grid.ColumnDefinition(1,true), Grid.ColumnDefinition()]}
-                                Margin="0px 10px 0px 10px">
+                                Margin="10px">
                                 <CommandBar
                                     Grid={{ Column: 0 }}
                                     ItemsSource={new Binding("SecondaryCommands")}

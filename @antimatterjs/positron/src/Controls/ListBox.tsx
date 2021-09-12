@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { getTheme } from '@fluentui/react';
 import { BindingMode } from '@antimatterjs/react';
 import { Style } from '../Style';
 import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 import { ISelectableItemControlProps, SelectableItemControlBase } from './Primitives/SelectableItemControl';
-import { Control } from './Control';
-import { ControlTemplate } from '../FrameworkTemplate';
 import { Panel } from './Panel';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface IListBoxProps extends ISelectorProps
 {
@@ -17,9 +15,7 @@ export interface IListBoxState extends ISelectorState
 }
 
 export class ListBox extends Selector<IListBoxProps, IListBoxState>
-{
-    static theme = getTheme();
-
+{    
     public static DefaultBindings = {
         ItemsSource: {
             NotifyCollectionChanged: true,
@@ -32,7 +28,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
     public static DefaultStyle: Style<IListBoxProps> = new Style<IListBoxProps>(
         {
             ItemsSource: [],
-            BorderBrush: ListBox.theme.semanticColors.buttonBorder,
+            BorderBrush: SemanticColor.ButtonBorder,
             BorderThickness: "1px",
             OnPointerMove: (e) =>
             {
@@ -63,20 +59,20 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                 {
                     Selector: "@.selected",
                     Rules: {
-                        background: ListBox.theme.semanticColors.listItemBackgroundChecked,
-                        color: ListBox.theme.semanticColors.bodyTextChecked
+                        background: Theme.Value(SemanticColor.ListItemBackgroundChecked),
+                        color: Theme.Value(SemanticColor.BodyTextChecked)
                     }
                 },
                 {
                     Selector: "@:hover.selected",
                     Rules: {
-                        background: ListBox.theme.semanticColors.listItemBackgroundCheckedHovered,
+                        background: Theme.Value(SemanticColor.ListItemBackgroundCheckedHovered),
                     }
                 },
                 {
                     Selector: "@:hover",
                     Rules: {
-                        background: ListBox.theme.semanticColors.listItemBackgroundHovered
+                        background: Theme.Value(SemanticColor.ListItemBackgroundHovered)
                     }
                 },
                 {
@@ -86,7 +82,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                         top: "0px",
                         width: "100%",
                         height: "100%",
-                        background: ListBox.theme.semanticColors.listItemBackgroundCheckedHovered,
+                        background: Theme.Value(SemanticColor.ListItemBackgroundCheckedHovered),
                         mixBlendMode: "darken",
                         pointerEvents: "none",
                         visibility: "hidden",

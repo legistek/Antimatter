@@ -14,13 +14,15 @@ import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
 import { Style } from './Style';
 import { CSSClasses } from './CSSClasses';
+import { Resource } from './Resource';
+import { PaletteColor, Theme } from './Theme';
 
 
 interface IFrameworkElementCommon
 {
     // Use only for control development; never use for cross-platform views    
-    Style?: Style<any>,    
-    Margin?: string,    
+    Style?: Style<any>,
+    Margin?: string,
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -165,6 +167,11 @@ export class FrameworkElement<
         );
     }
 
+    public get Margin(): string|undefined
+    {
+        return this.GetValue(nameof(this.state.Margin));
+    }
+
     public get ActualHeight(): number
     {
         return this.Container?.getBoundingClientRect()?.height || 0;
@@ -278,9 +285,21 @@ export class FrameworkElement<
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }
 
-    protected readonly GetValue = (property: string): any =>
+    protected GetThemableProperty(property: string): any
     {
-        return (this.state as any)[property];
+        var val = (this.state as any)[property];
+        if (typeof (val) === "number" && (val as number) > Theme.FirstResourceId)
+        {
+            // Theme resource
+            return Theme.Value(val as number);
+        }
+        return val;
+    }
+
+    protected GetValue<T>(property: string): T
+    {
+        var val = (this.state as any)[property];        
+        return val as T;
     }
 
     protected /* virtual */ renderElement(): JSX.Element | null
@@ -291,7 +310,7 @@ export class FrameworkElement<
     protected /* virtual */ getCSSStyles(): React.CSSProperties
     {
         let styles: React.CSSProperties = {
-            margin: this.state.Margin
+            margin: this.Margin
         };
         if (this.state.Grid?.Column !== undefined)
             styles.gridColumn = this.state.Grid.Column + 1;
@@ -345,11 +364,7 @@ export class FrameworkElement<
     protected /* virtual */ OnComponentMount()
     {
     }
-
-    protected /* virtual */ OnComponentWillMount()
-    {
-    }
-
+    
     protected /* virtual */ OnComponentWillUnmount()
     {
     }

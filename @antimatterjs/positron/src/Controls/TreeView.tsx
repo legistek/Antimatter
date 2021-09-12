@@ -8,8 +8,9 @@ import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
-import { getTheme, Icon, MotionAnimations } from '@fluentui/react';
+import { Icon, MotionAnimations } from '@fluentui/react';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface ITreeViewCommon
 {
@@ -154,9 +155,7 @@ class TreeViewItem<
             this.state.TreeViewParent._dataMap.set(key, this);
         }
     }
-
-    static theme = getTheme();
-
+    
     public static DefaultBindings = {
         IsExpanded: {
             Mode: BindingMode.TwoWay
@@ -229,7 +228,7 @@ class TreeViewItem<
         {
             Selector: "@ .selected",
             Rules: {
-                background: TreeViewItem.theme.semanticColors.listItemBackgroundChecked
+                background: Theme.Value(SemanticColor.ListItemBackgroundChecked)
             }
         },
         {

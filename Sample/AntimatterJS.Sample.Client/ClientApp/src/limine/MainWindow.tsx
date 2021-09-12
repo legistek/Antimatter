@@ -6,7 +6,7 @@ import { useLocation, Switch } from 'react-router-dom';
 import { createTheme, getTheme, Icon, INavLinkGroup, INavState, INavStyles, loadTheme, Nav } from '@fluentui/react';
 import { ModelObjectReference } from '@antimatterjs/react';
 import { MainAppBar } from './MainAppBar';
-import { Window, Grid, HorizontalAlignment, VerticalAlignment, IWindowProps } from '@antimatterjs/positron'
+import { Window, Grid, HorizontalAlignment, VerticalAlignment, IWindowProps, PaletteColor } from '@antimatterjs/positron'
 
 import { OpenMatterPanel } from './OpenMatterPanel';
 import { NewMatterPanel } from './NewMatterPanel';
@@ -28,7 +28,7 @@ export class MainWindow extends Window<IMainWindowProps, {}>
     {
         super(props);
         const theme = getTheme();
-        (this.state as any).Background = theme.palette.neutralLighter;
+        this.SetValue(nameof(this.props.Background), PaletteColor.NeutralLighter);        
     }
 
     static navStyles: Partial<INavStyles> = {

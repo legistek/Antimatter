@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, ModelValue, RelativeSourceMode } from '@antimatterjs/react';
-import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps, IContextualMenuItemProps, IContextualMenuProps, IContextualMenuItem, IButtonStyles, HighContrastSelector, labelProperties, getTheme } from '@fluentui/react'
+import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps, IContextualMenuItemProps, IContextualMenuProps, IContextualMenuItem, IButtonStyles, HighContrastSelector, labelProperties } from '@fluentui/react'
 
 import { Style } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
@@ -9,7 +9,7 @@ import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 import { Ellipse } from '../Shapes/Ellipse';
 import { Panel } from './Panel';
 import { Glyph } from './Glyph';
-import { ItemsControl } from './ItemsControl';
+import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
 
 
 export interface ICommandButtonProps extends IButtonBaseProps
@@ -18,12 +18,14 @@ export interface ICommandButtonProps extends IButtonBaseProps
     Label?: string | Binding,
     IsDefault?: boolean | Binding,
     SecondaryCommandsSource?: any[] | Binding,
+    AllCapsLabel?: boolean,
 }
 export interface ICommandButtonState extends IButtonBaseState
 {
     Icon?: number | string,
     Label?: string,
     IsDefault?: boolean,
+    AllCapsLabel?: boolean,
     SecondaryCommandsSource?: any[]
 }
 
@@ -31,7 +33,9 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
     extends ButtonBase<P, S>
 {
     public static BaseCommandButtonProps: ICommandButtonProps = {
-        HorizontalAlignment: HorizontalAlignment.Left,        
+        HorizontalAlignment: HorizontalAlignment.Left,
+        AllCapsLabel: true,
+        FontWeight: "bold",
         IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true }),
         ToolTip: new Binding({ Path: "ToolTip", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true  }),
@@ -96,32 +100,45 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
             return;
         Antimatter.Server.ExecuteICommand(cmd, ModelValue.Get(null));
     }
+
+    public get ActualLabel(): string|undefined
+    {
+        return this.state.AllCapsLabel
+            ? this.state.Label?.toUpperCase()
+            : this.state.Label;
+    }
 }
 
 export class CommandButton extends CommandButtonBase<ICommandButtonProps, ICommandButtonState>
-{
-    static theme = getTheme();
-
+{    
     public static DialogButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButtonBase.BaseCommandButtonProps),
             {
+                Margin: "0px 5px",
                 IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
                 Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
                         ? (<PrimaryButton                            
-                            style={{ minWidth: "90px" }}                            
+                            style={{
+                                minWidth: "90px",
+                                fontFamily: Theme.Value(FontStyle.FontFamily)
+                            }}
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}
                             menuProps={templatedParent.menuProps}>
-                            {templatedParent.state.Label}
+                            {templatedParent.ActualLabel}
                         </PrimaryButton>)
                         : (<DefaultButton
-                            style={{ minWidth: "90px" }}
+                            style={{
+                                minWidth: "90px",
+                                fontFamily: Theme.Value(FontStyle.FontFamily)
+
+                            }}
                             onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                             disabled={!templatedParent.state.IsEnabled}
                             menuProps={templatedParent.menuProps}>
-                            {templatedParent.state.Label}
+                            {templatedParent.ActualLabel}
                         </DefaultButton>))
             }
         ));
@@ -137,9 +154,12 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
+                        style={{
+                            fontFamily: Theme.Value(FontStyle.FontFamily)
+                        }}
                         disabled={!templatedParent.state.IsEnabled}
                         menuProps={templatedParent.menuProps}>
-                        {templatedParent.state.Label}
+                        {templatedParent.ActualLabel}
                     </PrimaryButton>
                 ))
             }
@@ -149,8 +169,10 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         Object.assign(
             Object.assign({}, CommandButton.BaseCommandButtonProps),
             {
-                Padding: "5px 0px 5px 0px",
+                Padding: "10px 5px 10px 5px",
                 IsVisible: true,
+                FontWeight: "bold",
+                Foreground: PaletteColor.NeutralSecondary,
                 Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <CommandBarButton
@@ -160,12 +182,16 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                             },
                             label: {
                                 lineHeight: "unset",
+                                margin: "1px 0px 0px 0px",                                
+                                color: templatedParent.Foreground,
+                                fontWeight: templatedParent.state.FontWeight,
                             },
                             root: {
                                 height: "100%",                                
                             }
                         }}
                         style={{
+                            fontFamily: Theme.Value(FontStyle.FontFamily),
                             padding: templatedParent.state.Padding,
                             backgroundColor: 'transparent'
                         }}
@@ -173,7 +199,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
-                        text={templatedParent.state.Label}
+                        text={templatedParent.ActualLabel}
                         disabled={!templatedParent.state.IsEnabled}
                         menuProps={templatedParent.menuProps}>
 
@@ -184,7 +210,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         {
             Selector: "@:hover",
             Rules: {
-                background: CommandButton.theme.semanticColors.buttonBackgroundHovered
+                background: Theme.Value(SemanticColor.ButtonBackgroundHovered)
             }
         });
 
@@ -248,14 +274,14 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                             <Ellipse
                                 HorizontalAlignment={HorizontalAlignment.Center}
                                     VerticalAlignment={VerticalAlignment.Center}
-                                    Fill={templatedParent.state.Background}
+                                    Fill={templatedParent.Background}
                                 Width={40} Height={40} />
                             <Glyph
                                 HorizontalAlignment={HorizontalAlignment.Center}
                                 VerticalAlignment={VerticalAlignment.Center}
                                     Overlaps={true}
-                                    FontSize={templatedParent.state.FontSize}
-                                    Foreground={templatedParent.state.Foreground}
+                                    FontSize={templatedParent.FontSize}
+                                    Foreground={templatedParent.Foreground}
                                     Icon={templatedParent.state.Icon} />
                         </Panel>);
                 }),

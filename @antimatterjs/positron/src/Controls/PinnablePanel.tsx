@@ -9,9 +9,10 @@ import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { ResizePanel } from './ResizePanel';
-import { DefaultEffects, getTheme, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, MotionAnimations } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
 import { CSSClasses } from '../CSSClasses';
+import { SemanticColor, Theme } from '../Theme';
 
 
 export enum PinnablePanelState
@@ -51,9 +52,7 @@ export interface IPinnablePanelState extends IControlState
 
 export class PinnablePanelBase<P extends IPinnablePanelProps,
     S extends IPinnablePanelState> extends Control<P, S>
-{
-    static theme = getTheme();
-
+{    
     public static DefaultStyle: Style<IPinnablePanelProps> = new Style<IPinnablePanelProps>(
         {
             State: PinnablePanelState.Pinned,
@@ -63,9 +62,9 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             IsPinButtonVisible: true,
             BorderThickness: "1px",
             PinButtonIcon: "pin",
-            BorderBrush: PinnablePanelBase.theme.semanticColors.bodyFrameDivider,
+            BorderBrush: SemanticColor.BodyFrameDivider,
             CanResize: true,
-            Background: PinnablePanelBase.theme.semanticColors.bodyBackground,
+            Background: SemanticColor.BodyBackground,
             Template: (templatedParent: PinnablePanel) =>
             {                
                 if (!templatedParent.state.State)
@@ -78,8 +77,8 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                 {
                     return (
                         <ResizePanel
-                            Background={templatedParent.state.Background}
-                            BorderBrush={templatedParent.state.BorderBrush}
+                            Background={templatedParent.Background}
+                            BorderBrush={templatedParent.BorderBrush}
                             BorderThickness={templatedParent.state.BorderThickness}
                             BoxShadow={templatedParent.state.BoxShadow}
                             Thickness={7}
@@ -136,7 +135,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                 }
                             }}
                             ClassName={templatedParent.GetFloatPanelClassName()}
-                            Background={templatedParent.state.Background}
+                            Background={templatedParent.Background}
                             Size={new Binding({
                                 Source: templatedParent,
                                 Path: nameof(templatedParent.state.Size),
@@ -144,7 +143,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             })}                            
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResize}
-                            BorderBrush={templatedParent.state.BorderBrush}
+                            BorderBrush={templatedParent.BorderBrush}
                             BorderThickness={templatedParent.state.BorderThickness}>
                             <React.Fragment key="panel-content">
                                 {templatedParent.props.children}

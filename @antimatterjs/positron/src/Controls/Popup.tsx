@@ -65,7 +65,7 @@ export class PopupBase<
                     }
                 }}
                 style={{
-                    background: this.state.Background,
+                    background: this.Background,
                     padding: this.state.Padding,
                 }}
                 isBeakVisible={false}

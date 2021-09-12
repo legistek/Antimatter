@@ -1,3 +1,5 @@
+export * from './src/Theme';
+export * from './src/Themes/PositronTheme';
 export * from './src/Enums';
 export * from './src/Foundation';
 export * from './src/RouteEventArgs';

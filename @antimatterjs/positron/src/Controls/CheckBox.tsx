@@ -4,6 +4,7 @@ import { Checkbox as FluentCheckBox } from '@fluentui/react'
 import { IToggleButtonProps, IToggleButtonState, ToggleButtonBase } from './Primitives/ToggleButton';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
+import { FontStyle, Theme } from '../Theme';
 
 export interface ICheckBoxProps extends IToggleButtonProps
 {
@@ -37,6 +38,7 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
                             width: "fit-content"
                         },
                         text: {
+                            fontFamily: Theme.Value(FontStyle.FontFamily),
                             marginTop: "auto",
                             marginBottom: "auto",
                             marginLeft: "0px",

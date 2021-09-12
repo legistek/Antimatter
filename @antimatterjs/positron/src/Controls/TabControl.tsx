@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { DefaultEffects, MotionAnimations, getTheme } from '@fluentui/react';
+import { DefaultEffects, MotionAnimations } from '@fluentui/react';
 import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
@@ -12,8 +12,10 @@ import { IStackPanelProps, StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
+import { Theme, PaletteColor, SemanticColor, FontStyle } from '../Theme';
 
 import { CSSClasses } from '../CSSClasses';
+import '../ResizeObserver.js';
 
 export interface ITabItem
 {
@@ -48,14 +50,12 @@ export interface ITabControlState extends IControlState, ITabControlCommon
 export class TabControlBase<
     P extends ITabControlProps = { Items: [] },
     S extends ITabControlState = { Items: [] }> extends Control<P, S>
-{
-    static theme = getTheme();
-
+{    
     private static TabPanelStyle: Style<IStackPanelProps> = new Style<IStackPanelProps>(
         {
             Orientation: Orientation.Horizontal,
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
-            ClassName: "tab-panel",
+            ClassName: "tab-panel",            
         },
         {
             Selector: "@",
@@ -81,7 +81,7 @@ export class TabControlBase<
                     <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                         <Grid
                             BorderThickness="0px 0px 1px 0px"
-                            BorderBrush={TabControl.theme.semanticColors.bodyFrameDivider}
+                            BorderBrush={SemanticColor.BodyFrameDivider}
                             ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
 
                         >
@@ -152,14 +152,14 @@ export class TabControlBase<
                     </Grid>
                 );
             }),
-            FontSize: TabControlBase.theme.fonts.small.fontSize as number,
+            FontSize: FontStyle.Small,
             Items: []
         },
         {
             Selector: "@ .tab-menu-item",
             Rules: {                
-                color: TabControlBase.theme.semanticColors.bodySubtext,
-                fontFamily: TabControlBase.theme.fonts.medium.fontFamily,
+                color: Theme.Value(SemanticColor.BodySubtext),
+                fontFamily: Theme.Value(FontStyle.FontFamily),
                 borderWidth: "0px 0px 2px 0px",
                 borderColor: "transparent",
                 //padding: "10px 45px 10px 10px",
@@ -171,7 +171,7 @@ export class TabControlBase<
         {
             Selector: "@ .tab-menu-item:hover",
             Rules: {
-                background: TabControlBase.theme.semanticColors.buttonBackgroundHovered
+                background: Theme.Value(PaletteColor.NeutralLighter)
             },
         },
         {
@@ -183,8 +183,8 @@ export class TabControlBase<
         {
             Selector: "@ .tab-menu-item.selected",
             Rules: {
-                color: TabControlBase.theme.semanticColors.bodyText,
-                borderColor: TabControlBase.theme.semanticColors.primaryButtonBackgroundPressed,
+                color: Theme.Value(SemanticColor.BodyText),
+                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
                 borderWidth: "0px 0px 2px 0px",
                 borderStyle: "solid"
             }
@@ -251,6 +251,8 @@ export class TabControlBase<
 
     protected /* virtual */ RenderTabLabel(tab: ITabItem, mobile: boolean): JSX.Element
     {
+        
+
         return (
             <Panel
                 ClassName={this.ConstructTabItemClassList(tab, mobile)}
@@ -273,12 +275,12 @@ export class TabControlBase<
                         <TextBlock Text={tab.Label}
                             ClassName="tab-label"
                             Margin="12px 0px 12px 0px"
-                            FontSize={this.state.FontSize}
+                            FontSize={this.FontSize}
                             FontWeight="bold" />
 
                         {tab.Description && (<TextBlock
                             Text={tab.Description}
-                            FontSize={(this.state.FontSize as number) * 0.50} />)}
+                            FontSize={(this.FontSize as number) * 0.50} />)}
                     </StackPanel>
                 </StackPanel>
             </Panel>);
@@ -294,10 +296,10 @@ export class TabControlBase<
         var elem = this._tabList?.ItemsPanelInstance?.Container;
         if (!elem)
             return;
-        this._tabListObserver = (window as any).MakeResizeObserver(entries =>
+        this._tabListObserver = new ResizeObserver((entries) =>
         {
             this.CheckTabPanelOverflow();
-        });
+        });        
         elem.onscroll = (e) => this.CheckTabPanelOverflow();
         this._tabListObserver.observe(elem);
         this.CheckTabPanelOverflow();
@@ -442,7 +444,7 @@ export class TabControlBase<
 
     protected _tabList?: ItemsControl | null;
     protected _selectedTab?: ITabItem;
-    protected _tabListObserver: any;
+    protected _tabListObserver?: ResizeObserver;
 
     private _scrollLeftButton: CommandButton | null = null;
     private _scrollRightButton: CommandButton | null = null;

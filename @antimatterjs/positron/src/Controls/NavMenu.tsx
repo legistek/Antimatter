@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingParameters, ModelObjectReference } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { DefaultEffects, MotionAnimations, getTheme } from '@fluentui/react';
+import { DefaultEffects, MotionAnimations } from '@fluentui/react';
 import { Style } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
@@ -16,6 +16,7 @@ import { Window } from './Window';
 
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { ITabControlCommon, ITabControlProps, ITabControlState, ITabItem, TabContentPanel, TabControl, TabControlBase } from './TabControl';
+import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 export interface INavMenuProps extends ITabControlProps
 {
@@ -27,9 +28,7 @@ export interface INavMenuState extends ITabControlState
 export class NavMenuBase<
     P extends INavMenuProps = { Items: [] },
     S extends INavMenuState = { Items: [] }> extends TabControlBase<P, S>
-{
-    static /* override */ theme = getTheme();
-
+{    
     public static /* override */ DefaultStyle: Style<INavMenuProps> = new Style<INavMenuProps>(
         {
             Template: new ControlTemplate(
@@ -39,14 +38,14 @@ export class NavMenuBase<
                     VisualTree: NavMenuBase.VerticalMobileTemplate
                 }),
             Padding: "5px",
-            FontSize: NavMenuBase.theme.fonts.large.fontSize as number,
+            FontSize: FontStyle.Large,
             Items: []
         },
         {
             Selector: "@ .tab-menu-item",
             Rules: {
-                color: NavMenuBase.theme.semanticColors.bodySubtext,
-                fontFamily: NavMenuBase.theme.fonts.medium.fontFamily,
+                color: Theme.Value(SemanticColor.BodySubtext),
+                fontFamily: Theme.Value(FontStyle.FontFamily),
                 borderWidth: "0px 0px 0px 4px",
                 borderColor: "transparent",
                 padding: "10px 45px 10px 10px",
@@ -64,7 +63,7 @@ export class NavMenuBase<
         {
             Selector: "@ .tab-menu-item:hover",
             Rules: {
-                background: NavMenuBase.theme.semanticColors.buttonBackgroundHovered
+                background: Theme.Value(SemanticColor.ButtonBackgroundHovered)
             },
         },
         {
@@ -76,8 +75,8 @@ export class NavMenuBase<
         {
             Selector: "@ .tab-menu-item.selected",
             Rules: {
-                color: NavMenuBase.theme.semanticColors.bodyText,
-                borderColor: NavMenuBase.theme.semanticColors.link,
+                color: Theme.Value(SemanticColor.BodyText),
+                borderColor: Theme.Value(SemanticColor.Link),
                 borderWidth: "0px 0px 0px 4px",
                 borderStyle: "solid"
             }
@@ -144,14 +143,14 @@ export class NavMenuBase<
                                 ClassName="mobile-nav-back"
                                 Foreground="black"
                                 Margin="10px 10px"
-                                FontSize={NavMenu.theme.fonts.xxLarge.fontSize}
+                                FontSize={FontStyle.ExtraExtraLarge}
                                 VerticalAlignment={VerticalAlignment.Center}
                                 OnClick={(e) => templatedParent.MobileBackButtonClick()}
                                 Icon="ChevronLeft" />
                             <TextBlock Text={t.Label}
                                 FontWeight="bold"
                                 VerticalAlignment={VerticalAlignment.Center}
-                                FontSize={NavMenu.theme.fonts.xLarge.fontSize} />
+                                FontSize={FontStyle.ExtraLarge} />
                         </StackPanel>
                     </Panel>
                 </Grid>
@@ -229,7 +228,7 @@ export class NavMenuBase<
                     Background={mobile ? tab.IconBackground : undefined}
                     Icon={tab.Icon}
                     Foreground={mobile ? tab.IconForeground : "#808080"}
-                    FontSize={NavMenu.theme.fonts.xLarge.fontSize as number} />
+                    FontSize={FontStyle.ExtraLarge} />
 
                 <StackPanel Grid={{ Column: 1 }}
                     Orientation={Orientation.Vertical}
@@ -237,12 +236,12 @@ export class NavMenuBase<
                     <TextBlock Text={tab.Label}
                         ClassName="tab-label"
                         Margin="0"
-                        FontSize={this.state.FontSize}
+                        FontSize={this.FontSize}
                         FontWeight="bold" />
 
                     {tab.Description && (<TextBlock
                         Text={tab.Description}
-                        FontSize={(this.state.FontSize as number) * 0.50} />)}
+                        FontSize={(this.FontSize as number) * 0.50} />)}
                 </StackPanel>
             </Grid>);
     }

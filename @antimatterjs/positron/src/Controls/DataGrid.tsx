@@ -8,6 +8,7 @@ import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 interface IDataGridCellCommon
 {
@@ -113,9 +114,7 @@ export class DataGridBase<
         var sel = this._selection.getSelection();
         this.SetValue(nameof(this.state.SelectedItems), sel, false);
     }
-
-    public static theme = Fluent.getTheme();
-
+    
     public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
         {
             Template: new ControlTemplate((templatedParent: DataGridBase<IDataGridProps, IDataGridState>) =>(
@@ -124,8 +123,8 @@ export class DataGridBase<
                         cellStyleProps={{
                             cellLeftPadding: 0,
                             cellRightPadding: 0,
-                            cellExtraRightPadding: 0,
-                        }}
+                            cellExtraRightPadding: 0,                            
+                        }}                        
                         onRenderCheckbox={(props, defaultRender) =>
                         {
                             return (
@@ -145,12 +144,14 @@ export class DataGridBase<
                         compact={true}
                         onRenderDetailsHeader={
                             // tslint:disable-next-line:jsx-no-lambda
-                            (detailsHeaderProps?: Fluent.IDetailsHeaderProps, defaultRender?: Fluent.IRenderFunction<Fluent.IDetailsHeaderProps>) => (
-                                <Fluent.Sticky>
-                                    {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
-                                </Fluent.Sticky>
-                            )}
-                        
+                            (detailsHeaderProps?: Fluent.IDetailsHeaderProps, defaultRender?: Fluent.IRenderFunction<Fluent.IDetailsHeaderProps>) =>
+                            {
+                                return (
+                                    <Fluent.Sticky>
+                                        {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
+                                    </Fluent.Sticky>
+                                );
+                            }}
                         getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
                         onRenderRow={(props, defaultRender) =>
                         {
@@ -168,7 +169,7 @@ export class DataGridBase<
                                     height: templatedParent.state.RowHeight || 32,
                                     minHeight: 0,
                                     // Draw your own grid lines here
-                                    borderColor: DataGrid.theme.semanticColors.bodyDivider,
+                                    borderColor: Theme.Value(SemanticColor.BodyDivider),
                                     borderWidth: "0px 0px 1px 0px",
                                     borderStyle: "solid",
                                     width: "100%"
@@ -186,6 +187,12 @@ export class DataGridBase<
                         columns={templatedParent.ConstructColumns()} />
                 </Fluent.ScrollablePane>
             ))
+        },
+        {
+            Selector: "@ .ms-DetailsHeader-cell",
+            Rules: {
+                fontFamily: Theme.Value(FontStyle.FontFamily)
+            }
         }
     );
 

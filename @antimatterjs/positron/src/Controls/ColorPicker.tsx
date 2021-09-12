@@ -10,6 +10,7 @@ import { Panel } from './Panel';
 import { PlacementMode, Popup } from './Popup';
 import { WrapPanel } from './WrapPanel';
 import { ISelectableItemControlProps, SelectableItemControl } from './Primitives/SelectableItemControl';
+import { PaletteColor, SemanticColor, Theme } from '../Theme';
 
 export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
 {
@@ -46,7 +47,7 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                 {
                     Selector: "@:hover",
                     Rules: {
-                        background: ComboBox.theme.semanticColors.listItemBackgroundHovered
+                        background: Theme.Value(SemanticColor.ListItemBackgroundHovered)
                     }
                 }
             )
@@ -75,7 +76,7 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                     <Glyph
                         Icon={"Edit"}
                         IsHitTestVisible={false}
-                        Foreground={ComboBox.theme.palette.white}
+                        Foreground={PaletteColor.White}
                         Overlaps={true}
                         VerticalAlignment={VerticalAlignment.Center}
                         HorizontalAlignment={HorizontalAlignment.Center} />

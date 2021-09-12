@@ -19,8 +19,8 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
         this.AssembleActualCommandItems();
         this._bar?.remeasure();
         return (
-            <FluentCommandBar
-                items={this._visibleCommandItems || []}
+            <FluentCommandBar                
+                items={this._visibleCommandItems || []}                
                 componentRef={r => this._bar = r}
                 styles={{
                     root: {
@@ -32,6 +32,28 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                 }}
             />
         );
+    }
+
+    override OnComponentMount()
+    {
+        this._resizeObserver = new ResizeObserver((entries) =>
+        {
+            this.InvalidateRender();
+        });
+        if (this.Container)
+            this._resizeObserver.observe(this.Container)
+    }
+
+    override OnComponentWillUnmount()
+    {
+        this._resizeObserver?.disconnect();
+    }
+
+    override getCSSStyles()
+    {
+        var styles = super.getCSSStyles();
+        styles.display = "block";
+        return styles;
     }
 
     AssembleCommandItems(): void
@@ -95,6 +117,8 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                 this._visibleCommandItems.push(item);
         }
     }
+
+    _resizeObserver?: ResizeObserver;
 }
 
 export class CommandBar extends ItemsControlBase<IItemsControlProps, IItemsControlState>

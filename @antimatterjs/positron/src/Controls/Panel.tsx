@@ -5,6 +5,7 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
+import { PaletteColor, SemanticColor } from '../Theme';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
@@ -12,10 +13,10 @@ export interface IPanelProps extends IFrameworkElementProps
     Height?: number | string | Binding,
     MinWidth?: number,
     MinHeight?: number,
-    Background?: string|Binding,
-    BorderBrush?: string|Binding,
+    Background?: string | Binding | PaletteColor | SemanticColor,
+    BorderBrush?: string | Binding | PaletteColor | SemanticColor,
     BorderThickness?: string | Binding,
-    Foreground?: string | Binding,
+    Foreground?: string | Binding | PaletteColor | SemanticColor,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
@@ -29,10 +30,10 @@ export interface IPanelState extends IFrameworkElementState
     Height?: number | string,
     MinWidth?: number,
     MinHeight?: number,
-    Background?: string,
-    BorderBrush?: string,
-    BorderThickness?: string,
-    Foreground?: string,
+    //Background?: string,
+    //BorderBrush?: string,
+    //BorderThickness?: string,
+    //Foreground?: string,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
@@ -49,6 +50,26 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
             props.ItemsParent.ItemsPanelInstance = this;
     }
 
+    public get Background(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.Background));
+    }
+
+    public get BorderBrush(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.BorderBrush));
+    }
+
+    public get BorderThickness(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.BorderThickness));
+    }
+
+    public get Foreground(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.Foreground));
+    }
+
     /* override */ getCSSStyles() : React.CSSProperties
     {
         var styles = {
@@ -56,10 +77,10 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
             height: this.state.Height,
             minWidth: this.state.MinWidth,
             minHeight: this.state.MinHeight,
-            color: this.state.Foreground,
-            background: this.state.Background,
-            borderColor: this.state.BorderBrush,
-            borderWidth: this.state.BorderThickness,
+            color: this.Foreground,
+            background:  this.Background,
+            borderColor: this.BorderBrush,
+            borderWidth: this.BorderThickness,
             borderStyle: "solid",
             boxShadow: this.state.BoxShadow,
             padding: this.state.Padding,

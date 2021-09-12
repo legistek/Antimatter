@@ -66,7 +66,7 @@ export class DocumentViewerBase<
         return (
             <Grid
                 ref={r => this._scroller = r}
-                Background={this.state.Background}
+                Background={this.Background}
                 OnScroll={(e) =>
                 {
                     if (!this._pagesPanel || !this._scroller?.Container)

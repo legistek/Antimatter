@@ -2,10 +2,9 @@ import { createTheme, getTheme, loadTheme, Link } from '@fluentui/react';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
 
-
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
-    defaultFontStyle: { fontFamily: 'Roboto' },
+    // defaultFontStyle: { fontFamily: 'Roboto' },
     palette: {
         themePrimary: '#2e70e0',
         themeLighterAlt: '#f6f9fe',

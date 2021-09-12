@@ -1,28 +1,24 @@
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { getTheme } from '@fluentui/react';
 import { Style } from '../Style';
+import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
 
 export interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
-    Foreground?: string | Binding,
-    FontFamily?: string,
-    FontSize?: number|string,
+    Foreground?: string | Binding | PaletteColor | SemanticColor,
+    FontFamily?: string | FontStyle,
+    FontSize?: number | string | FontStyle,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 interface ITextBlockState extends IFrameworkElementState
 {
     Text?: string | undefined,
-    Foreground?: string,
-    FontFamily?: string,
-    FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState>
 {
-    static theme = getTheme();
     static displayName = TextBlock.name;
 
     public static DefaultStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
@@ -31,8 +27,8 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         {
             Selector: "@",
             Rules: {
-                fontFamily: TextBlock.theme.fonts.medium.fontFamily,
-                fontSize: "14px"
+                fontFamily: Theme.Value(FontStyle.FontFamily),
+                fontSize: Theme.Value(FontStyle.Medium)
                 //margin: "5px",
                 //transform: "translate(0, -6%)"
             },
@@ -52,10 +48,25 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 
     );
 
+    public get Foreground(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.Foreground));
+    }
+
+    public get FontFamily(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.FontFamily));
+    }
+
+    public get FontSize(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.FontSize));
+    }
+
     public static DialogHeaderStyle = new Style(
         {
             //FontWeight: "bold",
-            FontSize: TextBlock.theme.fonts.large.fontSize
+            FontSize: FontStyle.Large
         });
 
     public static DefaultBindings = {
@@ -74,9 +85,9 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         return Object.assign(
             super.getCSSStyles(),
             {
-                color: this.state.Foreground,
-                fontFamily: this.state.FontFamily,
-                fontSize: this.state.FontSize,
+                color: this.Foreground,
+                fontFamily: this.FontFamily,
+                fontSize: this.FontSize,
                 fontWeight: this.state.FontWeight
             });
     }

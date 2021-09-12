@@ -4,6 +4,7 @@ import { IStyle, Position, SpinButton } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
+import { FontStyle, Theme } from '../Theme';
 
 interface ISpinnerProps extends IControlProps {
     Value?: number | Binding,
@@ -27,6 +28,7 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
     public static DefaultStyle: Style<ISpinnerProps> = new Style<ISpinnerProps>(
         {
             Value: 0,
+            FontFamily: FontStyle.FontFamily,
             Template: new ControlTemplate((templatedParent: Spinner) => templatedParent.template)
         }
     );
@@ -47,17 +49,17 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                 labelPosition={labelPosition}
                 styles={{
                     label: {
-                        fontFamily: this.state.FontFamily,
-                        color: this.state.Foreground,
-                        fontSize: this.state.FontSize,
+                        fontFamily: this.FontFamily,
+                        color: this.Foreground,
+                        fontSize: this.FontSize,
                         lineHeight: "unset",
                         alignSelf: "center",
                         padding: "0px"
                     },
                     input: {
-                        fontFamily: this.state.FontFamily,
-                        color: this.state.Foreground,
-                        fontSize: this.state.FontSize,
+                        fontFamily: this.FontFamily,
+                        color: this.Foreground,
+                        fontSize: this.FontSize,
                         lineHeight: "unset",
                         alignSelf: "center",
                     },

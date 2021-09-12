@@ -4,8 +4,8 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Style } from '../Style';
 import { Grid, IColumnDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
-import { getTheme } from '@fluentui/react';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface IResizePanelProps extends IControlProps
 {
@@ -27,9 +27,7 @@ export interface IResizePanelState extends IControlState
 export class ResizePanelBase<P extends IResizePanelProps = {},
     S extends IResizePanelState = {}>
     extends Control<P,S>
-{
-    static theme = getTheme();
-
+{    
     public static Opposite(side: Side): Side
     {
         switch (side)
@@ -80,8 +78,8 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
             {                
                 return (
                     <Grid
-                        Background={templatedParent.state.Background}
-                        BorderBrush={templatedParent.state.BorderBrush}
+                        Background={templatedParent.Background}
+                        BorderBrush={templatedParent.BorderBrush}
                         BorderThickness={templatedParent.state.BorderThickness}
                         BoxShadow={templatedParent.state.BoxShadow}
                         ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
@@ -107,7 +105,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
             Selector: "@ .sizer.resizing",
             Rules:
             {
-                background: ResizePanelBase.theme.semanticColors.menuItemBackgroundPressed
+                background: Theme.Value(SemanticColor.MenuItemBackgroundPressed)
             }
         },
         {

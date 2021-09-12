@@ -57,9 +57,9 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
 
         const textStyle: IStyle = {
-            fontFamily: this.state.FontFamily,
-            color: this.state.Foreground,
-            fontSize: this.state.FontSize ?? 16
+            fontFamily: this.FontFamily,
+            color: this.Foreground,
+            fontSize: this.FontSize ?? 16
         };
 
         return (

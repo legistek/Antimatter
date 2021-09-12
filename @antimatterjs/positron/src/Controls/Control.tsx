@@ -5,6 +5,7 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { WindowLayoutContext } from './Window';
 import { WindowLayout } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { FontStyle, PaletteColor, SemanticColor } from '../Theme';
 
 interface IControlCommon
 {
@@ -17,13 +18,13 @@ interface IControlCommon
 export interface IControlProps extends IFrameworkElementProps, IControlCommon
 {
     IsEnabled?: boolean | Binding,
-    Foreground?: string | Binding,
-    Background?: string | Binding,
-    BorderBrush?: string | Binding,
+    Foreground?: string | Binding | PaletteColor | SemanticColor,
+    Background?: string | Binding | PaletteColor | SemanticColor,
+    BorderBrush?: string | Binding | PaletteColor | SemanticColor,
+    FontFamily?: string | Binding | FontStyle,
+    FontSize?: number | Binding | FontStyle,
     BoxShadow?: string | Binding,
-    BorderThickness?: string | Binding,
-    FontFamily?: string | Binding,
-    FontSize?: number | Binding,
+    BorderThickness?: string | Binding,    
     TeachingBubbleParams?: ModelObjectReference | Binding,
     TeachingBubbleIsOpen?: BindingParameters
 }
@@ -31,13 +32,8 @@ export interface IControlProps extends IFrameworkElementProps, IControlCommon
 export interface IControlState extends IFrameworkElementState, IControlCommon
 {
     IsEnabled?: boolean,
-    Background?: string,
-    Foreground?: string,
-    BorderBrush?: string,
     BoxShadow?: string,
     BorderThickness?: string,
-    FontFamily?: string,
-    FontSize?: number,
     TeachingBubbleParams?: ModelObjectReference,
     TeachingBubbleIsOpen?: BindingParameters
 }
@@ -51,6 +47,31 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
             FallbackValue: false
         }
     };
+
+    public get Foreground(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.Foreground));
+    }
+
+    public get Background(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.Background));
+    }
+
+    public get BorderBrush(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.BorderBrush));
+    }
+
+    public get FontFamily(): string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.FontFamily));
+    }
+
+    public get FontSize(): number | string | undefined
+    {
+        return this.GetThemableProperty(nameof(this.props.FontSize));
+    }
 
     protected /* override */ renderElement(): JSX.Element | null
     {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { DefaultEffects, getTheme } from '@fluentui/react';
+import { DefaultEffects } from '@fluentui/react';
 
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
@@ -9,6 +9,7 @@ import { Style } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Panel } from './Panel';
 import { Grid } from './Grid';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface IGroupBoxProps extends IControlProps
 {
@@ -20,18 +21,17 @@ export interface IGroupBoxState extends IControlState
 }
 
 export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
-{
-    static theme = getTheme();
+{    
     static defaultProps: IGroupBoxProps = {
-        Background: GroupBox.theme.semanticColors.bodyBackground,
+        Background: SemanticColor.BodyBackground,
         BorderBrush: "#C0C0C0",
         BorderThickness: "1px",
         Padding: "10px"
     }
     static DefaultStyle: Style<IGroupBoxProps> = new Style(
         {
-            Background: GroupBox.theme.semanticColors.bodyBackground,
-            BorderBrush: GroupBox.theme.semanticColors.inputBorder,
+            Background: SemanticColor.BodyBackground,
+            BorderBrush: SemanticColor.InputBorder,
             BorderThickness: "1px",
             Padding: "10px",
             Template: new ControlTemplate((templatedParent: GroupBox) =>
@@ -45,8 +45,8 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
 
                     <Panel
                         BoxShadow={DefaultEffects.elevation8}
-                        Background={templatedParent.state.Background}
-                        BorderBrush={templatedParent.state.BorderBrush}
+                        Background={templatedParent.Background}
+                        BorderBrush={templatedParent.BorderBrush}
                         BorderThickness={templatedParent.state.BorderThickness}
                         Padding={templatedParent.props.Padding}>
                         {templatedParent.props.children}

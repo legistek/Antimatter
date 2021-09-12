@@ -84,9 +84,9 @@ export class ItemsControlBase<
                                 (this.state.ItemsPanel || StackPanel),
                                 {
                                     Style: this.state.ItemsPanelStyle,
-                                    Background: this.state.Background,
+                                    Background: this.Background,
                                     BorderThickness: this.state.BorderThickness,
-                                    BorderBrush: this.state.BorderBrush,
+                                    BorderBrush: this.BorderBrush,
                                     ItemsParent: this,
                                 } as IPanelProps);
                         }

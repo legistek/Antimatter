@@ -72,9 +72,9 @@ export class ToggleButton extends ToggleButtonBase<IToggleButtonProps, IToggleBu
     private get template(): JSX.Element
     {
         const textStyle: IStyle = {
-            fontFamily: this.state.FontFamily,
-            fontSize: this.state.FontSize,
-            color: this.state.Foreground
+            fontFamily: this.FontFamily,
+            fontSize: this.FontSize,
+            color: this.Foreground
         };
 
         return (
