@@ -154,21 +154,17 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         {
             case Side.Top:
                 delta = e.pageY - this._dragStartCoord;
-                newSize = this._dragStartSize - delta;
                 break;
             case Side.Bottom:
                 delta = e.pageY - this._dragStartCoord;
-                newSize = this._dragStartSize + delta;
                 break;
             case Side.Left:
                 delta = e.pageX - this._dragStartCoord;
                 newSize = this._dragStartSize - delta;
-                newSize = Math.min(newSize, this.Container?.scrollWidth || 4294967296);
                 break;
             case Side.Right:
                 delta = e.pageX - this._dragStartCoord;
-                newSize = this._dragStartSize + delta;
-                newSize = Math.min(newSize, this.Container?.scrollWidth || 4294967296);
+                newSize = this._dragStartSize + delta;                
                 break;
         }
 

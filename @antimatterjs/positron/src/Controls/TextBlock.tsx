@@ -21,13 +21,12 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 {
     static displayName = TextBlock.name;
 
-    public static DefaultStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>({},
+    public static DefaultStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>(
         {
-            "@": {
-                color: Theme.Value(SemanticColor.BodyText),
-                fontFamily: Theme.Value(FontStyle.FontFamily),
-                fontSize: Theme.Value(FontStyle.Medium)
-            },
+            Foreground: Theme.Value(SemanticColor.BodyText),
+            FontFamily: Theme.Value(FontStyle.FontFamily),
+            FontSize: Theme.Value(FontStyle.Medium),
+            FontWeight: "normal"
         },    
     );
 

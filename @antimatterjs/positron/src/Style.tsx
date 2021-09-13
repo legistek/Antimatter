@@ -87,7 +87,7 @@ export class WebStyle<T> extends Style<T>
 
     public Class(): string
     {
-        if (!this._applied && this._sheet)
+        if (!this._applied)
         {
             Utilities.AddStyleSheet(this.CreateStyleSheet(this._sheet));
             this._applied = true;
@@ -100,19 +100,42 @@ export class WebStyle<T> extends Style<T>
         return `ptnst${this._styleID}`;
     }
 
-    private CreateStyleSheet(classes: ICSSSheet): string
+    private CreateStyleSheet(classes: ICSSSheet|undefined): string
     {
         let s: string[] = [];
-        for (const cssClass of Object.entries(classes))
+
+        let didRoot: boolean = false;
+
+        if (classes)
         {
-            var selector = cssClass[0];
-            s.push(selector.replaceAll("@", `.${this.GetClassName()}`) + "\n");
-            s.push("{\n");
+            for (const cssClass of Object.entries(classes))
+            {
+                var selector = cssClass[0];
+                s.push(selector.replaceAll("@", `.${this.GetClassName()}`) + "\n");
+                s.push("{\n");
 
-            var entries = Object.entries(cssClass[1]);
-            for (const entry of entries)
-                s.push(`\t${this.GetCSSKey(entry[0])}: ${entry[1]};\n`);
+                if (selector === "@")
+                {
+                    didRoot = true;
+                    var propEntries = Object.entries(this.Props);
+                    for (const entry of propEntries)
+                        s.push(`\t--prop-${entry[0]}: ${entry[1]};\n`);
+                }
 
+                var entries = Object.entries(cssClass[1]);
+                for (const entry of entries)
+                    s.push(`\t${this.GetCSSKey(entry[0])}: ${entry[1]};\n`);
+
+                s.push("}\n");
+            }
+        }
+
+        if (!didRoot)
+        {
+            s.push(`.${this.GetClassName()} {\n`);
+            var propEntries = Object.entries(this.Props);
+            for (const entry of propEntries)
+                s.push(`\t--prop-${entry[0]}: ${entry[1]};\n`);
             s.push("}\n");
         }
 

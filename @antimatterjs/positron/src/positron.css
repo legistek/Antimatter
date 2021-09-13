@@ -311,3 +311,12 @@ code {
         background: rgba(46, 112, 223, 0.2);
         color: transparent;
     }
+
+    .TextBlock
+    {
+        color: var(--prop-Foreground);
+        font-size: var(--prop-FontSize);
+        background: var(--prop-Background);
+        font-family: var(--prop-FontFamily);
+        font-weight: var(--prop-FontWeight);
+    }
