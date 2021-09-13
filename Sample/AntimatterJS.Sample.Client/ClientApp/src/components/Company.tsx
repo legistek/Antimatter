@@ -80,7 +80,8 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         LabelIsInline={false}
                         StepIncrement={5}
-                        MinValue={0}
+                            MinValue={0}
+                            IsEnabled={false}
                         Label="The Age-O-Tron"
                     />
 
@@ -404,8 +405,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     {
         const elem: JSX.Element = (
             <ComboBox
-                Label="Name/String Selector Thingy (Single)"
-
+                Label="Name/String Selector Thingy (Single)"                
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployeeNames))}
 
@@ -422,7 +422,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         const elem: JSX.Element = (
             <ComboBox
                 Label="Employee Selector Thingy (Single)"
-
+                IsEnabled={false}
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployees))}
 

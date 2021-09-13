@@ -10,7 +10,7 @@ import { Panel } from './Panel';
 import { PlacementMode, Popup } from './Popup';
 import { WrapPanel } from './WrapPanel';
 import { ISelectableItemControlProps, SelectableItemControl } from './Primitives/SelectableItemControl';
-import { PaletteColor, SemanticColor, Theme } from '../Theme';
+import { ThemeColor, SemanticColor, Theme } from '../Theme';
 
 export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
 {
@@ -76,7 +76,7 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                     <Glyph
                         Icon={"Edit"}
                         IsHitTestVisible={false}
-                        Foreground={PaletteColor.White}
+                        Foreground={ThemeColor.White}
                         Overlaps={true}
                         VerticalAlignment={VerticalAlignment.Center}
                         HorizontalAlignment={HorizontalAlignment.Center} />

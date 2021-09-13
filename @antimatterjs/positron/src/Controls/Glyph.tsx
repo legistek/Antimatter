@@ -3,14 +3,14 @@ import { Icon } from '@fluentui/react';
 import * as React from 'react';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { Style } from '../Style';
-import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 import { IPanelProps, IPanelState, Panel } from './Panel';
 
 export interface IGlyphProps extends IFrameworkElementProps
 {
     Icon?: number | string | Binding,
     FontSize?: number | string | Binding | FontStyle,
-    Foreground?: string | Binding | PaletteColor | SemanticColor,
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
     FontWeight?: undefined | "bold" | "normal"
 }
 export interface IGlyphState extends IFrameworkElementState

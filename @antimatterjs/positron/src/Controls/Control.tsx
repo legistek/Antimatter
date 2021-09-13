@@ -5,7 +5,8 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { WindowLayoutContext } from './Window';
 import { WindowLayout } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { FontStyle, PaletteColor, SemanticColor } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor } from '../Theme';
+import { Style } from '../Style';
 
 interface IControlCommon
 {
@@ -16,11 +17,10 @@ interface IControlCommon
 }
 
 export interface IControlProps extends IFrameworkElementProps, IControlCommon
-{
-    IsEnabled?: boolean | Binding,
-    Foreground?: string | Binding | PaletteColor | SemanticColor,
-    Background?: string | Binding | PaletteColor | SemanticColor,
-    BorderBrush?: string | Binding | PaletteColor | SemanticColor,
+{    
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
+    Background?: string | Binding | ThemeColor | SemanticColor,
+    BorderBrush?: string | Binding | ThemeColor | SemanticColor,
     FontFamily?: string | Binding | FontStyle,
     FontSize?: number | Binding | FontStyle,
     BoxShadow?: string | Binding,
@@ -30,8 +30,7 @@ export interface IControlProps extends IFrameworkElementProps, IControlCommon
 }
 
 export interface IControlState extends IFrameworkElementState, IControlCommon
-{
-    IsEnabled?: boolean,
+{    
     BoxShadow?: string,
     BorderThickness?: string,
     TeachingBubbleParams?: ModelObjectReference,
@@ -73,6 +72,11 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         return this.GetThemableProperty(nameof(this.props.FontSize));
     }
 
+    protected static DisabledSelector(elementClass: string): string
+    {
+        return `@.amx-ptn-disabled .${elementClass},.amx-ptn-disabled @ .${elementClass}`;
+    }
+
     protected /* override */ renderElement(): JSX.Element | null
     {
         const baseElem: JSX.Element = (
@@ -104,6 +108,14 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
             </>
         );
         return bubblefiedElem;
+    }
+
+    getCSSStyles()
+    {
+        var styles = super.getCSSStyles();
+        if (!this.IsEnabled)
+            styles.pointerEvents = "none";
+        return styles;
     }
 
     // Hideous ridiculous hack necessitated by Javascript stupidity

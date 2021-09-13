@@ -15,6 +15,7 @@ import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
 import DataGridTest from './components/DataGridTest';
 import PinnablePanelTest from './components/PinnablePanelTest';
+import ControlGallery1 from './components/ControlGallery1';
 
 
 const theme = createTheme({
@@ -107,6 +108,15 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                     <NavMenu Style={NavMenu.DefaultStyle}
                         Items={
                             [
+                                {
+                                    Label: "Control Gallery 1",
+                                    Icon: 0xF03B,
+                                    IconForeground: "white",
+                                    IconBackground: "purple",
+                                    Key: "controls1",
+                                    Description: "Gallery of Positron controls",
+                                    Content: (<ControlGallery1 />)
+                                },
                                 {
                                     Label: "Company",
                                     Icon: 0xF084,

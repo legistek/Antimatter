@@ -3,7 +3,7 @@ import { IThemeFontStyle, IThemePalette, Theme } from '../Theme'
 export class PositronTheme extends Theme
 {
     public override readonly Palette: IThemePalette = {
-        ThemePrimary: '#2e70e0',
+        ThemePrimary:  "red", //'#2e70e0',
         ThemeLighterAlt: '#f6f9fe',
         ThemeLighter: '#dae6fa',
         ThemeLight: '#bcd1f6',

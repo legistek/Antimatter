@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "lib": [
+      "ES2021",
       "ES2020",
       "ES2020.BigInt",
       "dom",

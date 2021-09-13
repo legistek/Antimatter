@@ -2,12 +2,12 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
 import { Style } from '../Style';
-import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 
 export interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
-    Foreground?: string | Binding | PaletteColor | SemanticColor,
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
     FontFamily?: string | FontStyle,
     FontSize?: number | string | FontStyle,
     FontWeight?: undefined | "bold" | "normal" | number
@@ -29,24 +29,25 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
             Rules: {
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 fontSize: Theme.Value(FontStyle.Medium)
-                //margin: "5px",
-                //transform: "translate(0, -6%)"
             },
-        },
-        //{
-        //    Selector: ".amx-ptn-wrap-panel:first-child@",
-        //    Rules: {
-        //        marginLeft: "0px",
-        //    }
-        //},
-        //{
-        //    Selector: ".amx-ptn-vstack > @",
-        //    Rules: {
-        //        marginLeft: "0px",
-        //    }
-        //}
-
+        },    
     );
+
+    public static DialogHeaderStyle = new Style(
+        {
+            //FontWeight: "bold",
+            FontSize: FontStyle.Large
+        });
+
+    public static ControlSectionHeaderStyle = new Style({},
+        {
+            Selector: "@",
+            Rules: {
+                fontWeight: "bold",
+                fontFamily: Theme.Value(FontStyle.FontFamily),
+                fontSize: Theme.Value(FontStyle.Medium)
+            },
+        });
 
     public get Foreground(): string | undefined
     {
@@ -63,11 +64,7 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         return this.GetThemableProperty(nameof(this.props.FontSize));
     }
 
-    public static DialogHeaderStyle = new Style(
-        {
-            //FontWeight: "bold",
-            FontSize: FontStyle.Large
-        });
+
 
     public static DefaultBindings = {
         Text: {

@@ -1,9 +1,15 @@
 import { Utilities } from "@antimatterjs/react";
+import * as React from "react";
 
 export interface ICSSClass
 {
     Selector?: string,
     Rules: React.CSSProperties
+}
+
+export interface ICSSSheet
+{
+    [key: string]: React.CSSProperties;
 }
 
 export class Style<T>
@@ -49,7 +55,7 @@ export class Style<T>
         let s: string[] = [];
         for (const cssClass of this._classes)
         {
-            s.push((cssClass.Selector?.replace("@", `.${this.GetClassName()}`) || `.${this.GetClassName()}`) + "\n");
+            s.push((cssClass.Selector?.replaceAll("@", `.${this.GetClassName()}`) || `.${this.GetClassName()}`) + "\n");
             s.push("{\n");
 
             var entries = Object.entries(cssClass.Rules);

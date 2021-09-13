@@ -14,8 +14,7 @@ import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
 import { Style } from './Style';
 import { CSSClasses } from './CSSClasses';
-import { Resource } from './Resource';
-import { PaletteColor, Theme } from './Theme';
+import { ThemeColor, Theme } from './Theme';
 
 
 interface IFrameworkElementCommon
@@ -46,6 +45,7 @@ interface IFrameworkElementCommon
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {
+    IsEnabled?: boolean | Binding,
     ClassName?: string|Binding,
     HorizontalAlignment?: HorizontalAlignment |Binding,
     VerticalAlignment?: VerticalAlignment|Binding,
@@ -61,6 +61,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
     ClassName?: string,
+    IsEnabled?: boolean,
     HorizontalAlignment?: HorizontalAlignment,
     VerticalAlignment?: VerticalAlignment,
     IsVisible?: boolean,
@@ -165,6 +166,11 @@ export class FrameworkElement<
                 }
             </div>
         );
+    }
+
+    public get IsEnabled(): boolean
+    {
+        return this.GetValue<boolean>(nameof(this.props.IsEnabled), true);
     }
 
     public get Margin(): string|undefined
@@ -296,9 +302,11 @@ export class FrameworkElement<
         return val;
     }
 
-    protected GetValue<T>(property: string): T
+    protected GetValue<T>(property: string, defaultValue: T|undefined = undefined): T
     {
-        var val = (this.state as any)[property];        
+        var val = (this.state as any)[property];
+        if (val === undefined)
+            val = defaultValue;
         return val as T;
     }
 
@@ -445,6 +453,9 @@ export class FrameworkElement<
         if (this.state.Overlaps)
             cls += `${CSSClasses.Overlaps} `;
 
+        if (!this.IsEnabled)
+            cls += `${CSSClasses.Disabled} `;
+
         return cls;
     }
 
@@ -460,7 +471,7 @@ export class FrameworkElement<
         var entries = Object.entries(style.Props);
         for (const entry of entries)
         {
-            if (!this.props[entry[0]])
+            if (this.props[entry[0]] === undefined)
             {
                 var val = entry[1];
                 if ((val as Binding)?.IsAntimatterBinding)

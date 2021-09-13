@@ -9,7 +9,8 @@ import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 import { Ellipse } from '../Shapes/Ellipse';
 import { Panel } from './Panel';
 import { Glyph } from './Glyph';
-import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
+import { Control } from './Control';
 
 
 export interface ICommandButtonProps extends IButtonBaseProps
@@ -114,8 +115,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
     public static DialogButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
             Object.assign({}, CommandButtonBase.BaseCommandButtonProps),
-            {
-                Margin: "0px 5px",
+            {                
                 IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
                 Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                     templatedParent.state.IsDefault
@@ -154,16 +154,36 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                         iconProps={{
                             iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
                         }}
+                        styles={{
+                            label: {
+                                color: Theme.Value(SemanticColor.BodyText),
+                            },
+                            root: {
+                                background: Theme.Value(ThemeColor.ThemePrimary),
+                                selectors: {
+                                    ':disabled': {
+                                        background: Theme.Value(SemanticColor.DisabledBackground)
+                                    }
+                                }
+                            }
+                        }}
                         style={{
                             fontFamily: Theme.Value(FontStyle.FontFamily)
                         }}
-                        disabled={!templatedParent.state.IsEnabled}
+                        disabled={!templatedParent.IsEnabled}
                         menuProps={templatedParent.menuProps}>
                         {templatedParent.ActualLabel}
                     </PrimaryButton>
                 ))
             }
-        ));
+        ),
+        {
+            Selector: Control.DisabledSelector("ms-Button-label"),
+            Rules: {
+                opacity: "50%"
+            }
+        }
+    );
 
     public static CommandBarButtonStyle = new Style<ICommandButtonProps>(
         Object.assign(
@@ -172,7 +192,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 Padding: "10px 5px 10px 5px",
                 IsVisible: true,
                 FontWeight: "bold",
-                Foreground: PaletteColor.NeutralSecondary,
+                Foreground: ThemeColor.NeutralSecondary,
                 Template: new ControlTemplate((templatedParent: CommandButton) =>
                 (
                     <CommandBarButton

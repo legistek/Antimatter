@@ -4,7 +4,7 @@ import { IStyle, Position, SpinButton } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Style } from '../Style';
-import { FontStyle, Theme } from '../Theme';
+import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 interface ISpinnerProps extends IControlProps {
     Value?: number | Binding,
@@ -56,7 +56,7 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                         alignSelf: "center",
                         padding: "0px"
                     },
-                    input: {
+                    input: {                        
                         fontFamily: this.FontFamily,
                         color: this.Foreground,
                         fontSize: this.FontSize,
@@ -64,7 +64,19 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                         alignSelf: "center",
                     },
                     spinButtonWrapper: {
-                        height: "fit-content"
+                        height: "fit-content",                        
+                        selectors: {
+                            ':after': {
+                                borderColor: Theme.Value(SemanticColor.InputBorder),
+                            },
+                            ':hover': {
+                                selectors: {
+                                    ':after': {
+                                        borderColor: Theme.Value(SemanticColor.InputBorderHovered),
+                                    }
+                                }
+                            }
+                        },                        
                     }
                 }}
                 disabled={this.state.IsEnabled === false}

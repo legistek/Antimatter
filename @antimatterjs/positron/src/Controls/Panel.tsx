@@ -5,7 +5,7 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
-import { PaletteColor, SemanticColor } from '../Theme';
+import { ThemeColor, SemanticColor } from '../Theme';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
@@ -13,10 +13,10 @@ export interface IPanelProps extends IFrameworkElementProps
     Height?: number | string | Binding,
     MinWidth?: number,
     MinHeight?: number,
-    Background?: string | Binding | PaletteColor | SemanticColor,
-    BorderBrush?: string | Binding | PaletteColor | SemanticColor,
+    Background?: string | Binding | ThemeColor | SemanticColor,
+    BorderBrush?: string | Binding | ThemeColor | SemanticColor,
     BorderThickness?: string | Binding,
-    Foreground?: string | Binding | PaletteColor | SemanticColor,
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,

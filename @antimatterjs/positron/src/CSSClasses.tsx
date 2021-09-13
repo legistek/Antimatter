@@ -17,6 +17,8 @@ export class CSSClasses
     public static readonly VScroll: string = "amx-ptn-vscroll";
     public static readonly HScroll: string = "amx-ptn-hscroll";
 
+    public static readonly Disabled: string = "amx-ptn-disabled";
+
     public static readonly SlideInFromLeft: string = "slideInFromLeft";
     public static readonly SlideOutLeft: string = "slideOutLeft";
     public static readonly SlideInFromRight: string = "slideInFromRight";

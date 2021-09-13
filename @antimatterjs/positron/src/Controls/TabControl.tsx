@@ -12,7 +12,7 @@ import { IStackPanelProps, StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
-import { Theme, PaletteColor, SemanticColor, FontStyle } from '../Theme';
+import { Theme, ThemeColor, SemanticColor, FontStyle } from '../Theme';
 
 import { CSSClasses } from '../CSSClasses';
 import '../ResizeObserver.js';
@@ -171,7 +171,7 @@ export class TabControlBase<
         {
             Selector: "@ .tab-menu-item:hover",
             Rules: {
-                background: Theme.Value(PaletteColor.NeutralLighter)
+                background: Theme.Value(ThemeColor.NeutralLighter)
             },
         },
         {

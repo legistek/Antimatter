@@ -37,6 +37,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         {
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,
+            Foreground: SemanticColor.BodyText,
             Template: new ControlTemplate((templatedParent: TextBox) =>
             (
                 <TextField
@@ -52,6 +53,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             width: "100%",
                         },
                         field: {
+                            color: templatedParent.Foreground,
                             fontFamily: templatedParent.FontFamily,
                             fontSize: templatedParent.FontSize,
                             fontWeight: templatedParent.state.FontWeight,
@@ -85,8 +87,13 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             Rules: {
                 padding: "0px",
                 fontFamily: Theme.Value(FontStyle.FontFamily)
+            }        
+        },
+        {
+            Selector: "@ .ms-TextField-fieldGroup:hover",
+            Rules: {
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered)
             }
-        
         }
     );
 

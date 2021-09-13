@@ -26,6 +26,10 @@ body {
     overflow: hidden;
 }
 
+.amx-ptn-disabled .amx-ptn-fe {
+    pointer-events: none;   
+}
+
 .amx-ptn-vscroll {
 }
 

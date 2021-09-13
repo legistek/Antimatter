@@ -14,7 +14,8 @@ import { ITextBlockProps, TextBlock } from './TextBlock';
 import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
     from './Primitives/SelectableItemControl';
 import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
-import { FontStyle, PaletteColor, SemanticColor, Theme } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
+import { Control } from './Control';
 
 export interface IComboBoxProps extends ISelectorProps
 {
@@ -32,7 +33,7 @@ export interface IComboBoxState extends ISelectorState
     PopupIsOpen?: boolean
 }
 
-export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
+export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
     extends Selector<P, S>
 {
     private static DROPDOWN_MAX_HEIGHT: number = 400;    
@@ -57,7 +58,8 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
-            ItemsSource: [],            
+            ItemsSource: [],
+            BorderBrush: SemanticColor.InputBorder,
             Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.Template),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
@@ -66,6 +68,24 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
             Rules: {
                 cursor: 'pointer',
                 userSelect: 'none'
+            }
+        },
+        {
+            Selector: Control.DisabledSelector("panel"),
+            Rules: {
+                background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
+            }
+        },
+        {
+            Selector: Control.DisabledSelector("panel > *"),
+            Rules: {
+                opacity: "50%"
+            }
+        },
+        {
+            Selector: "@ .panel:hover",
+            Rules: {
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered) + " !important"
             }
         },
         {
@@ -82,39 +102,44 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
                 borderRadius: "0",
                 borderWidth: "1px",
                 borderStyle: "solid",
-                borderColor: Theme.Value(PaletteColor.ThemeSecondary)
+                borderColor: Theme.Value(ThemeColor.ThemeSecondary)
             }
-        }
-    );
-
-    private static LabelStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>({},
+        },
         {
+            Selector: "@ .cb-label",
             Rules: {
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 cursor: 'default'
             }
-        })
+        },
+        {
+            Selector: Control.DisabledSelector("cb-label"),
+            Rules: {
+                opacity: "50%"
+            }
+        }
+    );
 
     protected get Template(): JSX.Element
     {        
         const dropdown: JSX.Element = (            
             <Grid
+                ClassName="panel"
                 Grid={{Row: this.state.Label ? 1 : 0}}
                 ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
                 ref={r => this._button = r}
                 OnClick={() => this.TogglePopup()}
                 OnKeyPress={(event) => this.OnKeyPressed(event)}
-                BorderBrush={PaletteColor.NeutralSecondary} //Fluent equivalent: rgb(96, 96, 96) or #606060
+                BorderBrush={this.BorderBrush} //Fluent equivalent: rgb(96, 96, 96) or #606060
                 BorderThickness="1px"
                 Padding="0"
-                Background={PaletteColor.White}
-                ClassName="panel"
+                Background={this.Background}
                 TabIndex={0}>
                 {this.TitleElem}
                 <Glyph
                     Grid={{Column: 1}}
                     Icon="ChevronDown"
-                    Foreground={PaletteColor.NeutralSecondary}
+                    Foreground={ThemeColor.NeutralSecondary}
                     HorizontalAlignment={HorizontalAlignment.Center}
                     VerticalAlignment={VerticalAlignment.Center}
                 />
@@ -123,13 +148,13 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
         const labeledDropdown: JSX.Element = (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <TextBlock
+                    ClassName="cb-label"
                     Grid={{Row: 0}}
                     Text={this.state.Label}
                     FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
                     FontWeight={this.state.FontWeight ?? 600}
                     FontFamily={this.FontFamily}
-                    Margin="0px"
-                    Style={ComboBox.LabelStyle}/>
+                    Margin="0px"/>
                 {dropdown}
             </Grid>
         );
@@ -280,9 +305,9 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         }
     };
 
-    private get Parent(): ComboBox<IComboBoxProps, IComboBoxState>
+    private get Parent(): ComboBoxBase<IComboBoxProps, IComboBoxState>
     {
-        return this.state.Parent as ComboBox<IComboBoxProps, IComboBoxState>;
+        return this.state.Parent as ComboBoxBase<IComboBoxProps, IComboBoxState>;
     }
     private get RenderAutoCheckbox(): boolean
     {
@@ -311,7 +336,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         {
             Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.SELECTED_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
             Rules: {
-                backgroundColor: Theme.Value(PaletteColor.ThemeLighter)
+                backgroundColor: Theme.Value(ThemeColor.ThemeLighter)
             }
         },
         {
@@ -378,4 +403,8 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
     {
         return super.constructClasses() + this.ConstructGridClasses;
     }
+}
+
+export class ComboBox extends ComboBoxBase<IComboBoxProps, IComboBoxState>
+{
 }
