@@ -3,7 +3,7 @@ import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { CommandButton } from './CommandButton';
 import { StackPanel } from './StackPanel';
 import { HorizontalAlignment, Orientation } from '../Enums';
@@ -41,7 +41,7 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
     };
 
-    public static DefaultStyle: Style<IMessageBarProps> = new Style<IMessageBarProps>(
+    public static DefaultStyle: WebStyle<IMessageBarProps> = new WebStyle<IMessageBarProps>(
         {
             Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
         }

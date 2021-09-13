@@ -9,7 +9,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Orientation } from '../Enums';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { FontStyle, Theme } from '../Theme';
 
 export interface IDatePickerProps extends IControlProps
@@ -118,21 +118,17 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         );
     }
 
-    static DefaultStyle: Style<IDatePickerProps> = new Style<IDatePickerProps>(
+    static DefaultStyle: WebStyle<IDatePickerProps> = new WebStyle<IDatePickerProps>(
         {
             FontFamily: FontStyle.FontFamily,
             Template: DatePickerBase.Template
         },
         {
-            Selector: "@ .ms-Label",
-            Rules: {
+            "@ .ms-Label": {
                 padding: "0px",
                 fontFamily: Theme.Value(FontStyle.FontFamily),
-            }            
-        },
-        {
-            Selector: "@ .ms-TextField-field",
-            Rules: {
+            },
+            "@ .ms-TextField-field": {
                 fontFamily: Theme.Value(FontStyle.FontFamily),
             }
         }

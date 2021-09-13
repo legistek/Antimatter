@@ -1,7 +1,7 @@
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 
 export interface ITextBlockProps extends IFrameworkElementProps
@@ -21,33 +21,29 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 {
     static displayName = TextBlock.name;
 
-    public static DefaultStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+    public static DefaultStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>({},
         {
-        },
-        {
-            Selector: "@",
-            Rules: {
+            "@": {
+                color: Theme.Value(SemanticColor.BodyText),
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 fontSize: Theme.Value(FontStyle.Medium)
             },
         },    
     );
 
-    public static DialogHeaderStyle = new Style(
-        {
-            //FontWeight: "bold",
+    public static DialogHeaderStyle = new WebStyle(
+        {            
             FontSize: FontStyle.Large
-        });
+        },
+        undefined,
+        TextBlock.DefaultStyle);
 
-    public static ControlSectionHeaderStyle = new Style({},
+    public static ControlSectionHeaderStyle = new WebStyle(
         {
-            Selector: "@",
-            Rules: {
-                fontWeight: "bold",
-                fontFamily: Theme.Value(FontStyle.FontFamily),
-                fontSize: Theme.Value(FontStyle.Medium)
-            },
-        });
+            FontWeight: "bold"
+        },
+        undefined,
+        TextBlock.DefaultStyle);
 
     public get Foreground(): string | undefined
     {
@@ -63,8 +59,6 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
     {
         return this.GetThemableProperty(nameof(this.props.FontSize));
     }
-
-
 
     public static DefaultBindings = {
         Text: {

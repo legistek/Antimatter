@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Grid, IColumnDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
@@ -69,7 +69,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         }
     };
    
-    public static DefaultStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
+    public static DefaultStyle: WebStyle<IResizePanelProps> = new WebStyle<IResizePanelProps>(
         {
             Thickness: 5,
             CanResize: true,
@@ -102,16 +102,10 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
             }),
         },
         {            
-            Selector: "@ .sizer.resizing",
-            Rules:
-            {
+            "@ .sizer.resizing": {
                 background: Theme.Value(SemanticColor.MenuItemBackgroundPressed)
-            }
-        },
-        {
-            Selector: "@ .sizer",
-            Rules:
-            {
+            },
+            "@ .sizer": {
                 cursor: "col-resize"
             }
         }
@@ -153,26 +147,32 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         if (!this._isDragging || !this._dragStartSize || !this._dragStartCoord)
             return;
 
+        let newSize: number = 0;
+
         let delta: number = 0;
         switch (this.state.ResizerSide)
         {
             case Side.Top:
                 delta = e.pageY - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize - delta);
+                newSize = this._dragStartSize - delta;
                 break;
             case Side.Bottom:
                 delta = e.pageY - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize + delta);
+                newSize = this._dragStartSize + delta;
                 break;
             case Side.Left:
                 delta = e.pageX - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize - delta);
+                newSize = this._dragStartSize - delta;
+                newSize = Math.min(newSize, this.Container?.scrollWidth || 4294967296);
                 break;
             case Side.Right:
                 delta = e.pageX - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize + delta);
+                newSize = this._dragStartSize + delta;
+                newSize = Math.min(newSize, this.Container?.scrollWidth || 4294967296);
                 break;
-        }        
+        }
+
+        this.SetValue(nameof(this.props.Size), newSize);
     }
 
     /* private */ OnSizerPointerUp(e: PointerEvent)

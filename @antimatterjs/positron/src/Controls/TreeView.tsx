@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { IPanelProps } from '../Controls/Panel';
 import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
@@ -46,9 +46,9 @@ export class TreeView<
         }
     };
 
-    public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
+    public static DefaultStyle: WebStyle<ITreeViewProps> = new WebStyle<ITreeViewProps>(
         {
-            ItemsPanelStyle: new Style<IPanelProps>({
+            ItemsPanelStyle: new WebStyle<IPanelProps>({
                 VerticalScrollBarVisibility: ScrollBarVisibility.Auto
             })
         }
@@ -168,7 +168,7 @@ class TreeViewItem<
         }
     };
 
-    public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
+    public static DefaultStyle: WebStyle<ITreeViewProps> = new WebStyle<ITreeViewProps>(
         {
             Template: new ControlTemplate((templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
@@ -208,40 +208,23 @@ class TreeViewItem<
             ))
         },
         {
-            Selector: "@",
-            Rules:
-            {
+            "@": {
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
-            Selector: "@ .expander",
-            Rules:
-            {
+            },
+            "@ .expander": {
                 gridRow: 0,
                 gridColumn: 0,
                 cursor: "pointer",
                 alignSelf: "center",
                 margin: "0px 5px 0px 0px"
-            }
-        },
-        {
-            Selector: "@ .selected",
-            Rules: {
+            },
+            "@ .selected": {
                 background: Theme.Value(SemanticColor.ListItemBackgroundChecked)
-            }
-        },
-        {
-            Selector: "@ .expander.nochildren",
-            Rules:
-            {
+            },
+            "@ .expander.nochildren" : {
                 display: 'none'
-            }
-        },
-        {
-            Selector: "@ .expander.expanded",
-            Rules:
-            {
+            },
+            "@ .expander.expanded": {
                 transform: "rotate(90deg)"
             }
         });

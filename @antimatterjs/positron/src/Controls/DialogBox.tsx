@@ -5,7 +5,7 @@ import { DefaultEffects, Dialog, Icon, Modal, MotionAnimations } from '@fluentui
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { CommandButton } from './CommandButton';
@@ -41,14 +41,13 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
         DialogBox._templates.set(templateName, template);
     }
 
-    static DefaultStyle: Style<IDialogBoxProps> = new Style(
+    static DefaultStyle: WebStyle<IDialogBoxProps> = new WebStyle(
         {
             Template: new ControlTemplate((templatedParent: DialogBox) =>
             (
                 <Modal
                     isOpen={true}
-                    styles={{
-                        
+                    styles={{                        
                         scrollableContent: {
                             overflow: 'hidden',
                             height: "auto",

@@ -6,7 +6,7 @@ import { WindowLayoutContext } from './Window';
 import { WindowLayout } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { FontStyle, ThemeColor, SemanticColor } from '../Theme';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 
 interface IControlCommon
 {
@@ -72,7 +72,7 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         return this.GetThemableProperty(nameof(this.props.FontSize));
     }
 
-    protected static DisabledSelector(elementClass: string): string
+    protected static DisabledElement(elementClass: string): string
     {
         return `@.amx-ptn-disabled .${elementClass},.amx-ptn-disabled @ .${elementClass}`;
     }

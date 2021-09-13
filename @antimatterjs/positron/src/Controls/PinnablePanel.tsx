@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode, PropertyChangedEventArgs, RelativeSourceMode, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Grid, IGridChildPosition } from './Grid';
@@ -53,7 +53,7 @@ export interface IPinnablePanelState extends IControlState
 export class PinnablePanelBase<P extends IPinnablePanelProps,
     S extends IPinnablePanelState> extends Control<P, S>
 {    
-    public static DefaultStyle: Style<IPinnablePanelProps> = new Style<IPinnablePanelProps>(
+    public static DefaultStyle: WebStyle<IPinnablePanelProps> = new WebStyle<IPinnablePanelProps>(
         {
             State: PinnablePanelState.Pinned,
             Size: 200,
@@ -165,32 +165,22 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             }
         },
         {
-            Selector: `@.${CSSClasses.Overlaps}`,
-            Rules: {
+            "@.amx-ptn-overlaps": {
                 zIndex: 99999,                
             },
-        },
-        {
-            Selector: "@ .float-panel-left",
-            Rules: {
+            "@ .float-panel-left": {
                 animation: `${MotionAnimations.slideRightIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",
                 //marginRight: "20px",
                 zIndex: 99999
-            }
-        },
-        {
-            Selector: "@ .float-panel-right",
-            Rules: {
+            },
+            "@ .float-panel-right": {
                 animation: `${MotionAnimations.slideLeftIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "-4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",                
                 //marginLeft: "20px",
                 zIndex: 99999
-            }
-        },
-        {
-            Selector: "@ .modal-panel",
-            Rules: {
+            },
+            "@ .modal-panel": {
                 animation: `${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }
         }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { DefaultEffects, MotionAnimations } from '@fluentui/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -51,27 +51,23 @@ export class TabControlBase<
     P extends ITabControlProps = { Items: [] },
     S extends ITabControlState = { Items: [] }> extends Control<P, S>
 {    
-    private static TabPanelStyle: Style<IStackPanelProps> = new Style<IStackPanelProps>(
+    private static TabPanelStyle: WebStyle<IStackPanelProps> = new WebStyle<IStackPanelProps>(
         {
             Orientation: Orientation.Horizontal,
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             ClassName: "tab-panel",            
         },
         {
-            Selector: "@",
-            Rules: {
+            "@": {
                 justifyContent: "space-around"
-            }
-        },
-        {
-            Selector: "@::-webkit-scrollbar",
-            Rules: {
+            },
+            "@::-webkit-scrollbar": {
                 width: 0,
                 height: 0
             }
         });
 
-    public static DefaultStyle: Style<ITabControlProps> = new Style<ITabControlProps>(
+    public static DefaultStyle: WebStyle<ITabControlProps> = new WebStyle<ITabControlProps>(
         {
             MinTabWidth: 100,
             Padding: "5px",
@@ -114,7 +110,7 @@ export class TabControlBase<
                                 ref={ic => templatedParent._tabList = ic}
                                 ItemsPanel={StackPanel}
                                 ItemsPanelStyle={TabControlBase.TabPanelStyle}
-                                ItemContainerStyle={new Style<IPanelProps>({
+                                ItemContainerStyle={new WebStyle<IPanelProps>({
                                     MinWidth: templatedParent.state.MinTabWidth,
                                     Width: "100%"
                                 })}
@@ -156,8 +152,7 @@ export class TabControlBase<
             Items: []
         },
         {
-            Selector: "@ .tab-menu-item",
-            Rules: {                
+            "@ .tab-menu-item": {                
                 color: Theme.Value(SemanticColor.BodySubtext),
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 borderWidth: "0px 0px 2px 0px",
@@ -166,32 +161,20 @@ export class TabControlBase<
                 background: "transparent",
                 cursor: "pointer",
                 margin: "0px 5px"
-            }
-        },
-        {
-            Selector: "@ .tab-menu-item:hover",
-            Rules: {
+            },
+            "@ .tab-menu-item:hover": {
                 background: Theme.Value(ThemeColor.NeutralLighter)
             },
-        },
-        {
-            Selector: "@ .tab-content",
-            Rules: {
+            "@ .tab-content": {
                 animation: "unset"
-            }
-        },
-        {
-            Selector: "@ .tab-menu-item.selected",
-            Rules: {
+            },
+            "@ .tab-menu-item.selected": {
                 color: Theme.Value(SemanticColor.BodyText),
                 borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
                 borderWidth: "0px 0px 2px 0px",
                 borderStyle: "solid"
-            }
-        },
-        {
-            Selector: "@ .tab-panel-overflows .tab-panel",
-            Rules: {
+            },
+            "@ .tab-panel-overflows .tab-panel": {
                 justifyContent: "unset"
             }
         }
@@ -471,34 +454,24 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
     private _lastIndex?: number;
     private _renderCount: number = 0;
 
-    public static DefaultStyle: Style<ITabContentPanelProps> = new Style<ITabContentPanelProps>(
+    public static DefaultStyle: WebStyle<ITabContentPanelProps> = new WebStyle<ITabContentPanelProps>(
         {
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto
         },
         {
-            Selector: "@ .entering-from-left",
-            Rules: {
+            "@ .entering-from-left": {
                 animation: `${CSSClasses.SlideInFromLeft} 0.4s ease 0s 1 normal`,
                 animationFillMode: "forwards"
-            }
-        },
-        {
-            Selector: "@ .entering-from-right",
-            Rules: {
+            },
+            "@ .entering-from-right": {
                 animation: `${CSSClasses.SlideInFromRight} 0.4s ease 0s 1 normal`,
                 animationFillMode: "forwards"
-            }
-        },
-        {
-            Selector: "@ .exiting-left",
-            Rules: {
+            },
+            "@ .exiting-left": {
                 animation: `${CSSClasses.SlideOutLeft} 0.4s ease 0s 1 normal`,
                 animationFillMode: "forwards"
-            }
-        },
-        {
-            Selector: "@ .exiting-right",
-            Rules: {
+            },
+            "@ .exiting-right": {
                 animation: `${CSSClasses.SlideOutRight} 0.4s ease 0s 1 normal`,
                 animationFillMode: "forwards"
             }
@@ -526,6 +499,7 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
             // animate
             render = (<>
                 <Panel
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                     key={`tabcontent_${priorTab.Key}`}
                     ClassName={forwards ? "exiting-left" : "exiting-right"}
                     Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}>
@@ -533,6 +507,7 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
                 </Panel>
                 <Panel
                     //key={`tab${this._renderCount}entering`}
+                    VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                     key={`tabcontent_${currentTab.Key}`}
                     ClassName={forwards ? "entering-from-right" : "entering-from-left"}
                     Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}

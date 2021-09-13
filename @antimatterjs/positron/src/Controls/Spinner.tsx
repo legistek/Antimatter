@@ -3,7 +3,7 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { IStyle, Position, SpinButton } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 interface ISpinnerProps extends IControlProps {
@@ -25,7 +25,7 @@ interface ISpinnerState extends IControlState {
 export class Spinner extends Control<ISpinnerProps, ISpinnerState>
 {
 
-    public static DefaultStyle: Style<ISpinnerProps> = new Style<ISpinnerProps>(
+    public static DefaultStyle: WebStyle<ISpinnerProps> = new WebStyle<ISpinnerProps>(
         {
             Value: 0,
             FontFamily: FontStyle.FontFamily,

@@ -6,16 +6,13 @@ import { HorizontalAlignment, VerticalAlignment, WindowLayout } from './Enums';
 import './positron.css';
 import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
-import { ItemsControl } from './Controls/ItemsControl';
-import { WindowLayoutContext } from './Controls/Window';
 import { MultitouchTransform } from './Media/MultitouchTransform';
 import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEventArgs';
 import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
-import { Style } from './Style';
+import { Style, WebStyle } from './Style';
 import { CSSClasses } from './CSSClasses';
 import { ThemeColor, Theme } from './Theme';
-
 
 interface IFrameworkElementCommon
 {
@@ -117,6 +114,10 @@ export class FrameworkElement<
             this.state.OnManipulationCompleted)
             this._gestureHandlers = true;
 
+        let webStyleClass: string = '';
+        if (this.state.Style instanceof WebStyle)
+            webStyleClass = (this.state.Style as WebStyle<any>).Class();
+
         //onContextMenu={(event) => event.preventDefault()}
         return (
             <div
@@ -152,9 +153,8 @@ export class FrameworkElement<
                 onPointerOut={this.state.OnPointerOut || this._gestureHandlers
                     ? (event) => this.OnPointerOut(event)
                     : undefined}
-                className={this.constructor.name + " " + (this.state.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
-                tabIndex={this.state.TabIndex}
-            >
+                className={this.constructor.name + " " + (this.state.ClassName || "") + " " + webStyleClass + " " + this.constructClasses()}
+                tabIndex={this.state.TabIndex}>
                 {
                     this.state.IsLoading && this.state.LoadingTemplate
                         ? this.state.LoadingTemplate()
@@ -291,14 +291,16 @@ export class FrameworkElement<
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }
 
-    protected GetThemableProperty(property: string): any
+    protected GetThemableProperty(property: string, defaultValue?: any): any
     {
         var val = (this.state as any)[property];
-        if (typeof (val) === "number" && (val as number) > Theme.FirstResourceId)
+        if (typeof (val) === "number" && (val as number) >= Theme.FirstResourceId)
         {
             // Theme resource
             return Theme.Value(val as number);
         }
+        if (val === undefined)
+            val = defaultValue;
         return val;
     }
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as Fluent from '@fluentui/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
@@ -28,8 +28,7 @@ export class DataGridCell<
     //    {
     //    },
     //    {
-    //        Selector: "@",
-    //        Rules: {
+    //        "@": {
     //            height: "100%",
     //            display: 'flex',
     //            //borderWidth: "0px 0px 1px 0px",
@@ -115,7 +114,7 @@ export class DataGridBase<
         this.SetValue(nameof(this.state.SelectedItems), sel, false);
     }
     
-    public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
+    public static DefaultStyle: WebStyle<IDataGridProps> = new WebStyle<IDataGridProps>(
         {
             Template: new ControlTemplate((templatedParent: DataGridBase<IDataGridProps, IDataGridState>) =>(
                 <Fluent.ScrollablePane>
@@ -189,8 +188,7 @@ export class DataGridBase<
             ))
         },
         {
-            Selector: "@ .ms-DetailsHeader-cell",
-            Rules: {
+            "@ .ms-DetailsHeader-cell": {
                 fontFamily: Theme.Value(FontStyle.FontFamily)
             }
         }

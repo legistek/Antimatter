@@ -67,7 +67,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             (vm) =>
             (
                 <Panel VerticalAlignment={VerticalAlignment.Top} >
-                    <Employee Value={new Binding({ Path: "Employee", Source: vm })}/>
+                    <Employee ViewModel={new Binding({ Path: "Employee", Source: vm })} />
                 </Panel>
             )
         )

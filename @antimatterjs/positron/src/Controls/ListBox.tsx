@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BindingMode } from '@antimatterjs/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 import { ISelectableItemControlProps, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { Panel } from './Panel';
@@ -25,7 +25,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
             Mode: BindingMode.TwoWay
         }
     };
-    public static DefaultStyle: Style<IListBoxProps> = new Style<IListBoxProps>(
+    public static DefaultStyle: WebStyle<IListBoxProps> = new WebStyle<IListBoxProps>(
         {
             ItemsSource: [],
             BorderBrush: SemanticColor.ButtonBorder,
@@ -40,7 +40,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                     return;
                 (layer.style as any).webkitMaskPosition = `${(e as any).layerX - 75}px center`;
             },
-            ItemContainerStyle: new Style<ISelectableItemControlProps>(
+            ItemContainerStyle: new WebStyle<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
                     Template: (templatedParent: SelectableItemControlBase) =>
@@ -52,32 +52,20 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                     )
                 },
                 {
-                    Rules: {
+                    "@": {
                         cursor: "pointer"
-                    }
-                },
-                {
-                    Selector: "@.selected",
-                    Rules: {
+                    },
+                    "@.selected": {
                         background: Theme.Value(SemanticColor.ListItemBackgroundChecked),
                         color: Theme.Value(SemanticColor.BodyTextChecked)
-                    }
-                },
-                {
-                    Selector: "@:hover.selected",
-                    Rules: {
+                    },
+                    "@:hover.selected": {
                         background: Theme.Value(SemanticColor.ListItemBackgroundCheckedHovered),
-                    }
-                },
-                {
-                    Selector: "@:hover",
-                    Rules: {
+                    },
+                    "@:hover": {
                         background: Theme.Value(SemanticColor.ListItemBackgroundHovered)
-                    }
-                },
-                {
-                    Selector: "@ .listboxitem-border-layer",
-                    Rules: {
+                    },
+                    "@ .listboxitem-border-layer": {
                         position: "absolute",
                         top: "0px",
                         width: "100%",
@@ -89,11 +77,8 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                         WebkitMaskImage: "radial-gradient(circle at center, rgba(0,0,0,.5) 0%, transparent 75px)",
                         WebkitMaskRepeat: "no-repeat",
                         WebkitMaskSize: "150px 9999px"
-                    }
-                },
-                {
-                    Selector: "@:hover .listboxitem-border-layer",
-                    Rules: {
+                    },
+                    "@:hover .listboxitem-border-layer": {
                         visibility: "visible",
                     }
                 }

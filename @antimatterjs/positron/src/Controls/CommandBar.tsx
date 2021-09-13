@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ModelObjectReference } from '@antimatterjs/react';
 import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } from '@fluentui/react';
 
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
 import { CommandButton, CommandButtonBase } from './CommandButton';
@@ -123,7 +123,7 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
 
 export class CommandBar extends ItemsControlBase<IItemsControlProps, IItemsControlState>
 {
-    public static DefaultStyle: Style<IItemsControlProps> = new Style<IItemsControlProps>(
+    public static DefaultStyle: WebStyle<IItemsControlProps> = new WebStyle<IItemsControlProps>(
     {
         ItemsSource: [],
         ItemsPanel: CommandBarPanel,

@@ -3,7 +3,7 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { Checkbox as FluentCheckBox } from '@fluentui/react'
 import { IToggleButtonProps, IToggleButtonState, ToggleButtonBase } from './Primitives/ToggleButton';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { FontStyle, Theme } from '../Theme';
 
 export interface ICheckBoxProps extends IToggleButtonProps
@@ -28,7 +28,7 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
             FallbackValue: '...'
         }
     };
-    static DefaultStyle: Style<ICheckBoxProps> = new Style(
+    static DefaultStyle: WebStyle<ICheckBoxProps> = new WebStyle(
         {
             Template: new ControlTemplate((templatedParent: CheckBox) =>
             (

@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Ellipse } from '../Shapes/Ellipse';
-import { ComboBox, IComboBoxProps, IComboBoxState } from './ComboBox';
+import { ComboBox, ComboBoxBase, IComboBoxProps, IComboBoxState } from './ComboBox';
 import { Glyph } from './Glyph';
 import { Panel } from './Panel';
 import { PlacementMode, Popup } from './Popup';
@@ -12,15 +12,15 @@ import { WrapPanel } from './WrapPanel';
 import { ISelectableItemControlProps, SelectableItemControl } from './Primitives/SelectableItemControl';
 import { ThemeColor, SemanticColor, Theme } from '../Theme';
 
-export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
+export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
 {
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
             Template: new ControlTemplate((templatedParent: ColorPicker) => templatedParent.Template),
             ItemTemplate: new DataTemplate((item: any) => ColorPicker.DefaultItemTemplate(item)),
-            ItemContainerStyle: new Style<ISelectableItemControlProps>(
+            ItemContainerStyle: new WebStyle<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
                     Template: new ControlTemplate((templatedParent: SelectableItemControl) =>
@@ -40,20 +40,17 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                     ))
                 },
                 {
-                    Rules: {
+                    "@": {
                         cursor: "pointer"
-                    }
-                },
-                {
-                    Selector: "@:hover",
-                    Rules: {
+                    },
+                    "@:hover": {
                         background: Theme.Value(SemanticColor.ListItemBackgroundHovered)
                     }
                 }
             )
         },
         {
-            Rules: {
+            "@": {
                 cursor: 'pointer',
                 userSelect: 'none'
             }
@@ -91,7 +88,7 @@ export class ColorPicker extends ComboBox<IComboBoxProps, IComboBoxState>
                     Placement={PlacementMode.Below}
                     Width={ColorPicker.COLUMNS_SIZE * ColorPicker.COLUMN_WIDTH + 8}
                     Padding="4px">
-                    <WrapPanel ItemsParent={this} />
+                    <WrapPanel ItemsParent={this} Margin="0px"/>
                 </Popup>
             </>
         );

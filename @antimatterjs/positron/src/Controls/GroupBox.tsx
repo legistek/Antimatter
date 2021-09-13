@@ -5,7 +5,7 @@ import { DefaultEffects } from '@fluentui/react';
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Panel } from './Panel';
 import { Grid } from './Grid';
@@ -22,13 +22,7 @@ export interface IGroupBoxState extends IControlState
 
 export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
 {    
-    static defaultProps: IGroupBoxProps = {
-        Background: SemanticColor.BodyBackground,
-        BorderBrush: "#C0C0C0",
-        BorderThickness: "1px",
-        Padding: "10px"
-    }
-    static DefaultStyle: Style<IGroupBoxProps> = new Style(
+    static DefaultStyle: WebStyle<IGroupBoxProps> = new WebStyle(
         {
             Background: SemanticColor.BodyBackground,
             BorderBrush: SemanticColor.InputBorder,
@@ -48,7 +42,7 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
                         Background={templatedParent.Background}
                         BorderBrush={templatedParent.BorderBrush}
                         BorderThickness={templatedParent.state.BorderThickness}
-                        Padding={templatedParent.props.Padding}>
+                        Padding={templatedParent.state.Padding}>
                         {templatedParent.props.children}
                     </Panel>
 

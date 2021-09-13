@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Binding, BindingMode } from "@antimatterjs/react";
-import { Style } from '../../Style';
+import { WebStyle } from '../../Style';
 import { ControlTemplate } from '../../FrameworkTemplate';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from "./ButtonBase";
 import {
@@ -62,7 +62,7 @@ export class ToggleButtonBase<P extends IToggleButtonProps = {},
 
 
 export class ToggleButton extends ToggleButtonBase<IToggleButtonProps, IToggleButtonState> {
-    static DefaultStyle: Style<IToggleButtonProps> = new Style<IToggleButtonProps>(
+    static DefaultStyle: WebStyle<IToggleButtonProps> = new WebStyle<IToggleButtonProps>(
         {
             IsThreeState: false,
             Template: new ControlTemplate((templatedParent: ToggleButton) => templatedParent.template)

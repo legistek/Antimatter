@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingParameters, ModelObjectReference } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { DefaultEffects, MotionAnimations } from '@fluentui/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -29,7 +29,7 @@ export class NavMenuBase<
     P extends INavMenuProps = { Items: [] },
     S extends INavMenuState = { Items: [] }> extends TabControlBase<P, S>
 {    
-    public static /* override */ DefaultStyle: Style<INavMenuProps> = new Style<INavMenuProps>(
+    public static /* override */ DefaultStyle: WebStyle<INavMenuProps> = new WebStyle<INavMenuProps>(
         {
             Template: new ControlTemplate(
                 NavMenuBase.VerticalDesktopTemplate,
@@ -42,8 +42,7 @@ export class NavMenuBase<
             Items: []
         },
         {
-            Selector: "@ .tab-menu-item",
-            Rules: {
+            "@ .tab-menu-item": {
                 color: Theme.Value(SemanticColor.BodySubtext),
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 borderWidth: "0px 0px 0px 4px",
@@ -52,50 +51,29 @@ export class NavMenuBase<
                 background: "transparent",
                 cursor: "pointer",
                 margin: "5px 0px 5px 10px"
-            }
-        },
-        {
-            Selector: "@ .tab-label",
-            Rules: {
+            },
+            "@ .tab-label": {
                 fontWeight: "bold"
-            }
-        },
-        {
-            Selector: "@ .tab-menu-item:hover",
-            Rules: {
+            },
+            "@ .tab-menu-item:hover": {
                 background: Theme.Value(SemanticColor.ButtonBackgroundHovered)
             },
-        },
-        {
-            Selector: "@ .tab-menu-item:not(.mobile)",
-            Rules: {
+            "@ .tab-menu-item:not(.mobile)": {
                 maxWidth: "250px"
-            }
-        },
-        {
-            Selector: "@ .tab-menu-item.selected",
-            Rules: {
+            },
+            "@ .tab-menu-item.selected": {
                 color: Theme.Value(SemanticColor.BodyText),
                 borderColor: Theme.Value(SemanticColor.Link),
                 borderWidth: "0px 0px 0px 4px",
                 borderStyle: "solid"
-            }
-        },
-        {
-            Selector: "@ .menu-content",
-            Rules: {
+            },
+            "@ .menu-content": {
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
-            Selector: "@ .tab-content",
-            Rules: {
+            },
+            "@ .tab-content": {
                 animation: `${MotionAnimations.scaleDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
-            Selector: "@ .mobile-nav-back",
-            Rules: {
+            },
+            "@ .mobile-nav-back": {
                 cursor: "pointer"
             }
         }
@@ -141,7 +119,7 @@ export class NavMenuBase<
                             Grid={{ Row: 0 }} Orientation={Orientation.Horizontal}>
                             <Glyph
                                 ClassName="mobile-nav-back"
-                                Foreground="black"
+                                Foreground={SemanticColor.BodyText}
                                 Margin="10px 10px"
                                 FontSize={FontStyle.ExtraExtraLarge}
                                 VerticalAlignment={VerticalAlignment.Center}
@@ -227,7 +205,7 @@ export class NavMenuBase<
                     Margin="0px 10px"
                     Background={mobile ? tab.IconBackground : undefined}
                     Icon={tab.Icon}
-                    Foreground={mobile ? tab.IconForeground : "#808080"}
+                    Foreground={mobile ? tab.IconForeground : SemanticColor.ButtonTextDisabled}
                     FontSize={FontStyle.ExtraLarge} />
 
                 <StackPanel Grid={{ Column: 1 }}

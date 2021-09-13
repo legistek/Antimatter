@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Shimmer } from '@fluentui/react';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
@@ -21,7 +21,7 @@ export class LoadingShimmer<
     P extends ILoadingShimmerProps = {},
     S extends IControlState = {}> extends Control<ILoadingShimmerProps, ILoadingShimmerState>
 {
-    public static DefaultStyle: Style<ILoadingShimmerProps> = new Style<ILoadingShimmerProps>(
+    public static DefaultStyle: WebStyle<ILoadingShimmerProps> = new WebStyle<ILoadingShimmerProps>(
         {
             Template: (templatedParent: LoadingShimmer) =>
             {
@@ -42,8 +42,7 @@ export class LoadingShimmer<
             }
         },
         {
-            Selector: "@ .shimmer",
-            Rules: {
+            "@ .shimmer": {
                 margin: "5px"
             }
         });

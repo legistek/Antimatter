@@ -22,6 +22,12 @@ export enum ThemeColor
     NeutralDark,
     Black,
     White,
+    Red,
+    LightRed,
+    Yellow,
+    LightYellow,
+    Green,
+    LightGreen
 }
 
 export interface IThemePalette
@@ -48,11 +54,17 @@ export interface IThemePalette
     NeutralDark: string,
     Black: string,
     White: string,
+    Red: string,
+    LightRed: string,
+    Yellow: string,
+    LightYellow: string,
+    Green: string,
+    LightGreen: string
 }
 
 export interface IThemeFontStyle
 {
-    FontFamily: string,   
+    FontFamily: string,
     Tiny: string,
     ExtraSmall: string,
     Small: string,
@@ -65,11 +77,12 @@ export interface IThemeFontStyle
     ExtraExtraLarge: string,
     ExtraExtraLargePlus: string,
     SuperLarge: string,
+    Glyph1x: string,
 }
 
 export class Theme
 {
-    public static readonly FirstResourceId: number = 4294967296;    
+    public static readonly FirstResourceId: number = 4294967296;
 
     public readonly FontStyle: IThemeFontStyle = {
         FontFamily: "",
@@ -85,9 +98,10 @@ export class Theme
         ExtraExtraLarge: "",
         ExtraExtraLargePlus: "",
         SuperLarge: "",
+        Glyph1x: ""
     };
 
-    public readonly Palette: IThemePalette = {        
+    public readonly Palette: IThemePalette = {
         ThemePrimary: '#000000',
         ThemeLighterAlt: '#000000',
         ThemeLighter: '#000000',
@@ -110,9 +124,15 @@ export class Theme
         NeutralDark: '#000000',
         Black: '#000000',
         White: '#000000',
+        Red: '#000000',
+        LightRed: '#000000',
+        Yellow: '#000000',
+        LightYellow: '#000000',
+        Green: '#000000',
+        LightGreen: '#000000'
     };
-    
-    public static Value(resourceId: number) : any
+
+    public static Value(resourceId: number): any
     {
         if (resourceId >= 4294967296 && resourceId < 4296015872)
             return `var(--Palette_${ThemeColor[resourceId]})`;
@@ -149,6 +169,7 @@ export enum FontStyle
     ExtraExtraLarge,
     ExtraExtraLargePlus,
     SuperLarge,
+    Glyph1x,
 }
 
 export enum SemanticColor
@@ -210,7 +231,7 @@ export enum SemanticColor
     DisabledText = ThemeColor.NeutralTertiary,
     BodyText = ThemeColor.NeutralPrimary,
     ActionLink = ThemeColor.NeutralPrimary,
-    ButtonText = ThemeColor.NeutralPrimary,
+    ButtonText = ThemeColor.NeutralSecondary,
     InputBorderHovered = ThemeColor.NeutralPrimary,
     InputText = ThemeColor.NeutralPrimary,
     ListText = ThemeColor.NeutralPrimary,
@@ -225,7 +246,7 @@ export enum SemanticColor
     InputTextHovered = ThemeColor.NeutralDark,
     MenuItemTextHovered = ThemeColor.NeutralDark,
     BodySubtext = ThemeColor.NeutralSecondary,
-    FocusBorder = ThemeColor.NeutralSecondary,
+    FocusBorder = ThemeColor.ThemeSecondary,
 
     InputBorder = ThemeColor.NeutralTertiary,
     SmallInputBorder = ThemeColor.NeutralSecondary,
@@ -234,5 +255,12 @@ export enum SemanticColor
     DisabledBodySubtext = ThemeColor.NeutralTertiaryAlt,
     DisabledBorder = ThemeColor.NeutralTertiaryAlt,
     ButtonBackgroundChecked = ThemeColor.NeutralTertiaryAlt,
-    MenuDivider = ThemeColor.NeutralTertiaryAlt
+    MenuDivider = ThemeColor.NeutralTertiaryAlt,
+
+    Error = ThemeColor.Red,
+    ErrorBackground = ThemeColor.LightRed,
+    Warning = ThemeColor.Yellow,
+    WarningBackground = ThemeColor.LightYellow,
+    Good = ThemeColor.Green,
+    GoodBackground = ThemeColor.LightGreen
 }

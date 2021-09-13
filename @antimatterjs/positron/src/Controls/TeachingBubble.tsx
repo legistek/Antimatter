@@ -3,7 +3,7 @@ import { Target, TeachingBubble as FluentTeachingBubble, IStyle } from '@fluentu
 import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 
 import { FrameworkElement } from '../FrameworkElement';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { StackPanel } from './StackPanel';
 import { Orientation } from '../Enums';
@@ -70,7 +70,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
         })
     }
 
-    static DefaultStyle: Style<ITeachingBubbleProps> = new Style<ITeachingBubbleProps>(
+    static DefaultStyle: WebStyle<ITeachingBubbleProps> = new WebStyle<ITeachingBubbleProps>(
         Object.assign(
             Object.assign(TeachingBubble.BaseControlProps),
             {
@@ -142,7 +142,7 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
         if (!this.state.ShowSecondaryButton)
             return null;
 
-        const style: Style<ICommandButtonProps> = CommandButton.PrimaryButtonStyle;
+        const style: WebStyle<ICommandButtonProps> = CommandButton.PrimaryButtonStyle;
         if (this.state.CustomSecondaryCommand)
         {
             return (

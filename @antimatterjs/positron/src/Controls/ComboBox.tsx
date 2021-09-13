@@ -3,7 +3,7 @@ import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@anti
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
 import { Grid, IColumnDefinition } from './Grid';
@@ -55,7 +55,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
     protected _button?: FrameworkElement | null;
     public get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
 
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
@@ -64,33 +64,20 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
         {
-            Selector: "@ .panel",
-            Rules: {
+            "@ .panel": {
                 cursor: 'pointer',
                 userSelect: 'none'
-            }
-        },
-        {
-            Selector: Control.DisabledSelector("panel"),
-            Rules: {
+            },
+            [Control.DisabledElement("panel")]: {
                 background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
-            }
-        },
-        {
-            Selector: Control.DisabledSelector("panel > *"),
-            Rules: {
-                opacity: "50%"
-            }
-        },
-        {
-            Selector: "@ .panel:hover",
-            Rules: {
+            },
+            [Control.DisabledElement("panel > *")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
+            },
+            "@ .panel:hover": {
                 borderColor: Theme.Value(SemanticColor.InputBorderHovered) + " !important"
-            }
-        },
-        {
-            Selector: "@ .panel:focus::after",
-            Rules: {
+            },
+            "@ .panel:focus::after": {
                 content: "''",
                 pointerEvents: "none",
                 position: "absolute",
@@ -103,19 +90,13 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                 borderWidth: "1px",
                 borderStyle: "solid",
                 borderColor: Theme.Value(ThemeColor.ThemeSecondary)
-            }
-        },
-        {
-            Selector: "@ .cb-label",
-            Rules: {
+            },
+            "@ .cb-label": {
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 cursor: 'default'
-            }
-        },
-        {
-            Selector: Control.DisabledSelector("cb-label"),
-            Rules: {
-                opacity: "50%"
+            },
+            [Control.DisabledElement("cb-label")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
             }
         }
     );
@@ -186,14 +167,14 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         return ComboBoxItem;
     }
 
-    public static DefaultTextblockStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+    public static DefaultTextblockStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>(
         {
             FontFamily: FontStyle.FontFamily,
             FontSize: FontStyle.Medium,
             Margin: "7px 6px"
         },
         {
-            Rules: {
+            "@": {
                 userSelect: 'none'
             }
         }
@@ -314,34 +295,23 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         return this.Parent.IsMultiSelect && !this.Parent.state.PreventAutoCheckboxes;
     }
 
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
             Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.Template)
         },
         {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules:
-            {
+            [`.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
                 cursor: 'pointer'
             },
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}:hover:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules: {
+            [`.${ComboBoxItem.ROOT_CLASS}:hover:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
                 backgroundColor: Theme.Value(SemanticColor.ListItemBackgroundHovered)
-            }
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.SELECTED_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules: {
+            },
+            [`.${ComboBoxItem.ROOT_CLASS}.selected:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
                 backgroundColor: Theme.Value(ThemeColor.ThemeLighter)
-            }
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.DISABLED_CLASS}`,
-            Rules: {
+            },
+            [`.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.DISABLED_CLASS}`]: {
                 color: Theme.Value(SemanticColor.DisabledBodyText)
             }
         },

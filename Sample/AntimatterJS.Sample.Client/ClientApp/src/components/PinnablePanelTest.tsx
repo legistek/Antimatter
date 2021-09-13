@@ -55,7 +55,7 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                             Converter: (state: PinnablePanelState) => state === PinnablePanelState.Collapsed
                         })} />
 
-                    <Employee Value={new Binding("Company.CEO")} />
+                    <Employee ViewModel={new Binding("Company.CEO")} />
 
 
                 </StackPanel>
@@ -81,7 +81,7 @@ export default class PinnablePanelTest extends ViewBase<IViewProps, IPinnablePan
                                         Key: "overview",
                                         Label: "OVERVIEW",
                                         Icon: 0xF0F5,
-                                        Content: (<Employee Value={new Binding("Company.CEO")} />)
+                                        Content: (<Employee VerticalAlignment={VerticalAlignment.Top} ViewModel={new Binding("Company.CEO")} />)
                                     },
                                     {
                                         Key: "properties",

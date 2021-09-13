@@ -29,7 +29,6 @@ import
     PlacementMode,
     FrameworkElement,
     WrapPanel,
-    Style,
     IFrameworkElementState,
     IFrameworkElementProps,
     MultitouchTransform,
@@ -40,14 +39,15 @@ import
     Side,
     Panel,
     WindowLayout,
-    Glyph
+    Glyph,
+    View
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 
-export class Employee extends AntimatterComponent<{ Value: ModelObjectReference | Binding }, { Value: ModelObjectReference }>
+export class Employee extends View
 {
     static displayName = Employee.name;
 
@@ -66,22 +66,22 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
         //return <></>;
     }
 
-    render()
+    View()
     {
         // amx-grow-entrance
         return (
             <GroupBox
             /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
             >
-                <DataContext Value={this.state.Value}>
-                    <StackPanel>
+
+                <StackPanel>
 
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
                         LabelIsInline={false}
                         StepIncrement={5}
-                            MinValue={0}
-                            IsEnabled={false}
+                        MinValue={0}
+                        IsEnabled={false}
                         Label="The Age-O-Tron"
                     />
 
@@ -164,7 +164,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
                         {/*    <TextBlock Text="Really Nice bonus" />*/}
                         {/*</Popup>*/}
 
-                            {this.ColorPicker}
+                        {this.ColorPicker}
 
                     </WrapPanel>
 
@@ -178,7 +178,7 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <CommandButton Command={new Binding("IncreaseAgeCommand")}
                         SecondaryCommandsSource={new Binding("Commands")}
-                            Style={CommandButton.IconButtonStyle}
+                        Style={CommandButton.IconButtonStyle}
                     />
                     <CommandButton Command={new Binding("LongTaskCommand")} />
 
@@ -194,21 +194,21 @@ export class Employee extends AntimatterComponent<{ Value: ModelObjectReference 
 
                     <ProgressBar />
 
-                        {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
-                        {/*    <CommandButton*/}
-                        {/*        Style={CommandButton.IconButtonStyle}*/}
-                        {/*        Command={new Binding("EditCommand")} />*/}
-                        {/*    <CommandButton*/}
-                        {/*        Style={CommandButton.IconButtonStyle}*/}
-                        {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
-                        {/*    <CommandButton*/}
-                        {/*        Style={CommandButton.CommandBarButtonStyle}*/}
-                        {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
-                        {/*        CommandParameter={new Binding()} />*/}
-                        {/*</StackPanel>*/}
+                    {/*<StackPanel Orientation={Orientation.Horizontal}>*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.IconButtonStyle}*/}
+                    {/*        Command={new Binding("EditCommand")} />*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.IconButtonStyle}*/}
+                    {/*        Command={new Binding(nameof<Model.Employee>(e => e.IncreaseAgeCommand))}/>*/}
+                    {/*    <CommandButton*/}
+                    {/*        Style={CommandButton.CommandBarButtonStyle}*/}
+                    {/*        Command={new Binding("Company.DeleteEmployeeCommand")}*/}
+                    {/*        CommandParameter={new Binding()} />*/}
+                    {/*</StackPanel>*/}
 
-                        </StackPanel>
-                </DataContext>
+                </StackPanel>
+
 
             </GroupBox>
         );
@@ -368,14 +368,14 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
     {
         const elem: JSX.Element = (
-            
-                <TextBlock
-                    Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
-                    VerticalAlignment={VerticalAlignment.Center}
-                    Style={ComboBox.DefaultTextblockStyle}
-                />
 
-            
+            <TextBlock
+                Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+                VerticalAlignment={VerticalAlignment.Center}
+                Style={ComboBox.DefaultTextblockStyle}
+            />
+
+
 
         );
         return elem;
@@ -405,7 +405,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
     {
         const elem: JSX.Element = (
             <ComboBox
-                Label="Name/String Selector Thingy (Single)"                
+                Label="Name/String Selector Thingy (Single)"
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployeeNames))}
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployeeNames))}
 
@@ -541,11 +541,11 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     {/*    IsEnabled={new Binding({ Path: "Employees.Count", Converter: (ct) => ct < 100 })}*/}
                     {/*    Command={new Binding(nameof<Model.Company>(c => c.NewEmployeeCommand))} />*/}
 
-                    <Employee Value={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
+                    <Employee ViewModel={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))} />
                 </StackPanel>
 
                 <ResizePanel Size={new Binding("UnderlingPanelWidth")}
-                    Grid={{ Column: 1}}
+                    Grid={{ Column: 1 }}
                     Background={"blue"}
                     ResizerSide={Side.Left}>
                     <TreeView
@@ -561,7 +561,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     <Glyph Icon="Contact"
                                         VerticalAlignment={VerticalAlignment.Center}
                                         HorizontalAlignment={HorizontalAlignment.Center}
-                                        Margin={"5px"}/>
+                                        Margin={"5px"} />
                                     <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
                                         Foreground={new Binding({ Path: "Color", Source: item })} />
                                 </StackPanel>),

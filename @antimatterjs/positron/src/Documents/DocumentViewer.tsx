@@ -3,7 +3,7 @@ import { Binding, BindingMode, Utilities } from "@antimatterjs/react";
 
 import { Panel } from "../Controls/Panel";
 import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
-import { Style } from "../Style";
+import { WebStyle } from "../Style";
 import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
 import { FrameworkElement } from "../FrameworkElement";
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
@@ -159,12 +159,12 @@ export class DocumentViewerBase<
         //this.InvalidateRender();
     }
 
-    public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
+    public static DefaultStyle: WebStyle<IDocumentViewerProps> = new WebStyle<IDocumentViewerProps>(
         {
             Background: "#E0E0E0",
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
-            ItemContainerStyle: new Style<IDocumentPagePresenterProps>(
+            ItemContainerStyle: new WebStyle<IDocumentPagePresenterProps>(
                 {
                     PagePadding: 5,
                     HorizontalAlignment: HorizontalAlignment.Center
