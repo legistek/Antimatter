@@ -19,7 +19,8 @@ export interface IControlProps extends IFrameworkElementProps
     BorderThickness?: string | Binding | ThemeLayout,
     FontFamily?: string | Binding | FontStyle,
     FontSize?: string | Binding | FontStyle,
-    BoxShadow?: string | Binding,   
+    BoxShadow?: string | Binding,
+    InfoTip?: Binding | string,
     TeachingBubbleParams?: ModelObjectReference | Binding,
     TeachingBubbleIsOpen?: BindingParameters
 }
@@ -54,6 +55,11 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     public get Template(): ControlTemplate | ((templatedParent: any) => JSX.Element) | undefined
     {
         return this.GetValue(nameof(this.props.Template));
+    }
+
+    public get InfoTip(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.InfoTip));
     }
     
     public get TeachingBubbleIsOpen(): BindingParameters | undefined

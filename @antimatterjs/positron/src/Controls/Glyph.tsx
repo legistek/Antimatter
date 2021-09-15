@@ -24,7 +24,7 @@ export class Glyph extends FrameworkElement<IGlyphProps, IGlyphState>
     public static DefaultStyle: WebStyle<IGlyphProps> = new WebStyle<IGlyphProps>
     (
         {
-            FontSize: FontStyle.Medium,
+            FontSize: FontStyle.Glyph1x,
             Foreground: SemanticColor.BodyText,
         },
         {

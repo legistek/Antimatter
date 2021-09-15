@@ -85,7 +85,7 @@ export default class ControlGallery1 extends View
                                 <IconCommandButton
                                     HorizontalAlignment={HorizontalAlignment.Center}
                                     Style={CommandButton.IconButtonStyle}
-                                    Label="Icon Button"
+                                    Label="Icon Button"                                    
                                     Icon="ReportHacked" />
 
                                 <IconCommandButton
@@ -125,20 +125,36 @@ export default class ControlGallery1 extends View
                     Label: "Boxes",
                     Key: "boxes",
                     Content: (
-                        <StackPanel>
+                        <StackPanel>                            
+                            <TextBox
+                                MaxHeight="200px"
+                                Label="HStretch and Accept Return"
+                                AcceptsReturn={true} />
+                            <TextBox Label="HStretch and No Accept Return" />
+
                             <WrapPanel>
-                                <TextBox Label="Normal"
-                                    IconName={"Contact"}
-                                    PlaceholderText="Placeholder" />
+                                <TextBox Label="Icon + MinWidth"
+                                    InfoTip="Some useful info"
+                                    Icon={"Search"}
+                                    MinWidth="200px"
+                                    PlaceholderText="Enter search terms" />
+                                <TextBox Text="Unlabelled Text"
+                                    VerticalAlignment={VerticalAlignment.Bottom} />
                                 <TextBox Label="Disabled" IsEnabled={false} Text="Disabled Text" />
+                                <TextBox Label="Read Only" IsReadOnly={true} Text="Read Only Text" />
+                                <TextBox Label="No Auto-select" SelectOnFocus={false} Text="Why would you want to do this?" />
                                 <TextBox Label="Validation Error"
                                     Text="Invalid Text"
                                     ValidationError="Invalid Input"
-
                                 />
                                 <TextBox Label="Customized"
+                                    FontFamily="Courier New"
                                     Background="Yellow"
+                                    BorderBrush="Purple"
+                                    BorderThickness="3px"
                                     Foreground="Orange"
+                                    Padding="15px"
+                                    FontSize={FontStyle.ExtraLarge}
                                     Text="Customized Text"
                                 />
                             </WrapPanel>
