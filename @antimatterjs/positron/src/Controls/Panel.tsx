@@ -52,22 +52,22 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
 
     public get Background(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.Background));
+        return this.GetValue(nameof(this.props.Background));
     }
 
     public get BorderBrush(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.BorderBrush));
+        return this.GetValue(nameof(this.props.BorderBrush));
     }
 
     public get BorderThickness(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.BorderThickness));
+        return this.GetValue(nameof(this.props.BorderThickness));
     }
 
     public get Foreground(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.Foreground));
+        return this.GetValue(nameof(this.props.Foreground));
     }
 
     /* override */ getCSSStyles() : React.CSSProperties

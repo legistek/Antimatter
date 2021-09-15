@@ -60,7 +60,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
             BorderBrush: SemanticColor.InputBorder,
-            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.Template),
+            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.template),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
         {
@@ -101,7 +101,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         }
     );
 
-    protected get Template(): JSX.Element
+    protected get template(): JSX.Element
     {        
         const dropdown: JSX.Element = (            
             <Grid
@@ -133,7 +133,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                     Grid={{Row: 0}}
                     Text={this.state.Label}
                     FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
-                    FontWeight={this.state.FontWeight ?? 600}
+                    FontWeight={this.FontWeight ?? 600}
                     FontFamily={this.FontFamily}
                     Margin="0px"/>
                 {dropdown}
@@ -299,7 +299,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
-            Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.Template)
+            Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.template)
         },
         {
             [`.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
@@ -317,7 +317,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         },
     );
 
-    private get Template(): JSX.Element
+    private get template(): JSX.Element
     {
         const contentElem: JSX.Element = this.Parent.GetTemplateForItem(this.state.Item)(this.state.Item);
 

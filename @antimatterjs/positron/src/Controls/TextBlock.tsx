@@ -9,7 +9,7 @@ export interface ITextBlockProps extends IFrameworkElementProps
     Text?: string | Binding | undefined,
     Foreground?: string | Binding | ThemeColor | SemanticColor,
     FontFamily?: string | FontStyle,
-    FontSize?: number | string | FontStyle,
+    FontSize?: string | FontStyle,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 interface ITextBlockState extends IFrameworkElementState
@@ -46,22 +46,25 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
 
     public get Foreground(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.Foreground));
+        return this.GetValue(nameof(this.props.Foreground));
     }
 
     public get FontFamily(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.FontFamily));
+        return this.GetValue(nameof(this.props.FontFamily));
     }
 
     public get FontSize(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.FontSize));
+        return this.GetValue(nameof(this.props.FontSize));
     }
 
     public static DefaultBindings = {
         Text: {
             FallbackValue: '...'
+        },
+        FontSize: {
+            Converter: (size) => typeof(size) === "number" ? `${size}px` : size
         }
     };
 

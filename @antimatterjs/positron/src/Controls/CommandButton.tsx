@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, ModelValue, RelativeSourceMode } from '@antimatterjs/react';
 import { Checkbox as FluentCheckBox, DefaultButton, CommandButton as FluentCommandButton, PrimaryButton, CommandBarButton, IconButton, ICommandBarItemProps, IContextualMenuItemProps, IContextualMenuProps, IContextualMenuItem, IButtonStyles, HighContrastSelector, labelProperties, List } from '@fluentui/react'
 
-import { WebStyle } from '../Style';
+import { Style, TemplateProp, WebStyle } from '../Style';
 import { ButtonBase, IButtonBaseProps, IButtonBaseState } from './Primitives/ButtonBase';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { HorizontalAlignment, VerticalAlignment } from '../Enums';
@@ -12,11 +12,10 @@ import { Glyph } from './Glyph';
 import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 import { Control } from './Control';
 
-
 export interface ICommandButtonProps extends IButtonBaseProps
 {
     Icon?: number | string | Binding,
-    IconSize?: number | FontStyle | Binding,
+    IconSize?: string | FontStyle | Binding,
     IconForeground?: string | ThemeColor | SemanticColor | Binding,
     Label?: string | Binding,
     IsDefault?: boolean | Binding,
@@ -25,22 +24,23 @@ export interface ICommandButtonProps extends IButtonBaseProps
 }
 export interface ICommandButtonState extends IButtonBaseState
 {
-    Icon?: number | string,    
-    Label?: string,
-    IsDefault?: boolean,
-    AllCapsLabel?: boolean,
-    SecondaryCommandsSource?: any[]
 }
 
 export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICommandButtonState = {}>
     extends ButtonBase<P, S>
 {
+    public static DefaultBindings = {
+        FontSize: {
+            Converter: (size) => typeof (size) === "number" ? `${size}px` : size
+        }
+    };
+
     private static BaseCommandButtonProps: ICommandButtonProps = {
         HorizontalAlignment: HorizontalAlignment.Left,
         AllCapsLabel: true,
         FontWeight: "bold",
         FontSize: FontStyle.SmallPlus,
-        IconSize: FontStyle.Glyph1x,
+        IconSize: "16px",
         FontFamily: FontStyle.FontFamily,
         BorderThickness: "1px",
         IsVisible: new Binding({ Path: "Visibility", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true }),
@@ -48,28 +48,93 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
         IsEnabled: new Binding({ Path: "IsEnabled", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command", FallbackValue: true }),
         Icon: new Binding({ Path: "Icon", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
         Label: new Binding({ Path: "Name", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" })
-    };
+    };    
 
     public static BaseCommandButtonStyle: WebStyle<ICommandButtonProps> = new WebStyle<ICommandButtonProps>(
         CommandButtonBase.BaseCommandButtonProps,
         {
             "@ .ms-Button": {
-                height: "auto"
+                borderStyle: "solid",
+                height: "auto",
+                background: TemplateProp(nameof<ICommandButtonProps>(p => p.Background)),
+                borderColor: TemplateProp(nameof<ICommandButtonProps>(p => p.BorderBrush)),
+                borderWidth: TemplateProp(nameof<ICommandButtonProps>(p => p.BorderThickness)),
+                padding: TemplateProp(nameof<ICommandButtonProps>(p => p.Padding))
+            },
+            "@ .ms-Button:hover": {
+                borderWidth: TemplateProp(nameof<ICommandButtonProps>(p => p.BorderThickness)),
+                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
+                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
+                color: Theme.Value(SemanticColor.PrimaryButtonTextHovered),
+            },
+            "@ .ms-Button:active": {
+                borderWidth: TemplateProp(nameof<ICommandButtonProps>(p => p.BorderThickness)),
+                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
+                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
+                color: Theme.Value(SemanticColor.PrimaryButtonTextPressed),
             },
             "@ .ms-Button-label": {
-                lineHeight: "unset"
+                lineHeight: "unset",
+                fontWeight: TemplateProp(nameof<ICommandButtonProps>(p => p.FontWeight)),
+                color: TemplateProp(nameof<ICommandButtonProps>(p => p.Foreground)),
+                fontFamily: TemplateProp(nameof<ICommandButtonProps>(p => p.FontFamily)),
+                fontSize: TemplateProp(nameof<ICommandButtonProps>(p => p.FontSize))
+            },
+            "@ .ms-Button-icon": {
+                color: TemplateProp(nameof<ICommandButtonProps>(p => p.IconForeground)),
+                margin: "-5px 0px -5px 4px",
+                fontSize: TemplateProp(nameof<ICommandButtonProps>(p => p.IconSize))
+            },
+            "@ .ms-Button-menuIcon": {
+                margin: "-5px 4px -5px 0px",
+                color: TemplateProp(nameof<ICommandButtonProps>(p => p.IconForeground)),
+                fontSize: "14px"
+            },
+            [Control.DisabledElement("ms-Button")]: {
+                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
+                border: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
+                borderWidth: "1px",
+                borderStyle: "solid"
+            },
+            [Control.DisabledElement("ms-Button-label")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText),
             }
         }
     );
 
+    public get SecondaryCommandsSource(): any[] | undefined
+    {
+        return this.GetValue(nameof(this.props.SecondaryCommandsSource));
+    }
+
+    public get Icon(): number | string | undefined
+    {
+        return this.GetValue(nameof(this.props.Icon));
+    }
+
+    public get AllCapsLabel(): boolean
+    {
+        return this.GetValue(nameof(this.props.AllCapsLabel));
+    }
+
+    public get Label(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Label));
+    }
+
+    public get IsDefault(): boolean
+    {
+        return this.GetValue(nameof(this.props.IsDefault), false);
+    }
+
     public get IconForeground(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.IconForeground), Theme.Value(SemanticColor.PrimaryButtonText));
+        return this.GetValue(nameof(this.props.IconForeground), Theme.Value(SemanticColor.PrimaryButtonText));
     }
 
     public get IconSize(): number
     {
-        return this.GetThemableProperty(nameof(this.props.IconSize), Theme.Value(FontStyle.Glyph1x));
+        return this.GetValue(nameof(this.props.IconSize), Theme.Value(FontStyle.Glyph1x));
     }
 
     public menuProps?: IContextualMenuProps;
@@ -84,7 +149,7 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
     {
         this.menuProps = undefined;
 
-        const items = this.state.SecondaryCommandsSource ?? [];
+        const items = this.SecondaryCommandsSource ?? [];
         if (!items || items.length == 0)
             return;
 
@@ -138,14 +203,14 @@ export class CommandButtonBase<P extends ICommandButtonProps = {}, S extends ICo
 
     public get ActualLabel(): string | undefined
     {
-        return this.state.AllCapsLabel
-            ? this.state.Label?.toUpperCase()
-            : this.state.Label;
+        return this.AllCapsLabel
+            ? this.Label?.toUpperCase()
+            : this.Label;
     }
 
     override constructClasses()
     {
-        return super.constructClasses() + (this.state.IsDefault ? " btn-default " : "");
+        return super.constructClasses() + (this.IsDefault ? " btn-default " : "");
     }
 }
 
@@ -157,13 +222,8 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             Padding: "8px",
             Margin: "0px 5px",
             Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
-                templatedParent.state.IsDefault
+                templatedParent.IsDefault
                     ? (<PrimaryButton
-                        style={{
-                            minWidth: "90px",
-                            fontFamily: templatedParent.FontFamily,
-                            fontSize: templatedParent.FontSize,
-                        }}
                         styles={{
                             label: {
                                 color: templatedParent.Foreground || Theme.Value(SemanticColor.PrimaryButtonText),
@@ -171,7 +231,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                             root: {
                                 borderColor: templatedParent.BorderBrush || Theme.Value(SemanticColor.PrimaryButtonBackground),
                                 background: templatedParent.Background || Theme.Value(SemanticColor.PrimaryButtonBackground),
-                                padding: templatedParent.state.Padding
+                                padding: templatedParent.Padding
                             }
                         }}
                         onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
@@ -179,22 +239,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                         menuProps={templatedParent.menuProps}>
                         {templatedParent.ActualLabel}
                     </PrimaryButton>)
-                    : (<DefaultButton
-                        style={{
-                            minWidth: "90px",
-                            fontFamily: templatedParent.FontFamily,
-                            fontSize: templatedParent.FontSize,
-                        }}
-                        styles={{
-                            label: {
-                                color: templatedParent.Foreground || Theme.Value(SemanticColor.ButtonText),
-                            },
-                            root: {
-                                borderColor: templatedParent.BorderBrush || Theme.Value(SemanticColor.ButtonBorder),
-                                background: templatedParent.Background || Theme.Value(SemanticColor.ButtonBackground),
-                                padding: templatedParent.state.Padding
-                            }
-                        }}
+                    : (<DefaultButton                        
                         onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                         disabled={!templatedParent.state.IsEnabled}
                         menuProps={templatedParent.menuProps}>
@@ -202,11 +247,18 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                     </DefaultButton>))
         },
         {
+            "@ .ms-Button": {
+                minWidth: "90px",
+                background: Theme.Value(SemanticColor.ButtonBackground),
+                borderColor: Theme.Value(SemanticColor.ButtonBorder),
+            },
             "@ .ms-Button:hover": {
                 background: Theme.Value(SemanticColor.ButtonBackgroundHovered),
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered),
             },
-            "@ .ms-Button:active": {
-                background: Theme.Value(SemanticColor.ButtonBackgroundPressed),
+            "@.btn-default .ms-Button": {
+                background: Theme.Value(SemanticColor.PrimaryButtonBackground),
+                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackground)
             },
             "@.btn-default .ms-Button:hover": {
                 background: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
@@ -216,15 +268,10 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 background: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
                 borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
             },
-            [Control.DisabledElement("ms-Button")]: {
-                background: Theme.Value(SemanticColor.ButtonBackgroundDisabled),
-                border: Theme.Value(SemanticColor.ButtonBorderDisabled),
-                borderWidth: "1px",
-                borderStyle: "solid"
-            },
-            [Control.DisabledElement("ms-Button-label")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText),
-            },
+            [Control.DisabledElement("ms-Button", "@.btn-default")]: {
+                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
+                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
+            }
         },
         CommandButtonBase.BaseCommandButtonStyle);
 
@@ -240,42 +287,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 <PrimaryButton
                     onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                     iconProps={{
-                        iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
-                    }}
-                    styles={{
-                        label: {
-                            color: templatedParent.Foreground,
-                        },
-                        root: {
-                            borderWidth: templatedParent.state.BorderThickness,
-                            borderColor: templatedParent.BorderBrush,
-                            background: templatedParent.Background,
-                            padding: templatedParent.state.Padding,
-                            selectors: {
-                                ":hover": {
-                                    border: "unset",
-                                    borderWidth: templatedParent.state.BorderThickness,
-                                },
-                                ":active": {
-                                    border: "unset",
-                                    borderWidth: templatedParent.state.BorderThickness,
-                                }
-                            }
-                        },
-                        icon: {
-                            color: templatedParent.IconForeground,
-                            margin: "-5px 0px -5px 4px",
-                            fontSize: templatedParent.IconSize
-                        },
-                        menuIcon: {
-                            margin: "-5px 4px -5px 0px",
-                            color: templatedParent.IconForeground,
-                            fontSize: templatedParent.IconSize - 2
-                        }
-                    }}
-                    style={{
-                        fontFamily: templatedParent.FontFamily,
-                        fontSize: templatedParent.FontSize,
+                        iconName: CommandButton.ModelIconConverter(templatedParent.Icon)
                     }}
                     disabled={!templatedParent.IsEnabled}
                     menuProps={templatedParent.menuProps}>
@@ -283,28 +295,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 </PrimaryButton>
             ))
         },
-        {
-            [Control.DisabledElement("ms-Button")]: {
-                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
-                border: Theme.Value(SemanticColor.PrimaryButtonBackgroundDisabled),
-                borderWidth: "1px",
-                borderStyle: "solid"
-            },
-            [Control.DisabledElement("ms-Button-label")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText),
-            },
-            "@ .ms-Button:hover": {                
-                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
-                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
-                color: Theme.Value(SemanticColor.PrimaryButtonTextHovered),
-            },
-            "@ .ms-Button:active": {
-                background: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
-                borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundPressed),
-                color: Theme.Value(SemanticColor.PrimaryButtonTextPressed),
-            },
-
-        },
+        {},
         CommandButtonBase.BaseCommandButtonStyle);
 
     public static CommandBarButtonStyle = new WebStyle<ICommandButtonProps>(
@@ -318,31 +309,9 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             Template: new ControlTemplate((templatedParent: CommandButton) =>
             (
                 <CommandBarButton
-                    styles={{                        
-                        label: {                            
-                            color: templatedParent.Foreground,
-                            fontWeight: templatedParent.state.FontWeight,
-                        },
-                        icon: {
-                            color: templatedParent.IconForeground,
-                            fontSize: templatedParent.IconSize,
-                            margin: "-5px 0px -5px 4px",                            
-                        },                        
-                        root: {
-                            borderWidth: templatedParent.state.BorderThickness,
-                            borderColor: templatedParent.BorderBrush,
-                            background: templatedParent.Background,                            
-                            padding: templatedParent.state.Padding,
-                            borderStyle: "solid"
-                        },
-                    }}
-                    style={{
-                        fontFamily: templatedParent.FontFamily,
-                        padding: templatedParent.state.Padding,                        
-                    }}
                     onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                     iconProps={{
-                        iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
+                        iconName: CommandButton.ModelIconConverter(templatedParent.Icon)
                     }}
                     text={templatedParent.ActualLabel}
                     disabled={!templatedParent.state.IsEnabled}
@@ -363,16 +332,9 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 borderColor: Theme.Value(SemanticColor.ButtonBackgroundPressed),
                 color: Theme.Value(SemanticColor.ButtonTextPressed),
             },
-            [Control.DisabledElement("ms-Button")]: {
-                //background: Theme.Value(SemanticColor.ButtonBackgroundDisabled),
-                border: Theme.Value(SemanticColor.ButtonBorderDisabled),
-                borderColor: 'transparent',
-                borderStyle: "solid",
-                borderWidth: "1px"
-            },
-            [Control.DisabledElement("ms-Button-label")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText),
-            },
+            [Control.DisabledElement("ms-Icon")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
+            }
         },
         CommandButtonBase.BaseCommandButtonStyle);
 
@@ -380,6 +342,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         {
             Padding: "8px 5px 8px 5px",
             Background: "transparent",
+            BorderBrush: "transparent",
             IconForeground: SemanticColor.InputIcon,
             Template: new ControlTemplate((templatedParent: CommandButton) =>
             (
@@ -389,23 +352,12 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                             background: templatedParent.Background,
                             color: templatedParent.IconForeground,
                             width: "fit-content",
-                            padding: templatedParent.state.Padding,
+                            padding: templatedParent.Padding,
                             height: "fit-content"                            
                         },
                         flexContainer: {
                             height: "fit-content",
                             margin: "0px"
-                        },
-                        icon: {
-                            height: "fit-content",
-                            margin: "0px",
-                            color: templatedParent.IconForeground,
-                            fontSize: "16px"
-                        },
-                        menuIcon: {
-                            margin: "-5px 0px -5px 4px",
-                            color: templatedParent.IconForeground,
-                            fontSize: templatedParent.IconSize - 2
                         },
                         splitButtonMenuButton: { backgroundColor: 'white', width: 28, border: 'none' },
                         splitButtonMenuIcon: { fontSize: '7px' },
@@ -419,7 +371,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                     onClick={(e) =>
                         templatedParent.OnClick(e.nativeEvent)}
                     iconProps={{
-                        iconName: CommandButton.ModelIconConverter(templatedParent.state.Icon)
+                        iconName: CommandButton.ModelIconConverter(templatedParent.Icon)
                     }}
                     disabled={templatedParent.state.IsEnabled === false}
                     menuProps={templatedParent.menuProps}>
@@ -427,6 +379,13 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             )),
         },
         {
+            "@ .ms-Button-icon": {
+                margin: "0px",
+                height: "fit-content",
+            },
+            "@ .ms-Button-menuIcon": {
+                margin: "-5px 0px -5px 4px",
+            },
             "@ .ms-Button:hover": {
                 background: Theme.Value(SemanticColor.ButtonBackgroundHovered),
                 borderColor: Theme.Value(SemanticColor.ButtonBackgroundHovered),
@@ -443,32 +402,29 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             "@:active .ms-Button-menuIcon,@:active .ms-Button-icon": {
                 color: Theme.Value(SemanticColor.InputIcon),
             },
-            [Control.DisabledElement("ms-Button")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText),
-            },
         },
         CommandButton.BaseCommandButtonStyle);
 
     public static CircleButtonStyle = new WebStyle<ICommandButtonProps>(
         {
             Padding: "0px",
-            FontSize: FontStyle.Glyph1x,
-            Template: new ControlTemplate((templatedParent: CommandButton) =>
+            FontSize: FontStyle.Glyph1x,            
+            Template: new ControlTemplate((tp: CommandButton) =>
             {
                 return (
                     <Panel>
                         <Ellipse
+                            ClassName="btn-ellipse"
                             HorizontalAlignment={HorizontalAlignment.Center}
-                            VerticalAlignment={VerticalAlignment.Center}
-                            Fill={templatedParent.Background}
+                            VerticalAlignment={VerticalAlignment.Center}                            
                             Width={32} Height={32} />
                         <Glyph
                             HorizontalAlignment={HorizontalAlignment.Center}
                             VerticalAlignment={VerticalAlignment.Center}
                             Overlaps={true}
-                            FontSize={templatedParent.FontSize}
-                            Foreground={templatedParent.Foreground}
-                            Icon={templatedParent.state.Icon} />
+                            FontSize={TemplateProp("FontSize")}
+                            Foreground={TemplateProp("Foreground")}
+                            Icon={tp.Icon} />
                     </Panel>);
             }),
             Foreground: "white"
@@ -476,6 +432,10 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         {
             "@": {
                 cursor: "pointer"
+            },
+            "@ .btn-ellipse": {
+                color: TemplateProp(nameof<ICommandButtonProps>(p => p.Foreground)),
+                background: TemplateProp(nameof<ICommandButtonProps>(p => p.Background)),
             }
         },
         CommandButtonBase.BaseCommandButtonStyle

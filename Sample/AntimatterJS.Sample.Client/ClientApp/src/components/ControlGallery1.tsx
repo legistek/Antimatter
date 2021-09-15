@@ -8,7 +8,7 @@ import
     CommandButton, PinnablePanelState, DocumentViewer,
     Grid, HorizontalAlignment, IDocument, IViewProps, IViewState,
     Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility,
-    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton
+    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle
 } from "@antimatterjs/positron";
 import { Employee } from "./Company";
 import { Icon } from "@fluentui/react";
@@ -43,7 +43,7 @@ export default class ControlGallery1 extends View
                                 VerticalAlignment={VerticalAlignment.Center}
                                 Label="Customized"
                                 Foreground="#80FF80"
-                                FontSize={36}
+                                FontSize={FontStyle.SuperLarge}
                                 FontFamily="Times New Roman"
                                 BorderThickness="4px"
                                 Background="Purple"
@@ -134,6 +134,11 @@ export default class ControlGallery1 extends View
                                     Text="Invalid Text"
                                     ValidationError="Invalid Input"
 
+                                />
+                                <TextBox Label="Customized"
+                                    Background="Yellow"
+                                    Foreground="Orange"
+                                    Text="Customized Text"
                                 />
                             </WrapPanel>
                         </StackPanel>)

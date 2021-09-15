@@ -1,6 +1,6 @@
 export enum ThemeColor
 {
-    ThemePrimary = 4294967296,
+    ThemePrimary = 100000000000,
     ThemeLighterAlt,
     ThemeLighter,
     ThemeLight,
@@ -28,6 +28,11 @@ export enum ThemeColor
     LightYellow,
     Green,
     LightGreen
+}
+
+export interface IThemeLayout
+{
+    StandardBorder: string,
 }
 
 export interface IThemePalette
@@ -82,7 +87,7 @@ export interface IThemeFontStyle
 
 export class Theme
 {
-    public static readonly FirstResourceId: number = 4294967296;
+    public static readonly FirstResourceId: number = 100000000000;
 
     public readonly FontStyle: IThemeFontStyle = {
         FontFamily: "",
@@ -100,6 +105,10 @@ export class Theme
         SuperLarge: "",
         Glyph1x: ""
     };
+
+    public readonly Layout: IThemeLayout = {
+        StandardBorder: '1px',
+    }
 
     public readonly Palette: IThemePalette = {
         ThemePrimary: '#000000',
@@ -134,10 +143,12 @@ export class Theme
 
     public static Value(resourceId: number): any
     {
-        if (resourceId >= 4294967296 && resourceId < 4296015872)
+        if (resourceId >= 100000000000 && resourceId < 101000000000)
             return `var(--Palette_${ThemeColor[resourceId]})`;
-        else if (resourceId >= 4296015872 && resourceId < 4297064448)
+        else if (resourceId >= 101000000000 && resourceId < 102000000000)
             return `var(--Font_${FontStyle[resourceId]})`;
+        else if (resourceId >= 102000000000 && resourceId < 103000000000)
+            return `var(--Layout_${ThemeLayout[resourceId]})`;
         return undefined;
     }
 
@@ -151,12 +162,14 @@ export class Theme
             r.style.setProperty(`--Palette_${entry[0]}`, entry[1]);
         for (let entry of Object.entries(this.FontStyle))
             r.style.setProperty(`--Font_${entry[0]}`, entry[1]);
+        for (let entry of Object.entries(this.Layout))
+            r.style.setProperty(`--Layout_${entry[0]}`, entry[1]);
     }
 }
 
 export enum FontStyle
 {
-    FontFamily = 4296015872,
+    FontFamily = 101000000000,
     Tiny,
     ExtraSmall,
     Small,
@@ -170,6 +183,11 @@ export enum FontStyle
     ExtraExtraLargePlus,
     SuperLarge,
     Glyph1x,
+}
+
+export enum ThemeLayout
+{
+    StandardBorder = 102000000000,
 }
 
 export enum SemanticColor

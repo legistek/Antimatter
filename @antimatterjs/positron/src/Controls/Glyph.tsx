@@ -38,12 +38,12 @@ export class Glyph extends FrameworkElement<IGlyphProps, IGlyphState>
 
     public get FontSize(): string | number | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.FontSize));
+        return this.GetValue(nameof(this.props.FontSize));
     }
 
     public get Foreground(): string | undefined
     {
-        return this.GetThemableProperty(nameof(this.props.Foreground));
+        return this.GetValue(nameof(this.props.Foreground));
     }
 
     renderElement(): JSX.Element

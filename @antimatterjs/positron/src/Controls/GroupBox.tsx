@@ -17,11 +17,15 @@ export interface IGroupBoxProps extends IControlProps
 }
 export interface IGroupBoxState extends IControlState
 {
-    Header?: string,
 }
 
 export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
-{    
+{
+    public get Header(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Header));
+    }        
+
     static DefaultStyle: WebStyle<IGroupBoxProps> = new WebStyle(
         {
             Background: SemanticColor.BodyBackground,
@@ -31,18 +35,18 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
             Template: new ControlTemplate((templatedParent: GroupBox) =>
             (
                 <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
-                    Padding={(templatedParent.state.Header ? "0px 10px 10px 10px" : "10px")}>
+                    Padding={(templatedParent.Header ? "0px 10px 10px 10px" : "10px")}>
 
-                    {templatedParent.state.Header ? (() =>
-                        <TextBlock FontWeight="bold" Text={templatedParent.state.Header} />)()
+                    {templatedParent.Header ? (() =>
+                        <TextBlock FontWeight="bold" Text={templatedParent.Header} />)()
                         : null}
 
                     <Panel
                         BoxShadow={DefaultEffects.elevation8}
                         Background={templatedParent.Background}
                         BorderBrush={templatedParent.BorderBrush}
-                        BorderThickness={templatedParent.state.BorderThickness}
-                        Padding={templatedParent.state.Padding}>
+                        BorderThickness={templatedParent.BorderThickness}
+                        Padding={templatedParent.Padding}>
                         {templatedParent.props.children}
                     </Panel>
 

@@ -502,7 +502,7 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
                     VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                     key={`tabcontent_${priorTab.Key}`}
                     ClassName={forwards ? "exiting-left" : "exiting-right"}
-                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}>
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.Padding}>
                     {priorTab.Content}
                 </Panel>
                 <Panel
@@ -510,7 +510,7 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
                     VerticalScrollBarVisibility={ScrollBarVisibility.Auto}
                     key={`tabcontent_${currentTab.Key}`}
                     ClassName={forwards ? "entering-from-right" : "entering-from-left"}
-                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.Padding}
                     Overlaps={true}>
                     {currentTab.Content}
                 </Panel>
@@ -525,7 +525,7 @@ export class TabContentPanel extends PanelBase<ITabContentPanelProps, ITabConten
             render = (
                 <Panel
                     key={`tabcontent_${currentTab.Key}`}
-                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.state.Padding}>
+                    Padding={this.state.TabItem?.Padding || this.state.TabControlParent?.Padding}>
                     {this.state.TabControlParent?.state?.Items[currentIndex]?.Content}
                 </Panel>);                
         }

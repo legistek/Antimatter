@@ -1,5 +1,8 @@
 import { Utilities } from "@antimatterjs/react";
 import * as React from "react";
+import { Theme } from "./Theme";
+
+let _lastStyleID: number = 0;
 
 export interface ICSSSheet
 {
@@ -7,23 +10,23 @@ export interface ICSSSheet
 }
 
 export class Style<T> {
-    constructor(props: T, basedOn?: Style<T>)
+    constructor(setters: T, basedOn?: Style<T>)
     {
-        this._styleID = WebStyle._lastStyleID++;
+        this._styleID = _lastStyleID++;
 
         if (basedOn)
         {
-            this.Props = {} as any;
-            Object.assign(this.Props, basedOn.Props);
-            Object.assign(this.Props, props);
+            this.Setters = {} as any;
+            Object.assign(this.Setters, basedOn.Setters);
+            Object.assign(this.Setters, setters);
         }
         else
         {
-            this.Props = props;
+            this.Setters = setters;
         }
     }
 
-    public readonly Props: T;
+    public readonly Setters: T;
 
     public static CreateIconSet(start: number, end: number): { [key: string]: string }
     {
@@ -35,21 +38,29 @@ export class Style<T> {
         return set;
     }
 
-    _styleID: number;
-    static _lastStyleID: number = 0;
+    _styleID: number;    
+}
+
+export function TemplateProp(name: string): any
+{
+    // return `var(--prop-${name}${WebStyle._templPropFlag})`;
+    return `${WebStyle._templPropFlag}${name}`;
 }
 
 export class WebStyle<T> extends Style<T>
 {       
     static _kebabRegex: RegExp = new RegExp(/[A-Z]/g);
     static _cssKeys: Map<string, string> = new Map<string, string>();
+    static _templPropFlag: string = "__templateProp__";
     
     _applied: boolean = false;
     readonly _sheet?: ICSSSheet;
 
-    constructor(props: T, sheet?: ICSSSheet, basedOn?: WebStyle<T>)
+    public TemplateHasRendered: boolean = false;
+
+    constructor(propSetters: T, sheet?: ICSSSheet, basedOn?: WebStyle<T>)
     {
-        super(props, basedOn);
+        super(propSetters, basedOn);
 
         if (basedOn)
         {            
@@ -83,7 +94,9 @@ export class WebStyle<T> extends Style<T>
         {            
             this._sheet = sheet;
         }        
-    }    
+    }
+
+    public TemplateProps: Set<string> = new Set<string>();
 
     public Class(): string
     {
@@ -117,14 +130,14 @@ export class WebStyle<T> extends Style<T>
                 if (selector === "@")
                 {
                     didRoot = true;
-                    var propEntries = Object.entries(this.Props);
+                    var propEntries = Object.entries(this.Setters);
                     for (const entry of propEntries)
-                        s.push(`\t--prop-${entry[0]}: ${entry[1]};\n`);
+                        this.CreateStyleProps(entry, s);
                 }
 
                 var entries = Object.entries(cssClass[1]);
                 for (const entry of entries)
-                    s.push(`\t${this.GetCSSKey(entry[0])}: ${entry[1]};\n`);
+                    s.push(`\t${this.GetCSSKey(entry[0])}: ${this.GetTemplatablePropValue(entry[1])};\n`);
 
                 s.push("}\n");
             }
@@ -133,13 +146,36 @@ export class WebStyle<T> extends Style<T>
         if (!didRoot)
         {
             s.push(`.${this.GetClassName()} {\n`);
-            var propEntries = Object.entries(this.Props);
+            var propEntries = Object.entries(this.Setters);
             for (const entry of propEntries)
-                s.push(`\t--prop-${entry[0]}: ${entry[1]};\n`);
+                this.CreateStyleProps(entry, s);
             s.push("}\n");
         }
 
         return "".concat(...s);
+    }
+
+    public GetTemplatablePropValue(val: string):string
+    {
+        if (typeof (val) === "string" && (val as string).startsWith(WebStyle._templPropFlag))
+        {
+            var propName = (val as string).substring(WebStyle._templPropFlag.length);
+            if (!this.TemplateHasRendered)
+                this.TemplateProps.add(propName);
+            val = `var(--prop-${propName}${this._styleID})`;
+        }
+        return val;
+    }
+
+    private CreateStyleProps(entry: [string, any], sheet: string[])
+    {
+        var val = entry[1];
+        if (typeof (val) === "number" &&
+            (val as number) >= Theme.FirstResourceId)
+            val = Theme.Value(val as number);
+        else if (typeof (val) !== "string")
+            return;        
+        sheet.push(`\t--prop-${entry[0]}${this._styleID}: ${val};\n`);
     }
     
     private GetCSSKey(style: string)

@@ -2,9 +2,12 @@ import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { Autofill, IconType, ITextField, TextField } from '@fluentui/react';
-import { WebStyle } from '../Style';
+import { TemplateProp, WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { FontStyle, SemanticColor, Theme } from '../Theme';
+import { FontStyle, SemanticColor, Theme, ThemeLayout } from '../Theme';
+import { Grid } from './Grid';
+import { TextBlock } from './TextBlock';
+import { Panel } from './Panel';
 
 interface ITextBoxCommon
 {
@@ -31,14 +34,78 @@ export interface ITextBoxState extends IControlState, ITextBoxCommon
 export class TextBox extends Control<ITextBoxProps, ITextBoxState>
 {
     _field: ITextField | null = null;
-
+    
     public static DefaultBindings = {
         Text: {
             Mode: BindingMode.TwoWay,
             ValidatesOnDataErrors: true
         }
     };
+
     static DefaultStyle: WebStyle<ITextBoxProps> = new WebStyle(
+        {
+            BorderBrush: SemanticColor.ButtonBorder,
+            FontFamily: FontStyle.FontFamily,
+            Foreground: SemanticColor.BodyText,
+            BorderThickness: ThemeLayout.StandardBorder,
+            Padding: "5px",
+            FontSize: FontStyle.Medium,
+            Template: new ControlTemplate((templatedParent: TextBox) => (
+                <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                    <TextBlock
+                        ClassName="tb-label"
+                        FontWeight="bold"
+                        Foreground={templatedParent.TemplateProp(nameof<ITextBoxProps>(p => p.Foreground))}
+                        Text={templatedParent.state.Label} />
+
+                    <Panel TabIndex={-1} ClassName="tb-input-panel">
+                        <input
+                            onFocus={() => templatedParent.IsFocused = true}
+                            onBlur={() => templatedParent.IsFocused = false}
+                            className="tb-input" />
+                    </Panel>
+                </Grid>
+            ))
+        },
+        {
+            "@": {
+            },
+            "@ .tb-label": {
+                gridRow: 1,
+            },
+            "@ .tb-input": {                
+                gridRow: 2,
+                background: TemplateProp(nameof<ITextBoxProps> (p => p.Background)),
+                borderColor: TemplateProp(nameof<ITextBoxProps>(p => p.BorderBrush)),
+                borderWidth: TemplateProp(nameof<ITextBoxProps>(p => p.BorderThickness)),
+                padding: TemplateProp(nameof<ITextBoxProps>(p => p.Padding)),
+                borderStyle: "solid",
+                color: TemplateProp(nameof<ITextBoxProps>(p => p.Foreground)),
+                fontFamily: TemplateProp(nameof<ITextBoxProps>(p => p.FontFamily)),
+                fontSize: TemplateProp(nameof<ITextBoxProps>(p => p.FontSize)),
+            },
+            "@ .tb-input:focus": {
+                outline: "none",
+                //borderStyle: "none"
+            },
+            "@.focused .tb-input-panel::after": {
+                content: "''",
+                pointerEvents: "none",
+                position: "absolute",
+                boxSizing: "border-box",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                borderRadius: "0",
+                borderWidth: "2px",
+                borderStyle: "solid",
+                borderColor: Theme.Value(SemanticColor.FocusBorder)
+            }
+        }
+    );
+
+    static DefaultStyle_b: WebStyle<ITextBoxProps> = new WebStyle(
         {
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,
@@ -78,9 +145,9 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             color: templatedParent.Foreground,
                             fontFamily: templatedParent.FontFamily,
                             fontSize: templatedParent.FontSize,
-                            fontWeight: templatedParent.state.FontWeight,
+                            fontWeight: templatedParent.FontWeight,
                             margin: 0,
-                            padding: templatedParent.state.Padding || "5px"
+                            padding: templatedParent.Padding || "5px"
                         },
                         fieldGroup: {
                             height: "auto",
@@ -161,9 +228,24 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         return this.GetValue(nameof(this.state.ValidationError));
     }
 
+    private _isFocused: boolean = false;
+    public get IsFocused(): boolean
+    {
+        return this._isFocused;
+    }
+    public set IsFocused(value: boolean)
+    {
+        if (value === this._isFocused)
+            return;
+        this._isFocused = value;
+        this.InvalidateRender();
+    }
+
     constructClasses()
     {
-        return super.constructClasses() + (this.IsInvalid ? " validation-error " : "");
+        return super.constructClasses()
+            + (this.IsInvalid ? " validation-error " : "")
+            + (this.IsFocused ? " focused " : "");
     }
 
     NotifyValidationError(error?: string)

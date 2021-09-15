@@ -219,7 +219,7 @@ export class NavMenuBase<
 
                     {tab.Description && (<TextBlock
                         Text={tab.Description}
-                        FontSize={(this.FontSize as number) * 0.50} />)}
+                        FontSize={FontStyle.Medium} />)}
                 </StackPanel>
             </Grid>);
     }

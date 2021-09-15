@@ -18,7 +18,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
-            Template: new ControlTemplate((templatedParent: ColorPicker) => templatedParent.Template),
+            Template: new ControlTemplate((templatedParent: ColorPicker) => templatedParent.template),
             ItemTemplate: new DataTemplate((item: any) => ColorPicker.DefaultItemTemplate(item)),
             ItemContainerStyle: new WebStyle<ISelectableItemControlProps>(
                 {
@@ -57,7 +57,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
         },
     );
 
-    protected get Template(): JSX.Element
+    protected get template(): JSX.Element
     {
         const root: JSX.Element = (
             <>

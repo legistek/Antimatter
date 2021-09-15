@@ -178,12 +178,12 @@ export class TeachingBubble extends Control<ITeachingBubbleProps, ITeachingBubbl
 // in being unable to allow a base class to reference a subclass
 Control.RenderTeachingBubble = (control: Control<IControlProps, IControlState>) : JSX.Element|null =>
 {
-    if (!control.state.TeachingBubbleParams)
+    if (!control.TeachingBubbleParams)
         return null;
 
     return (<TeachingBubble
-        Params={control.state.TeachingBubbleParams}
-        IsOpen={new Binding(control.state.TeachingBubbleIsOpen)}
+        Params={control.TeachingBubbleParams}
+        IsOpen={new Binding(control.TeachingBubbleIsOpen)}
         Target={() => control} />);
 };
 

@@ -66,7 +66,7 @@ export class ItemsControlBase<
 
     public /* override */ renderElement(): JSX.Element | null
     {
-        if (this.state.Template)
+        if (this.Template)
             return super.renderElement();
         else
         {
@@ -75,9 +75,9 @@ export class ItemsControlBase<
                     {
                         (layout) =>
                         {
-                            if (this.state.Layout !== layout)
+                            if (this.Layout !== layout)
                             {
-                                (this.state as any).Layout = layout;
+                                this.Layout = layout;
                                 this.ItemsPanelInstance?.InvalidateRender();
                             }
                             return React.createElement(
@@ -85,7 +85,7 @@ export class ItemsControlBase<
                                 {
                                     Style: this.state.ItemsPanelStyle,
                                     Background: this.Background,
-                                    BorderThickness: this.state.BorderThickness,
+                                    BorderThickness: this.BorderThickness,
                                     BorderBrush: this.BorderBrush,
                                     ItemsParent: this,
                                 } as IPanelProps);
@@ -119,7 +119,7 @@ export class ItemsControlBase<
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
         if (this.state.ItemTemplate)
-            return this.state.ItemTemplate.GetVisualTree(this.state.Layout);
+            return this.state.ItemTemplate.GetVisualTree(this.Layout);
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }

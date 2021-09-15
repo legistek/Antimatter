@@ -61,7 +61,7 @@ export class DocumentViewerBase<
         super(props);
     }
 
-    private Template(): JSX.Element
+    private template(): JSX.Element
     {
         return (
             <Grid
@@ -169,7 +169,7 @@ export class DocumentViewerBase<
                     PagePadding: 5,
                     HorizontalAlignment: HorizontalAlignment.Center
                 }),
-            Template: new ControlTemplate((templatedParent: DocumentViewer) => templatedParent.Template())
+            Template: new ControlTemplate((templatedParent: DocumentViewer) => templatedParent.template())
         }
     );
 

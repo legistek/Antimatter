@@ -1,8 +1,8 @@
-import { IThemeFontStyle, IThemePalette, Theme } from '../Theme'
+import { IThemeFontStyle, IThemeLayout, IThemePalette, Theme } from '../Theme'
 
 export class PositronTheme extends Theme
 {
-    public readonly Palette2: IThemePalette = {
+    public readonly Palette: IThemePalette = {
         ThemePrimary:  "#FF0000", //'#2e70e0',
         ThemeLighterAlt: "#FF2020", // '#f6f9fe',
         ThemeLighter: "#FF3030", // '#dae6fa',
@@ -33,7 +33,7 @@ export class PositronTheme extends Theme
         LightGreen: '#60A0A0'
     };
 
-    public readonly Palette: IThemePalette = {
+    public readonly Palette2: IThemePalette = {
         ThemePrimary: '#2e70e0',
         ThemeLighterAlt: '#f6f9fe',
         ThemeLighter: '#dae6fa',
@@ -79,5 +79,9 @@ export class PositronTheme extends Theme
         ExtraExtraLargePlus: "25px",
         SuperLarge: "36px",
         Glyph1x: "16px",
+    }
+
+    public override readonly Layout: IThemeLayout = {
+        StandardBorder: "1px"
     }
 }

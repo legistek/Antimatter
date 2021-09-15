@@ -79,8 +79,8 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                         <ResizePanel
                             Background={templatedParent.Background}
                             BorderBrush={templatedParent.BorderBrush}
-                            BorderThickness={templatedParent.state.BorderThickness}
-                            BoxShadow={templatedParent.state.BoxShadow}
+                            BorderThickness={templatedParent.BorderThickness}
+                            BoxShadow={templatedParent.BoxShadow}
                             Thickness={7}
                             Size={new Binding({
                                 Source: templatedParent,
@@ -144,7 +144,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResize}
                             BorderBrush={templatedParent.BorderBrush}
-                            BorderThickness={templatedParent.state.BorderThickness}>
+                            BorderThickness={templatedParent.BorderThickness}>
                             <React.Fragment key="panel-content">
                                 {templatedParent.props.children}
                             </React.Fragment>
