@@ -3,7 +3,7 @@ import { Binding, BindingMode, Utilities } from "@antimatterjs/react";
 
 import { Panel } from "../Controls/Panel";
 import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
-import { Style } from "../Style";
+import { WebStyle } from "../Style";
 import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
 import { FrameworkElement } from "../FrameworkElement";
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
@@ -61,12 +61,12 @@ export class DocumentViewerBase<
         super(props);
     }
 
-    private Template(): JSX.Element
+    private template(): JSX.Element
     {
         return (
             <Grid
                 ref={r => this._scroller = r}
-                Background={this.state.Background}
+                Background={this.Background}
                 OnScroll={(e) =>
                 {
                     if (!this._pagesPanel || !this._scroller?.Container)
@@ -159,17 +159,17 @@ export class DocumentViewerBase<
         //this.InvalidateRender();
     }
 
-    public static DefaultStyle: Style<IDocumentViewerProps> = new Style<IDocumentViewerProps>(
+    public static DefaultStyle: WebStyle<IDocumentViewerProps> = new WebStyle<IDocumentViewerProps>(
         {
             Background: "#E0E0E0",
             HorizontalScrollBarVisibility: ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility: ScrollBarVisibility.Auto,
-            ItemContainerStyle: new Style<IDocumentPagePresenterProps>(
+            ItemContainerStyle: new WebStyle<IDocumentPagePresenterProps>(
                 {
                     PagePadding: 5,
                     HorizontalAlignment: HorizontalAlignment.Center
                 }),
-            Template: new ControlTemplate((templatedParent: DocumentViewer) => templatedParent.Template())
+            Template: new ControlTemplate((templatedParent: DocumentViewer) => templatedParent.template())
         }
     );
 

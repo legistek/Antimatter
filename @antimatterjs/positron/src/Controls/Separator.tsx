@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 
 import { Separator as FluentSeparator } from '@fluentui/react'
 import { ControlTemplate } from '../FrameworkTemplate';
@@ -14,7 +14,7 @@ export interface ISeparatorState extends IControlState
 
 export class Separator extends Control<ISeparatorProps, ISeparatorState>
 {
-    public static DefaultStyle: Style<ISeparatorProps> = new Style<ISeparatorProps>(
+    public static DefaultStyle: WebStyle<ISeparatorProps> = new WebStyle<ISeparatorProps>(
         {
             Template: (templatedParent: Separator) =>
             (

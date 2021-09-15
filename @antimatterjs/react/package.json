@@ -19,7 +19,7 @@
     "@types/ts-nameof": "^4.2.1",
     "react-app-polyfill": "^1.0.6",
     "react-dom": "^16.0.0",
-    "typescript": "^3.9.9"
+    "typescript": "^4.4.3"
   },
   "files": [
     "src"

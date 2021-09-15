@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
-import { Style } from '../Style';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
+import { WebStyle } from '../Style';
 import { IPanelProps } from '../Controls/Panel';
 import { Grid } from './Grid';
 import { StackPanel } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { TextBlock } from './TextBlock';
-import { getTheme, Icon, MotionAnimations } from '@fluentui/react';
+import { Icon, MotionAnimations } from '@fluentui/react';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface ITreeViewCommon
 {
@@ -31,7 +32,7 @@ export interface ITreeViewState extends IItemsControlState, ITreeViewCommon
 export class TreeView<
     P extends ITreeViewProps = {},
     S extends ITreeViewState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     /* private */ _selectedTVI?: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>;
     /* internal */ _dataMap: Map<any, TreeViewItem> = new Map<any, TreeViewItem>();
@@ -45,9 +46,9 @@ export class TreeView<
         }
     };
 
-    public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
+    public static DefaultStyle: WebStyle<ITreeViewProps> = new WebStyle<ITreeViewProps>(
         {
-            ItemsPanelStyle: new Style<IPanelProps>({
+            ItemsPanelStyle: new WebStyle<IPanelProps>({
                 VerticalScrollBarVisibility: ScrollBarVisibility.Auto
             })
         }
@@ -143,7 +144,7 @@ interface ITreeViewItemState extends IItemsControlState, ITreeViewItemCommon
 class TreeViewItem<
     P extends ITreeViewItemProps = {},
     S extends ITreeViewItemState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     constructor(props)
     {
@@ -154,9 +155,7 @@ class TreeViewItem<
             this.state.TreeViewParent._dataMap.set(key, this);
         }
     }
-
-    static theme = getTheme();
-
+    
     public static DefaultBindings = {
         IsExpanded: {
             Mode: BindingMode.TwoWay
@@ -169,7 +168,7 @@ class TreeViewItem<
         }
     };
 
-    public static DefaultStyle: Style<ITreeViewProps> = new Style<ITreeViewProps>(
+    public static DefaultStyle: WebStyle<ITreeViewProps> = new WebStyle<ITreeViewProps>(
         {
             Template: new ControlTemplate((templatedParent: TreeViewItem<ITreeViewItemProps, ITreeViewItemState>) =>
             (
@@ -209,40 +208,23 @@ class TreeViewItem<
             ))
         },
         {
-            Selector: "@",
-            Rules:
-            {
+            "@": {
                 animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-            }
-        },
-        {
-            Selector: "@ .expander",
-            Rules:
-            {
+            },
+            "@ .expander": {
                 gridRow: 0,
                 gridColumn: 0,
                 cursor: "pointer",
                 alignSelf: "center",
                 margin: "0px 5px 0px 0px"
-            }
-        },
-        {
-            Selector: "@ .selected",
-            Rules: {
-                background: TreeViewItem.theme.semanticColors.listItemBackgroundChecked
-            }
-        },
-        {
-            Selector: "@ .expander.nochildren",
-            Rules:
-            {
+            },
+            "@ .selected": {
+                background: Theme.Value(SemanticColor.ListItemBackgroundChecked)
+            },
+            "@ .expander.nochildren" : {
                 display: 'none'
-            }
-        },
-        {
-            Selector: "@ .expander.expanded",
-            Rules:
-            {
+            },
+            "@ .expander.expanded": {
                 transform: "rotate(90deg)"
             }
         });

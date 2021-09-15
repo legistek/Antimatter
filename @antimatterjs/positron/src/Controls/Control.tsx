@@ -1,79 +1,152 @@
 import * as React from 'react';
 import { Binding, BindingMode, BindingParameters, ModelObjectReference } from '@antimatterjs/react';
 
-import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
-import { WindowLayoutContext } from './Window';
+import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState, TemplatedParentContext } from '../FrameworkElement';
 import { WindowLayout } from '../Enums';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { FontStyle, ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
+import { WebStyle } from '../Style';
+import { WindowLayoutContext } from './Window';
 
-interface IControlCommon
+export interface IControlProps extends IFrameworkElementProps
 {
-    FontWeight?: undefined | "bold" | "normal",
-    Padding?: string,
     Template?: ControlTemplate | ((templatedParent: any) => JSX.Element),
-    Layout?: WindowLayout
-}
-
-export interface IControlProps extends IFrameworkElementProps, IControlCommon
-{
-    IsEnabled?: boolean | Binding,
-    Foreground?: string | Binding,
-    Background?: string | Binding,
-    BorderBrush?: string | Binding,
-    BoxShadow?: string | Binding,
-    BorderThickness?: string | Binding,
-    FontFamily?: string | Binding,
-    FontSize?: number | Binding,
+    Padding?: string | ThemeLayout,
+    FontWeight?: undefined | "bold" | "normal",
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
+    Background?: string | Binding | ThemeColor | SemanticColor,
+    BorderBrush?: string | Binding | ThemeColor | SemanticColor,
+    BorderThickness?: string | Binding | ThemeLayout,
+    FontFamily?: string | Binding | FontStyle,
+    FontSize?: string | Binding | FontStyle,
+    BoxShadow?: string | Binding,   
     TeachingBubbleParams?: ModelObjectReference | Binding,
     TeachingBubbleIsOpen?: BindingParameters
 }
 
-export interface IControlState extends IFrameworkElementState, IControlCommon
+export interface IControlState extends IFrameworkElementState
 {
-    IsEnabled?: boolean,
-    Background?: string,
-    Foreground?: string,
-    BorderBrush?: string,
-    BoxShadow?: string,
-    BorderThickness?: string,
-    FontFamily?: string,
-    FontSize?: number,
-    TeachingBubbleParams?: ModelObjectReference,
-    TeachingBubbleIsOpen?: BindingParameters
 }
 
 export class Control<P extends IControlProps = {}, S extends IControlState = {}>
-    extends FrameworkElement<P,S>
+    extends FrameworkElement<P, S>
 {
     public static DefaultBindings: any = {
         TeachingBubbleIsOpen: {
             Mode: BindingMode.TwoWay,
             FallbackValue: false
+        },
+        FontSize: {
+            Converter: (size) => typeof (size) === "number" ? `${size}px` : size
         }
     };
+
+    private _layout?: WindowLayout;
+    public get Layout(): WindowLayout
+    {
+        return this._layout || WindowLayout.Default;
+    }
+    public set Layout(value: WindowLayout)
+    {
+        this._layout = value;
+    }
+
+    public get Template(): ControlTemplate | ((templatedParent: any) => JSX.Element) | undefined
+    {
+        return this.GetValue(nameof(this.props.Template));
+    }
+    
+    public get TeachingBubbleIsOpen(): BindingParameters | undefined
+    {
+        return this.GetValue(nameof(this.props.TeachingBubbleIsOpen));
+    }
+
+    public get TeachingBubbleParams(): ModelObjectReference|undefined
+    {
+        return this.GetValue(nameof(this.props.TeachingBubbleParams));
+    }
+
+    public get Padding(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Padding));
+    }
+
+    public get BoxShadow(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.BoxShadow));
+    }
+
+    public get Foreground(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Foreground));
+    }
+
+    public get Background(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Background));
+    }
+
+    public get BorderBrush(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.BorderBrush));
+    }
+
+    public get BorderThickness(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.BorderThickness));
+    }
+
+    public get FontFamily(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.FontFamily));
+    }
+
+    public get FontSize(): number | string | undefined
+    {
+        return this.GetValue(nameof(this.props.FontSize));
+    }
+
+    public get FontWeight(): "bold" | "normal" | undefined
+    {
+        return this.GetValue(nameof(this.props.FontWeight));
+    }
+
+    override OnComponentMount()
+    {
+        if (this.state.Style instanceof WebStyle)
+            (this.state.Style as WebStyle<any>).TemplateHasRendered = true;
+    }
+
+    protected static DisabledElement(elementClass: string, root?: string): string
+    {
+        root = root || "@";
+        return `${root}.amx-ptn-disabled .${elementClass},.amx-ptn-disabled ${root} .${elementClass}`;
+    }
 
     protected /* override */ renderElement(): JSX.Element | null
     {
         const baseElem: JSX.Element = (
-            <WindowLayoutContext.Consumer>
+            <TemplatedParentContext.Provider value={this}>
+                <WindowLayoutContext.Consumer>
                 {
                     (layout) =>
                     {
-                        if (!this.state.Template)
+                        if (!this.Template)
                             return null;
-                        (this.state as any).Layout = layout;
-                        if (typeof (this.state.Template) === "function")
+                        this.Layout = layout;
+                        if (typeof (this.Template) === "function")
                         {
-                            var vt = (this.state.Template as ((templatedParent: Control) => JSX.Element));
+                            var vt = (this.Template as ((templatedParent: Control) => JSX.Element));
                             return vt(this);
                         }
                         else
                         {
-                            return this.state.Template.GetVisualTree(layout)(this);
+                            return this.Template.GetVisualTree(layout)(this);
                         }
                     }
                 }
-            </WindowLayoutContext.Consumer>
+                </WindowLayoutContext.Consumer>
+            </TemplatedParentContext.Provider>
         );
 
         const bubblefiedElem: JSX.Element = (
@@ -83,6 +156,35 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
             </>
         );
         return bubblefiedElem;
+    }
+    
+    getCSSStyles()
+    {
+        var styles = super.getCSSStyles();
+        if (!this.IsEnabled)
+            styles.pointerEvents = "none";
+
+        if (this.state.Style instanceof WebStyle)
+        {
+            var props = (this.state.Style as WebStyle<any>).TemplateProps;
+            if (props?.size > 0)
+                this.SetupTemplateProps(styles, props);
+        }
+
+        return styles;
+    }
+
+    private SetupTemplateProps(styles: React.CSSProperties, names: Set<string>)
+    {
+        for (var name of names)
+        {
+            if (!(this.props as any)[name])
+                continue;
+            var val = this.GetValue(name);
+            if (val === undefined)
+                continue;
+            styles[`--prop-${name}${this.state.Style?._styleID}`] = val;
+        }
     }
 
     // Hideous ridiculous hack necessitated by Javascript stupidity

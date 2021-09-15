@@ -9,7 +9,8 @@ import { Control, IControlProps, IControlState } from './Control';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Orientation } from '../Enums';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
+import { FontStyle, Theme } from '../Theme';
 
 export interface IDatePickerProps extends IControlProps
 {
@@ -40,7 +41,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         }
     };
 
-    private static get Template(): ControlTemplate
+    private static get template(): ControlTemplate
     {
         return new ControlTemplate((templatedParent: DatePicker) =>
         {
@@ -57,7 +58,25 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                         minDate={templatedParent.state.MinDate}
                         maxDate={templatedParent.state.MaxDate}
                         isRequired={templatedParent.state.Required}
-                        styles={templatedParent.DatePickerStyles}
+                        styles={{
+                            //Align bottom in case of label (which for some reason yields a small whitespace below w/ time input present)
+                            root: {
+                                display: 'flex',
+                                fontFamily: Theme.Value(FontStyle.FontFamily),
+                            },
+                            wrapper: {
+                                fontFamily: Theme.Value(FontStyle.FontFamily),
+                            },
+                            //Align bottom in case of label (which for some reason yields a small whitespace below w/ time input present)
+                            textField: {
+                                display: 'flex',
+                                fontFamily: Theme.Value(FontStyle.FontFamily),
+                            },
+                            //Prevent huge red "Invalid date..." message from appearing to the left after unparseable text input
+                            statusMessage: {
+                                display: 'none'
+                            }
+                        }}
                     />
                     {templatedParent.TimeTemplate}
                 </StackPanel>
@@ -78,13 +97,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
             const m: number = this.state.Date?.getMinutes() ?? 0;
             const mString: string = m.toLocaleString('en-US', { minimumIntegerDigits: 2 });
             timeString = `${hString}:${mString}`;
-        }
-
-        //Align bottom, in case datepicker has label
-        const style: IStyle =
-        {
-            marginTop: 'auto'
-        };
+        }        
 
         return (
             <TextField
@@ -93,15 +106,31 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                 onChange={(event, newValue?: string) => this.OnSelectTime(newValue)}
                 required={this.state.Required}
                 styles={{
-                    root: style
+                    root: {
+                        //Align bottom, in case datepicker has label
+                        marginTop: 'auto',
+                    },
+                    field: {
+                        fontFamily: Theme.Value(FontStyle.FontFamily)
+                    }
                 }}
             />
         );
     }
 
-    static DefaultStyle: Style<IDatePickerProps> = new Style<IDatePickerProps>(
+    static DefaultStyle: WebStyle<IDatePickerProps> = new WebStyle<IDatePickerProps>(
         {
-            Template: DatePickerBase.Template
+            FontFamily: FontStyle.FontFamily,
+            Template: DatePickerBase.template
+        },
+        {
+            "@ .ms-Label": {
+                padding: "0px",
+                fontFamily: Theme.Value(FontStyle.FontFamily),
+            },
+            "@ .ms-TextField-field": {
+                fontFamily: Theme.Value(FontStyle.FontFamily),
+            }
         }
     );
 
@@ -148,27 +177,6 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         const h: number = +splitString[0];
         const m: number = +splitString[1];
         return ((h * 60) + m) * 60000;
-    }
-
-    private get DatePickerStyles() {
-        //Align bottom in case of label (which for some reason yields a small whitespace below w/ time input present)
-        const flexStyle: IStyle =
-        {
-            display: 'flex'
-        };
-        //Prevent huge red "Invalid date..." message from appearing to the left after unparseable text input
-        const hideStyle: IStyle =
-        {
-            display: 'none'
-        };
-        //const styles: IDatePickerStyles = {
-        const styles =
-        {
-            root: flexStyle,
-            textField: flexStyle,
-            statusMessage: hideStyle
-        };
-        return styles;
     }
 }
 

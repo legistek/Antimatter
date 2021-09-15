@@ -1,5 +1,5 @@
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
-import { IItemsControlState, IItemsControlProps, ItemsControl } from '../ItemsControl';
+import { IItemsControlState, IItemsControlProps, ItemsControl, ItemsControlBase } from '../ItemsControl';
 import { SelectionMode } from '../../Enums';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../../FrameworkElement';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './SelectableItemControl';
@@ -32,7 +32,7 @@ export class EmptyISelectorState implements ISelectorState { SelectedItems = [];
 
 export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItems: [] },
     S extends ISelectorState = { ItemsSource: [], SelectedItems: [] }>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     _selectedIndex: number = -1;
     _lastClickedOrSelected: number = -1;

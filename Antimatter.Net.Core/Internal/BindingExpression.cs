@@ -80,12 +80,24 @@ namespace Antimatter.Net.Internal
                     return;
 
                 if (modelValue.Type != ModelValueType.Collection &&
-                    _lastValue?.Type == modelValue.Type &&
-                    _lastValue?.ObjectHandle == modelValue.ObjectHandle)
+                    _lastValue?.Type == modelValue.Type)
                 {
-                    // Unchanged value
-                    return;
-                }
+                    if (modelValue.Type == ModelValueType.Object)
+                    {
+                        if (_lastValue?.ObjectHandle == modelValue.ObjectHandle)
+                            return;
+                    }
+                    else if (modelValue.Type == ModelValueType.String)
+                    {
+                        if (_lastValue?.StringValue == modelValue.StringValue)
+                            return;
+                    }
+                    else
+                    {
+                        if (_lastValue?.LongValue == modelValue.LongValue)
+                            return;
+                    }                        
+                }                                            
 
                 // Add ref before releasing old value
                 AddRef(modelValue);

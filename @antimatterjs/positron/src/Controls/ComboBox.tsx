@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { getTheme } from '@fluentui/react';
 import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
 import { Grid, IColumnDefinition } from './Grid';
@@ -15,6 +14,8 @@ import { ITextBlockProps, TextBlock } from './TextBlock';
 import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
     from './Primitives/SelectableItemControl';
 import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
+import { Control } from './Control';
 
 export interface IComboBoxProps extends ISelectorProps
 {
@@ -32,11 +33,10 @@ export interface IComboBoxState extends ISelectorState
     PopupIsOpen?: boolean
 }
 
-export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
+export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
     extends Selector<P, S>
 {
-    private static DROPDOWN_MAX_HEIGHT: number = 400;
-    protected static theme = getTheme();
+    private static DROPDOWN_MAX_HEIGHT: number = 400;    
 
     public static DefaultBindings = {
         ItemsSource: {
@@ -55,23 +55,29 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
     protected _button?: FrameworkElement | null;
     public get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
 
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
-            ItemsSource: [],            
-            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.Template),
+            ItemsSource: [],
+            BorderBrush: SemanticColor.InputBorder,
+            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.template),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
         {
-            Selector: "@ .panel",
-            Rules: {
+            "@ .panel": {
                 cursor: 'pointer',
                 userSelect: 'none'
-            }
-        },
-        {
-            Selector: "@ .panel:focus::after",
-            Rules: {
+            },
+            [Control.DisabledElement("panel")]: {
+                background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
+            },
+            [Control.DisabledElement("panel > *")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
+            },
+            "@ .panel:hover": {
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered) + " !important"
+            },
+            "@ .panel:focus::after": {
                 content: "''",
                 pointerEvents: "none",
                 position: "absolute",
@@ -83,60 +89,55 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
                 borderRadius: "0",
                 borderWidth: "1px",
                 borderStyle: "solid",
-                borderColor: ComboBox.theme.palette.themeSecondary //Fluent equivalent: rgb(46, 112, 224) or #2e70e0
+                borderColor: Theme.Value(ThemeColor.ThemeSecondary)
+            },
+            "@ .cb-label": {
+                fontFamily: Theme.Value(FontStyle.FontFamily),
+                cursor: 'default'
+            },
+            [Control.DisabledElement("cb-label")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
             }
         }
     );
 
-    protected get Template(): JSX.Element
-    {
-        //console.log(`Current neutralSecondary ${ComboBox.theme.palette.neutralSecondary}`);
-
-        const dropdown: JSX.Element = (
-            <Panel
+    protected get template(): JSX.Element
+    {        
+        const dropdown: JSX.Element = (            
+            <Grid
+                ClassName="panel"
+                Grid={{Row: this.state.Label ? 1 : 0}}
+                ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
                 ref={r => this._button = r}
                 OnClick={() => this.TogglePopup()}
                 OnKeyPress={(event) => this.OnKeyPressed(event)}
-                BorderBrush={ComboBox.theme.palette.neutralSecondary} //Fluent equivalent: rgb(96, 96, 96) or #606060
+                BorderBrush={this.BorderBrush} //Fluent equivalent: rgb(96, 96, 96) or #606060
                 BorderThickness="1px"
                 Padding="0"
-                Background={ComboBox.theme.palette.white}
-                ClassName="panel"
-                TabIndex={0}
-            >
-                <Grid ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}>
-                    {this.TitleElem}
-                    <Glyph
-                        Icon="ChevronDown"
-                        Foreground={ComboBox.theme.palette.neutralSecondary}
-                        HorizontalAlignment={HorizontalAlignment.Center}
-                        VerticalAlignment={VerticalAlignment.Center}
-                    />
-                </Grid>
-            </Panel>
-        );
-
-        const labelStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>({},
-            {
-                Rules: {
-                    fontFamily: TextBlock.theme.fonts.medium.fontFamily,
-                    cursor: 'default'
-                }
-            }
-        );
+                Background={this.Background}
+                TabIndex={0}>
+                {this.TitleElem}
+                <Glyph
+                    Grid={{Column: 1}}
+                    Icon="ChevronDown"
+                    Foreground={ThemeColor.NeutralSecondary}
+                    HorizontalAlignment={HorizontalAlignment.Center}
+                    VerticalAlignment={VerticalAlignment.Center}
+                />
+            </Grid>);
 
         const labeledDropdown: JSX.Element = (
-            <StackPanel Orientation={Orientation.Vertical}>
+            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                 <TextBlock
+                    ClassName="cb-label"
+                    Grid={{Row: 0}}
                     Text={this.state.Label}
-                    FontSize={this.state.FontSize ?? ComboBox.theme.fonts.medium.fontSize}
-                    FontWeight={this.state.FontWeight ?? 600}
-                    FontFamily={this.state.FontFamily}
-                    Margin="5px 0"
-                    Style={labelStyle}
-                />
+                    FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
+                    FontWeight={this.FontWeight ?? 600}
+                    FontFamily={this.FontFamily}
+                    Margin="0px"/>
                 {dropdown}
-            </StackPanel>
+            </Grid>
         );
 
         const root: JSX.Element = this.state.Label ? labeledDropdown : dropdown;
@@ -166,16 +167,14 @@ export class ComboBox<P extends IComboBoxProps = {}, S extends IComboBoxState = 
         return ComboBoxItem;
     }
 
-
-
-    public static DefaultTextblockStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+    public static DefaultTextblockStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>(
         {
-            FontFamily: ComboBox.theme.fonts.medium.fontFamily,
-            FontSize: ComboBox.theme.fonts.medium.fontSize,
+            FontFamily: FontStyle.FontFamily,
+            FontSize: FontStyle.Medium,
             Margin: "7px 6px"
         },
         {
-            Rules: {
+            "@": {
                 userSelect: 'none'
             }
         }
@@ -277,7 +276,6 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
     private static ROOT_CLASS: string = 'option-wrapper';
     private static SELECTED_CLASS: string = 'selected';
     private static DISABLED_CLASS: string = 'disabled';
-    private static theme = getTheme();
 
     public static DefaultBindings = {
         IsSelected: {
@@ -288,50 +286,38 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         }
     };
 
-    private get Parent(): ComboBox<IComboBoxProps, IComboBoxState>
+    private get Parent(): ComboBoxBase<IComboBoxProps, IComboBoxState>
     {
-        return this.state.Parent as ComboBox<IComboBoxProps, IComboBoxState>;
+        return this.state.Parent as ComboBoxBase<IComboBoxProps, IComboBoxState>;
     }
     private get RenderAutoCheckbox(): boolean
     {
         return this.Parent.IsMultiSelect && !this.Parent.state.PreventAutoCheckboxes;
     }
 
-    public static DefaultStyle: Style<IComboBoxProps> = new Style<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
-            Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.Template)
+            Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.template)
         },
         {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules:
-            {
+            [`.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
                 cursor: 'pointer'
             },
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}:hover:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules: {
-                backgroundColor: ComboBoxItem.theme.semanticColors.listItemBackgroundHovered
-            }
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.SELECTED_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`,
-            Rules: {
-                //backgroundColor: ComboBoxItem.theme.palette.neutralQuaternaryAlt
-                backgroundColor: ComboBoxItem.theme.palette.themeLighter
-            }
-        },
-        {
-            Selector: `.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.DISABLED_CLASS}`,
-            Rules: {
-                color: ComboBoxItem.theme.semanticColors.disabledBodyText
+            [`.${ComboBoxItem.ROOT_CLASS}:hover:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
+                backgroundColor: Theme.Value(SemanticColor.ListItemBackgroundHovered)
+            },
+            [`.${ComboBoxItem.ROOT_CLASS}.selected:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
+                backgroundColor: Theme.Value(ThemeColor.ThemeLighter)
+            },
+            [`.${ComboBoxItem.ROOT_CLASS}.${ComboBoxItem.DISABLED_CLASS}`]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
             }
         },
     );
 
-    private get Template(): JSX.Element
+    private get template(): JSX.Element
     {
         const contentElem: JSX.Element = this.Parent.GetTemplateForItem(this.state.Item)(this.state.Item);
 
@@ -343,6 +329,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             colDefs.unshift(Grid.ColumnDefinition());
             checkboxElem = (
                 <CheckBox
+                    Grid={{Column: 0}}
                     IsChecked={this.state.IsSelected}
                     OnClick={(event) => this.OnCheckboxClicked(event)}
                     VerticalAlignment={VerticalAlignment.Center}
@@ -350,18 +337,19 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
                     IsEnabled={this.props.IsEnabled}
                 />
             );
+            return (
+                <Grid
+                    ClassName={this.ConstructGridClasses}
+                    ColumnDefinitions={colDefs}>
+                    {checkboxElem}
+                    <Panel Grid={{ Column: 1 }}>
+                        {contentElem}
+                    </Panel>
+                </Grid>
+            );
         }
 
-        const combinedElem: JSX.Element = (
-            <Grid
-                ClassName={this.ConstructGridClasses}
-                ColumnDefinitions={colDefs}
-            >
-                {checkboxElem}
-                {contentElem}
-            </Grid>
-        );
-        return combinedElem;
+        return contentElem;            
     }
 
     private OnCheckboxClicked(event: MouseEvent): void
@@ -380,4 +368,13 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             classNames += ` ${ComboBoxItem.SELECTED_CLASS}`;
         return classNames;
     }
+
+    /* override */ constructClasses(): string
+    {
+        return super.constructClasses() + this.ConstructGridClasses;
+    }
+}
+
+export class ComboBox extends ComboBoxBase<IComboBoxProps, IComboBoxState>
+{
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding } from "@antimatterjs/react";
 import { Control, IControlProps, IControlState } from "../Control";
 import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
-import { Style } from '@antimatterjs/positron/src/Style';
+import { WebStyle } from '@antimatterjs/positron/src/Style';
 import { ISelectorProps, ISelectorState, Selector } from './Selector';
 
 interface ISelectableItemCommon
@@ -30,7 +30,7 @@ export class SelectableItemControlBase<
     P extends ISelectableItemControlProps = {},
     S extends ISelectableItemControlState = {}> extends Control<P, S>
 {
-    public static DefaultStyle: Style<ISelectableItemControlProps> = new Style<ISelectableItemControlProps>(
+    public static DefaultStyle: WebStyle<ISelectableItemControlProps> = new WebStyle<ISelectableItemControlProps>(
         {
             Template: new ControlTemplate((tp) => (<>{tp.props.children}</>))
         });

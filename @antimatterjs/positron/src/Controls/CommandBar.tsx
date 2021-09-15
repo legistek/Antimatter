@@ -2,8 +2,8 @@ import * as React from 'react';
 import { ModelObjectReference } from '@antimatterjs/react';
 import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } from '@fluentui/react';
 
-import { Style } from '../Style';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { WebStyle } from '../Style';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
 import { CommandButton, CommandButtonBase } from './CommandButton';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
@@ -19,18 +19,41 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
         this.AssembleActualCommandItems();
         this._bar?.remeasure();
         return (
-            <FluentCommandBar
-                items={this._visibleCommandItems || []}
+            <FluentCommandBar                
+                items={this._visibleCommandItems || []}                
                 componentRef={r => this._bar = r}
                 styles={{
                     root: {
                         padding: "0px",
+                        height: "auto",
                         background: "transparent",
                         margin: this.state.Padding
                     }
                 }}
             />
         );
+    }
+
+    override OnComponentMount()
+    {
+        this._resizeObserver = new ResizeObserver((entries) =>
+        {
+            this.InvalidateRender();
+        });
+        if (this.Container)
+            this._resizeObserver.observe(this.Container)
+    }
+
+    override OnComponentWillUnmount()
+    {
+        this._resizeObserver?.disconnect();
+    }
+
+    override getCSSStyles()
+    {
+        var styles = super.getCSSStyles();
+        styles.display = "block";
+        return styles;
     }
 
     AssembleCommandItems(): void
@@ -94,11 +117,13 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                 this._visibleCommandItems.push(item);
         }
     }
+
+    _resizeObserver?: ResizeObserver;
 }
 
-export class CommandBar extends ItemsControl<IItemsControlProps, IItemsControlState>
+export class CommandBar extends ItemsControlBase<IItemsControlProps, IItemsControlState>
 {
-    public static DefaultStyle: Style<IItemsControlProps> = new Style<IItemsControlProps>(
+    public static DefaultStyle: WebStyle<IItemsControlProps> = new WebStyle<IItemsControlProps>(
     {
         ItemsSource: [],
         ItemsPanel: CommandBarPanel,

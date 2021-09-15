@@ -48,8 +48,9 @@ export class Antimatter
         component: Component,
         prop: string,
         value: any,
-        reRender?: boolean): void
+        reRender?: boolean,
+        suspendNotifyModel?: boolean): void
     {
-        return Antimatter._client.TargetChanged(component, prop, value, reRender);
+        return Antimatter._client.TargetChanged(component, prop, value, reRender, suspendNotifyModel);
     }
 }

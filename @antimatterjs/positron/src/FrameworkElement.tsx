@@ -6,22 +6,21 @@ import { HorizontalAlignment, VerticalAlignment, WindowLayout } from './Enums';
 import './positron.css';
 import { TooltipHost } from '@fluentui/react';
 import { IGridChildPosition } from './Controls/Grid';
-import { ItemsControl } from './Controls/ItemsControl';
-import { WindowLayoutContext } from './Controls/Window';
 import { MultitouchTransform } from './Media/MultitouchTransform';
 import { ManipulationEvent, ManipulationEventArgs } from './Input/ManipulationEventArgs';
 import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
-import { Style } from './Style';
+import { Style, WebStyle } from './Style';
 import { CSSClasses } from './CSSClasses';
+import { ThemeColor, Theme } from './Theme';
 
+export const TemplatedParentContext = React.createContext<FrameworkElement | undefined>(undefined);
 
 interface IFrameworkElementCommon
 {
-    // Use only for control development; never use for cross-platform views
-    ClassName?: string,
-    Style?: Style<any>,    
-    Margin?: string,    
+    // Use only for control development; never use for cross-platform views    
+    Style?: Style<any>,
+    Margin?: string,
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -45,6 +44,8 @@ interface IFrameworkElementCommon
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {
+    IsEnabled?: boolean | Binding,
+    ClassName?: string|Binding,
     HorizontalAlignment?: HorizontalAlignment |Binding,
     VerticalAlignment?: VerticalAlignment|Binding,
     IsVisible?: boolean | Binding,
@@ -58,6 +59,8 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
 {
+    ClassName?: string,
+    IsEnabled?: boolean,
     HorizontalAlignment?: HorizontalAlignment,
     VerticalAlignment?: VerticalAlignment,
     IsVisible?: boolean,
@@ -82,9 +85,47 @@ export class FrameworkElement<
     _isMeasureValid: boolean = false;
     _gestureHandlers: boolean = false;
 
-    //protected readonly CurrentRoute: string = "";
+    private _templatedParent?: FrameworkElement;
+    private _templatedStyle?: Style<any>;
 
     public Container: HTMLElement | null = null;
+
+    public get Style(): Style<any>
+    {
+        return this.state.Style as Style<any>;
+    }
+
+    public get TemplatedParent(): FrameworkElement | undefined
+    {
+        return this._templatedParent;
+    }
+    //public set TemplatedParent(value: FrameworkElement|undefined)
+    //{
+    //    if (this._templatedParent === value &&
+    //        this._templatedParent?.Style === value?.Style )
+    //        return;
+
+    //    this._templatedParent = value;
+    //    if (!value || !value.Style)
+    //        return;
+
+    //    var props = Object.entries(this.props);
+    //    for (var prop of props)
+    //    {
+    //        if (typeof (prop[1]) === "string" &&
+    //            (prop[1] as string).startsWith(WebStyle._templPropFlag))
+    //        {
+    //            var propName = (prop[1] as string).substring(WebStyle._templPropFlag.length);
+    //            var newVal = `var(--prop-${propName}${value.Style._styleID})`;
+    //            this.SetValue(prop[0], newVal, false);
+    //        }                            
+    //    }
+    //}
+
+    //public get Parent(): FrameworkElement
+    //{
+    //    return (this.Container?.parentElement as any)?.AMXFE;
+    //}
 
     constructor(props)
     {
@@ -113,55 +154,83 @@ export class FrameworkElement<
             this.state.OnManipulationCompleted)
             this._gestureHandlers = true;
 
+        let webStyleClass: string = '';
+        if (this.state.Style instanceof WebStyle)
+            webStyleClass = (this.state.Style as WebStyle<any>).Class();
+
         //onContextMenu={(event) => event.preventDefault()}
         return (
-            <div
-                ref={r => this.Container = r}
-                style={this.getCSSStyles()}
-                onScroll={this.state.OnScroll
-                    ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
-                    : undefined}
-                onClick={this.state.OnClick
-                    ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
-                    : undefined}
-                onKeyPress={this.state.OnKeyPress
-                    ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
-                    : undefined}
-                onPointerMove={this.state.OnPointerMove || this._gestureHandlers
-                    ? (event) => this.OnPointerMove(event)
-                    : undefined}
-                onPointerDown={this.state.OnPointerDown || this._gestureHandlers
-                    ? (event) => this.OnPointerDown(event)
-                    : undefined}
-                onPointerUp={this.state.OnPointerUp || this._gestureHandlers
-                    ? (event) => this.OnPointerUp(event)
-                    : undefined}
-                onLostPointerCapture={this.state.OnLostPointerCapture
-                    ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
-                    : undefined}
-                onPointerLeave={this.state.OnPointerLeave || this._gestureHandlers
-                    ? (event) => this.OnPointerLeave(event)
-                    : undefined}
-                onPointerCancel={this.state.OnPointerCancel || this._gestureHandlers
-                    ? (event) => this.OnPointerCancel(event)
-                    : undefined}
-                onPointerOut={this.state.OnPointerOut || this._gestureHandlers
-                    ? (event) => this.OnPointerOut(event)
-                    : undefined}
-                className={this.constructor.name + " " + (this.props.ClassName || "") + " " + (this.state.Style?.Class() || "") + " " + this.constructClasses()}
-                tabIndex={this.state.TabIndex}
-            >
+            <TemplatedParentContext.Consumer>
+                {ctx =>
                 {
-                    this.state.IsLoading && this.state.LoadingTemplate
-                        ? this.state.LoadingTemplate()
-                        : (this.state.ToolTip
-                            ? (<TooltipHost content={this.state.ToolTip}>
-                                { this.renderElement()}
-                            </TooltipHost>)
-                            : this.renderElement())
+                    this._templatedParent = ctx;
+                    return (
+                        <div
+                            ref={r =>
+                            {
+                                this.Container = r;
+                                if (r)
+                                    (this.Container as any).AMXFE = this;
+                            }}
+                            style={this.getCSSStyles()}
+                            onScroll={this.state.OnScroll
+                                ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
+                                : undefined}
+                            onClick={this.state.OnClick
+                                ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
+                                : undefined}
+                            onKeyPress={this.state.OnKeyPress
+                                ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
+                                : undefined}
+                            onPointerMove={this.state.OnPointerMove || this._gestureHandlers
+                                ? (event) => this.OnPointerMove(event)
+                                : undefined}
+                            onPointerDown={this.state.OnPointerDown || this._gestureHandlers
+                                ? (event) => this.OnPointerDown(event)
+                                : undefined}
+                            onPointerUp={this.state.OnPointerUp || this._gestureHandlers
+                                ? (event) => this.OnPointerUp(event)
+                                : undefined}
+                            onLostPointerCapture={this.state.OnLostPointerCapture
+                                ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
+                                : undefined}
+                            onPointerLeave={this.state.OnPointerLeave || this._gestureHandlers
+                                ? (event) => this.OnPointerLeave(event)
+                                : undefined}
+                            onPointerCancel={this.state.OnPointerCancel || this._gestureHandlers
+                                ? (event) => this.OnPointerCancel(event)
+                                : undefined}
+                            onPointerOut={this.state.OnPointerOut || this._gestureHandlers
+                                ? (event) => this.OnPointerOut(event)
+                                : undefined}
+                            className={this.constructor.name + " " + (this.state.ClassName || "") + " " + webStyleClass + " " + this.constructClasses()}
+                            tabIndex={this.state.TabIndex}>
+                            {
+                                this.state.IsLoading && this.state.LoadingTemplate
+                                    ? this.state.LoadingTemplate()
+                                    : (this.state.ToolTip
+                                        ? (<TooltipHost content={this.state.ToolTip}>
+                                            {
+                                                this.renderElement()
+                                            }
+                                        </TooltipHost>)
+                                        : this.renderElement())
+                            }
+                        </div>)
+                    }
                 }
-            </div>
+            </TemplatedParentContext.Consumer>
         );
+    }
+
+    public get IsEnabled(): boolean
+    {
+        return this.GetValue<boolean>(nameof(this.props.IsEnabled), true);
+    }
+
+    public get Margin(): string|undefined
+    {
+        return this.GetValue(nameof(this.state.Margin));
     }
 
     public get ActualHeight(): number
@@ -267,19 +336,37 @@ export class FrameworkElement<
      * in response to the user input. (For example, an input field immediately
      * reflects typed text; there is no need to re-render when updating the
      * Model side with the new text).
+     * @param suspendNotifyModel If explicitly set to true, the model is not notified
+     * of the update. Use this when updating internal state in response to other 
+     * model changes. 
      */
-    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean): void =>
+    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean, suspendNotifyModel?: boolean): void =>
     {
         if (this.state[stateVar] === newValue)
             return;
-        Antimatter.TargetChanged(this, stateVar, newValue, reRender);
+
+        Antimatter.TargetChanged(this, stateVar, newValue, reRender, suspendNotifyModel);
 
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
-    }
+    }    
 
-    protected readonly GetValue = (property: string): any =>
+    protected GetValue<T>(property: string, defaultValue: T|undefined = undefined): T
     {
-        return (this.state as any)[property];
+        var val = (this.state as any)[property];
+        if (typeof (val) === "number" && (val as number) >= Theme.FirstResourceId)
+        {
+            // Theme resource
+            return Theme.Value(val as number);
+        }
+        else if (typeof (val) === "string" &&
+            (this.TemplatedParent?.Style instanceof WebStyle))
+        {
+            // Possibly a templated prop
+            val = (this.TemplatedParent?.Style as WebStyle<any>)?.GetTemplatablePropValue(val as string);
+        }
+        if (val === undefined)
+            val = defaultValue;
+        return val as T;
     }
 
     protected /* virtual */ renderElement(): JSX.Element | null
@@ -290,7 +377,7 @@ export class FrameworkElement<
     protected /* virtual */ getCSSStyles(): React.CSSProperties
     {
         let styles: React.CSSProperties = {
-            margin: this.state.Margin
+            margin: this.Margin
         };
         if (this.state.Grid?.Column !== undefined)
             styles.gridColumn = this.state.Grid.Column + 1;
@@ -344,12 +431,12 @@ export class FrameworkElement<
     protected /* virtual */ OnComponentMount()
     {
     }
-
-    protected /* virtual */ OnComponentWillMount()
+    
+    protected /* virtual */ OnComponentWillUnmount()
     {
     }
 
-    protected /* virtual */ OnComponentWillUnmount()
+    protected /* virtual */ OnElementUpdated(oldProps?: P)
     {
     }
 
@@ -367,9 +454,14 @@ export class FrameworkElement<
             : this.state.VerticalAlignment as VerticalAlignment;
     }
 
+    componentDidUpdate(prevProps)
+    {
+        this.OnElementUpdated(prevProps);
+    }
+
     readonly componentDidMount = () =>
     {
-        this.OnComponentMount();
+        this.OnComponentMount();        
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 
@@ -420,22 +512,23 @@ export class FrameworkElement<
         if (this.state.Overlaps)
             cls += `${CSSClasses.Overlaps} `;
 
+        if (!this.IsEnabled)
+            cls += `${CSSClasses.Disabled} `;
+
         return cls;
     }
 
     private ApplyStyle()
     {
-        var style = this.props.Style ||
-            (this.constructor as any).DefaultStyle
-            //|| this.GetDefaultStyle()
-            ;
+        var style = (this.props.Style ||
+            (this.constructor as any).DefaultStyle) as Style<any>;
         if (!style)
             return;
         (this.state as any).Style = style;
-        var entries = Object.entries(style.Props);
+        var entries = Object.entries(style.Setters);
         for (const entry of entries)
         {
-            if (!this.props[entry[0]])
+            if (this.props[entry[0]] === undefined)
             {
                 var val = entry[1];
                 if ((val as Binding)?.IsAntimatterBinding)

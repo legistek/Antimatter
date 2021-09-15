@@ -2,7 +2,7 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { Callout, Target } from '@fluentui/react';
 import * as React from 'react';
 import { FrameworkElement } from '../FrameworkElement';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { ButtonBase } from './Primitives/ButtonBase';
 
@@ -39,7 +39,7 @@ export class PopupBase<
     S extends IPopupState>
     extends PanelBase<P, S>
 {
-    public static DefaultStyle: Style<IPopupProps> = new Style<IPopupProps>(
+    public static DefaultStyle: WebStyle<IPopupProps> = new WebStyle<IPopupProps>(
         {
             Padding: "10px",
             Placement: PlacementMode.Below
@@ -65,7 +65,7 @@ export class PopupBase<
                     }
                 }}
                 style={{
-                    background: this.state.Background,
+                    background: this.Background,
                     padding: this.state.Padding,
                 }}
                 isBeakVisible={false}

@@ -13,7 +13,7 @@ export class FrameworkTemplate
     /* private */ _allLayouts: (ILayoutTemplate|null)[];
 
     constructor(
-        visualTree: ((parent: any) => JSX.Element),
+        visualTree: ((parent: any) => JSX.Element),        
         ...alternates: ILayoutTemplate[])
     {
         this._mainVisualTree = visualTree;
@@ -42,7 +42,7 @@ export class FrameworkTemplate
 }
 
 export class ControlTemplate extends FrameworkTemplate
-{
+{    
 }
 
 export class DataTemplate extends FrameworkTemplate

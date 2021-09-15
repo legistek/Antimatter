@@ -5,7 +5,7 @@
     "removeComments": false,
     "moduleResolution": "Node",
     "target": "ES2020",
-    "lib": [ "ES2020", "ES2020.BigInt", "dom" ],
+    "lib": [ "ES2021", "ES2020", "ES2020.BigInt", "dom" ],
     "strict": true,
     "sourceMap": false,
     "declaration": false,

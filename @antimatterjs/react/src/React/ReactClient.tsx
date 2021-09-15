@@ -107,41 +107,46 @@ export class ReactClient implements IClient
         component: Component,
         prop: string,
         value: any,
-        reRender?: boolean): void
+        reRender?: boolean,
+        suspendNotifyModel?: boolean): void
     {
         var target = component as IBoundComponent;
         if (!target.antimatterBindingExps)
             throw "Components using prop binding must call InitializeComponent in their constructors or extend from AntimatterComponent";
 
-        var exp = target.antimatterBindingExps.get(prop);
-        if (exp?.ActualMode === BindingMode.TwoWay)
+        if (suspendNotifyModel !== true)
         {
-            var newSourceValue = value;
-            if (exp.Parameters.ConverterBack)
-                newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
-            var index = exp.Index;
+            var exp = target.antimatterBindingExps.get(prop);
+            if (exp?.ActualMode === BindingMode.TwoWay)
+            {
+                var newSourceValue = value;
+                if (exp.Parameters.ConverterBack)
+                    newSourceValue = exp.Parameters.ConverterBack(newSourceValue);
+                var index = exp.Index;
 
-            if (((exp._resolvedSource?.Type || 0) & BindingSourceType.INPC) > 0 &&
-                exp._resolvedSource?.POJO)
-            {
-                exp.SuspendPOJOSourceChangeHandler = true;
-                try
+                if (((exp._resolvedSource?.Type || 0) & BindingSourceType.INPC) > 0 &&
+                    exp._resolvedSource?.POJO)
                 {
-                    exp._resolvedSource.POJO[exp.Parameters.Path as string] = newSourceValue;
+                    exp.SuspendPOJOSourceChangeHandler = true;
+                    try
+                    {
+                        exp._resolvedSource.POJO[exp.Parameters.Path as string] = newSourceValue;
+                    }
+                    finally
+                    {
+                        exp.SuspendPOJOSourceChangeHandler = false;
+                    }
                 }
-                finally
+                else
                 {
-                    exp.SuspendPOJOSourceChangeHandler = false;
+                    unstable_batchedUpdates(() =>
+                    {
+                        Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
+                    });
                 }
-            }
-            else
-            {
-                unstable_batchedUpdates(() =>
-                {
-                    Antimatter.Server.UpdateBindingSource(index, ModelValue.Get(newSourceValue));
-                });
             }
         }
+
         if (reRender !== false)
         {
             var newState = {};

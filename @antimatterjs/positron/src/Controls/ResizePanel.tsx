@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Binding, BindingMode } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Grid, IColumnDefinition, IGridChildPosition, IGridDefinition, IGridProps, IGridState, IRowDefinition } from './Grid';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
-import { getTheme } from '@fluentui/react';
 import { ControlTemplate } from '../FrameworkTemplate';
+import { SemanticColor, Theme } from '../Theme';
 
 export interface IResizePanelProps extends IControlProps
 {
@@ -27,9 +27,7 @@ export interface IResizePanelState extends IControlState
 export class ResizePanelBase<P extends IResizePanelProps = {},
     S extends IResizePanelState = {}>
     extends Control<P,S>
-{
-    static theme = getTheme();
-
+{    
     public static Opposite(side: Side): Side
     {
         switch (side)
@@ -71,7 +69,7 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         }
     };
    
-    public static DefaultStyle: Style<IResizePanelProps> = new Style<IResizePanelProps>(
+    public static DefaultStyle: WebStyle<IResizePanelProps> = new WebStyle<IResizePanelProps>(
         {
             Thickness: 5,
             CanResize: true,
@@ -80,8 +78,8 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
             {                
                 return (
                     <Grid
-                        Background={templatedParent.state.Background}
-                        BorderBrush={templatedParent.state.BorderBrush}
+                        Background={templatedParent.Background}
+                        BorderBrush={templatedParent.BorderBrush}
                         BorderThickness={templatedParent.state.BorderThickness}
                         BoxShadow={templatedParent.state.BoxShadow}
                         ColumnDefinitions={templatedParent.ComputeColumnDefinitions()}
@@ -104,16 +102,10 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
             }),
         },
         {            
-            Selector: "@ .sizer.resizing",
-            Rules:
-            {
-                background: ResizePanelBase.theme.semanticColors.menuItemBackgroundPressed
-            }
-        },
-        {
-            Selector: "@ .sizer",
-            Rules:
-            {
+            "@ .sizer.resizing": {
+                background: Theme.Value(SemanticColor.MenuItemBackgroundPressed)
+            },
+            "@ .sizer": {
                 cursor: "col-resize"
             }
         }
@@ -155,26 +147,28 @@ export class ResizePanelBase<P extends IResizePanelProps = {},
         if (!this._isDragging || !this._dragStartSize || !this._dragStartCoord)
             return;
 
+        let newSize: number = 0;
+
         let delta: number = 0;
         switch (this.state.ResizerSide)
         {
             case Side.Top:
                 delta = e.pageY - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize - delta);
                 break;
             case Side.Bottom:
                 delta = e.pageY - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize + delta);
                 break;
             case Side.Left:
                 delta = e.pageX - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize - delta);
+                newSize = this._dragStartSize - delta;
                 break;
             case Side.Right:
                 delta = e.pageX - this._dragStartCoord;
-                this.SetValue(nameof(this.state.Size), this._dragStartSize + delta);
+                newSize = this._dragStartSize + delta;                
                 break;
-        }        
+        }
+
+        this.SetValue(nameof(this.props.Size), newSize);
     }
 
     /* private */ OnSizerPointerUp(e: PointerEvent)

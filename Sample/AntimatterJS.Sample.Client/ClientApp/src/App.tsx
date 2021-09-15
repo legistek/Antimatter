@@ -7,7 +7,7 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, TabControl, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, NavMenu, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 //import './custom.css'
@@ -15,11 +15,12 @@ import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
 import DataGridTest from './components/DataGridTest';
 import PinnablePanelTest from './components/PinnablePanelTest';
+import ControlGallery1 from './components/ControlGallery1';
 
 
 const theme = createTheme({
     // You can also modify certain other properties such as fontWeight if desired
-    defaultFontStyle: { fontFamily: 'Roboto' },
+    //defaultFontStyle: { fontFamily: 'Roboto' },
     palette: {
         themePrimary: '#2e70e0',
         themeLighterAlt: '#f6f9fe',
@@ -66,7 +67,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             (vm) =>
             (
                 <Panel VerticalAlignment={VerticalAlignment.Top} >
-                    <Employee Value={new Binding({ Path: "Employee", Source: vm })}/>
+                    <Employee ViewModel={new Binding({ Path: "Employee", Source: vm })} />
                 </Panel>
             )
         )
@@ -104,9 +105,18 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             <Window
                 Model={this.state.Model}
                 Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
-                    <TabControl Style={TabControl.DefaultStyle}
-                        Tabs={
+                    <NavMenu Style={NavMenu.DefaultStyle}
+                        Items={
                             [
+                                {
+                                    Label: "Control Gallery 1",
+                                    Icon: 0xF03B,
+                                    IconForeground: "white",
+                                    IconBackground: "purple",
+                                    Key: "controls1",
+                                    Description: "Gallery of Positron controls",
+                                    Content: (<ControlGallery1 />)
+                                },
                                 {
                                     Label: "Company",
                                     Icon: 0xF084,

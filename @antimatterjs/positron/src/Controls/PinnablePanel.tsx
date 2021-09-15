@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Binding, BindingMode, PropertyChangedEventArgs, RelativeSourceMode, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Grid, IGridChildPosition } from './Grid';
@@ -9,9 +9,10 @@ import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { CommandButton } from './CommandButton';
 import { HorizontalAlignment, Side, VerticalAlignment } from '../Enums';
 import { ResizePanel } from './ResizePanel';
-import { DefaultEffects, getTheme, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, MotionAnimations } from '@fluentui/react';
 import { FrameworkElement } from '../FrameworkElement';
 import { CSSClasses } from '../CSSClasses';
+import { SemanticColor, Theme } from '../Theme';
 
 
 export enum PinnablePanelState
@@ -51,10 +52,8 @@ export interface IPinnablePanelState extends IControlState
 
 export class PinnablePanelBase<P extends IPinnablePanelProps,
     S extends IPinnablePanelState> extends Control<P, S>
-{
-    static theme = getTheme();
-
-    public static DefaultStyle: Style<IPinnablePanelProps> = new Style<IPinnablePanelProps>(
+{    
+    public static DefaultStyle: WebStyle<IPinnablePanelProps> = new WebStyle<IPinnablePanelProps>(
         {
             State: PinnablePanelState.Pinned,
             Size: 200,
@@ -63,11 +62,11 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             IsPinButtonVisible: true,
             BorderThickness: "1px",
             PinButtonIcon: "pin",
-            BorderBrush: PinnablePanelBase.theme.semanticColors.bodyFrameDivider,
+            BorderBrush: SemanticColor.BodyFrameDivider,
             CanResize: true,
-            Background: PinnablePanelBase.theme.semanticColors.bodyBackground,
+            Background: SemanticColor.BodyBackground,
             Template: (templatedParent: PinnablePanel) =>
-            {
+            {                
                 if (!templatedParent.state.State)
                 {
                     // Collapsed             
@@ -78,10 +77,10 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                 {
                     return (
                         <ResizePanel
-                            Background={templatedParent.state.Background}
-                            BorderBrush={templatedParent.state.BorderBrush}
-                            BorderThickness={templatedParent.state.BorderThickness}
-                            BoxShadow={templatedParent.state.BoxShadow}
+                            Background={templatedParent.Background}
+                            BorderBrush={templatedParent.BorderBrush}
+                            BorderThickness={templatedParent.BorderThickness}
+                            BoxShadow={templatedParent.BoxShadow}
                             Thickness={7}
                             Size={new Binding({
                                 Source: templatedParent,
@@ -90,7 +89,9 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             })}
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResize}>
-                            {templatedParent.props.children}
+                            <React.Fragment key="panel-content">
+                                {templatedParent.props.children}
+                            </React.Fragment>
                             {
                                 templatedParent.state.IsCollapseButtonVisible &&
                                 (<CommandButton
@@ -134,7 +135,7 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                                 }
                             }}
                             ClassName={templatedParent.GetFloatPanelClassName()}
-                            Background={templatedParent.state.Background}
+                            Background={templatedParent.Background}
                             Size={new Binding({
                                 Source: templatedParent,
                                 Path: nameof(templatedParent.state.Size),
@@ -142,9 +143,11 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
                             })}                            
                             ResizerSide={templatedParent.state.Side ? ResizePanel.Opposite(templatedParent.state.Side) : Side.Right}
                             CanResize={templatedParent.state.CanResize}
-                            BorderBrush={templatedParent.state.BorderBrush}
-                            BorderThickness={templatedParent.state.BorderThickness}>
-                            {templatedParent.props.children}
+                            BorderBrush={templatedParent.BorderBrush}
+                            BorderThickness={templatedParent.BorderThickness}>
+                            <React.Fragment key="panel-content">
+                                {templatedParent.props.children}
+                            </React.Fragment>
                             {
                                 templatedParent.state.IsPinButtonVisible &&
                                 <CommandButton
@@ -162,32 +165,22 @@ export class PinnablePanelBase<P extends IPinnablePanelProps,
             }
         },
         {
-            Selector: `@.${CSSClasses.Overlaps}`,
-            Rules: {
+            "@.amx-ptn-overlaps": {
                 zIndex: 99999,                
             },
-        },
-        {
-            Selector: "@ .float-panel-left",
-            Rules: {
+            "@ .float-panel-left": {
                 animation: `${MotionAnimations.slideRightIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",
                 //marginRight: "20px",
                 zIndex: 99999
-            }
-        },
-        {
-            Selector: "@ .float-panel-right",
-            Rules: {
+            },
+            "@ .float-panel-right": {
                 animation: `${MotionAnimations.slideLeftIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`,
                 boxShadow: "-4.5px 0px 14.4px 0 rgb(0 0 0 / 13%)",                
                 //marginLeft: "20px",
                 zIndex: 99999
-            }
-        },
-        {
-            Selector: "@ .modal-panel",
-            Rules: {
+            },
+            "@ .modal-panel": {
                 animation: `${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
             }
         }

@@ -1,5 +1,5 @@
 import { FrameworkElement } from "../FrameworkElement";
-import { IItemsControlProps, IItemsControlState, ItemsControl } from "./ItemsControl";
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from "./ItemsControl";
 import { VirtualizedPanel, VirtualizedPanelBase } from "./VirtualizedPanel";
 
 export interface IVirtualizingItemsControlProps extends IItemsControlProps
@@ -17,7 +17,7 @@ export interface IVirtualizingItemsControlState extends IItemsControlState
 export class VirtualizingItemsControlBase<
     P extends IVirtualizingItemsControlProps = {},
     S extends IVirtualizingItemsControlState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     public readonly IsVirtualizingItemsControl = true;
 }

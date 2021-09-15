@@ -3,7 +3,7 @@ import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { CommandButton } from './CommandButton';
 import { StackPanel } from './StackPanel';
 import { HorizontalAlignment, Orientation } from '../Enums';
@@ -41,15 +41,15 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
     };
 
-    public static DefaultStyle: Style<IMessageBarProps> = new Style<IMessageBarProps>(
+    public static DefaultStyle: WebStyle<IMessageBarProps> = new WebStyle<IMessageBarProps>(
         {
-            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
+            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.template)
         }
     );
 
     private _timeout;
 
-    private get Template(): JSX.Element
+    private get template(): JSX.Element
     {
         if (this.state.Duration && !this._timeout)
         {
@@ -57,9 +57,9 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         }
 
         const textStyle: IStyle = {
-            fontFamily: this.state.FontFamily,
-            color: this.state.Foreground,
-            fontSize: this.state.FontSize ?? 16
+            fontFamily: this.FontFamily,
+            color: this.Foreground,
+            fontSize: this.FontSize ?? 16
         };
 
         return (

@@ -3,7 +3,8 @@ import { Binding, BindingMode } from '@antimatterjs/react';
 import { IStyle, Position, SpinButton } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
+import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 interface ISpinnerProps extends IControlProps {
     Value?: number | Binding,
@@ -24,23 +25,16 @@ interface ISpinnerState extends IControlState {
 export class Spinner extends Control<ISpinnerProps, ISpinnerState>
 {
 
-    public static DefaultStyle: Style<ISpinnerProps> = new Style<ISpinnerProps>(
+    public static DefaultStyle: WebStyle<ISpinnerProps> = new WebStyle<ISpinnerProps>(
         {
             Value: 0,
+            FontFamily: FontStyle.FontFamily,
             Template: new ControlTemplate((templatedParent: Spinner) => templatedParent.template)
         }
     );
 
     private get template(): JSX.Element
     {
-        const textStyle: IStyle = {
-            fontFamily: this.state.FontFamily,
-            color: this.state.Foreground,
-            fontSize: this.state.FontSize,
-            lineHeight: "unset",
-            alignSelf: "center"
-        };
-
         const textValue: string = this.state.Value?.toString() || '0';
         const labelPosition: Position = this.props.LabelIsInline ? Position.start : Position.top;
 
@@ -54,10 +48,35 @@ export class Spinner extends Control<ISpinnerProps, ISpinnerState>
                 label={this.state.Label}
                 labelPosition={labelPosition}
                 styles={{
-                    label: textStyle,
-                    input: textStyle,
+                    label: {
+                        fontFamily: this.FontFamily,
+                        color: this.Foreground,
+                        fontSize: this.FontSize,
+                        lineHeight: "unset",
+                        alignSelf: "center",
+                        padding: "0px"
+                    },
+                    input: {                        
+                        fontFamily: this.FontFamily,
+                        color: this.Foreground,
+                        fontSize: this.FontSize,
+                        lineHeight: "unset",
+                        alignSelf: "center",
+                    },
                     spinButtonWrapper: {
-                        height: "fit-content"
+                        height: "fit-content",                        
+                        selectors: {
+                            ':after': {
+                                borderColor: Theme.Value(SemanticColor.InputBorder),
+                            },
+                            ':hover': {
+                                selectors: {
+                                    ':after': {
+                                        borderColor: Theme.Value(SemanticColor.InputBorderHovered),
+                                    }
+                                }
+                            }
+                        },                        
                     }
                 }}
                 disabled={this.state.IsEnabled === false}

@@ -11,6 +11,8 @@ body {
 }
 
 .amx-ptn-fe {
+    /*grid-row: 1;
+    grid-column: 1;*/
     position: relative;
     touch-action: pan-x pan-y;
     margin: 0px;
@@ -24,9 +26,8 @@ body {
     overflow: hidden;
 }
 
-.amx-ptn-hstack {
-    flex-direction: row;
-    width: fit-content;
+.amx-ptn-disabled .amx-ptn-fe {
+    pointer-events: none;   
 }
 
 .amx-ptn-vscroll {
@@ -43,6 +44,19 @@ body {
         overflow-x: inherit;
     }
 
+.amx-ptn-hstack {
+    flex-direction: row;
+    width: fit-content;
+}
+
+    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
+        margin-left: 5px;
+    }
+
+    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
+        margin-right: 5px;
+    }
+
 .amx-ptn-vstack {
     display: block;
 }
@@ -51,12 +65,12 @@ body {
         min-height: fit-content;
     }
 
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
-            margin-top: 5px;
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child):not(.amx-ptn-panel) {
+            margin-top: 7.5px;
         }
 
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
-            margin-bottom: 5px;
+        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child):not(.amx-ptn-panel) {
+            margin-bottom: 7.5px;
         }
 
 .amx-ptn-hstack > .amx-ptn-fe {
@@ -134,10 +148,6 @@ body {
 .amx-ptn-fixed-height {
 }
 
-
-
-
-
 /* For some reason this is necessary for MS DetailsList resizing and
     any other Layer's to work I guess. */
 .ms-Fabric.ms-Layer-content {
@@ -187,6 +197,12 @@ body {
 .amx-ptn-wrap-panel {
     display: flex;
     flex-wrap: wrap;
+    margin: -5px;
+}
+
+.amx-ptn-wrap-panel > .amx-ptn-fe
+{
+    margin: 5px;
 }
 
 a {
@@ -207,6 +223,44 @@ code {
     100% {
         transform: translateX(0);
         opacity: 100%;
+    }
+}
+
+@keyframes slideOutLeft {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0%;
+        display: none;
+    }
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0%;
+        display: none;
     }
 }
 
@@ -257,3 +311,12 @@ code {
         background: rgba(46, 112, 223, 0.2);
         color: transparent;
     }
+/*
+    .TextBlock
+    {
+        color: var(--prop-Foreground);
+        font-size: var(--prop-FontSize);
+        background: var(--prop-Background);
+        font-family: var(--prop-FontFamily);
+        font-weight: var(--prop-FontWeight);
+    }*/

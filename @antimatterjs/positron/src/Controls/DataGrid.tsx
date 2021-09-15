@@ -1,13 +1,14 @@
 import * as React from 'react';
 import * as Fluent from '@fluentui/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
-import { IItemsControlProps, IItemsControlState, ItemsControl } from './ItemsControl';
+import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { FontStyle, SemanticColor, Theme } from '../Theme';
 
 interface IDataGridCellCommon
 {
@@ -27,8 +28,7 @@ export class DataGridCell<
     //    {
     //    },
     //    {
-    //        Selector: "@",
-    //        Rules: {
+    //        "@": {
     //            height: "100%",
     //            display: 'flex',
     //            //borderWidth: "0px 0px 1px 0px",
@@ -77,7 +77,7 @@ export interface IDataGridColumn
 export class DataGridBase<
     P extends IDataGridProps = {},
     S extends IDataGridState = {}>
-    extends ItemsControl<P, S>
+    extends ItemsControlBase<P, S>
 {
     /* private */ _selection: Fluent.Selection;
 
@@ -113,10 +113,8 @@ export class DataGridBase<
         var sel = this._selection.getSelection();
         this.SetValue(nameof(this.state.SelectedItems), sel, false);
     }
-
-    public static theme = Fluent.getTheme();
-
-    public static DefaultStyle: Style<IDataGridProps> = new Style<IDataGridProps>(
+    
+    public static DefaultStyle: WebStyle<IDataGridProps> = new WebStyle<IDataGridProps>(
         {
             Template: new ControlTemplate((templatedParent: DataGridBase<IDataGridProps, IDataGridState>) =>(
                 <Fluent.ScrollablePane>
@@ -124,8 +122,8 @@ export class DataGridBase<
                         cellStyleProps={{
                             cellLeftPadding: 0,
                             cellRightPadding: 0,
-                            cellExtraRightPadding: 0,
-                        }}
+                            cellExtraRightPadding: 0,                            
+                        }}                        
                         onRenderCheckbox={(props, defaultRender) =>
                         {
                             return (
@@ -145,12 +143,14 @@ export class DataGridBase<
                         compact={true}
                         onRenderDetailsHeader={
                             // tslint:disable-next-line:jsx-no-lambda
-                            (detailsHeaderProps?: Fluent.IDetailsHeaderProps, defaultRender?: Fluent.IRenderFunction<Fluent.IDetailsHeaderProps>) => (
-                                <Fluent.Sticky>
-                                    {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
-                                </Fluent.Sticky>
-                            )}
-                        
+                            (detailsHeaderProps?: Fluent.IDetailsHeaderProps, defaultRender?: Fluent.IRenderFunction<Fluent.IDetailsHeaderProps>) =>
+                            {
+                                return (
+                                    <Fluent.Sticky>
+                                        {defaultRender ? defaultRender(detailsHeaderProps) : (<></>)}
+                                    </Fluent.Sticky>
+                                );
+                            }}
                         getKey={item => item?.IsModelObjectReference ? (item as ModelObjectReference).Handle : item?.toString()}
                         onRenderRow={(props, defaultRender) =>
                         {
@@ -168,7 +168,7 @@ export class DataGridBase<
                                     height: templatedParent.state.RowHeight || 32,
                                     minHeight: 0,
                                     // Draw your own grid lines here
-                                    borderColor: DataGrid.theme.semanticColors.bodyDivider,
+                                    borderColor: Theme.Value(SemanticColor.BodyDivider),
                                     borderWidth: "0px 0px 1px 0px",
                                     borderStyle: "solid",
                                     width: "100%"
@@ -186,6 +186,11 @@ export class DataGridBase<
                         columns={templatedParent.ConstructColumns()} />
                 </Fluent.ScrollablePane>
             ))
+        },
+        {
+            "@ .ms-DetailsHeader-cell": {
+                fontFamily: Theme.Value(FontStyle.FontFamily)
+            }
         }
     );
 

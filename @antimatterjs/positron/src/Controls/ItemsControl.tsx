@@ -6,7 +6,7 @@ import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
 import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { DataTemplate } from '../FrameworkTemplate';
 import { WindowLayoutContext } from './Window';
 
@@ -15,8 +15,8 @@ export interface IItemsControlProps extends IControlProps
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemsPanelStyle?: Style<IPanelProps>,
-    ItemContainerStyle?: Style<IFrameworkElementProps>,
+    ItemsPanelStyle?: WebStyle<IPanelProps>,
+    ItemContainerStyle?: WebStyle<IFrameworkElementProps>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
@@ -26,14 +26,14 @@ export interface IItemsControlState extends IControlState
     ItemsSource?: any[],
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemsPanelStyle?: Style<IPanelProps>,
-    ItemContainerStyle?: Style<IFrameworkElementProps>
+    ItemsPanelStyle?: WebStyle<IPanelProps>,
+    ItemContainerStyle?: WebStyle<IFrameworkElementProps>
 }
 
 /** Base class for components displaying collections of items. ItemsControl
  * does not render its own items directly but it and its sub-classes
  * handle the control logic. Items are always rendered inside an items panel.  **/
-export class ItemsControl<
+export class ItemsControlBase<
     P extends IItemsControlProps = {},
     S extends IItemsControlState = {}>
     extends Control<P, S>
@@ -66,7 +66,7 @@ export class ItemsControl<
 
     public /* override */ renderElement(): JSX.Element | null
     {
-        if (this.state.Template)
+        if (this.Template)
             return super.renderElement();
         else
         {
@@ -75,18 +75,18 @@ export class ItemsControl<
                     {
                         (layout) =>
                         {
-                            if (this.state.Layout !== layout)
+                            if (this.Layout !== layout)
                             {
-                                (this.state as any).Layout = layout;
+                                this.Layout = layout;
                                 this.ItemsPanelInstance?.InvalidateRender();
                             }
                             return React.createElement(
                                 (this.state.ItemsPanel || StackPanel),
                                 {
                                     Style: this.state.ItemsPanelStyle,
-                                    Background: this.state.Background,
-                                    BorderThickness: this.state.BorderThickness,
-                                    BorderBrush: this.state.BorderBrush,
+                                    Background: this.Background,
+                                    BorderThickness: this.BorderThickness,
+                                    BorderBrush: this.BorderBrush,
                                     ItemsParent: this,
                                 } as IPanelProps);
                         }
@@ -119,7 +119,7 @@ export class ItemsControl<
     GetTemplateForItem(item?: any): (item?: any) => JSX.Element
     {
         if (this.state.ItemTemplate)
-            return this.state.ItemTemplate.GetVisualTree(this.state.Layout);
+            return this.state.ItemTemplate.GetVisualTree(this.Layout);
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }
@@ -133,4 +133,8 @@ export class ItemsControl<
     }
 
     private _itemContainers: FrameworkElement[] = [];
+}
+
+export class ItemsControl extends ItemsControlBase<IItemsControlProps, IItemsControlState>
+{
 }

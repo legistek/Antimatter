@@ -5,6 +5,5 @@
     src: url("/Legistek-Custom.woff") format('woff');
 }
 
-span {
-    transform: translate(0px, 2%);
+span {    
 }

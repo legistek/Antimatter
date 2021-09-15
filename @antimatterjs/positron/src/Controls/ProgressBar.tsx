@@ -2,7 +2,7 @@
 import { Binding } from '@antimatterjs/react';
 import { ProgressIndicator } from '@fluentui/react'
 import { Control, IControlProps, IControlState } from './Control';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 
 export interface IProgressBarProps extends IControlProps
@@ -22,7 +22,7 @@ interface IProgressBarState extends IControlState
 //class ProgressBarBase<P extends IProgressBarProps = {}, S extends IProgressBarState = {}> extends Control<P, S>
 export class ProgressBar extends Control<IProgressBarProps, IProgressBarState>
 {
-    static DefaultStyle: Style<IProgressBarProps> = new Style<IProgressBarProps>(
+    static DefaultStyle: WebStyle<IProgressBarProps> = new WebStyle<IProgressBarProps>(
         {
             Denominator: 1,
             Template: new ControlTemplate((templatedParent: ProgressBar) =>

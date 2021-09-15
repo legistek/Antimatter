@@ -344,15 +344,32 @@ namespace AntimatterJS.Sample.AppModel
                     IncreaseAgeCommand,
                     DecreaseAgeCommand,
                     FireCommand,
-                    MakeBonusEligibleCommand,
-                    DoSomethingElseCommand,
-                    EditCommand,
-                    IncreaseAgeCommand,
-                    DecreaseAgeCommand,
-                    FireCommand,                   
+                    DisabledCommand
                 });
             }
         }
+        #endregion
+
+        #region IUICommand Disabled Command
+
+        private Command _DisabledCommand;
+        public Command DisabledCommand
+        {
+            get
+            {
+                return _DisabledCommand ?? (_DisabledCommand = new Command(
+                    (arg) =>
+                    {                        
+                    })
+                {
+                    Name = "Disabled",
+                    Icon = 0xF00C,                    
+                    IsEnabled = false,
+                    ToolTip = "Increase this person's age"
+                });
+            }
+        }
+
         #endregion
 
         #region IUICommand IncreaseAge Command

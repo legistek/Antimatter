@@ -1,66 +1,70 @@
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { getTheme } from '@fluentui/react';
-import { Style } from '../Style';
+import { WebStyle } from '../Style';
+import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 
 export interface ITextBlockProps extends IFrameworkElementProps
 {
     Text?: string | Binding | undefined,
-    Foreground?: string | Binding,
-    FontFamily?: string,
-    FontSize?: number|string,
+    Foreground?: string | Binding | ThemeColor | SemanticColor,
+    FontFamily?: string | FontStyle,
+    FontSize?: string | FontStyle,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 interface ITextBlockState extends IFrameworkElementState
 {
     Text?: string | undefined,
-    Foreground?: string,
-    FontFamily?: string,
-    FontSize?: number|string,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState>
 {
-    static theme = getTheme();
     static displayName = TextBlock.name;
 
-    public static DefaultStyle: Style<ITextBlockProps> = new Style<ITextBlockProps>(
+    public static DefaultStyle: WebStyle<ITextBlockProps> = new WebStyle<ITextBlockProps>(
         {
-        },
-        {
-            Selector: "@",
-            Rules: {
-                fontFamily: TextBlock.theme.fonts.medium.fontFamily,
-                fontSize: "14px"
-                //margin: "5px",
-                //transform: "translate(0, -6%)"
-            },
-        },
-        //{
-        //    Selector: ".amx-ptn-wrap-panel:first-child@",
-        //    Rules: {
-        //        marginLeft: "0px",
-        //    }
-        //},
-        //{
-        //    Selector: ".amx-ptn-vstack > @",
-        //    Rules: {
-        //        marginLeft: "0px",
-        //    }
-        //}
-
+            Foreground: Theme.Value(SemanticColor.BodyText),
+            FontFamily: Theme.Value(FontStyle.FontFamily),
+            FontSize: Theme.Value(FontStyle.Medium),
+            FontWeight: "normal"
+        },    
     );
 
-    public static DialogHeaderStyle = new Style(
+    public static DialogHeaderStyle = new WebStyle(
+        {            
+            FontSize: FontStyle.Large
+        },
+        undefined,
+        TextBlock.DefaultStyle);
+
+    public static ControlSectionHeaderStyle = new WebStyle(
         {
-            //FontWeight: "bold",
-            FontSize: TextBlock.theme.fonts.large.fontSize
-        });
+            FontWeight: "bold"
+        },
+        undefined,
+        TextBlock.DefaultStyle);
+
+    public get Foreground(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Foreground));
+    }
+
+    public get FontFamily(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.FontFamily));
+    }
+
+    public get FontSize(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.FontSize));
+    }
 
     public static DefaultBindings = {
         Text: {
             FallbackValue: '...'
+        },
+        FontSize: {
+            Converter: (size) => typeof(size) === "number" ? `${size}px` : size
         }
     };
 
@@ -74,9 +78,9 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         return Object.assign(
             super.getCSSStyles(),
             {
-                color: this.state.Foreground,
-                fontFamily: this.state.FontFamily,
-                fontSize: this.state.FontSize,
+                color: this.Foreground,
+                fontFamily: this.FontFamily,
+                fontSize: this.FontSize,
                 fontWeight: this.state.FontWeight
             });
     }
