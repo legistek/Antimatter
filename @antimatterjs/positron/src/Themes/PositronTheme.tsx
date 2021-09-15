@@ -2,7 +2,7 @@ import { IThemeFontStyle, IThemeLayout, IThemePalette, Theme } from '../Theme'
 
 export class PositronTheme extends Theme
 {
-    public readonly Palette: IThemePalette = {
+    public readonly Palette2: IThemePalette = {
         ThemePrimary:  "#FF0000", //'#2e70e0',
         ThemeLighterAlt: "#FF2020", // '#f6f9fe',
         ThemeLighter: "#FF3030", // '#dae6fa',
@@ -33,7 +33,7 @@ export class PositronTheme extends Theme
         LightGreen: '#60A0A0'
     };
 
-    public readonly Palette2: IThemePalette = {
+    public readonly Palette: IThemePalette = {
         ThemePrimary: '#2e70e0',
         ThemeLighterAlt: '#f6f9fe',
         ThemeLighter: '#dae6fa',

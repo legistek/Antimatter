@@ -111,16 +111,6 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         return this.GetValue(nameof(this.props.FontWeight));
     }
 
-    public TemplateProp(name: string): string
-    {
-        if (this.state.Style instanceof WebStyle &&
-            !(this.state.Style as WebStyle<any>).TemplateHasRendered)
-        {
-            (this.state.Style as WebStyle<any>).TemplateProps.add(name);
-        }
-        return `var(--prop-${name}${this.state.Style?._styleID})`;
-    }
-
     override OnComponentMount()
     {
         if (this.state.Style instanceof WebStyle)

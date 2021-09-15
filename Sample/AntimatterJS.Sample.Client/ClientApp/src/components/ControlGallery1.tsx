@@ -112,6 +112,7 @@ export default class ControlGallery1 extends View
                                 <TextBlock Text="Circle Button" Style={TextBlock.ControlSectionHeaderStyle} />
                                 <CommandButton
                                     Background="blue"
+                                    Foreground="yellow"
                                     HorizontalAlignment={HorizontalAlignment.Center}
                                     Style={CommandButton.CircleButtonStyle}
                                     Icon={0xE90C} />

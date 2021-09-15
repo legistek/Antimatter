@@ -25,16 +25,27 @@ export interface ITextBoxProps extends IControlProps, ITextBoxCommon
 }
 export interface ITextBoxState extends IControlState, ITextBoxCommon
 {
-    Text?: string,
-    Label?: string,
     ValidationError?: string,
     IconName?: string
 }
 
 export class TextBox extends Control<ITextBoxProps, ITextBoxState>
 {
-    _field: ITextField | null = null;
-    
+    public get Text(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Text));
+    }
+
+    public get Label(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Label));
+    }
+
+    public get ValidationError(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.ValidationError));
+    }
+
     public static DefaultBindings = {
         Text: {
             Mode: BindingMode.TwoWay,
@@ -47,6 +58,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,
             Foreground: SemanticColor.BodyText,
+            Background: SemanticColor.BodyBackground,
             BorderThickness: ThemeLayout.StandardBorder,
             Padding: "5px",
             FontSize: FontStyle.Medium,
@@ -55,12 +67,23 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                     <TextBlock
                         ClassName="tb-label"
                         FontWeight="bold"
-                        Foreground={templatedParent.TemplateProp(nameof<ITextBoxProps>(p => p.Foreground))}
-                        Text={templatedParent.state.Label} />
+                        Foreground={TemplateProp(nameof<ITextBoxProps>(p => p.Foreground))}
+                        Text={templatedParent.Label} />
 
                     <Panel TabIndex={-1} ClassName="tb-input-panel">
                         <input
-                            onFocus={() => templatedParent.IsFocused = true}
+                            ref={r => templatedParent._input = r}
+                            value={templatedParent.Text}
+                            onChange={(e) =>
+                            {
+                                templatedParent.SetValue(nameof(templatedParent.Text), templatedParent._input?.value)
+                            }}
+                            onFocus={() =>
+                            {
+                                templatedParent.IsFocused = true;
+                                if (templatedParent.SelectOnFocus)
+                                    templatedParent._input?.select();
+                            }}
                             onBlur={() => templatedParent.IsFocused = false}
                             className="tb-input" />
                     </Panel>
@@ -73,9 +96,9 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             "@ .tb-label": {
                 gridRow: 1,
             },
-            "@ .tb-input": {                
+            "@ .tb-input": {
                 gridRow: 2,
-                background: TemplateProp(nameof<ITextBoxProps> (p => p.Background)),
+                background: TemplateProp(nameof<ITextBoxProps>(p => p.Background)),
                 borderColor: TemplateProp(nameof<ITextBoxProps>(p => p.BorderBrush)),
                 borderWidth: TemplateProp(nameof<ITextBoxProps>(p => p.BorderThickness)),
                 padding: TemplateProp(nameof<ITextBoxProps>(p => p.Padding)),
@@ -101,11 +124,18 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 borderWidth: "2px",
                 borderStyle: "solid",
                 borderColor: Theme.Value(SemanticColor.FocusBorder)
+            },
+            "@.validation-error .tb-input": {
+                background: Theme.Value(SemanticColor.ErrorBackground),
+                borderColor: Theme.Value(SemanticColor.Error)
+            },
+            "@.validation-error.focused .tb-input-panel::after": {
+                borderColor: Theme.Value(SemanticColor.Error)
             }
         }
     );
 
-    static DefaultStyle_b: WebStyle<ITextBoxProps> = new WebStyle(
+    static DefaultStyle_a: WebStyle<ITextBoxProps> = new WebStyle(
         {
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,
@@ -160,15 +190,15 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                         },
                     }}
                     autoAdjustHeight={true}
-                    label={templatedParent.state.Label}
+                    label={templatedParent.Label}
                     value=
                     {
-                        (templatedParent.state.Text === null || templatedParent.state.Text === undefined)
+                        (templatedParent.Text === null || templatedParent.Text === undefined)
                             ? ''
-                            : templatedParent.state.Text
+                            : templatedParent.Text
                     }
                     onChange={(event, newValue) =>
-                        templatedParent.SetValue(nameof(templatedParent.state.Text), newValue)
+                        templatedParent.SetValue(nameof(templatedParent.Text), newValue)
                     }
                     //onGetErrorMessage={(value: string) =>
                     //{
@@ -225,7 +255,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
 
     private get IsInvalid(): boolean
     {
-        return this.GetValue(nameof(this.state.ValidationError));
+        return this.ValidationError !== undefined;
     }
 
     private _isFocused: boolean = false;
@@ -250,9 +280,10 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
 
     NotifyValidationError(error?: string)
     {
-        if (this.state.ValidationError !== error)
-        {            
-            this.setState({ ValidationError: error });
-        }
+        if (this.ValidationError !== error)
+            this.SetValue(nameof(this.props.ValidationError), error, true, true);
     }
+
+    _field: ITextField | null = null;
+    _input: HTMLInputElement | null = null;
 }

@@ -41,7 +41,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
         }
     };
 
-    private static get Template(): ControlTemplate
+    private static get template(): ControlTemplate
     {
         return new ControlTemplate((templatedParent: DatePicker) =>
         {
@@ -121,7 +121,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
     static DefaultStyle: WebStyle<IDatePickerProps> = new WebStyle<IDatePickerProps>(
         {
             FontFamily: FontStyle.FontFamily,
-            Template: DatePickerBase.Template
+            Template: DatePickerBase.template
         },
         {
             "@ .ms-Label": {

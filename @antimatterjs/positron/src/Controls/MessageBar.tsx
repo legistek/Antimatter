@@ -43,13 +43,13 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
 
     public static DefaultStyle: WebStyle<IMessageBarProps> = new WebStyle<IMessageBarProps>(
         {
-            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.Template)
+            Template: new ControlTemplate((templatedParent: MessageBar) => templatedParent.template)
         }
     );
 
     private _timeout;
 
-    private get Template(): JSX.Element
+    private get template(): JSX.Element
     {
         if (this.state.Duration && !this._timeout)
         {
