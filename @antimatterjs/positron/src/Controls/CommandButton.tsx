@@ -249,18 +249,22 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         {
             "@ .ms-Button": {
                 minWidth: "90px",
+                color: Theme.Value(SemanticColor.ButtonText),
                 background: Theme.Value(SemanticColor.ButtonBackground),
                 borderColor: Theme.Value(SemanticColor.ButtonBorder),
             },
             "@ .ms-Button:hover": {
+                color: Theme.Value(SemanticColor.ButtonTextHovered),
                 background: Theme.Value(SemanticColor.ButtonBackgroundHovered),
                 borderColor: Theme.Value(SemanticColor.InputBorderHovered),
             },
             "@.btn-default .ms-Button": {
+                color: Theme.Value(SemanticColor.PrimaryButtonText),
                 background: Theme.Value(SemanticColor.PrimaryButtonBackground),
                 borderColor: Theme.Value(SemanticColor.PrimaryButtonBackground)
             },
             "@.btn-default .ms-Button:hover": {
+                color: Theme.Value(SemanticColor.PrimaryButtonTextHovered),
                 background: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
                 borderColor: Theme.Value(SemanticColor.PrimaryButtonBackgroundHovered),
             },

@@ -7,6 +7,7 @@ import { ControlTemplate } from '../FrameworkTemplate';
 import { FontStyle, ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
 import { WebStyle } from '../Style';
 import { WindowLayoutContext } from './Window';
+import { CSSClasses } from '../CSSClasses';
 
 export interface IControlProps extends IFrameworkElementProps
 {
@@ -22,7 +23,8 @@ export interface IControlProps extends IFrameworkElementProps
     BoxShadow?: string | Binding,
     InfoTip?: Binding | string,
     TeachingBubbleParams?: ModelObjectReference | Binding,
-    TeachingBubbleIsOpen?: BindingParameters
+    TeachingBubbleIsOpen?: BindingParameters,
+    ValidationError?: string,
 }
 
 export interface IControlState extends IFrameworkElementState
@@ -50,6 +52,16 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     public set Layout(value: WindowLayout)
     {
         this._layout = value;
+    }
+
+    public get ValidationError(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.ValidationError));
+    }
+
+    public get IsInvalid(): boolean
+    {
+        return this.ValidationError !== undefined;
     }
 
     public get Template(): ControlTemplate | ((templatedParent: any) => JSX.Element) | undefined
@@ -178,6 +190,18 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         }
 
         return styles;
+    }
+
+    override constructClasses()
+    {
+        return super.constructClasses()
+            + (this.IsInvalid ? ` ${CSSClasses.ValidationError} ` : "");
+    }
+
+    NotifyValidationError(error?: string)
+    {
+        if (this.ValidationError !== error)
+            this.SetValue(nameof(this.props.ValidationError), error, true, true);
     }
 
     private SetupTemplateProps(styles: React.CSSProperties, names: Set<string>)

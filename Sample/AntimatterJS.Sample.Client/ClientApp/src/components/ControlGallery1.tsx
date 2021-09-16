@@ -187,6 +187,13 @@ export default class ControlGallery1 extends View
                                     ItemsSource={new Binding("Company.CEO.Underlings")}
                                     ItemTemplate={ControlGallery1.EmployeeTemplate} />
 
+                                <ComboBox
+                                    Label="Invalid"
+                                    SelectedItem={new Binding("Company.CEO")}
+                                    ValidationError="This is an invalid choice"
+                                    ItemsSource={new Binding("Company.CEO.Underlings")}
+                                    ItemTemplate={ControlGallery1.EmployeeTemplate} />
+
                             </WrapPanel>
 
                             <ComboBox

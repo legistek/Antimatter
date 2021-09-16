@@ -22,8 +22,7 @@ export interface ITextBoxProps extends IControlProps
     Text?: string | Binding,
     PlaceholderText?: string | Binding,
     Label?: string | Binding,
-    Icon?: number | string | Binding,
-    ValidationError?: string,
+    Icon?: number | string | Binding,    
     SelectOnFocus?: boolean|Binding,
 }
 export interface ITextBoxState extends IControlState
@@ -94,11 +93,6 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         return this.GetValue(nameof(this.props.Label));
     }
 
-    public get ValidationError(): string | undefined
-    {
-        return this.GetValue(nameof(this.props.ValidationError));
-    }
-
     public get IsReadOnly(): boolean
     {
         return this.GetValue(nameof(this.props.IsReadOnly), false);
@@ -113,12 +107,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
     {
         return this.GetValue(nameof(this.props.IsPassword), false);
     }
-
-    private get IsInvalid(): boolean
-    {
-        return this.ValidationError !== undefined;
-    }
-
+    
     private get SafeText(): string
     {
         if (!this.Text)
@@ -346,17 +335,17 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 borderStyle: "solid",
                 borderColor: Theme.Value(SemanticColor.FocusBorder)
             },
-            "@.validation-error .tb-input": {
+            [`@.${CSSClasses.ValidationError} .tb-input`]: {
                 marginRight: "24px"
             },
-            "@.validation-error .tb-input-panel": {
+            [`@.${CSSClasses.ValidationError} .tb-input-panel`]: {
                 background: Theme.Value(SemanticColor.ErrorBackground),
                 borderColor: Theme.Value(SemanticColor.Error)
             },
-            "@.validation-error.focused .tb-input-panel::after": {
+            [`@.${CSSClasses.ValidationError}.focused .tb-input-panel::after`]: {
                 borderColor: Theme.Value(SemanticColor.Error)
             },
-            "@.validation-error .tb-warning-glyph": {
+            [`@.${CSSClasses.ValidationError} .tb-warning-glyph`]: {
                 cursor: "pointer"
             },
             [Control.DisabledElement("tb-label")]: {
@@ -371,20 +360,13 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         }
     );
     
-    constructClasses()
+    override constructClasses()
     {
-        return super.constructClasses()
-            + (this.IsInvalid ? " validation-error " : "")
+        return super.constructClasses()            
             + (this.IsFocused ? " focused " : "")
             + (this.IsReadOnly ? " read-only " : "")
             + (this.Icon ? " has-icon " : "")
             + (this.AcceptsReturn ? " accepts-return " : "");
-    }
-
-    NotifyValidationError(error?: string)
-    {
-        if (this.ValidationError !== error)
-            this.SetValue(nameof(this.props.ValidationError), error, true, true);
     }
 
     _field: ITextField | null = null;

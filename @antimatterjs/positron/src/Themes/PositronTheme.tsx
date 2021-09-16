@@ -82,6 +82,7 @@ export class PositronTheme extends Theme
     }
 
     public override readonly Layout: IThemeLayout = {
-        StandardBorder: "1px"
+        StandardBorder: "1px",
+        ControlSpacing: "10px"
     }
 }

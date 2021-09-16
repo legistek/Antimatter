@@ -16,6 +16,7 @@ import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItem
 import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 import { FontStyle, ThemeColor, SemanticColor, Theme, ThemeLayout } from '../Theme';
 import { Control } from './Control';
+import { CSSClasses } from '../CSSClasses';
 
 export interface IComboBoxProps extends ISelectorProps
 {
@@ -111,7 +112,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             Template: new ControlTemplate((templatedParent: ComboBox) =>
                 <>
                     <Grid
-                        ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                        ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
                         RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                         {
                             templatedParent.Label &&
@@ -137,8 +138,17 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                                     <span className="cb-placeholder">{templatedParent.PlaceholderText}</span>
                                 )
                             }
+
+                            {
+                                templatedParent.IsInvalid &&
+                                (<Glyph Icon="Warning"
+                                    Margin="0px 0px 0px 5px"
+                                    Foreground={SemanticColor.Error}
+                                    ToolTip={templatedParent.ValidationError}/>)
+                            }
+
                             <Glyph
-                                Grid={{ Column: 1 }}
+                                Grid={{ Column: 2 }}
                                 Icon="ChevronDown"
                                 Margin="0px 0px 0px 5px"
                                 Foreground={ThemeColor.NeutralSecondary}
@@ -225,6 +235,13 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             [Control.DisabledElement("panel > *")]: {
                 color: Theme.Value(SemanticColor.DisabledBodyText)
             },
+            [`@.${CSSClasses.ValidationError} .panel`]: {
+                background: Theme.Value(SemanticColor.ErrorBackground),
+                borderColor: Theme.Value(SemanticColor.Error),
+            },
+            [`@.${CSSClasses.ValidationError} .panel:focus::after`]: {
+                borderColor: Theme.Value(SemanticColor.Error),
+            }
         }
     );
 
@@ -271,7 +288,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
     protected TogglePopup(): void
     {
-        if (!this.IsEnabled || this.PopupIsOpen)
+        if (!this.IsEnabled)
             return;
         this.PopupIsOpen = !this.PopupIsOpen;
     }

@@ -5,7 +5,7 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
-import { ThemeColor, SemanticColor } from '../Theme';
+import { ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
@@ -17,6 +17,7 @@ export interface IPanelProps extends IFrameworkElementProps
     BorderBrush?: string | Binding | ThemeColor | SemanticColor,
     BorderThickness?: string | Binding,
     Foreground?: string | Binding | ThemeColor | SemanticColor,
+    ItemSpacing?: string | ThemeLayout,
     Padding?: string,
     BoxShadow?: string,
     ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
@@ -48,6 +49,11 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         super(props);
         if (props.ItemsParent)        
             props.ItemsParent.ItemsPanelInstance = this;
+    }
+
+    public get ItemSpacing(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.ItemSpacing));
     }
 
     public get Background(): string | undefined

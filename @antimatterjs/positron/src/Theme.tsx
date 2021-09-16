@@ -33,6 +33,7 @@ export enum ThemeColor
 export interface IThemeLayout
 {
     StandardBorder: string,
+    ControlSpacing: string,
 }
 
 export interface IThemePalette
@@ -108,6 +109,7 @@ export class Theme
 
     public readonly Layout: IThemeLayout = {
         StandardBorder: '1px',
+        ControlSpacing: '7px'
     }
 
     public readonly Palette: IThemePalette = {
@@ -188,6 +190,7 @@ export enum FontStyle
 export enum ThemeLayout
 {
     StandardBorder = 102000000000,
+    ControlSpacing,
 }
 
 export enum SemanticColor
@@ -258,7 +261,7 @@ export enum SemanticColor
     DefaultStateBackground = ThemeColor.NeutralLighterAlt,
     ActionLinkHovered = ThemeColor.NeutralDark,
 
-    ButtonTextHovered = ThemeColor.NeutralDark,
+    ButtonTextHovered = ThemeColor.NeutralSecondary,
     ButtonTextChecked = ThemeColor.NeutralDark,
     ButtonTextPressed = ThemeColor.NeutralDark,
     InputTextHovered = ThemeColor.NeutralDark,

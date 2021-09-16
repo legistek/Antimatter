@@ -274,7 +274,7 @@ export class TabControlBase<
         this.CheckTabPanelOverflow();
     }
 
-    protected /* override */ OnComponentMount()
+    public override OnComponentMount()
     {
         var elem = this._tabList?.ItemsPanelInstance?.Container;
         if (!elem)

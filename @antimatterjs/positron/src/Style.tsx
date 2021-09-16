@@ -102,7 +102,9 @@ export class WebStyle<T> extends Style<T>
     {
         if (!this._applied)
         {
-            Utilities.AddStyleSheet(this.CreateStyleSheet(this._sheet));
+            var ss = this.CreateStyleSheet(this._sheet);
+            if (ss)
+                Utilities.AddStyleSheet(ss);
             this._applied = true;
         }
         return this.GetClassName();
@@ -113,11 +115,12 @@ export class WebStyle<T> extends Style<T>
         return `ptnst${this._styleID}`;
     }
 
-    private CreateStyleSheet(classes: ICSSSheet|undefined): string
+    private CreateStyleSheet(classes: ICSSSheet|undefined): string|undefined
     {
         let s: string[] = [];
 
         let didRoot: boolean = false;
+        let didAny: boolean = true;
 
         if (classes)
         {
@@ -132,7 +135,7 @@ export class WebStyle<T> extends Style<T>
                     didRoot = true;
                     var propEntries = Object.entries(this.Setters);
                     for (const entry of propEntries)
-                        this.CreateStyleProps(entry, s);
+                        didAny = this.CreateStyleProps(entry, s) || didAny; 
                 }
 
                 var entries = Object.entries(cssClass[1]);
@@ -148,9 +151,12 @@ export class WebStyle<T> extends Style<T>
             s.push(`.${this.GetClassName()} {\n`);
             var propEntries = Object.entries(this.Setters);
             for (const entry of propEntries)
-                this.CreateStyleProps(entry, s);
+                didAny = this.CreateStyleProps(entry, s) || didAny;
             s.push("}\n");
         }
+
+        if (!didAny)
+            return undefined;
 
         return "".concat(...s);
     }
@@ -167,15 +173,16 @@ export class WebStyle<T> extends Style<T>
         return val;
     }
 
-    private CreateStyleProps(entry: [string, any], sheet: string[])
+    private CreateStyleProps(entry: [string, any], sheet: string[]): boolean
     {
         var val = entry[1];
         if (typeof (val) === "number" &&
             (val as number) >= Theme.FirstResourceId)
             val = Theme.Value(val as number);
         else if (typeof (val) !== "string")
-            return;        
+            return false;
         sheet.push(`\t--prop-${entry[0]}${this._styleID}: ${val};\n`);
+        return true;
     }
     
     private GetCSSKey(style: string)
