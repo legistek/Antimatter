@@ -1,5 +1,7 @@
 import React from "react";
 
+import * as Model from '../model/Model';
+
 import { Binding, BindingMode, INotifyPropertyChanged, PropertyChangedEventArgs } from "@antimatterjs/react";
 import { DefaultEffects } from "@fluentui/react";
 
@@ -8,13 +10,20 @@ import
     CommandButton, PinnablePanelState, DocumentViewer,
     Grid, HorizontalAlignment, IDocument, IViewProps, IViewState,
     Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility,
-    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle
+    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle, DataTemplate
 } from "@antimatterjs/positron";
 import { Employee } from "./Company";
 import { Icon } from "@fluentui/react";
 
 export default class ControlGallery1 extends View
 {
+    private static EmployeeTemplate = new DataTemplate(item => (
+        <TextBlock
+            Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
+            VerticalAlignment={VerticalAlignment.Center}
+            Style={ComboBox.DefaultTextblockStyle}
+        />));
+
     override View()
     {
         return (
@@ -125,7 +134,9 @@ export default class ControlGallery1 extends View
                     Label: "Boxes",
                     Key: "boxes",
                     Content: (
-                        <StackPanel>                            
+                        <StackPanel>
+                            <TextBlock Text="TextBox" Style={TextBlock.ControlSectionHeaderStyle} />
+
                             <TextBox
                                 MaxHeight="200px"
                                 Label="HStretch and Accept Return"
@@ -145,19 +156,35 @@ export default class ControlGallery1 extends View
                                 <TextBox Label="No Auto-select" SelectOnFocus={false} Text="Why would you want to do this?" />
                                 <TextBox Label="Validation Error"
                                     Text="Invalid Text"
-                                    ValidationError="Invalid Input"
-                                />
-                                <TextBox Label="Customized"
-                                    FontFamily="Courier New"
-                                    Background="Yellow"
-                                    BorderBrush="Purple"
-                                    BorderThickness="3px"
-                                    Foreground="Orange"
-                                    Padding="15px"
-                                    FontSize={FontStyle.ExtraLarge}
-                                    Text="Customized Text"
-                                />
+                                    ValidationError="Invalid Input"/>                                
                             </WrapPanel>
+
+                            <TextBox Label="Customized"
+                                FontFamily="Courier New"
+                                Background="Yellow"
+                                BorderBrush="Purple"
+                                BorderThickness="3px"
+                                Foreground="Orange"
+                                Padding="15px"
+                                FontSize={FontStyle.ExtraLarge}
+                                Text="Customized Text" />
+
+                            <TextBlock Text="ComboBox" Style={TextBlock.ControlSectionHeaderStyle} />
+
+                            <WrapPanel>
+
+                                <ComboBox
+                                    Label="Normal"
+                                    ItemsSource={new Binding("Company.CEO.Underlings")}
+                                    ItemTemplate={ControlGallery1.EmployeeTemplate} />
+
+                                <ComboBox
+                                    Label="Disabled"
+                                    ItemsSource={new Binding("Company.CEO.Underlings")}
+                                    ItemTemplate={ControlGallery1.EmployeeTemplate} />
+
+                            </WrapPanel>
+
                         </StackPanel>)
                 }
 

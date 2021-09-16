@@ -3,7 +3,7 @@ import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@anti
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { WebStyle } from '../Style';
+import { TemplateProp, WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
 import { Grid, IColumnDefinition } from './Grid';
@@ -14,29 +14,57 @@ import { ITextBlockProps, TextBlock } from './TextBlock';
 import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
     from './Primitives/SelectableItemControl';
 import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
-import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
+import { FontStyle, ThemeColor, SemanticColor, Theme, ThemeLayout } from '../Theme';
 import { Control } from './Control';
 
 export interface IComboBoxProps extends ISelectorProps
 {
     Label?: string | Binding,
+    MaxDropdownHeight?: string | Binding,
     TitleOverride?: DataTemplate | string | Binding,
     PreventAutoCheckboxes?: boolean | Binding,
     PlaceholderText?: string | Binding
 }
 export interface IComboBoxState extends ISelectorState
-{
-    Label?: string,
+{    
     TitleOverride?: DataTemplate | string,
-    PreventAutoCheckboxes?: boolean,
-    PlaceholderText?: string,
-    PopupIsOpen?: boolean
+    PreventAutoCheckboxes?: boolean,        
 }
 
 export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
     extends Selector<P, S>
 {
-    private static DROPDOWN_MAX_HEIGHT: number = 400;    
+    public get Label(): string
+    {        
+        return this.GetValue(nameof(this.props.Label));
+    }
+
+    public get PlaceholderText(): string
+    {
+        return this.GetValue(nameof(this.props.PlaceholderText));
+    }
+
+    public get IsMultiSelect(): boolean
+    {
+        return this.props.SelectionMode == SelectionMode.Multiple;
+    }
+    
+    public get MaxDropdownHeight(): string
+    {
+        return this.GetValue(nameof(this.props.MaxDropdownHeight));
+    }
+
+    public get PopupIsOpen(): boolean
+    {
+        return this._popupIsOpen;
+    }
+    public set PopupIsOpen(value: boolean)
+    {
+        this.SetValue(nameof(this.PopupIsOpen), value, false);
+        this.PropertyChanged.invoke(
+            this,
+            new PropertyChangedEventArgs(nameof(this.PopupIsOpen)));
+    }
 
     public static DefaultBindings = {
         ItemsSource: {
@@ -51,31 +79,29 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             NotifyCollectionChanged: true
         }
     };
-
-    protected _button?: FrameworkElement | null;
-    public get IsMultiSelect(): boolean { return this.props.SelectionMode == SelectionMode.Multiple; }
-
+    
     public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
+            TabIndex: -1,
+            MaxDropdownHeight: "400px",            
             BorderBrush: SemanticColor.InputBorder,
+            BorderThickness: ThemeLayout.StandardBorder,
+            Background: SemanticColor.MenuBackground,
             Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.template),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
         {
             "@ .panel": {
                 cursor: 'pointer',
-                userSelect: 'none'
-            },
-            [Control.DisabledElement("panel")]: {
-                background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
-            },
-            [Control.DisabledElement("panel > *")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText)
+                userSelect: 'none',
+                background: TemplateProp(nameof<IComboBoxProps>(p => p.Background)),
+                borderWidth: TemplateProp(nameof<IComboBoxProps>(p => p.BorderThickness)),
+                borderColor: TemplateProp(nameof<IComboBoxProps>(p => p.BorderBrush)),
             },
             "@ .panel:hover": {
-                borderColor: Theme.Value(SemanticColor.InputBorderHovered) + " !important"
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered)
             },
             "@ .panel:focus::after": {
                 content: "''",
@@ -97,62 +123,62 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             },
             [Control.DisabledElement("cb-label")]: {
                 color: Theme.Value(SemanticColor.DisabledBodyText)
-            }
+            },
+            [Control.DisabledElement("panel")]: {
+                background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
+            },
+            [Control.DisabledElement("panel > *")]: {
+                color: Theme.Value(SemanticColor.DisabledBodyText)
+            },
         }
     );
 
     protected get template(): JSX.Element
-    {        
-        const dropdown: JSX.Element = (            
-            <Grid
-                ClassName="panel"
-                Grid={{Row: this.state.Label ? 1 : 0}}
-                ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
-                ref={r => this._button = r}
-                OnClick={() => this.TogglePopup()}
-                OnKeyPress={(event) => this.OnKeyPressed(event)}
-                BorderBrush={this.BorderBrush} //Fluent equivalent: rgb(96, 96, 96) or #606060
-                BorderThickness="1px"
-                Padding="0"
-                Background={this.Background}
-                TabIndex={0}>
-                {this.TitleElem}
-                <Glyph
-                    Grid={{Column: 1}}
-                    Icon="ChevronDown"
-                    Foreground={ThemeColor.NeutralSecondary}
-                    HorizontalAlignment={HorizontalAlignment.Center}
-                    VerticalAlignment={VerticalAlignment.Center}
-                />
-            </Grid>);
-
-        const labeledDropdown: JSX.Element = (
+    {                
+        var root = (
             <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-                <TextBlock
-                    ClassName="cb-label"
-                    Grid={{Row: 0}}
-                    Text={this.state.Label}
-                    FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
-                    FontWeight={this.FontWeight ?? 600}
-                    FontFamily={this.FontFamily}
-                    Margin="0px"/>
-                {dropdown}
+                {
+                    this.Label &&
+                    (<TextBlock
+                        ClassName="cb-label"
+                        Grid={{ Row: 0 }}
+                        Text={this.Label}
+                        FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
+                        FontWeight={this.FontWeight ?? 600}
+                        FontFamily={this.FontFamily}
+                        Margin="0px" />)
+                }
+                <Grid
+                    ClassName="panel"
+                    ref={r => this._button = r}
+                    Grid={{ Row: 1 }}
+                    ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
+                    OnClick={() => this.TogglePopup()}
+                    OnKeyPress={(event) => this.OnKeyPressed(event)}>
+                    {this.TitleElem}
+                    <Glyph
+                        Grid={{ Column: 1 }}
+                        Icon="ChevronDown"
+                        Foreground={ThemeColor.NeutralSecondary}
+                        HorizontalAlignment={HorizontalAlignment.Center}
+                        VerticalAlignment={VerticalAlignment.Center}
+                    />
+                </Grid>
             </Grid>
         );
-
-        const root: JSX.Element = this.state.Label ? labeledDropdown : dropdown;
+        
         const elem: JSX.Element = (
             <>
                 {root}
                 <Popup
                     IsOpen={new Binding({
                         Source: this,
-                        Path: nameof(this.state.PopupIsOpen),
+                        Path: nameof(this.PopupIsOpen),
                         Mode: BindingMode.TwoWay
                     })}
                     Target={() => this._button}
                     Width={this._button?.Container?.clientWidth}
-                    MaxHeight={ComboBox.DROPDOWN_MAX_HEIGHT}
+                    MaxHeight={this.MaxDropdownHeight}
                     Padding="0">
                     <StackPanel ItemsParent={this} />
                 </Popup>
@@ -162,7 +188,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         return elem;
     }
 
-    public /* override */ GetContainerForItemOverride()
+    public override GetContainerForItemOverride()
     {
         return ComboBoxItem;
     }
@@ -191,24 +217,12 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         return elem;
     }
 
-    /* protected override */ OnSelectionChanged()
+    override OnSelectionChanged()
     {
         if (!this.IsMultiSelect)
             this.PopupIsOpen = false;
         super.OnSelectionChanged();
     }
-
-    public get PopupIsOpen(): boolean
-    {
-        if (this.state.PopupIsOpen !== undefined)
-            return this.state.PopupIsOpen as boolean;
-        return false;
-    }
-    public set PopupIsOpen(value: boolean)
-    {
-        this.SetValue(nameof(this.state.PopupIsOpen), value, false);
-        this.PropertyChanged.invoke(this, new PropertyChangedEventArgs(nameof(this.state.PopupIsOpen)));
-    }    
 
     protected TogglePopup(): void
     {
@@ -243,7 +257,8 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             return this.ConstructTitleFromString(joined);
         }
 
-        //For standard single-selection, use the item template for the selected item w/o the ItemContainerStyle applied
+        // For standard single-selection, use the item template 
+        // for the selected item w / o the ItemContainerStyle applied
         if (this.state.SelectedItem)
             return this.GetTemplateForItem(this.state.SelectedItem)(this.state.SelectedItem);
         return this.PlaceholderElem;
@@ -251,8 +266,8 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
     private get PlaceholderElem(): JSX.Element | undefined
     {
-        if (this.state.PlaceholderText)
-            return this.ConstructTitleFromString(this.state.PlaceholderText)
+        if (this.PlaceholderText)
+            return this.ConstructTitleFromString(this.PlaceholderText)
     }
 
     //Format string as title-friendly element that looks consistent (whitespace-wise) w/ DefaultItemTemplate
@@ -263,11 +278,13 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         const elem: JSX.Element = (
             <TextBlock
                 Text={text}
-                Margin="5px 6px"
-            />
+                Margin="5px 6px"/>
         );
         return elem;
     }
+
+    private _popupIsOpen: boolean = false;
+    private _button?: FrameworkElement | null;
 }
 
 class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelectableItemControlState = {}>

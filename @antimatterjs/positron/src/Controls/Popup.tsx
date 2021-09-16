@@ -20,7 +20,7 @@ export interface IPopupProps extends IPanelProps
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
-    MaxHeight?: number,
+    MaxHeight?: number|string,
     Width?: number
 }
 export interface IPopupState extends IPanelState
@@ -30,7 +30,7 @@ export interface IPopupState extends IPanelState
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
-    MaxHeight?: number,
+    MaxHeight?: number|string,
     Width?: number
 }
 
@@ -62,6 +62,9 @@ export class PopupBase<
                         backdropFilter: this.state.Blur
                             ? `blur(${this.state.Blur}px)`
                             : undefined
+                    },
+                    calloutMain: {
+                        maxHeight: this.state.MaxHeight
                     }
                 }}
                 style={{
@@ -76,7 +79,7 @@ export class PopupBase<
                         this.SetValue(nameof(this.state.IsOpen), false)
                 }}
                 calloutWidth={this.state.Width}
-                calloutMaxHeight={this.state.MaxHeight}
+                //calloutMaxHeight={this.state.MaxHeight}
                 minPagePadding={0}
                 setInitialFocus>
                 {this.props.children}
