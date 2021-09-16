@@ -89,7 +89,50 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             BorderBrush: SemanticColor.InputBorder,
             BorderThickness: ThemeLayout.StandardBorder,
             Background: SemanticColor.MenuBackground,
-            Template: new ControlTemplate((templatedParent: ComboBox) => templatedParent.template),
+            Template: new ControlTemplate((templatedParent: ComboBox) => 
+                <>
+                    (<Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                        {
+                            templatedParent.Label &&
+                            (<TextBlock
+                                ClassName="cb-label"
+                                Grid={{ Row: 0 }}
+                                Text={templatedParent.Label}
+                                FontSize={templatedParent.FontSize ?? Theme.Value(FontStyle.Medium)}
+                                FontWeight={templatedParent.FontWeight ?? 600}
+                                FontFamily={templatedParent.FontFamily}
+                                Margin="0px" />)
+                        }
+                        <Grid
+                            ClassName="panel"
+                            ref={r => templatedParent._button = r}
+                            Grid={{ Row: 1 }}
+                            ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
+                            OnClick={() => templatedParent.TogglePopup()}
+                            OnKeyPress={(event) => templatedParent.OnKeyPressed(event)}>
+                            {templatedParent.TitleElem}
+                            <Glyph
+                                Grid={{ Column: 1 }}
+                                Icon="ChevronDown"
+                                Foreground={ThemeColor.NeutralSecondary}
+                                HorizontalAlignment={HorizontalAlignment.Center}
+                                VerticalAlignment={VerticalAlignment.Center}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Popup
+                        IsOpen={new Binding({
+                            Source: this,
+                            Path: nameof(templatedParent.PopupIsOpen),
+                            Mode: BindingMode.TwoWay
+                        })}
+                        Target={() => templatedParent._button}
+                        Width={templatedParent._button?.Container?.clientWidth}
+                        MaxHeight={templatedParent.MaxDropdownHeight}
+                        Padding="0">
+                        <StackPanel ItemsParent={templatedParent} />
+                    </Popup>
+                </>),
             ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
         },
         {
@@ -132,61 +175,6 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             },
         }
     );
-
-    protected get template(): JSX.Element
-    {                
-        var root = (
-            <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
-                {
-                    this.Label &&
-                    (<TextBlock
-                        ClassName="cb-label"
-                        Grid={{ Row: 0 }}
-                        Text={this.Label}
-                        FontSize={this.FontSize ?? Theme.Value(FontStyle.Medium)}
-                        FontWeight={this.FontWeight ?? 600}
-                        FontFamily={this.FontFamily}
-                        Margin="0px" />)
-                }
-                <Grid
-                    ClassName="panel"
-                    ref={r => this._button = r}
-                    Grid={{ Row: 1 }}
-                    ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
-                    OnClick={() => this.TogglePopup()}
-                    OnKeyPress={(event) => this.OnKeyPressed(event)}>
-                    {this.TitleElem}
-                    <Glyph
-                        Grid={{ Column: 1 }}
-                        Icon="ChevronDown"
-                        Foreground={ThemeColor.NeutralSecondary}
-                        HorizontalAlignment={HorizontalAlignment.Center}
-                        VerticalAlignment={VerticalAlignment.Center}
-                    />
-                </Grid>
-            </Grid>
-        );
-        
-        const elem: JSX.Element = (
-            <>
-                {root}
-                <Popup
-                    IsOpen={new Binding({
-                        Source: this,
-                        Path: nameof(this.PopupIsOpen),
-                        Mode: BindingMode.TwoWay
-                    })}
-                    Target={() => this._button}
-                    Width={this._button?.Container?.clientWidth}
-                    MaxHeight={this.MaxDropdownHeight}
-                    Padding="0">
-                    <StackPanel ItemsParent={this} />
-                </Popup>
-            </>
-        );
-
-        return elem;
-    }
 
     public override GetContainerForItemOverride()
     {
