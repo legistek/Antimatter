@@ -11,8 +11,8 @@ export interface IPanelProps extends IFrameworkElementProps
 {
     Width?: number | string | Binding,
     Height?: number | string | Binding,
-    MinWidth?: number,
-    MinHeight?: number,
+    MinWidth?: number | Binding,
+    MinHeight?: number | Binding,
     Background?: string | Binding | ThemeColor | SemanticColor,
     BorderBrush?: string | Binding | ThemeColor | SemanticColor,
     BorderThickness?: string | Binding,

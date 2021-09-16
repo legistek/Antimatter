@@ -440,6 +440,10 @@ export class FrameworkElement<
     {
     }
 
+    protected /* virtual */ OnElementRendered()
+    {
+    }
+
     protected /* virtual */ get ActualHorizontalAlignment(): HorizontalAlignment
     {
         return (this.state.HorizontalAlignment as HorizontalAlignment) === undefined
@@ -456,12 +460,14 @@ export class FrameworkElement<
 
     componentDidUpdate(prevProps)
     {
+        this.OnElementRendered();
         this.OnElementUpdated(prevProps);
     }
 
     readonly componentDidMount = () =>
     {
-        this.OnComponentMount();        
+        this.OnComponentMount();
+        this.OnElementRendered();
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 

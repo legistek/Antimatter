@@ -20,8 +20,9 @@ export interface IPopupProps extends IPanelProps
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
-    MaxHeight?: number|string,
-    Width?: number
+    MaxHeight?: number,
+    Width?: number | Binding,
+    MaxWidth?: number | Binding,
 }
 export interface IPopupState extends IPanelState
 {
@@ -30,7 +31,7 @@ export interface IPopupState extends IPanelState
     Target?: () => FrameworkElement | undefined | null,
     Placement?: PlacementMode,
     StaysOpen?: boolean,
-    MaxHeight?: number|string,
+    MaxHeight?: number,
     Width?: number
 }
 
@@ -62,9 +63,6 @@ export class PopupBase<
                         backdropFilter: this.state.Blur
                             ? `blur(${this.state.Blur}px)`
                             : undefined
-                    },
-                    calloutMain: {
-                        maxHeight: this.state.MaxHeight
                     }
                 }}
                 style={{
@@ -79,7 +77,8 @@ export class PopupBase<
                         this.SetValue(nameof(this.state.IsOpen), false)
                 }}
                 calloutWidth={this.state.Width}
-                //calloutMaxHeight={this.state.MaxHeight}
+                calloutMinWidth={Math.max(this.state.MinWidth || 0, this.TargetWidth || 0)}
+                calloutMaxHeight={this.state.MaxHeight}
                 minPagePadding={0}
                 setInitialFocus>
                 {this.props.children}
@@ -98,8 +97,20 @@ export class PopupBase<
             });
     }
 
-    /* private */ ComputeTarget(): Target
+    public override OnPropertyChanged(property: string, value: any, oldValue: any)
     {
+
+    }
+
+    private get TargetWidth(): number | undefined
+    {
+        if (!this.state.Target)
+            return undefined;
+        return this.state.Target()?.ActualWidth;
+    }
+
+    /* private */ ComputeTarget(): Target
+    {        
         if (this.state.Placement === PlacementMode.Mouse &&
             ButtonBase.LastMouseEvent)
             return ButtonBase.LastMouseEvent;

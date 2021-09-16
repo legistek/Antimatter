@@ -220,7 +220,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
         {            
             IsDefault: new Binding({ Path: "IsDefault", RelativeSourceMode: RelativeSourceMode.Self, RelativeSource: "Command" }),
             Padding: "8px",
-            Margin: "0px 5px",
+            // Margin: "0px 5px",
             Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                 templatedParent.IsDefault
                     ? (<PrimaryButton

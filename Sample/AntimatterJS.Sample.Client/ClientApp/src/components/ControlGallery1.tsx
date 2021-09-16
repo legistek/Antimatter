@@ -175,15 +175,33 @@ export default class ControlGallery1 extends View
 
                                 <ComboBox
                                     Label="Normal"
+                                    PlaceholderText="Select something!"
+                                    InfoTip="What does this thing do?"
                                     ItemsSource={new Binding("Company.CEO.Underlings")}
                                     ItemTemplate={ControlGallery1.EmployeeTemplate} />
 
                                 <ComboBox
                                     Label="Disabled"
+                                    IsEnabled={false}
+                                    SelectedItem={new Binding("Company.CEO")}
                                     ItemsSource={new Binding("Company.CEO.Underlings")}
                                     ItemTemplate={ControlGallery1.EmployeeTemplate} />
 
                             </WrapPanel>
+
+                            <ComboBox
+                                Label="Custom"
+                                Background="#D0D0D0"
+                                BorderBrush="#0080FF"
+                                BorderThickness="5px"
+                                FontFamily="Times New Roman"
+                                FontSize={28}
+                                HorizontalAlignment={HorizontalAlignment.Left}
+                                SelectedItem={"red"}
+                                ItemsSource={["red", "orange", "yellow", "green", "blue", "purple"]}
+                                ItemTemplate={new DataTemplate(item => (
+                                    <Panel HorizontalAlignment={HorizontalAlignment.Center} Width={50} Height={50} Background={item} />
+                                ))} />
 
                         </StackPanel>)
                 }

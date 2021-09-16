@@ -244,7 +244,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             (<Glyph
                                 ClassName="tb-warning-glyph"
                                 ToolTip={templatedParent.ValidationError}
-                                Margin={"0px 5px 0px 0px"}
+                                Margin={"0px 5px 0px 5px"}
                                 Overlaps={true}
                                 FontSize={FontStyle.Glyph1x}
                                 Foreground={ThemeColor.Red}
@@ -304,6 +304,9 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 borderColor: TemplateProp(nameof<ITextBoxProps>(p => p.BorderBrush)),
                 borderWidth: TemplateProp(nameof<ITextBoxProps>(p => p.BorderThickness)),
             },
+            "@ .tb-input-panel:hover": {
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered)
+            },
             "@.focused .tb-input-panel": {
                 borderColor: Theme.Value(SemanticColor.FocusBorder),
             },
@@ -344,7 +347,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 borderColor: Theme.Value(SemanticColor.FocusBorder)
             },
             "@.validation-error .tb-input": {
-                marginRight: "20px"
+                marginRight: "24px"
             },
             "@.validation-error .tb-input-panel": {
                 background: Theme.Value(SemanticColor.ErrorBackground),

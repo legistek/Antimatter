@@ -3,12 +3,12 @@ import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@anti
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
-import { TemplateProp, WebStyle } from '../Style';
+import { Style, TemplateProp, WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
 import { Grid, IColumnDefinition } from './Grid';
 import { Panel } from './Panel';
-import { Popup } from './Popup';
+import { PlacementMode, Popup } from './Popup';
 import { StackPanel } from './StackPanel';
 import { ITextBlockProps, TextBlock } from './TextBlock';
 import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
@@ -20,22 +20,23 @@ import { Control } from './Control';
 export interface IComboBoxProps extends ISelectorProps
 {
     Label?: string | Binding,
+    MinWidth?: string,
     MaxDropdownHeight?: string | Binding,
     TitleOverride?: DataTemplate | string | Binding,
     PreventAutoCheckboxes?: boolean | Binding,
     PlaceholderText?: string | Binding
 }
 export interface IComboBoxState extends ISelectorState
-{    
+{
     TitleOverride?: DataTemplate | string,
-    PreventAutoCheckboxes?: boolean,        
+    PreventAutoCheckboxes?: boolean,
 }
 
 export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
     extends Selector<P, S>
 {
     public get Label(): string
-    {        
+    {
         return this.GetValue(nameof(this.props.Label));
     }
 
@@ -48,19 +49,33 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
     {
         return this.props.SelectionMode == SelectionMode.Multiple;
     }
-    
+
     public get MaxDropdownHeight(): string
     {
         return this.GetValue(nameof(this.props.MaxDropdownHeight));
     }
 
+    private _popupWidth: number = 0;
+    public get PopupWidth(): number
+    {
+        return this._popupWidth;
+    }
+    public set PopupWidth(value: number)
+    {
+        this._popupWidth = value;
+        this.PropertyChanged.invoke(
+            this,
+            new PropertyChangedEventArgs(nameof(this.PopupWidth)));
+    }
+
+    private _popupIsOpen: boolean = false;
     public get PopupIsOpen(): boolean
     {
         return this._popupIsOpen;
     }
     public set PopupIsOpen(value: boolean)
     {
-        this.SetValue(nameof(this.PopupIsOpen), value, false);
+        this._popupIsOpen = value;
         this.PropertyChanged.invoke(
             this,
             new PropertyChangedEventArgs(nameof(this.PopupIsOpen)));
@@ -79,56 +94,78 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             NotifyCollectionChanged: true
         }
     };
-    
+
     public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
         {
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
-            TabIndex: -1,
-            MaxDropdownHeight: "400px",            
+            MinWidth: "150px",
+            PlaceholderText: " ",
+            FontSize: FontStyle.Medium,
+            FontFamily: FontStyle.FontFamily,
+            Padding: "5px",
+            MaxDropdownHeight: "400px",
             BorderBrush: SemanticColor.InputBorder,
             BorderThickness: ThemeLayout.StandardBorder,
             Background: SemanticColor.MenuBackground,
-            Template: new ControlTemplate((templatedParent: ComboBox) => 
+            Template: new ControlTemplate((templatedParent: ComboBox) =>
                 <>
-                    (<Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                    <Grid
+                        ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                        RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
                         {
                             templatedParent.Label &&
                             (<TextBlock
                                 ClassName="cb-label"
+                                FontWeight="bold"
+                                Foreground={TemplateProp(nameof<IComboBoxProps>(p => p.Foreground))}
                                 Grid={{ Row: 0 }}
-                                Text={templatedParent.Label}
-                                FontSize={templatedParent.FontSize ?? Theme.Value(FontStyle.Medium)}
-                                FontWeight={templatedParent.FontWeight ?? 600}
-                                FontFamily={templatedParent.FontFamily}
-                                Margin="0px" />)
+                                Text={templatedParent.Label} />)
                         }
                         <Grid
                             ClassName="panel"
+                            TabIndex={0}
                             ref={r => templatedParent._button = r}
-                            Grid={{ Row: 1 }}
-                            ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(28, false)]}
+                            Grid={{ Row: 1, Column: 0 }}
+                            ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
                             OnClick={() => templatedParent.TogglePopup()}
                             OnKeyPress={(event) => templatedParent.OnKeyPressed(event)}>
-                            {templatedParent.TitleElem}
+                            {
+                                templatedParent.TitleElem ||
+                                templatedParent.PlaceholderText &&
+                                (
+                                    <span className="cb-placeholder">{templatedParent.PlaceholderText}</span>
+                                )
+                            }
                             <Glyph
                                 Grid={{ Column: 1 }}
                                 Icon="ChevronDown"
+                                Margin="0px 0px 0px 5px"
                                 Foreground={ThemeColor.NeutralSecondary}
-                                HorizontalAlignment={HorizontalAlignment.Center}
-                                VerticalAlignment={VerticalAlignment.Center}
-                            />
+                                VerticalAlignment={VerticalAlignment.Center} />
                         </Grid>
+
+                        {templatedParent.InfoTip && (
+                            <Glyph
+                                Margin="0px 0px 0px 5px"
+                                Grid={{ Column: 1, Row: 1 }}
+                                ClassName="cb-infotip"
+                                Icon="Info"
+                                VerticalAlignment={VerticalAlignment.Center}
+                                Foreground={ThemeColor.ThemePrimary}
+                                ToolTip={templatedParent.InfoTip} />)}
+
                     </Grid>
                     <Popup
                         IsOpen={new Binding({
-                            Source: this,
+                            Source: templatedParent,
                             Path: nameof(templatedParent.PopupIsOpen),
                             Mode: BindingMode.TwoWay
                         })}
+                        Background={templatedParent.Background}
+                        Placement={PlacementMode.Below}
                         Target={() => templatedParent._button}
-                        Width={templatedParent._button?.Container?.clientWidth}
-                        MaxHeight={templatedParent.MaxDropdownHeight}
+                        MaxHeight={400}
                         Padding="0">
                         <StackPanel ItemsParent={templatedParent} />
                     </Popup>
@@ -139,12 +176,18 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             "@ .panel": {
                 cursor: 'pointer',
                 userSelect: 'none',
+                padding: TemplateProp(nameof<IComboBoxProps>(p => p.Padding)),
+                minWidth: TemplateProp(nameof<IComboBoxProps>(p => p.MinWidth)),
                 background: TemplateProp(nameof<IComboBoxProps>(p => p.Background)),
                 borderWidth: TemplateProp(nameof<IComboBoxProps>(p => p.BorderThickness)),
                 borderColor: TemplateProp(nameof<IComboBoxProps>(p => p.BorderBrush)),
             },
             "@ .panel:hover": {
                 borderColor: Theme.Value(SemanticColor.InputBorderHovered)
+            },
+            "@ .panel:focus": {
+                outline: "none",
+                borderColor: Theme.Value(SemanticColor.FocusBorder),
             },
             "@ .panel:focus::after": {
                 content: "''",
@@ -158,14 +201,23 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                 borderRadius: "0",
                 borderWidth: "1px",
                 borderStyle: "solid",
-                borderColor: Theme.Value(ThemeColor.ThemeSecondary)
+                borderColor: Theme.Value(SemanticColor.FocusBorder),
             },
             "@ .cb-label": {
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 cursor: 'default'
             },
+            "@ .cb-infotip": {
+                cursor: "pointer"
+            },
+            "@ .cb-placeholder": {
+                alignSelf: "center",
+                fontFamily: TemplateProp(nameof<IComboBoxProps>(p => p.FontFamily)),
+                fontSize: TemplateProp(nameof<IComboBoxProps>(p => p.FontSize)),
+                color: Theme.Value(SemanticColor.DisabledBodyText) + " !important"
+            },
             [Control.DisabledElement("cb-label")]: {
-                color: Theme.Value(SemanticColor.DisabledBodyText)
+                color: `${Theme.Value(SemanticColor.DisabledBodyText)} !important`
             },
             [Control.DisabledElement("panel")]: {
                 background: Theme.Value(SemanticColor.DisabledBackground) + " !important"
@@ -176,6 +228,12 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         }
     );
 
+    override OnElementRendered()
+    {
+        if (this._button)
+            this.PopupWidth = this._button.ActualWidth;
+    }
+
     public override GetContainerForItemOverride()
     {
         return ComboBoxItem;
@@ -185,7 +243,6 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         {
             FontFamily: FontStyle.FontFamily,
             FontSize: FontStyle.Medium,
-            Margin: "7px 6px"
         },
         {
             "@": {
@@ -214,7 +271,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
     protected TogglePopup(): void
     {
-        if (this.state.IsEnabled == false)
+        if (!this.IsEnabled || this.PopupIsOpen)
             return;
         this.PopupIsOpen = !this.PopupIsOpen;
     }
@@ -249,29 +306,27 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         // for the selected item w / o the ItemContainerStyle applied
         if (this.state.SelectedItem)
             return this.GetTemplateForItem(this.state.SelectedItem)(this.state.SelectedItem);
-        return this.PlaceholderElem;
+
+        return undefined;
     }
 
     private get PlaceholderElem(): JSX.Element | undefined
     {
         if (this.PlaceholderText)
-            return this.ConstructTitleFromString(this.PlaceholderText)
+            return this.ConstructTitleFromString(this.PlaceholderText, true)
     }
 
     //Format string as title-friendly element that looks consistent (whitespace-wise) w/ DefaultItemTemplate
-    private ConstructTitleFromString(text?: string): JSX.Element | undefined
+    private ConstructTitleFromString(text?: string, isPlaceholder?: boolean): JSX.Element | undefined
     {
         if (!text)
             return undefined;
         const elem: JSX.Element = (
-            <TextBlock
-                Text={text}
-                Margin="5px 6px"/>
+            <TextBlock ClassName={isPlaceholder ? "cb-placeholder" : ''} Text={text} />
         );
         return elem;
     }
 
-    private _popupIsOpen: boolean = false;
     private _button?: FrameworkElement | null;
 }
 
@@ -307,6 +362,12 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.template)
         },
         {
+            "@": {
+                marginTop: "0px !important",
+                marginBottom: "0px !important",
+                padding: TemplateProp(nameof<ISelectableItemControlProps>(p => p.Padding)),
+                background: TemplateProp(nameof<ISelectableItemControlProps>(p => p.Background)),
+            },
             [`.${ComboBoxItem.ROOT_CLASS}:not(.${ComboBoxItem.DISABLED_CLASS})`]: {
                 cursor: 'pointer'
             },
@@ -334,7 +395,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             colDefs.unshift(Grid.ColumnDefinition());
             checkboxElem = (
                 <CheckBox
-                    Grid={{Column: 0}}
+                    Grid={{ Column: 0 }}
                     IsChecked={this.state.IsSelected}
                     OnClick={(event) => this.OnCheckboxClicked(event)}
                     VerticalAlignment={VerticalAlignment.Center}
@@ -354,7 +415,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             );
         }
 
-        return contentElem;            
+        return contentElem;
     }
 
     private OnCheckboxClicked(event: MouseEvent): void
@@ -372,6 +433,13 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         if (this.state.IsSelected)
             classNames += ` ${ComboBoxItem.SELECTED_CLASS}`;
         return classNames;
+    }
+
+    override getCSSStyles()
+    {
+        var styles = super.getCSSStyles();
+        styles.padding = this.Padding || this.Parent?.Padding;
+        return styles;
     }
 
     /* override */ constructClasses(): string

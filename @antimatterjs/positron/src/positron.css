@@ -50,11 +50,11 @@ body {
 }
 
     .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
-        margin-left: 5px;
+        margin-left: 7px;
     }
 
     .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
-        margin-right: 5px;
+        margin-right: 7px;
     }
 
 .amx-ptn-vstack {
@@ -66,11 +66,11 @@ body {
     }
 
         .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child):not(.amx-ptn-panel) {
-            margin-top: 7.5px;
+            margin-top: 7px;
         }
 
         .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child):not(.amx-ptn-panel) {
-            margin-bottom: 7.5px;
+            margin-bottom: 7px;
         }
 
 .amx-ptn-hstack > .amx-ptn-fe {
@@ -196,13 +196,15 @@ body {
 
 .amx-ptn-wrap-panel {
     display: flex;
-    flex-wrap: wrap;
-    margin: -5px;
+    flex-wrap: wrap;    
+    transform: translate(-7px,-7px);
+    margin-bottom: -7px;
 }
 
 .amx-ptn-wrap-panel > .amx-ptn-fe
 {
-    margin: 5px;
+    margin-left: 7px;
+    margin-top: 7px;
 }
 
 a {
