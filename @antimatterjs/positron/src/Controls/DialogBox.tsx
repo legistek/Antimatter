@@ -8,7 +8,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { WebStyle } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
-import { CommandButton } from './CommandButton';
+import { CommandButton, ICommandButtonProps } from './CommandButton';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
 import { ControlTemplate } from '../FrameworkTemplate';
@@ -40,6 +40,15 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
     {
         DialogBox._templates.set(templateName, template);
     }
+
+    private static DialogButtonStyle = new WebStyle<ICommandButtonProps>(
+        {
+            Margin: "0px 5px"
+        },
+        {
+        },
+        CommandButton.DialogButtonStyle
+    )
 
     static DefaultStyle: WebStyle<IDialogBoxProps> = new WebStyle(
         {
@@ -126,14 +135,14 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                     Grid={{ Column: 0 }}
                                     ItemsSource={new Binding("SecondaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Left}
-                                    ItemContainerStyle={CommandButton.DialogButtonStyle}/>                                
+                                    ItemContainerStyle={DialogBox.DialogButtonStyle}/>                                
 
                                 {/* Primary Buttons */}
                                 <CommandBar
                                     Grid={{ Column: 1 }}
                                     ItemsSource={new Binding("PrimaryCommands")}
                                     HorizontalAlignment={HorizontalAlignment.Right}
-                                    ItemContainerStyle={CommandButton.DialogButtonStyle}/>
+                                    ItemContainerStyle={DialogBox.DialogButtonStyle}/>
                             </Grid>
                         
                         </Grid>

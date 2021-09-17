@@ -1,6 +1,7 @@
 import { Binding } from '@antimatterjs/react';
 import { Icon } from '@fluentui/react';
 import * as React from 'react';
+import { VerticalAlignment } from '../Enums';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { WebStyle } from '../Style';
 import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
@@ -24,7 +25,7 @@ export class Glyph extends FrameworkElement<IGlyphProps, IGlyphState>
     public static DefaultStyle: WebStyle<IGlyphProps> = new WebStyle<IGlyphProps>
     (
         {
-            FontSize: FontStyle.Medium,
+            FontSize: FontStyle.Glyph1x,
             Foreground: SemanticColor.BodyText,
         },
         {
@@ -35,6 +36,32 @@ export class Glyph extends FrameworkElement<IGlyphProps, IGlyphState>
             }
         }
     );
+
+    public static ControlInfoTipStyle = new WebStyle<IGlyphProps>(
+        {
+            Foreground: ThemeColor.ThemePrimary,
+            VerticalAlignment: VerticalAlignment.Center,
+            FontSize: FontStyle.Glyph1x,
+            FontWeight: "normal",
+            Icon: "Info",
+            Margin: "0px 0px 0px 5px"
+        },
+        {
+        },
+        this.DefaultStyle
+    );
+
+    public static ControlValidationErrorStyle = new WebStyle<IGlyphProps>(
+        {
+            Foreground: SemanticColor.Error,
+            Margin: "0px 0px 0px 5px",
+            Icon: "Warning",
+            VerticalAlignment: VerticalAlignment.Center
+        },
+        {
+
+        },
+        this.DefaultStyle);
 
     public get FontSize(): string | number | undefined
     {

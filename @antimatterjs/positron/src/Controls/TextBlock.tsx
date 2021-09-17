@@ -37,9 +37,18 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
         undefined,
         TextBlock.DefaultStyle);
 
+    public static LabelStyle = new WebStyle(
+        {
+            FontWeight: "bold",
+            FontSize: FontStyle.Medium,
+        },
+        undefined,
+        TextBlock.DefaultStyle);
+
     public static ControlSectionHeaderStyle = new WebStyle(
         {
-            FontWeight: "bold"
+            FontWeight: "bold",
+            FontSize: FontStyle.Large,
         },
         undefined,
         TextBlock.DefaultStyle);

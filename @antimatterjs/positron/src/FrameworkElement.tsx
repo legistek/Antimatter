@@ -336,16 +336,16 @@ export class FrameworkElement<
      * in response to the user input. (For example, an input field immediately
      * reflects typed text; there is no need to re-render when updating the
      * Model side with the new text).
-     * @param suspendNotifyModel If explicitly set to true, the model is not notified
+     * @param silent If explicitly set to true, the model is not notified
      * of the update. Use this when updating internal state in response to other 
      * model changes. 
      */
-    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean, suspendNotifyModel?: boolean): void =>
+    public readonly SetValue = (stateVar: string, newValue: any, reRender?: boolean, silent?: boolean): void =>
     {
         if (this.state[stateVar] === newValue)
             return;
 
-        Antimatter.TargetChanged(this, stateVar, newValue, reRender, suspendNotifyModel);
+        Antimatter.TargetChanged(this, stateVar, newValue, reRender, silent);
 
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }    
@@ -440,6 +440,10 @@ export class FrameworkElement<
     {
     }
 
+    protected /* virtual */ OnElementRendered()
+    {
+    }
+
     protected /* virtual */ get ActualHorizontalAlignment(): HorizontalAlignment
     {
         return (this.state.HorizontalAlignment as HorizontalAlignment) === undefined
@@ -456,12 +460,14 @@ export class FrameworkElement<
 
     componentDidUpdate(prevProps)
     {
+        this.OnElementRendered();
         this.OnElementUpdated(prevProps);
     }
 
     readonly componentDidMount = () =>
     {
-        this.OnComponentMount();        
+        this.OnComponentMount();
+        this.OnElementRendered();
         this.ExecutePropCommandHandler(this.state.OnDidMount);
     }
 

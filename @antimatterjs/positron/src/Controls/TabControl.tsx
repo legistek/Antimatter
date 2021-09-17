@@ -78,9 +78,7 @@ export class TabControlBase<
                         <Grid
                             BorderThickness="0px 0px 1px 0px"
                             BorderBrush={SemanticColor.BodyFrameDivider}
-                            ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
-
-                        >
+                            ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}>
                             <CommandButton
                                 ref={r => templatedParent._scrollLeftButton = r}
                                 Padding="0px"
@@ -160,7 +158,8 @@ export class TabControlBase<
                 //padding: "10px 45px 10px 10px",
                 background: "transparent",
                 cursor: "pointer",
-                margin: "0px 5px"
+                margin: "0px 5px",
+                maxWidth: "unset !important"
             },
             "@ .tab-menu-item:hover": {
                 background: Theme.Value(ThemeColor.NeutralLighter)
@@ -274,7 +273,7 @@ export class TabControlBase<
         this.CheckTabPanelOverflow();
     }
 
-    protected /* override */ OnComponentMount()
+    public override OnComponentMount()
     {
         var elem = this._tabList?.ItemsPanelInstance?.Container;
         if (!elem)

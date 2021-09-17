@@ -39,6 +39,30 @@ export class ToggleButtonBase<P extends IToggleButtonProps = {},
         }
     };
 
+    protected static readonly STATE_Checked: string = "tgl-chk";
+    protected static readonly STATE_Indeterminate: string = "tgl-ind";
+
+    public get IsChecked(): boolean|undefined
+    {
+        var val = this.GetValue(nameof(this.props.IsChecked));
+        if (val !== undefined)
+            return val as boolean;
+        else if (!this.IsThreeState)
+            return false;
+        else
+            return undefined;
+    }
+
+    public get Label(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Label));
+    }
+
+    public get IsThreeState(): boolean
+    {
+        return this.GetValue(nameof(this.props.IsThreeState), false);
+    }
+
     /* override */ OnClick(e?: MouseEvent)
     {
         let newValue: boolean | undefined = undefined;
@@ -53,10 +77,20 @@ export class ToggleButtonBase<P extends IToggleButtonProps = {},
         }
         else
         {
-            newValue = this.state.IsChecked ? false : true;
+            newValue = this.IsChecked ? false : true;
         }
         super.OnClick(e);
         this.SetValue(nameof(this.state.IsChecked), newValue);
+    }
+
+    override constructClasses()
+    {
+        let state: string = '';
+        if (this.IsChecked)
+            state = ToggleButton.STATE_Checked;
+        else if (this.IsChecked === undefined)
+            state = ToggleButton.STATE_Indeterminate;
+        return super.constructClasses() + ' ' + state;
     }
 }
 
@@ -82,7 +116,7 @@ export class ToggleButton extends ToggleButtonBase<IToggleButtonProps, IToggleBu
                 checked={this.state.IsChecked}
                 onChange={() => super.OnClick()}
                 disabled={this.state.IsEnabled === false}
-                label={this.state.Label}
+                label={this.Label}
                 onText={this.state.CheckedText}
                 offText={this.state.UncheckedText}
                 inlineLabel={this.state.LabelIsInline}

@@ -5,6 +5,24 @@ const unixTime0MSs: number = 62135596800000;
 
 export class Utilities
 {
+    public static SelectElementContents (node: HTMLElement)
+    {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        if (!range)
+            return;
+        range.selectNodeContents(node);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+    }
+
+    public static escapeHTML(unsafeText: string): string
+    {
+        let div = document.createElement('div');
+        div.innerText = unsafeText;
+        return div.innerHTML;
+    }
+
     public static SmartEquals(item1: any, item2: any): boolean
     {
         if (item1?.IsModelObjectReference && item2?.IsModelObjectReference &&

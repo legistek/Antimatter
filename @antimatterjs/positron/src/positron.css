@@ -17,6 +17,7 @@ body {
     touch-action: pan-x pan-y;
     margin: 0px;
     padding: 0px;
+    line-height: normal;
     box-sizing: border-box;
     border-width: 0px;
     border-style: solid;
@@ -49,14 +50,6 @@ body {
     width: fit-content;
 }
 
-    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child) {
-        margin-left: 5px;
-    }
-
-    .amx-ptn-hstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child) {
-        margin-right: 5px;
-    }
-
 .amx-ptn-vstack {
     display: block;
 }
@@ -64,14 +57,6 @@ body {
     .amx-ptn-vstack > .amx-ptn-fe {
         min-height: fit-content;
     }
-
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:first-child):not(.amx-ptn-panel) {
-            margin-top: 7.5px;
-        }
-
-        .amx-ptn-vstack > .amx-ptn-fe:not(.amx-ptn-fe:last-child):not(.amx-ptn-panel) {
-            margin-bottom: 7.5px;
-        }
 
 .amx-ptn-hstack > .amx-ptn-fe {
     min-width: fit-content;
@@ -197,12 +182,6 @@ body {
 .amx-ptn-wrap-panel {
     display: flex;
     flex-wrap: wrap;
-    margin: -5px;
-}
-
-.amx-ptn-wrap-panel > .amx-ptn-fe
-{
-    margin: 5px;
 }
 
 a {

@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { CSSClasses } from '../CSSClasses';
+import { TemplateProp, WebStyle } from '../Style';
+import { ThemeLayout } from '../Theme';
 
 import { PanelBase, IPanelProps, IPanelState } from './Panel';
 
@@ -15,13 +18,33 @@ export class WrapPanelBase<
     S extends IWrapPanelState = {}>
     extends PanelBase<P, S>
 {
-    /* override */ constructClasses(): string
-    {
-        return "amx-ptn-wrap-panel  "
-            + super.constructClasses();
-    }
+    public static DefaultStyle = new WebStyle(
+        {
+            ItemSpacing: ThemeLayout.ControlSpacing,
+        },
+        {
+            [`@  .amx-ptn-wrap-panel > .${CSSClasses.Base}`]: {
+                marginTop: `${TemplateProp(nameof<IWrapPanelProps>(p => p.ItemSpacing))}`,
+                marginLeft: `${TemplateProp(nameof<IWrapPanelProps>(p => p.ItemSpacing))}`,
+            }
+        });
 
     /* override */ renderElement(): JSX.Element
+    {       
+        return (
+            <div
+                className="amx-ptn-wrap-panel amx-ptn-hstretch amx-ptn-vstretch"
+                style={{
+                    marginLeft: `calc(0px - ${this.ItemSpacing})`,
+                    marginTop: `calc(0px - ${this.ItemSpacing})`
+                }}
+
+            >
+                {this.ChildRender()}
+            </div>);        
+    }
+
+    private ChildRender(): JSX.Element
     {
         if (this.state.ItemsParent)
         {
@@ -36,7 +59,7 @@ export class WrapPanelBase<
         {
             return (<>{this.props.children}</>);
         }
-    }   
+    }
 }
 
 export class WrapPanel extends WrapPanelBase<IWrapPanelProps, IWrapPanelState>

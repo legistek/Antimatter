@@ -2,10 +2,10 @@ import * as React from 'react';
 import { ModelObjectReference } from '@antimatterjs/react';
 import { CommandBar as FluentCommandBar, ICommandBar, ICommandBarItemProps } from '@fluentui/react';
 
-import { WebStyle } from '../Style';
+import { Style, WebStyle } from '../Style';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { FrameworkElement } from '../FrameworkElement';
-import { CommandButton, CommandButtonBase } from './CommandButton';
+import { CommandButton, CommandButtonBase, ICommandButtonProps } from './CommandButton';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
@@ -126,8 +126,8 @@ export class CommandBar extends ItemsControlBase<IItemsControlProps, IItemsContr
     public static DefaultStyle: WebStyle<IItemsControlProps> = new WebStyle<IItemsControlProps>(
     {
         ItemsSource: [],
-        ItemsPanel: CommandBarPanel,
-        ItemContainerStyle: CommandButton.CommandBarButtonStyle
+            ItemsPanel: CommandBarPanel,
+            ItemContainerStyle: CommandButton.CommandBarButtonStyle
     });
 
     /* override */ GetContainerForItemOverride(): typeof FrameworkElement

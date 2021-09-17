@@ -5,6 +5,7 @@ export class CSSClasses
     public static readonly Panel: string = "amx-ptn-panel";
     public static readonly HStack: string = "amx-ptn-hstack";
     public static readonly VStack: string = "amx-ptn-vstack";
+    public static readonly WrapPanel: string = "amx-ptn-wrap-panel";
     public static readonly HACenter: string = "amx-ptn-ha-center";
     public static readonly HALeft: string = "amx-ptn-ha-left";
     public static readonly HARight: string = "amx-ptn-ha-right";

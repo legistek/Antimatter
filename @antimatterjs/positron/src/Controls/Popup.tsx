@@ -21,7 +21,8 @@ export interface IPopupProps extends IPanelProps
     Placement?: PlacementMode,
     StaysOpen?: boolean,
     MaxHeight?: number,
-    Width?: number
+    Width?: number | Binding,
+    MaxWidth?: number | Binding,
 }
 export interface IPopupState extends IPanelState
 {
@@ -76,6 +77,7 @@ export class PopupBase<
                         this.SetValue(nameof(this.state.IsOpen), false)
                 }}
                 calloutWidth={this.state.Width}
+                calloutMinWidth={Math.max(this.state.MinWidth || 0, this.TargetWidth || 0)}
                 calloutMaxHeight={this.state.MaxHeight}
                 minPagePadding={0}
                 setInitialFocus>
@@ -95,8 +97,20 @@ export class PopupBase<
             });
     }
 
-    /* private */ ComputeTarget(): Target
+    public override OnPropertyChanged(property: string, value: any, oldValue: any)
     {
+
+    }
+
+    private get TargetWidth(): number | undefined
+    {
+        if (!this.state.Target)
+            return undefined;
+        return this.state.Target()?.ActualWidth;
+    }
+
+    /* private */ ComputeTarget(): Target
+    {        
         if (this.state.Placement === PlacementMode.Mouse &&
             ButtonBase.LastMouseEvent)
             return ButtonBase.LastMouseEvent;
