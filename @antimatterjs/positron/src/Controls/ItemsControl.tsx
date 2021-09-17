@@ -6,7 +6,7 @@ import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
 import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
-import { WebStyle } from '../Style';
+import { Style, WebStyle } from '../Style';
 import { DataTemplate } from '../FrameworkTemplate';
 import { WindowLayoutContext } from './Window';
 
@@ -15,8 +15,8 @@ export interface IItemsControlProps extends IControlProps
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemsPanelStyle?: WebStyle<IPanelProps>,
-    ItemContainerStyle?: WebStyle<IFrameworkElementProps>,
+    ItemsPanelStyle?: Style<IPanelProps>,
+    ItemContainerStyle?: Style<IFrameworkElementProps>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
 }
@@ -26,8 +26,8 @@ export interface IItemsControlState extends IControlState
     ItemsSource?: any[],
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
-    ItemsPanelStyle?: WebStyle<IPanelProps>,
-    ItemContainerStyle?: WebStyle<IFrameworkElementProps>
+    ItemsPanelStyle?: Style<IPanelProps>,
+    ItemContainerStyle?: Style<IFrameworkElementProps>
 }
 
 /** Base class for components displaying collections of items. ItemsControl

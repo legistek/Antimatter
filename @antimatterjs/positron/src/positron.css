@@ -17,6 +17,7 @@ body {
     touch-action: pan-x pan-y;
     margin: 0px;
     padding: 0px;
+    line-height: normal;
     box-sizing: border-box;
     border-width: 0px;
     border-style: solid;

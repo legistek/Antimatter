@@ -4,7 +4,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { Autofill, IconType, ITextField, TextField } from '@fluentui/react';
 import { TemplateProp, WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
-import { FontStyle, SemanticColor, Theme, ThemeColor, ThemeLayout } from '../Theme';
+import { FontStyle, SemanticColor, Theme, ThemeColor, ThemeEffect, ThemeLayout } from '../Theme';
 import { Grid } from './Grid';
 import { ITextBlockProps, TextBlock } from './TextBlock';
 import { Panel } from './Panel';
@@ -287,6 +287,8 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             },
             "@ .tb-input-panel": {
                 borderStyle: "solid",
+                boxShadow: Theme.Value(ThemeEffect.ControlInnerShadow),
+                borderRadius: Theme.Value(ThemeLayout.StandardBorderRadius),
                 maxHeight: TemplateProp(nameof<ITextBoxProps>(p => p.MaxHeight)),
                 minWidth: TemplateProp(nameof<ITextBoxProps>(p => p.MinWidth)),
                 background: TemplateProp(nameof<ITextBoxProps>(p => p.Background)),
@@ -335,17 +337,18 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 borderStyle: "solid",
                 borderColor: Theme.Value(SemanticColor.FocusBorder)
             },
-            [`@.${CSSClasses.ValidationError} .tb-input`]: {
+            [`@.${Control.STATE_ValidationError} .tb-input`]: {
                 marginRight: "24px"
             },
-            [`@.${CSSClasses.ValidationError} .tb-input-panel`]: {
+            [`@.${Control.STATE_ValidationError} .tb-input-panel`]: {
                 background: Theme.Value(SemanticColor.ErrorBackground),
+                borderColor: Theme.Value(SemanticColor.Error),
+                boxShadow: "none"
+            },
+            [`@.${Control.STATE_ValidationError}.focused .tb-input-panel::after`]: {
                 borderColor: Theme.Value(SemanticColor.Error)
             },
-            [`@.${CSSClasses.ValidationError}.focused .tb-input-panel::after`]: {
-                borderColor: Theme.Value(SemanticColor.Error)
-            },
-            [`@.${CSSClasses.ValidationError} .tb-warning-glyph`]: {
+            [`@.${Control.STATE_ValidationError} .tb-warning-glyph`]: {
                 cursor: "pointer"
             },
             [Control.DisabledElement("tb-label")]: {
@@ -353,6 +356,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             },
             [Control.DisabledElement("tb-input-panel")]: {                
                 background: Theme.Value(SemanticColor.DisabledBackground),
+                boxShadow: "none"
             },
             [Control.DisabledElement("tb-input")]: {
                 color: Theme.Value(SemanticColor.DisabledText),

@@ -30,10 +30,10 @@ export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPan
             [`@.${CSSClasses.HStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:last-child)`]: {
                 marginRight: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
             },
-            [`@.${CSSClasses.VStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:first-child):not(.amx-ptn-panel)`]: {
+            [`@.${CSSClasses.VStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:first-child)`]: {
                 marginTop: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
             },
-            [`@.${CSSClasses.VStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:last-child):not(.amx-ptn-panel)`]: {
+            [`@.${CSSClasses.VStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:last-child)`]: {
                 marginBottom: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
             }
         });

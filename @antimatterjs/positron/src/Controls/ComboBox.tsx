@@ -141,15 +141,14 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
                             {
                                 templatedParent.IsInvalid &&
-                                (<Glyph Icon="Warning"
-                                    Margin="0px 0px 0px 5px"
-                                    Foreground={SemanticColor.Error}
-                                    ToolTip={templatedParent.ValidationError}/>)
+                                (<Glyph
+                                    Style={Glyph.ControlValidationErrorStyle}
+                                    ToolTip={templatedParent.ValidationError} />)
                             }
 
                             <Glyph
                                 Grid={{ Column: 2 }}
-                                Icon="ChevronDown"
+                                Icon="ScrollUpDown"
                                 Margin="0px 0px 0px 5px"
                                 Foreground={ThemeColor.NeutralSecondary}
                                 VerticalAlignment={VerticalAlignment.Center} />
@@ -157,12 +156,9 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
                         {templatedParent.InfoTip && (
                             <Glyph
-                                Margin="0px 0px 0px 5px"
+                                Style={Glyph.ControlInfoTipStyle}
                                 Grid={{ Column: 1, Row: 1 }}
                                 ClassName="cb-infotip"
-                                Icon="Info"
-                                VerticalAlignment={VerticalAlignment.Center}
-                                Foreground={ThemeColor.ThemePrimary}
                                 ToolTip={templatedParent.InfoTip} />)}
 
                     </Grid>
@@ -186,6 +182,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             "@ .panel": {
                 cursor: 'pointer',
                 userSelect: 'none',
+                borderRadius: Theme.Value(ThemeLayout.StandardBorderRadius),
                 padding: TemplateProp(nameof<IComboBoxProps>(p => p.Padding)),
                 minWidth: TemplateProp(nameof<IComboBoxProps>(p => p.MinWidth)),
                 background: TemplateProp(nameof<IComboBoxProps>(p => p.Background)),
@@ -235,11 +232,11 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             [Control.DisabledElement("panel > *")]: {
                 color: Theme.Value(SemanticColor.DisabledBodyText)
             },
-            [`@.${CSSClasses.ValidationError} .panel`]: {
+            [`@.${Control.STATE_ValidationError} .panel`]: {
                 background: Theme.Value(SemanticColor.ErrorBackground),
                 borderColor: Theme.Value(SemanticColor.Error),
             },
-            [`@.${CSSClasses.ValidationError} .panel:focus::after`]: {
+            [`@.${Control.STATE_ValidationError} .panel:focus::after`]: {
                 borderColor: Theme.Value(SemanticColor.Error),
             }
         }

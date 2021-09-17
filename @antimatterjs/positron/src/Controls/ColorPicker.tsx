@@ -110,7 +110,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
 
     private static COLUMN_COUNT: number = 6;
     private static COLUMN_WIDTH: number = 40;
-    private static get ELLIPSE_SIZE() { return ColorPicker.COLUMN_WIDTH - 8; }
+    private static get ELLIPSE_SIZE() { return ColorPicker.COLUMN_WIDTH - 10; }
 
     private _button?: FrameworkElement | null;
 }

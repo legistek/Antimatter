@@ -34,6 +34,7 @@ export interface IThemeLayout
 {
     StandardBorder: string,
     ControlSpacing: string,
+    StandardBorderRadius: string,
 }
 
 export interface IThemePalette
@@ -86,6 +87,11 @@ export interface IThemeFontStyle
     Glyph1x: string,
 }
 
+export interface IThemeEffects
+{
+    ControlInnerShadow: string,
+}
+
 export class Theme
 {
     public static readonly FirstResourceId: number = 100000000000;
@@ -109,7 +115,12 @@ export class Theme
 
     public readonly Layout: IThemeLayout = {
         StandardBorder: '1px',
-        ControlSpacing: '7px'
+        ControlSpacing: '7px',
+        StandardBorderRadius: "0px"
+    }
+
+    public readonly Effects: IThemeEffects = {
+        ControlInnerShadow: "inset 0 1px 2px 0 var(--Palette_NeutralLight)",
     }
 
     public readonly Palette: IThemePalette = {
@@ -151,6 +162,8 @@ export class Theme
             return `var(--Font_${FontStyle[resourceId]})`;
         else if (resourceId >= 102000000000 && resourceId < 103000000000)
             return `var(--Layout_${ThemeLayout[resourceId]})`;
+        else if (resourceId >= 103000000000 && resourceId < 104000000000)
+            return `var(--Effect_${ThemeEffect[resourceId]})`;
         return undefined;
     }
 
@@ -166,6 +179,8 @@ export class Theme
             r.style.setProperty(`--Font_${entry[0]}`, entry[1]);
         for (let entry of Object.entries(this.Layout))
             r.style.setProperty(`--Layout_${entry[0]}`, entry[1]);
+        for (let entry of Object.entries(this.Effects))
+            r.style.setProperty(`--Effect_${entry[0]}`, entry[1]);
     }
 }
 
@@ -191,6 +206,12 @@ export enum ThemeLayout
 {
     StandardBorder = 102000000000,
     ControlSpacing,
+    StandardBorderRadius
+}
+
+export enum ThemeEffect
+{
+    ControlInnerShadow = 103000000000,
 }
 
 export enum SemanticColor

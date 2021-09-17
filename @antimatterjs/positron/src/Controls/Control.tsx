@@ -195,7 +195,7 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     override constructClasses()
     {
         return super.constructClasses()
-            + (this.IsInvalid ? ` ${CSSClasses.ValidationError} ` : "");
+            + (this.IsInvalid ? ` ${Control.STATE_ValidationError} ` : "");
     }
 
     NotifyValidationError(error?: string)
@@ -224,4 +224,6 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     {
         return null;
     }
+
+    protected static readonly STATE_ValidationError: string = "ctrl-valerr"; 
 }

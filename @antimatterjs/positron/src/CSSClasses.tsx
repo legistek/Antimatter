@@ -24,6 +24,4 @@ export class CSSClasses
     public static readonly SlideOutLeft: string = "slideOutLeft";
     public static readonly SlideInFromRight: string = "slideInFromRight";
     public static readonly SlideOutRight: string = "slideOutRight";
-
-    public static readonly ValidationError: string = "validation-error";
 }
