@@ -5,6 +5,8 @@ import { ModelObjectReference } from "./ModelObjectReference";
 import { IServer } from "./IServer";
 import { ModelValue, ModelValueType } from "./ModelValue";
 import { Utilities } from "./Utilities";
+import { CollectionUpdate } from "./ICollectionUpdatee";
+import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
 
 //const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
 //const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
@@ -109,9 +111,33 @@ export class WebassemblyServer implements IServer
         this._updateSourceValueMethod(bxIndex, JSON.stringify(value));
     }
 
+    UpdateBoundCollection(bxIndex: number, value: CollectionUpdate)
+    {
+        if (!this._updateBoundCollectionMethod)
+        {
+            this._updateSourceValueMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "UpdateBoundCollection"));
+        }
+        this._updateBoundCollectionMethod(bxIndex, JSON.stringify(value));
+    }
+
     //#endregion
 
     //#region Server-Invocable Methods
+
+    public OnUpdateBoundCollection(bxIndex: number, valuePtr: number)
+    {
+        let update: ICollectionUpdate = {
+            Action: this.getValueI32(valuePtr + 0) as NotifyCollectionChangedAction,
+            Index: this.getValueI32(valuePtr + 4),
+            Count: this.getValueI32(valuePtr + 8),
+            Items: this.getArrayValue(valuePtr + 12)
+        };
+        BindingExpression.OnModelBoundCollectionChanged(bxIndex, update);
+    }
 
     public UpdateBinding(bxIndex: number, valuePtr: number)
     {
@@ -277,6 +303,7 @@ export class WebassemblyServer implements IServer
     _bindMethod: any;
     _executeICommandMethod: any;
     _updateSourceValueMethod: any;
+    _updateBoundCollectionMethod: any;
     _unbindMethod: any;
 
     //#endregion

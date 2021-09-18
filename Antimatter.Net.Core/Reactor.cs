@@ -127,6 +127,12 @@ namespace Antimatter.Net
             bx.UpdateSource(newValue);
         }
 
+        [AMXClientInvocable]
+        public void UpdateBoundCollection(int bxIndex, CollectionUpdate update)
+        {
+            //hobo;
+        }
+
         /// <summary>
         /// Invoked by clients to create new bindings to model objects and
         /// properties.

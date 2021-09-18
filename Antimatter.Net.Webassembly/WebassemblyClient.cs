@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-using Antimatter.Net.Internal;
-
 namespace Antimatter.Net.Webassembly
 {
-    public class Client : IClient
+    public class WebassemblyClient : IClient
     {
         public void UpdateBinding(string clientid, int bxIndex, ModelValue value)
         {
@@ -18,6 +16,15 @@ namespace Antimatter.Net.Webassembly
                 "window.AntimatterServer.UpdateBinding",
                 bxIndex,
                 value,
+                null);
+        }
+
+        public void UpdateBoundCollection(string clinetID, int bxIndex, CollectionUpdate update)
+        {
+            JS.InvokeUnmarshalled<int, object, object, object>(
+                "window.AntimatterServer.OnUpdateBoundCollection",
+                bxIndex,
+                update,
                 null);
         }
 
@@ -44,9 +51,10 @@ namespace Antimatter.Net.Webassembly
             }
         }
 
-        public async Task StartupAsync()
+        public Task StartupAsync()
         {
             JS.InvokeJS("window.OnServerStartup", null);
+            return Task.CompletedTask;
         }
     }
 }

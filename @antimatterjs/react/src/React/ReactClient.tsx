@@ -15,6 +15,8 @@ import { ModelValue, ModelValueType } from '../ModelValue';
 
 import createHistory from "history/createBrowserHistory"
 import { BindingSourceType } from '../BindingSource';
+import { NotifyCollectionChangedAction } from '../ICollectionUpdate';
+
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -48,30 +50,6 @@ export class ReactClient implements IClient
         //history.push(route);
     }
 
-    BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void
-    {
-        if (!stateVar)
-            stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
-
-        var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
-        if (exp &&
-            ModelObjectReference.Equals(exp.Parameters?.Source, args?.Source) &&
-            exp.Parameters?.Path == args?.Path)
-            return target.state[stateVar + "Command"];     // already bound
-
-        if (exp)
-            exp.Unapply();
-
-        exp = new BindingExpression(target, stateVar, args);
-        exp.Apply();
-        (target as any).antimatterBindingExps.set(stateVar, exp);
-
-        return target.state[stateVar + "Command"] = (function ()
-        {
-            Antimatter.Server.ExecuteICommand(target.state[stateVar || ""]);
-        }).bind(target);
-    }
-
     BindState(target: any, args?: BindingParameters, stateVar?: string): any
     {
         if (!stateVar)
@@ -89,18 +67,17 @@ export class ReactClient implements IClient
         exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
-        if (args?.Mode === BindingMode.TwoWay)
-        {
-            target.state[stateVar + "Changed"] = (function (value: any)
-            {
-                Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
-                var newState = {};
-                newState[stateVar || ""] = value;
-                target.setState(newState);                
-            }).bind(target);
-        }
-
         return target.state[stateVar];  
+    }
+
+    public BoundCollectionTargetChanged(
+        bx: BindingExpression,
+        action: NotifyCollectionChangedAction,
+        index: number,
+        count: number,
+        items: ModelValue[]): void
+    {
+        // TODO - Notify model of view-side collection change
     }
 
     public TargetChanged(

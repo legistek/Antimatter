@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -298,7 +299,40 @@ namespace Antimatter.Net.Internal
 
         private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ReportSourcePropertyUpdate(sender);
+            // ReportSourcePropertyUpdate(sender);
+            CollectionUpdate update = new CollectionUpdate
+            {
+                Action = e.Action,
+            };
+
+            IList items = null;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Reset:
+                    // Nothing else is important
+                    break;
+                case NotifyCollectionChangedAction.Add:
+                    update.Count = e.NewItems.Count;
+                    update.Index = e.NewStartingIndex;
+                    items = e.NewItems;                    
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    update.Count = e.OldItems.Count;
+                    update.Index = e.OldStartingIndex;
+                    break;
+            }
+            
+            update.Items = items
+                ?.Cast<object>()
+                ?.Select(item => this._reactor
+                ?.GetModelValue(item))
+                ?.ToArray();           
+
+            Reactor.Client.UpdateBoundCollection(
+                this._reactor.ClientID, 
+                this.BXIndex, 
+                update);
         }
 
         private void OnSourceValidationError(object sender, DataErrorsChangedEventArgs e)

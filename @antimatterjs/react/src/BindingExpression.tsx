@@ -5,6 +5,8 @@ import { BindingMode, BindingParameters, RelativeSourceMode } from "./BindingPar
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
 import { ModelValueType } from "./ModelValue";
+import { CollectionUpdate } from "./ICollectionUpdatee";
+import { ICollectionUpdate } from "./ICollectionUpdate";
 
 export class BindingExpression
 {
@@ -106,6 +108,16 @@ export class BindingExpression
             Antimatter.Server.Unbind(this);
         else if ((this._resolvedSource.Type & BindingSourceType.INPC) > 0)
             (this._resolvedSource.POJO as INotifyPropertyChanged)?.PropertyChanged.unsubscribe(this.OnPOJOValueChanged);
+    }
+
+    public static OnModelBoundCollectionChanged(bxIndex: number, update: ICollectionUpdate): void
+    {
+        // TODO - Notify bound component 
+        var exp = this._globalBindings.get(bxIndex) as BindingExpression;
+        if (!exp)
+            return;
+
+
     }
 
     public static OnModelValueChanged(bxIndex: number, value: any, type: ModelValueType): void
