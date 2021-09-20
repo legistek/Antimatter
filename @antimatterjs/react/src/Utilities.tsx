@@ -42,6 +42,8 @@ export class Utilities
             return item;
         else if (item?.key)
             return item.key;
+        else if (item?.Key)
+            return item.Key;
         else
             return item?.toString();
     }

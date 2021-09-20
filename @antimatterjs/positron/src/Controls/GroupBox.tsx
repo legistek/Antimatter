@@ -38,7 +38,9 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
                     Padding={(templatedParent.Header ? "0px 10px 10px 10px" : "10px")}>
 
                     {templatedParent.Header ? (() =>
-                        <TextBlock FontWeight="bold" Text={templatedParent.Header} />)()
+                        <TextBlock FontWeight="bold"
+                            FontSize={templatedParent.FontSize}
+                            Text={templatedParent.Header} />)()
                         : null}
 
                     <Panel

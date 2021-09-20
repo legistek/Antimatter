@@ -109,6 +109,15 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                         Items={
                             [
                                 {
+                                    Label: "Empty",
+                                    Icon: 0xF03B,
+                                    IconForeground: "white",
+                                    IconBackground: "black",
+                                    Key: "empty",
+                                    Description: "Nothing to see here",
+                                    Content: (<Grid> </Grid>)
+                                },
+                                {
                                     Label: "Control Gallery 1",
                                     Icon: 0xF03B,
                                     IconForeground: "white",

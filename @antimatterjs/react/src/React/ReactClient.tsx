@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Component } from 'react';
-import { useHistory } from 'react-router';
 
 import { INotifyPropertyChanged } from '../INotifyPropertyChanged';
 import { PropertyChangedEventArgs } from '../PropertyChangedEventArgs';
@@ -13,8 +12,9 @@ import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue, ModelValueType } from '../ModelValue';
 
-import createHistory from "history/createBrowserHistory"
 import { BindingSourceType } from '../BindingSource';
+import { ICollectionUpdate, NotifyCollectionChangedAction } from '../ICollectionUpdate';
+import { BoundCollection } from '../BoundCollection';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -48,30 +48,6 @@ export class ReactClient implements IClient
         //history.push(route);
     }
 
-    BindCommand(target: any, args?: BindingParameters, stateVar?: string): () => void
-    {
-        if (!stateVar)
-            stateVar = (args?.Source?.Handle || "dctx") + "." + args?.Path;
-
-        var exp = (target as any).antimatterBindingExps.get(stateVar) as BindingExpression;
-        if (exp &&
-            ModelObjectReference.Equals(exp.Parameters?.Source, args?.Source) &&
-            exp.Parameters?.Path == args?.Path)
-            return target.state[stateVar + "Command"];     // already bound
-
-        if (exp)
-            exp.Unapply();
-
-        exp = new BindingExpression(target, stateVar, args);
-        exp.Apply();
-        (target as any).antimatterBindingExps.set(stateVar, exp);
-
-        return target.state[stateVar + "Command"] = (function ()
-        {
-            Antimatter.Server.ExecuteICommand(target.state[stateVar || ""]);
-        }).bind(target);
-    }
-
     BindState(target: any, args?: BindingParameters, stateVar?: string): any
     {
         if (!stateVar)
@@ -89,20 +65,10 @@ export class ReactClient implements IClient
         exp.Apply();
         (target as any).antimatterBindingExps.set(stateVar, exp);
 
-        if (args?.Mode === BindingMode.TwoWay)
-        {
-            target.state[stateVar + "Changed"] = (function (value: any)
-            {
-                Antimatter.Server.UpdateBindingSource(exp.Index, ModelValue.Get(value));
-                var newState = {};
-                newState[stateVar || ""] = value;
-                target.setState(newState);                
-            }).bind(target);
-        }
-
         return target.state[stateVar];  
     }
 
+    // Notify Model of View-Side Property Change
     public TargetChanged(
         component: Component,
         prop: string,
@@ -157,6 +123,54 @@ export class ReactClient implements IClient
         target.state[prop] = value;
     }
 
+    public ModelUpdateBoundCollection(
+        bx: BindingExpression,
+        action: NotifyCollectionChangedAction,
+        index: number,
+        count: number,
+        items: ModelValue[] | undefined): void
+    {
+        unstable_batchedUpdates(() =>
+        {
+            Antimatter.Server.UpdateBoundCollection(
+                bx.Index,
+                {
+                    Action: action,
+                    Count: count,
+                    Index: index,
+                    Items: items || []
+                });
+        });
+    }
+
+    // Notify View of model-side collection change
+    public ViewUpdateBoundCollection(
+        bx: BindingExpression,
+        target: any,
+        targetProperty: string,
+        update: ICollectionUpdate,
+        reRender: boolean)
+    {
+        if (!target?.state)
+            return;
+
+        let collection: BoundCollection<any> | undefined = undefined;
+
+        if (!target.state[targetProperty] ||
+            !(target.state[targetProperty].IsBoundCollection) ||
+            (collection = (target.state[targetProperty] as BoundCollection<any>)).BindingExpression !== bx)
+        {
+            // Should never happen
+            collection = new BoundCollection<any>(bx);            
+        }
+
+        collection.ProcessModelUpdate(update);
+
+        //if (reRender && target.InvalidateRender)
+        //    target.InvalidateRender();            
+    }
+
+    // Notify View of Model-Side property change
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
         if (!target)
@@ -169,7 +183,7 @@ export class ReactClient implements IClient
         var oldValue = target.state[targetProperty];
         if (oldValue != value)
         {           
-            if (reRender)
+            if (reRender && target.IsMounted !== false)
             {
                 var newState = {};
                 newState[targetProperty] = value;

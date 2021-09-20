@@ -5,7 +5,7 @@ import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
-import { Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { FontStyle, SemanticColor, Theme } from '../Theme';
@@ -102,6 +102,12 @@ export class DataGridBase<
             });
     }
 
+    private _selectedItems: any[] = [];
+    public get SelectedItems(): any[]
+    {
+        return this.GetValue(nameof(this.props.SelectedItems), this._selectedItems);
+    }
+
     /* private */ OnSelectionChanged()
     {
         const isAll = this._selection.isAllSelected();
@@ -111,7 +117,10 @@ export class DataGridBase<
             return;
 
         var sel = this._selection.getSelection();
-        this.SetValue(nameof(this.state.SelectedItems), sel, false);
+
+        this.SelectedItems.splice(0, this.SelectedItems.length, ...sel);
+
+        // this.SetValue(nameof(this.state.SelectedItems), sel, false);
     }
     
     public static DefaultStyle: WebStyle<IDataGridProps> = new WebStyle<IDataGridProps>(

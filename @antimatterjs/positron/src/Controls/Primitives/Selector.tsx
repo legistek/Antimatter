@@ -3,6 +3,7 @@ import { IItemsControlState, IItemsControlProps, ItemsControl, ItemsControlBase 
 import { SelectionMode } from '../../Enums';
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../../FrameworkElement';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './SelectableItemControl';
+import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 export interface ISelectorProps extends IItemsControlProps
 {
@@ -30,12 +31,10 @@ export interface ISelectorState extends IItemsControlState
 //Default state param for use by "base" classes that Selector
 export class EmptyISelectorState implements ISelectorState { SelectedItems = []; }
 
-export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItems: [] },
+export class SelectorBase<P extends ISelectorProps = { ItemsSource: [], SelectedItems: [] },
     S extends ISelectorState = { ItemsSource: [], SelectedItems: [] }>
     extends ItemsControlBase<P, S>
-{
-    _selectedIndex: number = -1;
-    _lastClickedOrSelected: number = -1;
+{        
     _currentSelectionAnchor: number = -1;
 
     constructor(props)
@@ -65,6 +64,36 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         return super.OnRenderItem(item, index, props);
     }
 
+    public get SelectedItem(): any
+    {
+        return this.GetValue(nameof(this.props.SelectedItem));
+    }
+
+    public get IsMultiSelect(): boolean
+    {
+        return this.SelectionMode === SelectionMode.Multiple ||
+            this.SelectionMode === SelectionMode.Extended;
+    }
+
+    public FocusSelected(scrollToView: boolean = true)
+    {
+        if (this.SelectionMode !== SelectionMode.Single ||
+            !this.SelectedItem)
+            return;
+
+        var items = this.ItemsSource;
+        var item = this.SelectedItem;
+        var index = items?.findIndex(i => i === item);
+        if (index === -1)
+            return;
+
+        var container = this.ItemContainers[index]?.Container;
+
+        var focused = container?.focus();
+        if (scrollToView)
+            container?.scrollIntoView();
+    }
+
     IsItemSelected(item: any): boolean
     {
         if (this.state.IsSelectAll)
@@ -77,8 +106,10 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
 
             //return (this.state.SelectedItems.length > 0 && this.state.SelectedItems.includes(item)) === true;
 
-            const match: boolean = this.state.SelectedItems?.some(s => Utilities.SmartEquals(item, s)) == true;
-            return (this.state.SelectedItems.length > 0 && match) === true;
+            var match = this.state.SelectedItems?.find(sel =>
+                Utilities.SmartEquals(sel, item)) != undefined;
+            return match;
+            
         }
         else
         {
@@ -130,8 +161,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         if (!this.CanSelect)
             return;
 
-        var itemIndex: number = this.state.ItemsSource?.findIndex(it => Utilities.SmartEquals(item, it)) ?? -1;
-        this._lastClickedOrSelected = itemIndex;
+        var itemIndex: number = this.state.ItemsSource?.findIndex(it => Utilities.SmartEquals(item, it)) ?? -1;        
 
         // Screwy-looking logic to try to replicate Windows Explorer behavior.
         if (this.SelectionMode === SelectionMode.Single)
@@ -197,9 +227,15 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
                 this._currentSelectionAnchor = newSelStart;
             }
 
-            this.SetValue(
-                nameof(this.state.SelectedItems),
-                this.state.ItemsSource?.slice(newSelStart, newSelEnd + 1));
+            var selection = this.state.SelectedItems || [];
+            selection.splice(
+                0,
+                selection.length,
+                ...(this.state.ItemsSource?.slice(newSelStart, newSelEnd + 1)||[]) );
+
+            //this.SetValue(
+            //    nameof(this.state.SelectedItems),
+            //    this.state.ItemsSource?.slice(newSelStart, newSelEnd + 1));
             this.OnSelectionChanged();
         }
         else
@@ -216,8 +252,8 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         // Forces all the instantiated children to re-render with their new selection state
         this.ItemsPanelInstance?.InvalidateRender();
     }
-
-    /* private */ ChangeSingleItemSelectionState(item: any, select: boolean)
+    
+    private ChangeSingleItemSelectionState(item: any, select: boolean)
     {
         if (select)
         {
@@ -234,7 +270,7 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         this.OnSelectionChanged();
     }
 
-    /* private */ SetSingleItemSelection(index: number)
+    public SetSingleItemSelection(index: number)
     {
         var item = this.state.ItemsSource
             ? this.state.ItemsSource[index]
@@ -242,15 +278,10 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         if (!item)
             return;
         if (this.SelectionMode !== SelectionMode.Single)
-        {
             this.SetValue(nameof(this.state.SelectedItems), [item]);
-        }
         else
-        {
             this.SetValue(nameof(this.state.SelectedItem), item);
-        }
         this.OnSelectionChanged();
-        this._lastClickedOrSelected = index;
     }
 
     /* private*/ ToggleMultiItemSelection(index: number): void
@@ -269,15 +300,32 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
             items.push(item);
         else
             items.splice(currentIndex, 1);
-        const itemsCopy: any[] = items.slice();
-        this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
+
+        //const itemsCopy: any[] = items.slice();
+        //this.SetValue(nameof(this.state.SelectedItems), itemsCopy);
+
         this.OnSelectionChanged();
-        this._lastClickedOrSelected = index;
     }
 
-    /* private */ OnPropertyChanged(prop: string, value: any, oldValue: any)
+    override OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
+        if (prop === nameof(this.state.SelectedItems))
+        {
+            if (oldValue?.IsBoundCollection)
+                (oldValue as BoundCollection<any>).CollectionChanged.unsubscribe(this.Callback(this.OnSelectedItemsCollectionChanged));
+
+            if (value?.IsBoundCollection)
+                (value as BoundCollection<any>).CollectionChanged.subscribe(this.Callback(this.OnSelectedItemsCollectionChanged));
+
+            this.ItemsPanelInstance?.InvalidateRender();
+        }
+
         super.OnPropertyChanged(prop, value, oldValue);
+    }
+
+    protected OnSelectedItemsCollectionChanged(sender: any, e: void)
+    {
+        this.ItemsPanelInstance?.InvalidateRender();
     }
 
     private CheckIsDisabled(item?: any): boolean
@@ -291,4 +339,9 @@ export class Selector<P extends ISelectorProps = { ItemsSource: [], SelectedItem
         };
         return this.BindState(disabledBindParams, `${Utilities.SmartGetKey(item)}:IsDisabled`);
     }
+}
+
+
+export class Selector extends SelectorBase<ISelectorProps, ISelectorState>
+{
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Antimatter.Net.Model
@@ -6,6 +7,8 @@ namespace Antimatter.Net.Model
     public class Command : ObservableObject, ICommand
     {
         private Action<object> _action;
+        private string _name;
+
 
         public event EventHandler CanExecuteChanged;
 
@@ -41,9 +44,10 @@ namespace Antimatter.Net.Model
 
         public ushort Icon { get; set; }        
 
-        public Command(Action<object> action)
+        public Command(Action<object> action, [CallerMemberName] string name = null)
         {
             this._action = action;
+            this._name = name;
         }
 
         public virtual bool CanExecute(object parameter)
@@ -56,6 +60,11 @@ namespace Antimatter.Net.Model
             if (!CanExecute(parameter))
                 return;
             this._action?.Invoke(parameter);
+        }
+
+        public override string ToString()
+        {
+            return this._name;
         }
     }
 }

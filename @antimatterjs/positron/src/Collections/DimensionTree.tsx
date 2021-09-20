@@ -236,7 +236,7 @@ class BranchNode extends Node
         this._bottom = value;
     }
 
-    public /* override */ InvalidateCount(): void
+    public override InvalidateCount(): void
     {
         if (!this._count)
             return;
@@ -244,7 +244,7 @@ class BranchNode extends Node
         this.Parent?.InvalidateCount();
     }
 
-    public /* override */ InvalidateLength(): void
+    public override InvalidateLength(): void
     {
         if (!this._size)
             return;
@@ -252,12 +252,12 @@ class BranchNode extends Node
         this.Parent?.InvalidateLength();
     }
 
-    public /* override */ FindLastDescendant(): ValueNode | undefined
+    public override FindLastDescendant(): ValueNode | undefined
     {
         return this.Bottom?.FindLastDescendant();
     }
 
-    public /* override */ FindFirstDescendant(): ValueNode | undefined
+    public override FindFirstDescendant(): ValueNode | undefined
     {
         return this.Top?.FindFirstDescendant();
     }
@@ -295,17 +295,17 @@ class ValueNode extends Node
         this.Value = value;
     }
 
-    public /* override */ get IsValue(): boolean
+    public override get IsValue(): boolean
     {
         return true;
     }
 
-    public /* override */ get Count()
+    public override get Count()
     {
         return 1;
     }
 
-    public /* override */ get Length()
+    public override get Length()
     {
         return this.Value?.Length || 0;
     }
@@ -327,27 +327,27 @@ class ValueNode extends Node
         }
     }
 
-    public /* override */ InvalidateLength(): void
+    public override InvalidateLength(): void
     {
         this.Parent?.InvalidateLength();
     }
 
-    public /* override */ InvalidateCount(): void
+    public override InvalidateCount(): void
     {
         // no op
     }
 
-    public /* override */  FindLastDescendant(): ValueNode
+    public override FindLastDescendant(): ValueNode
     {
         return this;
     }
 
-    public /* override */  FindFirstDescendant(): ValueNode
+    public override FindFirstDescendant(): ValueNode
     {
         return this;
     }
 
-    public /* override */ toString()
+    public override toString()
     {
         return this.Value?.toString();
     }

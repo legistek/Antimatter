@@ -4,7 +4,9 @@ import { Antimatter } from "./Antimatter";
 import { BindingMode, BindingParameters, RelativeSourceMode } from "./BindingParameters";
 import { BindingSource, BindingSourceType } from "./BindingSource";
 import { ModelObjectReference } from "./ModelObjectReference";
-import { ModelValueType } from "./ModelValue";
+import { ModelValue, ModelValueType } from "./ModelValue";
+import { ICollectionUpdate } from "./ICollectionUpdate";
+import { BoundCollection } from "./BoundCollection";
 
 export class BindingExpression
 {
@@ -108,6 +110,19 @@ export class BindingExpression
             (this._resolvedSource.POJO as INotifyPropertyChanged)?.PropertyChanged.unsubscribe(this.OnPOJOValueChanged);
     }
 
+    public static OnModelBoundCollectionChanged(bxIndex: number, update: ICollectionUpdate): void
+    {
+        var exp = this._globalBindings.get(bxIndex) as BindingExpression;
+        if (!exp)
+            return;
+        Antimatter.ViewUpdateBoundCollection(
+            exp,
+            exp._target,
+            exp.TargetProperty,
+            update,
+            exp._isApplied && exp.AffectsRender);
+    }
+
     public static OnModelValueChanged(bxIndex: number, value: any, type: ModelValueType): void
     {
         var exp = this._globalBindings.get(bxIndex) as BindingExpression;
@@ -123,6 +138,9 @@ export class BindingExpression
         
         if (exp.Parameters.Converter)
             value = exp.Parameters.Converter(value);
+
+        if (type === ModelValueType.Collection)
+            value = new BoundCollection<any>(exp, ...value as any[]);
 
         Antimatter.UpdateTargetValue(
             exp._target,

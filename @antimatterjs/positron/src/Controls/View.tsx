@@ -37,3 +37,8 @@ export abstract class ViewBase<P extends IViewProps = {},
 export abstract class View extends ViewBase<IViewProps, IViewState>
 {
 }
+
+export abstract class View2<T> extends ViewBase<IViewProps, IViewState>
+{
+    protected Model: T = {} as any;
+}

@@ -1,4 +1,5 @@
 import { BindingExpression } from "./BindingExpression";
+import { ICollectionUpdate } from "./ICollectionUpdate";
 import { ModelObjectReference } from "./ModelObjectReference";
 import { ModelValue } from "./ModelValue";
 
@@ -11,4 +12,5 @@ export interface IServer
     Bind(ref: ModelObjectReference, path: string | undefined, expression: BindingExpression);
     Unbind(exp: BindingExpression);
     UpdateBindingSource(bxIndex: number, value: ModelValue);
+    UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate);
 }

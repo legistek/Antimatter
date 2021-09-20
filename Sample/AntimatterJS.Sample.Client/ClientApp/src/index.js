@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, HashRouter, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import { registerIcons } from '@fluentui/react/lib/Styling';
@@ -11,7 +11,6 @@ import './theme';       // Do this before ANY positron stuff
 
 import { Antimatter, SignalRServer, ReactClient, WebassemblyServer, DataContext, Binding } from '@antimatterjs/react';
 import { Window } from '@antimatterjs/positron'
-import { MainWindow } from './limine/MainWindow';
 
 import { Style } from '@antimatterjs/positron';
 import App from './App';

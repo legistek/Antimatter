@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BindingMode } from '@antimatterjs/react';
-import { WebStyle } from '../Style';
+import { TemplateProp, WebStyle } from '../Style';
 import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
-import { ISelectableItemControlProps, SelectableItemControlBase } from './Primitives/SelectableItemControl';
+import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { Panel } from './Panel';
 import { SemanticColor, Theme } from '../Theme';
 
@@ -23,6 +23,10 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
         },
         SelectedItem: {
             Mode: BindingMode.TwoWay
+        },
+        SelectedItems: {
+            Mode: BindingMode.TwoWay,
+            NotifyCollectionChanged: true
         }
     };
     public static DefaultStyle: WebStyle<IListBoxProps> = new WebStyle<IListBoxProps>(
@@ -30,6 +34,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
             ItemsSource: [],
             BorderBrush: SemanticColor.ButtonBorder,
             BorderThickness: "1px",
+            ItemPadding: "5px",
             OnPointerMove: (e) =>
             {
                 var target = e.currentTarget as HTMLElement;
@@ -43,9 +48,9 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
             ItemContainerStyle: new WebStyle<ISelectableItemControlProps>(
                 {
                     Margin: "0px",
-                    Template: (templatedParent: SelectableItemControlBase) =>
+                    Template: (templatedParent: SelectableItemControl) =>
                     (
-                        <Panel ClassName="listboxitem">
+                        <Panel ClassName="listboxitem"  >
                             <>{templatedParent.props.children}</>
                             <div className="listboxitem-border-layer" />
                         </Panel>
@@ -81,8 +86,14 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                     "@:hover .listboxitem-border-layer": {
                         visibility: "visible",
                     }
-                }
+                },
+                SelectableItemControlBase.DefaultStyle
             )
+        },
+        {
+            "@ .listboxitem": {
+                padding: TemplateProp(nameof<IListBoxProps>(p => p.ItemPadding))
+            },
         }
     );
 }

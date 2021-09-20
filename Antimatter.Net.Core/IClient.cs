@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Antimatter.Net.Internal;
 
 namespace Antimatter.Net
 {
@@ -26,6 +26,19 @@ namespace Antimatter.Net
         /// model server scenarios. Otherwise <c>null</c>.
         /// </param>
         void UpdateBinding(string clientID, int bxIndex, ModelValue value);
+
+        /// <summary>
+        /// Notifies clients of a model-side update to a collection that implements
+        /// <see cref="INotifyCollectionChanged "/>
+        /// </summary>
+        /// <param name="clinetID">The client ID provided when creating the
+        /// <see cref="Reactor"/> instance. Used in multi-tenant
+        /// model server scenarios. Otherwise <c>null</c>.</param>
+        /// <param name="bxIndex"></param>
+        /// <param name="update">A <see cref="CollectionUpdate"/> instance with
+        /// information used by the client to process the collection change.
+        /// </param>
+        void UpdateBoundCollection(string clinetID, int bxIndex, CollectionUpdate update);
 
         /// <summary>
         /// Navigate to an application route (e.g. URL).

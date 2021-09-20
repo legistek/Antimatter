@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,6 +12,8 @@ namespace Antimatter.Net.Internal
     internal class BindingExpression
     {
         ModelValue _lastValue;
+        HashSet<int> _currentObjectCollection;
+
         Reactor _reactor;
         bool _suspendPropertyChangeReport;
 
@@ -70,7 +75,104 @@ namespace Antimatter.Net.Internal
             }
         }
 
-        public void UpdateSource(ModelValue modelValue)
+        public void UpdateBoundCollection(CollectionUpdate update)
+        {
+            this._suspendPropertyChangeReport = true;
+            try
+            {
+                object collection = null;
+                if (!(this.PathComponents.Length > 0))
+                    collection = this.ResolvedSource;
+                else
+                    collection = this.PathComponents.Last().GetValue();
+                
+                if (collection is IList list)
+                {
+                    var olist = list as IObservableList;
+
+                    switch (update.Action)
+                    {
+                        case NotifyCollectionChangedAction.Reset:                            
+                            // Add refs on the new items first if any
+                            if (update.Items?.Length > 0)
+                            {
+                                foreach (var item in update.Items)
+                                    AddRef(item);
+                            }
+
+                            // Release old items
+                            if (this._currentObjectCollection != null)
+                            {
+                                foreach (var item in this._currentObjectCollection)
+                                    _reactor.Release(item);
+                                this._currentObjectCollection.Clear();
+                            }
+                            
+                            if (update.Items?.Length > 0)
+                            {
+                                // Cache new items if objs
+                                this._currentObjectCollection = new HashSet<int>(
+                                    update.Items
+                                        .Where(item => item.IsReferenceCounted)
+                                        .Select(item => item.ObjectHandle));
+
+                                // Now actually add them to the list
+                                if (olist != null)
+                                    olist.Reset(update.Items.Select(item => item.ToCSValue(this._reactor)));
+                                else
+                                {
+                                    list.Clear();
+                                    foreach (var item in update.Items)
+                                        list.Add(item.ToCSValue(this._reactor));
+                                }
+                            }                    
+                            else
+                            {
+                                list.Clear();
+                            }
+
+                            break;
+                        case NotifyCollectionChangedAction.Add:
+                            if (olist != null)
+                            {
+                                olist.AddRange(update.Items.Select(item => item.ToCSValue(this._reactor)).ToArray());
+                            }
+                            else
+                            {
+                                foreach (var item in update.Items)
+                                    list.Add(item.ToCSValue(this._reactor));
+                            }
+
+                            foreach (var item in update.Items)
+                            {
+                                AddRef(item);
+                                if (item.IsReferenceCounted)
+                                    this._currentObjectCollection.Add(item.ObjectHandle);
+                            }
+                            break;
+
+                        case NotifyCollectionChangedAction.Remove:
+                            for (int i = update.Index; i < update.Index + update.Count; i++)
+                                _reactor.TryGetObjectReference(list[i])?.Release(this._reactor);
+                            if (olist != null)
+                                olist.RemoveRange(update.Index, update.Count);
+                            else
+                            {
+                                var count = update.Count;
+                                while (count-- > 0)
+                                    list.RemoveAt(update.Index);
+                            }                            
+                            break;
+                    }
+                }
+            }
+            finally
+            {
+                _suspendPropertyChangeReport = false;
+            }
+        }
+
+        public void UpdateSource(ModelValue newValue)
         {
             this._suspendPropertyChangeReport = true;
             try
@@ -79,35 +181,38 @@ namespace Antimatter.Net.Internal
                     // No two-way binding if no path
                     return;
 
-                if (modelValue.Type != ModelValueType.Collection &&
-                    _lastValue?.Type == modelValue.Type)
+                if (newValue.Type != ModelValueType.Collection &&
+                    _lastValue?.Type == newValue.Type)
                 {
-                    if (modelValue.Type == ModelValueType.Object)
+                    if (newValue.Type == ModelValueType.Object)
                     {
-                        if (_lastValue?.ObjectHandle == modelValue.ObjectHandle)
+                        if (_lastValue?.ObjectHandle == newValue.ObjectHandle)
                             return;
                     }
-                    else if (modelValue.Type == ModelValueType.String)
+                    else if (newValue.Type == ModelValueType.String)
                     {
-                        if (_lastValue?.StringValue == modelValue.StringValue)
+                        if (_lastValue?.StringValue == newValue.StringValue)
                             return;
                     }
                     else
                     {
-                        if (_lastValue?.LongValue == modelValue.LongValue)
+                        if (_lastValue?.LongValue == newValue.LongValue)
                             return;
                     }                        
                 }                                            
 
                 // Add ref before releasing old value
-                AddRef(modelValue);
+                AddRef(newValue);
 
                 ReleaseLastValue();                                
 
-                _lastValue = modelValue;                
+                _lastValue = newValue;
+                if (newValue.Type == ModelValueType.Collection)
+                    this._currentObjectCollection = new HashSet<int>(
+                        newValue.Collection.Where(mv => mv.IsReferenceCounted).Select(mv=>mv.ObjectHandle));
 
                 this.PathComponents.Last()
-                    .OnTargetPropertyChanged(modelValue, _reactor);
+                    .OnTargetPropertyChanged(newValue, _reactor);
             }
             finally
             {
@@ -242,17 +347,20 @@ namespace Antimatter.Net.Internal
                 return;
 
             // TODO - What if value is actually unchanged (but collections?)
-            var dnv = _reactor.GetModelValue(value, this.MarshalValue);   // do this first
-            if (dnv.Type != ModelValueType.Collection && dnv.Equals(_lastValue))
+            var mv = _reactor.GetModelValue(value, this.MarshalValue);   // do this first
+            if (mv.Type != ModelValueType.Collection && mv.Equals(_lastValue))
                 return;
 
             if (this.NotifyCollectionChanged && value is INotifyCollectionChanged incc)
                 incc.CollectionChanged += OnSourceCollectionChanged;
 
             ReleaseLastValue(); // now release old to avoid unnecessary release if overlap
-            _lastValue = dnv;
+            _lastValue = mv;
+            if (mv.Type == ModelValueType.Collection)
+                _currentObjectCollection = new HashSet<int>(
+                    mv.Collection.Where(mv=>mv.IsReferenceCounted).Select(mv=>mv.ObjectHandle));
 
-            Reactor.Client.UpdateBinding(this._reactor.ClientID, this.BXIndex, dnv);
+            Reactor.Client.UpdateBinding(this._reactor.ClientID, this.BXIndex, mv);
             CheckReportIDEIValidationError();
         }
 
@@ -292,13 +400,64 @@ namespace Antimatter.Net.Internal
                 if (reference != null && reference.Object is INotifyCollectionChanged oldIncc && this.NotifyCollectionChanged)
                     oldIncc.CollectionChanged -= OnSourceCollectionChanged;
             }
-            _reactor.Release(_lastValue);
+            _reactor.Release(_lastValue, includeCollection: false);
+            if (_lastValue?.Type == ModelValueType.Collection)
+            {
+                foreach (var val in _currentObjectCollection)
+                    _reactor.Release(val);
+                _currentObjectCollection.Clear();
+                _lastValue.Collection = null;
+            }
+
             _lastValue = null;
         }
 
         private void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            ReportSourcePropertyUpdate(sender);
+            if (_suspendPropertyChangeReport)
+                return;
+
+            // ReportSourcePropertyUpdate(sender);
+            CollectionUpdate update = new CollectionUpdate
+            {
+                Action = e.Action,
+            };
+
+            IList items = null;
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Reset:
+                    // Nothing else is important
+                    break;
+                case NotifyCollectionChangedAction.Add:
+                    update.Count = e.NewItems.Count;
+                    update.Index = e.NewStartingIndex;
+                    items = e.NewItems;                    
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    update.Count = e.OldItems.Count;
+                    update.Index = e.OldStartingIndex;
+                    // TODO - what about multiple removals? By index??
+                    break;
+            }
+
+            // TODO - Release ref counts for objects being removed!!
+            // And find a way to changed _lastValue to reflect current
+            // state for when value is actually changed or binding released.
+
+            var itemArray = items?.Cast<object>()?.ToArray();
+
+            update.Items = items
+                ?.Cast<object>()
+                ?.Select(item => this._reactor
+                ?.GetModelValue(item))
+                ?.ToArray();           
+
+            Reactor.Client.UpdateBoundCollection(
+                this._reactor.ClientID, 
+                this.BXIndex, 
+                update);
         }
 
         private void OnSourceValidationError(object sender, DataErrorsChangedEventArgs e)

@@ -21,14 +21,13 @@ namespace Antimatter.Net.Internal
             _refCount++;
         }
 
-        public void Release(Reactor mgr)
+        public void Release(Reactor reactor)
         {
             _refCount--;
             if (_refCount == 0)
             {
-                mgr.FinalDispose(this);
-                //Console.WriteLine($"Fully releasing {this.Object?.ToString()}");
-                this.Object = null; // free for GC                
+                reactor.FinalDispose(this);                
+                this.Object = null; // free for GC
             }
         }
     }

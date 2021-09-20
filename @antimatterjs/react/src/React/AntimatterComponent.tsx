@@ -18,13 +18,8 @@ export class AntimatterComponent<P = {}, S = {}> extends Component<P, S>
         return Antimatter.BindState(this, parameters, stateVar);
     }
 
-    BindCommand(parameters: BindingParameters, stateVar?: string): () => void
-    {                
-        return Antimatter.BindCommand(this, parameters);
-    }
-
     public OnTargetChanged(property: string, newValue: any): void
     {
-        Antimatter.TargetChanged(this, property, newValue);
+        Antimatter.UpdateModelValue(this, property, newValue);
     }
 }

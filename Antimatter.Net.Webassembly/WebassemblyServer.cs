@@ -14,7 +14,7 @@ namespace Antimatter.Net.Webassembly
         static WebassemblyServer()
         {
             WebAssemblyHostBuilder.CreateDefault(); // need this to ensure dlls are included
-            Reactor.Initialize(new Client());
+            Reactor.Initialize(new WebassemblyClient());
         }
 
         public static readonly Reactor Reactor = new Reactor(null);
@@ -36,6 +36,13 @@ namespace Antimatter.Net.Webassembly
         {
             var value = JsonConvert.DeserializeObject<ModelValue>(valueJson);
             Reactor.UpdateBindingSource(bxIndex, value);
+        }
+
+        [AMXClientInvocable]
+        public static void UpdateBoundCollection(int bxIndex, string valueJson)
+        {
+            var value = JsonConvert.DeserializeObject<CollectionUpdate>(valueJson);
+            Reactor.UpdateBoundCollection(bxIndex, value);
         }
 
         [AMXClientInvocable]

@@ -4,7 +4,6 @@ import { Binding, BindingMode, Utilities } from "@antimatterjs/react";
 import { Panel } from "../Controls/Panel";
 import { DocumentPosition, IDocument, IDocumentPage } from "./IDocument";
 import { WebStyle } from "../Style";
-import { ItemsStackPanel } from "../Controls/ItemsStackPanel";
 import { FrameworkElement } from "../FrameworkElement";
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from "../Enums";
 import { ControlTemplate } from "../FrameworkTemplate";

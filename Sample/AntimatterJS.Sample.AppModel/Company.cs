@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Antimatter.Net.Model;
+using Antimatter.Net;
 
 namespace AntimatterJS.Sample.AppModel
 {
@@ -99,17 +100,10 @@ namespace AntimatterJS.Sample.AppModel
 
         public IEnumerable<Employee> SomeEmployees => Employees.Take(50);
 
-        public IEnumerable<string> SomeEmployeeNames
-            => SomeEmployees.Select(e => e.FullName);
-        //{
-        //    get
-        //    {
-        //        return SomeEmployees.Select(e => e.FullName);
-        //    }
-        //}
-
+        public IEnumerable<string> SomeEmployeeNames => SomeEmployees.Select(e => e.FullName);
 
         public IEnumerable<Employee> SomeMoreEmployees => Employees.Take(200);
+
         public IEnumerable<string> SomeMoreEmployeeNames => SomeMoreEmployees.Select(e => e.FullName);
 
         #region Employee SelectedEmployeeName property
@@ -156,22 +150,22 @@ namespace AntimatterJS.Sample.AppModel
         //}
         //#endregion
 
-        #region ObservableCollection<Employee> SelectedEmployees property
-        private ObservableCollection<Employee> _SelectedEmployees;
-        public ObservableCollection<Employee> SelectedEmployees
+        #region ObservableList<Employee> SelectedEmployees property
+        private ObservableList<Employee> _SelectedEmployees;
+        public ObservableList<Employee> SelectedEmployees
         {
             get
             {
-                return _SelectedEmployees;
-            }
-            set
-            {
-                if (_SelectedEmployees != value)
+                if (_SelectedEmployees == null)
                 {
-                    _SelectedEmployees = value;
-                    OnPropertyChanged();
-                    this._DeleteSelectedEmployeesCommand.IsEnabled = value?.Count > 0;
+                    _SelectedEmployees = new ObservableList<Employee>();
+                    _SelectedEmployees.CollectionChanged += (sender, e) =>
+                    {
+                        (this.DeleteSelectedEmployeesCommand as Command).IsEnabled = SelectedEmployees?.Count > 0;
+                        this.OnPropertyChanged(nameof(SelectedEmployeesDisplayText));
+                    };
                 }
+                return _SelectedEmployees;
             }
         }
         #endregion
@@ -312,9 +306,11 @@ namespace AntimatterJS.Sample.AppModel
                     {
                         if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
                             return;
+                        
                         foreach (var empl in SelectedEmployees)
                             this.Employees.Remove(empl);
-                        this.SelectedEmployees = null;
+
+                        this.SelectedEmployees.Clear();
                     })
                 {
                     Name = "Fire",

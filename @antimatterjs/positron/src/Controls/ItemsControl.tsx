@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Binding, DataContext, ModelObjectReference, Utilities } from '@antimatterjs/react';
+import { Binding, DataContext, ModelObjectReference, ModelValue, Utilities } from '@antimatterjs/react';
 
 import { Control, IControlProps, IControlState } from './Control';
 import { FrameworkElement, IFrameworkElementProps } from '../FrameworkElement';
@@ -9,11 +9,13 @@ import { ScrollBarVisibility } from '../Enums';
 import { Style, WebStyle } from '../Style';
 import { DataTemplate } from '../FrameworkTemplate';
 import { WindowLayoutContext } from './Window';
+import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 export interface IItemsControlProps extends IControlProps
 {
     ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
+    ItemPadding?: string,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>,
@@ -38,10 +40,25 @@ export class ItemsControlBase<
     S extends IItemsControlState = {}>
     extends Control<P, S>
 {
+    constructor(props)
+    {
+        super(props);
+    }
+
     public ItemsPanelInstance: Panel | undefined | null;
     public get ItemContainers(): FrameworkElement[]
     {
         return this._itemContainers;
+    }
+
+    public get ItemsSource(): any[]
+    {
+        return this.GetValue(nameof(this.props.ItemsSource), []);
+    }
+
+    public get ItemPadding(): string|undefined
+    {
+        return this.GetValue(nameof(this.props.ItemPadding));
     }
 
     public /* virtual */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null
@@ -95,15 +112,26 @@ export class ItemsControlBase<
         }
     }
 
-    /* override */ OnPropertyChanged(property: string, value: any, oldValue: any)
+    override OnPropertyChanged(property: string, value: any, oldValue: any)
     {
         if (property === nameof(this.state.ItemsSource))
         {
+            if (oldValue?.IsBoundCollection)
+                (oldValue as BoundCollection<any>).CollectionChanged.unsubscribe(this.Callback(this.OnItemsSourceCollectionChanged));
+
+            if (value?.IsBoundCollection)
+                (value as BoundCollection<any>).CollectionChanged.subscribe(this.Callback(this.OnItemsSourceCollectionChanged));
+
             this._itemContainers = new Array((value as any[])?.length || 0);
             this.ItemsPanelInstance?.InvalidateRender();
         }
         super.OnPropertyChanged(property, value, oldValue);
     }
+
+    private OnItemsSourceCollectionChanged (sender: any, e: void)
+    {
+        this.InvalidateRender();
+    };
 
     /* override */ OnInvalidateRender(): void
     {

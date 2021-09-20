@@ -23,6 +23,13 @@ namespace Antimatter.Net
                 mv.ObjectHandle == this.ObjectHandle;
         }
 
+        public override int GetHashCode()
+        {
+            return (int)this.Type ^
+                (int)(this.StringValue?.GetHashCode() ?? 0) ^
+                (int)this.ObjectHandle;
+        }
+
         [FieldOffset(0)]
         private ModelValueType type;
         public ModelValueType Type

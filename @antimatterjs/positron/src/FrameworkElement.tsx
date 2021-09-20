@@ -35,6 +35,7 @@ interface IFrameworkElementCommon
     OnManipulationDelta?: (event: ManipulationEventArgs) => void,
     OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
     OnKeyPress?: (event: KeyboardEvent) => void,
+    OnKeyDown?: (event: KeyboardEvent) => void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element,
@@ -84,6 +85,8 @@ export class FrameworkElement<
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
     _gestureHandlers: boolean = false;
+    private _boundCallbacks?: Map<Function, Function>;
+    private _isMounted: boolean = false;
 
     private _templatedParent?: FrameworkElement;
     private _templatedStyle?: Style<any>;
@@ -95,10 +98,29 @@ export class FrameworkElement<
         return this.state.Style as Style<any>;
     }
 
+    public get IsMounted(): boolean
+    {
+        return this._isMounted;
+    }
+
     public get TemplatedParent(): FrameworkElement | undefined
     {
         return this._templatedParent;
     }
+
+    protected Callback(unbound: Function): any
+    {
+        let bound: Function | undefined = undefined;
+        if (!this._boundCallbacks)
+            this._boundCallbacks = new Map<Function, Function>();
+        else if ((bound = this._boundCallbacks.get(unbound)))
+            return bound;
+        
+        bound = unbound.bind(this) as Function;
+        this._boundCallbacks.set(unbound, bound);
+        return bound;                    
+    }
+
     //public set TemplatedParent(value: FrameworkElement|undefined)
     //{
     //    if (this._templatedParent === value &&
@@ -120,11 +142,6 @@ export class FrameworkElement<
     //            this.SetValue(prop[0], newVal, false);
     //        }                            
     //    }
-    //}
-
-    //public get Parent(): FrameworkElement
-    //{
-    //    return (this.Container?.parentElement as any)?.AMXFE;
     //}
 
     constructor(props)
@@ -169,8 +186,6 @@ export class FrameworkElement<
                             ref={r =>
                             {
                                 this.Container = r;
-                                if (r)
-                                    (this.Container as any).AMXFE = this;
                             }}
                             style={this.getCSSStyles()}
                             onScroll={this.state.OnScroll
@@ -178,6 +193,9 @@ export class FrameworkElement<
                                 : undefined}
                             onClick={this.state.OnClick
                                 ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
+                                : undefined}
+                            onKeyDown={this.state.OnKeyDown
+                                ? (event) => this.state.OnKeyDown?.call(this, event.nativeEvent)
                                 : undefined}
                             onKeyPress={this.state.OnKeyPress
                                 ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
@@ -345,7 +363,7 @@ export class FrameworkElement<
         if (this.state[stateVar] === newValue)
             return;
 
-        Antimatter.TargetChanged(this, stateVar, newValue, reRender, silent);
+        Antimatter.UpdateModelValue(this, stateVar, newValue, reRender, silent);
 
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }    
@@ -466,6 +484,7 @@ export class FrameworkElement<
 
     readonly componentDidMount = () =>
     {
+        this._isMounted = true;
         this.OnComponentMount();
         this.OnElementRendered();
         this.ExecutePropCommandHandler(this.state.OnDidMount);

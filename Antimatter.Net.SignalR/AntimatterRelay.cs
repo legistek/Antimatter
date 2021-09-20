@@ -89,6 +89,11 @@ namespace Antimatter.Net.SignalR
             Instance.Clients.Client(clientID)?.SendAsync("NavigateTo", route);
         }
 
+        void IClient.UpdateBoundCollection(string clinetID, int bxIndex, CollectionUpdate update)
+        {
+            throw new NotImplementedException();
+        }
+
         void IClient.UpdateBinding(string clientID, int bxIndex, ModelValue value)
         {
             var json = JsonConvert.SerializeObject(value);
@@ -105,6 +110,5 @@ namespace Antimatter.Net.SignalR
             }
             return mgrObject as Reactor;            
         }
-
     }
 }
