@@ -139,8 +139,9 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
             [`@.${ToggleButton.STATE_Indeterminate}:not(.${ToggleButton.STATE_ValidationError}) .ckb-icon`]: {
                 color: Theme.Value(ThemeColor.NeutralSecondary)
             },
-            [`@.${ToggleButton.STATE_Checked}:not(.${ToggleButton.STATE_ValidationError}) .ckb-icon`]: {
-                color: Theme.Value(SemanticColor.PrimaryButtonText)
+            [`@.${ToggleButton.STATE_Checked} .ckb-icon`]: {
+                color: Theme.Value(SemanticColor.PrimaryButtonText),
+                visibility: "visible"
             },
             "@ .ckb-label": {
                 gridColumn: 2,
@@ -153,6 +154,7 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
                 color: TemplateProp(nameof<ICheckBoxProps>(p => p.Foreground)),
             },
             [Control.DisabledElement("ckb-box")]: {
+                boxShadow: "none",
                 background: Theme.Value(SemanticColor.ButtonBackgroundDisabled),
                 borderColor: TemplateProp(nameof<ICheckBoxProps>(p => p.BorderBrush)),
             },

@@ -114,7 +114,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconForeground: "white",
                                     IconBackground: "black",
                                     Key: "empty",
-                                    Description: "Nothign here",
+                                    Description: "Nothing to see here",
                                     Content: (<Grid> </Grid>)
                                 },
                                 {

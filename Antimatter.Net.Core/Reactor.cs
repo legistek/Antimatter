@@ -9,6 +9,7 @@ using Antimatter.Net.Internal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Globalization;
 
 namespace Antimatter.Net
 {

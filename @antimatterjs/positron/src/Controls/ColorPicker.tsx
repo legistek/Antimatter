@@ -67,7 +67,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
                     <Ellipse
                         ref={r => this._pickerButton = r}
                         OnClick={() => this.TogglePopup()}
-                        Fill={this.state.SelectedItem}
+                        Fill={this.SelectedItem}
                         VerticalAlignment={VerticalAlignment.Center}
                         HorizontalAlignment={HorizontalAlignment.Center}
                         Width={ColorPicker.ELLIPSE_SIZE}

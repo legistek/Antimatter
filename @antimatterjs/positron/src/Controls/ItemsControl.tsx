@@ -13,8 +13,9 @@ import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 export interface IItemsControlProps extends IControlProps
 {
-    ItemsSource?: BoundCollection<any> | any[] | Binding,
+    ItemsSource?: any[] | Binding,
     ItemTemplate?: DataTemplate,
+    ItemPadding?: string,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>,
@@ -24,7 +25,7 @@ export interface IItemsControlProps extends IControlProps
 
 export interface IItemsControlState extends IControlState
 {
-    ItemsSource?: BoundCollection<any> | any[],
+    ItemsSource?: any[],
     ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
@@ -48,6 +49,16 @@ export class ItemsControlBase<
     public get ItemContainers(): FrameworkElement[]
     {
         return this._itemContainers;
+    }
+
+    public get ItemsSource(): any[]
+    {
+        return this.GetValue(nameof(this.props.ItemsSource), []);
+    }
+
+    public get ItemPadding(): string|undefined
+    {
+        return this.GetValue(nameof(this.props.ItemPadding));
     }
 
     public /* virtual */ OnRenderItem(item: any, index: number, props?: any): JSX.Element | null

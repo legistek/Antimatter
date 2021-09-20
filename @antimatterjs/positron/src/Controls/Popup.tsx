@@ -23,6 +23,7 @@ export interface IPopupProps extends IPanelProps
     MaxHeight?: number,
     Width?: number | Binding,
     MaxWidth?: number | Binding,
+    OnOpened?: () => void
 }
 export interface IPopupState extends IPanelState
 {
@@ -32,7 +33,8 @@ export interface IPopupState extends IPanelState
     Placement?: PlacementMode,
     StaysOpen?: boolean,
     MaxHeight?: number,
-    Width?: number
+    Width?: number,
+    OnOpened?: () => void
 }
 
 export class PopupBase<
@@ -53,10 +55,15 @@ export class PopupBase<
         }
     };
 
+    public get IsOpen(): boolean
+    {
+        return this.GetValue(nameof(this.props.IsOpen), false);
+    }
+
     /* override */ renderElement()
     {
         return this.state.IsOpen ? (
-            <Callout
+            <Callout                
                 target={this.ComputeTarget()}
                 styles={{
                     root: {
@@ -86,6 +93,13 @@ export class PopupBase<
         ) : null;
     }
 
+    override OnElementRendered()
+    {
+        if (!this.IsOpen)
+            return;
+        if (this.state.OnOpened)
+            this.state.OnOpened();
+    }
 
     /* override */ getCSSStyles()
     {
@@ -99,7 +113,6 @@ export class PopupBase<
 
     public override OnPropertyChanged(property: string, value: any, oldValue: any)
     {
-
     }
 
     private get TargetWidth(): number | undefined

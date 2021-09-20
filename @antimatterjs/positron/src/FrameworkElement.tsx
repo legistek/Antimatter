@@ -35,6 +35,7 @@ interface IFrameworkElementCommon
     OnManipulationDelta?: (event: ManipulationEventArgs) => void,
     OnManipulationCompleted?: (event: ManipulationEventArgs) => void,
     OnKeyPress?: (event: KeyboardEvent) => void,
+    OnKeyDown?: (event: KeyboardEvent) => void,
     Grid?: IGridChildPosition,
     Overlaps?: boolean,
     LoadingTemplate?: () => JSX.Element,
@@ -143,11 +144,6 @@ export class FrameworkElement<
     //    }
     //}
 
-    //public get Parent(): FrameworkElement
-    //{
-    //    return (this.Container?.parentElement as any)?.AMXFE;
-    //}
-
     constructor(props)
     {
         super(props);
@@ -190,8 +186,6 @@ export class FrameworkElement<
                             ref={r =>
                             {
                                 this.Container = r;
-                                if (r)
-                                    (this.Container as any).AMXFE = this;
                             }}
                             style={this.getCSSStyles()}
                             onScroll={this.state.OnScroll
@@ -199,6 +193,9 @@ export class FrameworkElement<
                                 : undefined}
                             onClick={this.state.OnClick
                                 ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
+                                : undefined}
+                            onKeyDown={this.state.OnKeyDown
+                                ? (event) => this.state.OnKeyDown?.call(this, event.nativeEvent)
                                 : undefined}
                             onKeyPress={this.state.OnKeyPress
                                 ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)

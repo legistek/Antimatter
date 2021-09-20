@@ -13,7 +13,7 @@ import { StackPanel } from './StackPanel';
 import { ITextBlockProps, TextBlock } from './TextBlock';
 import { ISelectableItemControlProps, SelectableItemControlBase, ISelectableItemControlState }
     from './Primitives/SelectableItemControl';
-import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
+import { EmptyISelectorState, ISelectorProps, ISelectorState, Selector, SelectorBase } from './Primitives/Selector';
 import { FontStyle, ThemeColor, SemanticColor, Theme, ThemeLayout } from '../Theme';
 import { Control } from './Control';
 import { CSSClasses } from '../CSSClasses';
@@ -34,7 +34,7 @@ export interface IComboBoxState extends ISelectorState
 }
 
 export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxState = EmptyISelectorState>
-    extends Selector<P, S>
+    extends SelectorBase<P, S>
 {
     public get Label(): string
     {
@@ -44,11 +44,6 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
     public get PlaceholderText(): string
     {
         return this.GetValue(nameof(this.props.PlaceholderText));
-    }
-
-    public get IsMultiSelect(): boolean
-    {
-        return this.props.SelectionMode == SelectionMode.Multiple;
     }
 
     public get MaxDropdownHeight(): string
@@ -101,6 +96,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
             SelectionMode: SelectionMode.Single,
             ItemsSource: [],
             MinWidth: "150px",
+            ItemPadding: "5px",
             PlaceholderText: " ",
             FontSize: FontStyle.Medium,
             FontFamily: FontStyle.FontFamily,
@@ -168,6 +164,9 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                             Path: nameof(templatedParent.PopupIsOpen),
                             Mode: BindingMode.TwoWay
                         })}
+                        OnOpened={() =>
+                            templatedParent.OnPopupOpened()
+                        }
                         Background={templatedParent.Background}
                         Placement={PlacementMode.Below}
                         Target={() => templatedParent._button}
@@ -298,11 +297,17 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         this.PopupIsOpen = !this.PopupIsOpen;
     }
 
-    private OnKeyPressed(event: KeyboardEvent): void
+    private async OnKeyPressed(event: KeyboardEvent)
     {
         if (event.key != "Enter" && event.key != " ")
             return;
-        this.TogglePopup();
+        this.TogglePopup();        
+    }
+
+    private async OnPopupOpened() //: void
+    {
+        await Utilities.SleepAsync(50);
+        this.FocusSelected(true);
     }
 
     private get TitleElem(): JSX.Element | undefined
@@ -326,8 +331,8 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
 
         // For standard single-selection, use the item template 
         // for the selected item w / o the ItemContainerStyle applied
-        if (this.state.SelectedItem)
-            return this.GetTemplateForItem(this.state.SelectedItem)(this.state.SelectedItem);
+        if (this.SelectedItem)
+            return this.GetTemplateForItem(this.SelectedItem)(this.SelectedItem);
 
         return undefined;
     }
@@ -368,19 +373,16 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
         }
     };
 
-    private get Parent(): ComboBoxBase<IComboBoxProps, IComboBoxState>
-    {
-        return this.state.Parent as ComboBoxBase<IComboBoxProps, IComboBoxState>;
-    }
     private get RenderAutoCheckbox(): boolean
     {
-        return this.Parent.IsMultiSelect && !this.Parent.state.PreventAutoCheckboxes;
+        return this.Parent?.IsMultiSelect === true && 
+            (this.Parent as ComboBox).state.PreventAutoCheckboxes === false;
     }
 
-    public static DefaultStyle: WebStyle<IComboBoxProps> = new WebStyle<IComboBoxProps>(
+    public static DefaultStyle: WebStyle<ISelectableItemControlProps> = new WebStyle<ISelectableItemControlProps>(
         {
-            SelectionMode: SelectionMode.Single,
-            ItemsSource: [],
+            //SelectionMode: SelectionMode.Single,
+            // ItemsSource: [],            
             Template: new ControlTemplate((templatedParent: ComboBoxItem) => templatedParent.template)
         },
         {
@@ -403,11 +405,12 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
                 color: Theme.Value(SemanticColor.DisabledBodyText)
             }
         },
+        SelectableItemControlBase.DefaultStyle
     );
 
     private get template(): JSX.Element
     {
-        const contentElem: JSX.Element = this.Parent.GetTemplateForItem(this.state.Item)(this.state.Item);
+        const contentElem = this.Parent?.GetTemplateForItem(this.state.Item)(this.state.Item);
 
         var checkboxElem: JSX.Element | undefined;
         const colDefs: IColumnDefinition[] = [Grid.ColumnDefinition(1, true)];
@@ -418,7 +421,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             checkboxElem = (
                 <CheckBox
                     Grid={{ Column: 0 }}
-                    IsChecked={this.Parent.IsItemSelected(this.state.Item)}
+                    IsChecked={this.Parent?.IsItemSelected(this.state.Item)}
                     OnClick={(event) => this.OnCheckboxClicked(event)}
                     VerticalAlignment={VerticalAlignment.Center}
                     Margin="0 0 0 4px"
@@ -437,7 +440,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             );
         }
 
-        return contentElem;
+        return contentElem || (<></>);
     }
 
     private OnCheckboxClicked(event: MouseEvent): void
@@ -460,7 +463,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
     override getCSSStyles()
     {
         var styles = super.getCSSStyles();
-        styles.padding = this.Padding || this.Parent?.Padding;
+        styles.padding = this.Padding || this.Parent?.ItemPadding;
         return styles;
     }
 
