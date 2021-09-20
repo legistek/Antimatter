@@ -5,6 +5,7 @@ import { ModelObjectReference } from "./ModelObjectReference";
 import { ModelValue, ModelValueType } from './ModelValue';
 import { Utilities } from './Utilities';
 import { Antimatter } from './Antimatter';
+import { ICollectionUpdate } from './ICollectionUpdate';
 
 export class SignalRServer implements IServer
 {    
@@ -58,6 +59,11 @@ export class SignalRServer implements IServer
     public UpdateBindingSource(bxIndex: number, value: ModelValue)
     {
         this._connection.invoke("UpdateBindingSource", bxIndex, value);
+    }
+
+    public UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate)
+    {
+        // NotImplemented
     }
 
     //#endregion

@@ -8,6 +8,7 @@ using System.Linq;
 using Antimatter.Net.Internal;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace Antimatter.Net
 {
@@ -130,7 +131,11 @@ namespace Antimatter.Net
         [AMXClientInvocable]
         public void UpdateBoundCollection(int bxIndex, CollectionUpdate update)
         {
-            //hobo;
+            BindingExpression bx;
+            if (!this.Bindings.TryGetValue(bxIndex, out bx))
+                return;
+            _currentSessionContext.Value = _sessionContextObject;
+            bx.UpdateBoundCollection(update);
         }
 
         /// <summary>
@@ -214,12 +219,14 @@ namespace Antimatter.Net
         internal string ClientID { get; }
 
         internal void FinalDispose(ObjectReference reference)
-        {
-            //Console.WriteLine($"Disposing {reference.Object?.ToString()}");
+        {            
             var obj = reference.Object;
             if (obj != null)
                 _references.Remove(obj);
             _dict.Remove(reference.Handle);
+            _freedHandles.Add(reference.Handle);
+            int liveObjects = _dict.Count;
+            //Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
         }
 
         internal void Release(int objHandle)
@@ -229,13 +236,13 @@ namespace Antimatter.Net
                 reference.Release(this);
         }
 
-        internal void Release(ModelValue value)
+        internal void Release(ModelValue value, bool includeCollection = true)
         {
             if (value == null)
                 return;
-            if (value.Type == ModelValueType.Object)
+            if (value.IsReferenceCounted)
                 Release(value.ObjectHandle);
-            else if (value.Type == ModelValueType.Collection)
+            else if (includeCollection && value.Type == ModelValueType.Collection)
             {
                 foreach (var val in value.Collection)
                     Release(val);
@@ -270,9 +277,9 @@ namespace Antimatter.Net
                         IntValue = System.Convert.ToInt32(en)
                     };
                 }
-                else if (obj is IEnumerable<object> ienum)
+                else if (obj is IEnumerable ienum)
                 {
-                    var arr = ienum.Select(item => GetModelValue(item)).ToArray();
+                    var arr = ienum.Cast<object>().Select(item => GetModelValue(item)).ToArray();
                     return new ModelValue
                     {
                         Type = ModelValueType.Collection,
@@ -288,7 +295,8 @@ namespace Antimatter.Net
                 {
                     return Reactor.Client.MarshalObject(obj);
                 }
-                else {
+                else 
+                {
                     var handle = GetOrCreateReference(obj).Handle;
                     return new ModelValue
                     {
@@ -310,22 +318,42 @@ namespace Antimatter.Net
             return dnv;
         }
 
+        internal ObjectReference TryGetObjectReference(object obj)
+        {
+            ObjectReference reference = null;
+            this._references.TryGetValue(obj, out reference);
+            return reference;
+        }
+
+        private int GetNextHandle()
+        {
+            int handle = 0;
+            if (this._freedHandles.Count > 0)
+            {
+                handle = this._freedHandles.First();
+                this._freedHandles.Remove(handle);
+            }
+            else
+            {
+                handle = this._nextHandle++;
+            }
+            return handle;
+        }
+
         private ObjectReference GetOrCreateReference(object obj)
         {
             ObjectReference reference = null;
             if (!this._references.TryGetValue(obj, out reference))
-            {
-                //Console.WriteLine($"Adding {obj?.ToString()}");
+            {                
+                var handle = GetNextHandle();
                 reference = new ObjectReference
                 {
-                    Handle = this._nextHandle,
+                    Handle = handle,
                     Object = obj
                 };
-                this._dict[this._nextHandle] = reference;
-                this._references.Add(obj, reference);
-                this._nextHandle++;
-
-                //Console.WriteLine($"Creating ref {this._nextHandle} to {obj?.ToString()}");
+                this._dict[handle] = reference;
+                this._references.Add(obj, reference);                
+                //Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
             }
 
             reference.AddRef();
@@ -428,6 +456,7 @@ namespace Antimatter.Net
         //}
 
         private readonly Dictionary<int, BindingExpression> Bindings = new Dictionary<int, BindingExpression>();
+        private readonly HashSet<int> _freedHandles = new HashSet<int>();
         private int _nextHandle = 0;
         private Dictionary<int, ObjectReference> _dict = new Dictionary<int, ObjectReference>();
         private ConditionalWeakTable<object, ObjectReference> _references =

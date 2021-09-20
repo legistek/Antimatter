@@ -328,7 +328,7 @@ export class DocumentPagePresenterBase<
         var newWidth = this.Container?.clientWidth || 0;
         var newHeight = this.Container?.clientHeight || 0;
 
-        console.log(`Invalidating measure for page: ${this.state.PageIndex}, width diff: ${newWidth - this._lastWidth}, ${newHeight - this._lastHeight}`);
+        //console.log(`Invalidating measure for page: ${this.state.PageIndex}, width diff: ${newWidth - this._lastWidth}, ${newHeight - this._lastHeight}`);
         //this.PagesPanel?.RecomputeDimensions(true);
         this.PagesPanel?.AdjustDimensionsOnChildRealization(
             newWidth,

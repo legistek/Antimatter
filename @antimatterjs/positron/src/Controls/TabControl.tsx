@@ -334,7 +334,7 @@ export class TabControlBase<
                     return;
                 this.SetSelectedTab(tab, false);
                 var index = this.state.Items?.indexOf(tab) || 0;                
-                Antimatter.TargetChanged(
+                Antimatter.UpdateModelValue(
                     this,
                     nameof(this.state.SelectedIndex),
                     index,
@@ -347,7 +347,7 @@ export class TabControlBase<
                     return;
                 tab = this.state.Items[index];
                 this.SetSelectedTab(tab, false);
-                Antimatter.TargetChanged(
+                Antimatter.UpdateModelValue(
                     this,
                     nameof(this.state.SelectedItem),
                     tab.Key,
@@ -366,8 +366,8 @@ export class TabControlBase<
         if (notify)
         {
             // Notify two-way binding sources
-            Antimatter.TargetChanged(this, nameof(this.state.SelectedItem), tab.Key, false);
-            Antimatter.TargetChanged(
+            Antimatter.UpdateModelValue(this, nameof(this.state.SelectedItem), tab.Key, false);
+            Antimatter.UpdateModelValue(
                 this,
                 nameof(this.state.SelectedIndex),
                 newIndex,

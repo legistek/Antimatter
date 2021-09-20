@@ -65,7 +65,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
             <>
                 <Panel>
                     <Ellipse
-                        ref={r => this._button = r}
+                        ref={r => this._pickerButton = r}
                         OnClick={() => this.TogglePopup()}
                         Fill={this.state.SelectedItem}
                         VerticalAlignment={VerticalAlignment.Center}
@@ -86,7 +86,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
                         Path: nameof(this.PopupIsOpen),
                         Mode: BindingMode.TwoWay
                     })}
-                    Target={() => this._button}
+                    Target={() => this._pickerButton}
                     Placement={PlacementMode.Below}
                     Width={ColorPicker.COLUMN_COUNT * ColorPicker.COLUMN_WIDTH }
                     Padding="4px">
@@ -112,5 +112,5 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
     private static COLUMN_WIDTH: number = 40;
     private static get ELLIPSE_SIZE() { return ColorPicker.COLUMN_WIDTH - 10; }
 
-    private _button?: FrameworkElement | null;
+    private _pickerButton?: FrameworkElement | null;
 }

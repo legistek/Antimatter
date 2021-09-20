@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { BindingExpression } from "./BindingExpression";
 import { BindingParameters } from "./BindingParameters";
-import { NotifyCollectionChangedAction } from "./ICollectionUpdate";
+import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
 import { ModelValue } from "./ModelValue";
 
 export interface IClient
@@ -12,10 +12,18 @@ export interface IClient
     BindState(target: any, args?: BindingParameters, stateVar?: string): any;
     TargetChanged(component: Component, prop: string, value: any, reRender?: boolean, suspendNotifyModel?: boolean): void;
     NavigateTo(route: string);
-    BoundCollectionTargetChanged(
+
+    ModelUpdateBoundCollection(
         bx: BindingExpression,
         action: NotifyCollectionChangedAction,
         index: number,
         count: number,
         items: ModelValue[] | undefined): void;
+
+    ViewUpdateBoundCollection(
+        bx: BindingExpression,
+        target: any,
+        targetProperty: string,
+        update: ICollectionUpdate,
+        reRender: boolean): void;
 }

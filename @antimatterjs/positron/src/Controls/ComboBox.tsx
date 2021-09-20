@@ -242,6 +242,14 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         }
     );
 
+    protected override OnSelectedItemsCollectionChanged(sender: any, e: void)
+    {
+        this.ItemsPanelInstance?.InvalidateRender();
+        this.InvalidateRender();
+        
+        //super.OnSelectedItemsCollectionChanged(sender, e);
+    }
+
     override OnElementRendered()
     {
         if (this._button)
@@ -410,7 +418,7 @@ class ComboBoxItem<P extends ISelectableItemControlProps = {}, S extends ISelect
             checkboxElem = (
                 <CheckBox
                     Grid={{ Column: 0 }}
-                    IsChecked={this.state.IsSelected}
+                    IsChecked={this.Parent.IsItemSelected(this.state.Item)}
                     OnClick={(event) => this.OnCheckboxClicked(event)}
                     VerticalAlignment={VerticalAlignment.Center}
                     Margin="0 0 0 4px"

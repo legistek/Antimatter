@@ -23,6 +23,10 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
         },
         SelectedItem: {
             Mode: BindingMode.TwoWay
+        },
+        SelectedItems: {
+            Mode: BindingMode.TwoWay,
+            NotifyCollectionChanged: true
         }
     };
     public static DefaultStyle: WebStyle<IListBoxProps> = new WebStyle<IListBoxProps>(

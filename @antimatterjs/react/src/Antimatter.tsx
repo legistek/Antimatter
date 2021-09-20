@@ -7,7 +7,6 @@ import { IServer } from "./IServer";
 import { ModelValue } from "./ModelValue";
 import { Utilities } from "./Utilities";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
-import { Hobo } from "./BoundCollection";
 
 export class Antimatter
 {
@@ -35,9 +34,9 @@ export class Antimatter
     }
 
     // Called to update View after model-side changes to a bound collection
-    public static UpdateTargetBoundCollection(target: any, targetProperty: string, update: ICollectionUpdate, reRender: boolean)
+    public static ViewUpdateBoundCollection(bx: BindingExpression, target: any, targetProperty: string, update: ICollectionUpdate, reRender: boolean)
     {
-        Hobo;
+        Antimatter._client.ViewUpdateBoundCollection(bx, target, targetProperty, update, reRender);
     }
 
     public static InitializeComponent(target: any)
@@ -51,7 +50,7 @@ export class Antimatter
     }
 
     // Called to update model after view-side property changes
-    public static TargetChanged(
+    public static UpdateModelValue(
         component: Component,
         prop: string,
         value: any,
@@ -62,13 +61,13 @@ export class Antimatter
     }
 
     // Called to update model after view-side changes to bound collection
-    public static BoundCollectionChanged(
+    public static UpdateModelBoundCollection(
         bx: BindingExpression,
         action: NotifyCollectionChangedAction,
         index: number,
         count: number,
         items: ModelValue[]|undefined): void
     {
-        return Antimatter._client.BoundCollectionTargetChanged(bx, action, index, count, items);
+        return Antimatter._client.ModelUpdateBoundCollection(bx, action, index, count, items);
     }
 }

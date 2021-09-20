@@ -23,7 +23,7 @@ import
     ITextBlockProps,
 
     ListBox, SelectionMode,
-    ItemsStackPanel, GroupBox, CommandButton,
+    GroupBox, CommandButton,
     CommandBar, DataGrid, VerticalAlignment,
     Popup,
     PlacementMode,
@@ -391,6 +391,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
             RowDefinitions={[Grid.RowDefinition(30)]}
         >
             <CheckBox
+                IsHitTestVisible={false}
                 IsEnabled={new Binding({ Path: nameof<Model.Employee>(e => e.IsBonusEligible), Source: item })}
                 IsChecked={new Binding({ Path: nameof<Model.Employee>(e => e.IsMultiSelected), Source: item })}
                 Label={new Binding({ Path: nameof<Model.Employee>(e => e.LastName), Source: item })}
@@ -422,7 +423,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         const elem: JSX.Element = (
             <ComboBox
                 Label="Employee Selector Thingy (Single)"
-                IsEnabled={false}
                 //ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
                 ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeMoreEmployees))}
 
@@ -527,7 +527,12 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                     {this.MessageBar2}
                     {this.MessageBar3}
 
-
+                    <ListBox
+                        ItemsSource={new Binding(nameof<Model.Company>(c => c.SomeEmployees))}
+                        SelectionMode={SelectionMode.Multiple}
+                        ItemTemplate={this._comboBoxOptionTemplate}
+                        SelectedItems={new Binding(nameof<Model.Company>(c => c.SelectedEmployees))}
+                    />
 
 
                     {this.OpenBubbleButton}
@@ -593,20 +598,6 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 <div className="amx-ptn-fe" style={{ height: 1024 }}>
 
                 </div>
-
-
-
-                {/*<ListBox                    */}
-                {/*    SelectionMode={SelectionMode.Single}                    */}
-                {/*    ItemsPanel={ItemsStackPanel}*/}
-                {/*    ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}*/}
-                {/*    SelectedItem={new Binding(nameof<Model.Company>(c => c.SelectedEmployee))}*/}
-                {/*    ItemTemplate={(item) =>*/}
-                {/*    (*/}
-                {/*        <TextBlock Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}*/}
-                {/*            Margin="10px"*/}
-                {/*        />*/}
-                {/*    )} />*/}
 
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}

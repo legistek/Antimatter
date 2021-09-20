@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import { Component } from 'react';
-import { useHistory } from 'react-router';
 
 import { INotifyPropertyChanged } from '../INotifyPropertyChanged';
 import { PropertyChangedEventArgs } from '../PropertyChangedEventArgs';
@@ -13,10 +12,9 @@ import { IClient } from '../IClient';
 import { ModelObjectReference } from '../ModelObjectReference';
 import { ModelValue, ModelValueType } from '../ModelValue';
 
-import createHistory from "history/createBrowserHistory"
 import { BindingSourceType } from '../BindingSource';
-import { NotifyCollectionChangedAction } from '../ICollectionUpdate';
-
+import { ICollectionUpdate, NotifyCollectionChangedAction } from '../ICollectionUpdate';
+import { BoundCollection } from '../BoundCollection';
 
 export const ReactDataContext = React.createContext<ModelObjectReference|undefined>(undefined);
 
@@ -70,16 +68,7 @@ export class ReactClient implements IClient
         return target.state[stateVar];  
     }
 
-    public BoundCollectionTargetChanged(
-        bx: BindingExpression,
-        action: NotifyCollectionChangedAction,
-        index: number,
-        count: number,
-        items: ModelValue[]): void
-    {
-        // TODO - Notify model of view-side collection change
-    }
-
+    // Notify Model of View-Side Property Change
     public TargetChanged(
         component: Component,
         prop: string,
@@ -134,6 +123,54 @@ export class ReactClient implements IClient
         target.state[prop] = value;
     }
 
+    public ModelUpdateBoundCollection(
+        bx: BindingExpression,
+        action: NotifyCollectionChangedAction,
+        index: number,
+        count: number,
+        items: ModelValue[] | undefined): void
+    {
+        unstable_batchedUpdates(() =>
+        {
+            Antimatter.Server.UpdateBoundCollection(
+                bx.Index,
+                {
+                    Action: action,
+                    Count: count,
+                    Index: index,
+                    Items: items || []
+                });
+        });
+    }
+
+    // Notify View of model-side collection change
+    public ViewUpdateBoundCollection(
+        bx: BindingExpression,
+        target: any,
+        targetProperty: string,
+        update: ICollectionUpdate,
+        reRender: boolean)
+    {
+        if (!target?.state)
+            return;
+
+        let collection: BoundCollection<any> | undefined = undefined;
+
+        if (!target.state[targetProperty] ||
+            !(target.state[targetProperty].IsBoundCollection) ||
+            (collection = (target.state[targetProperty] as BoundCollection<any>)).BindingExpression !== bx)
+        {
+            // Should never happen
+            collection = new BoundCollection<any>(bx);            
+        }
+
+        collection.ProcessModelUpdate(update);
+
+        //if (reRender && target.InvalidateRender)
+        //    target.InvalidateRender();            
+    }
+
+    // Notify View of Model-Side property change
     UpdateTargetValue(target: any, targetProperty: string, value: any, reRender: boolean)
     {
         if (!target)
@@ -146,7 +183,7 @@ export class ReactClient implements IClient
         var oldValue = target.state[targetProperty];
         if (oldValue != value)
         {           
-            if (reRender)
+            if (reRender && target.IsMounted !== false)
             {
                 var newState = {};
                 newState[targetProperty] = value;

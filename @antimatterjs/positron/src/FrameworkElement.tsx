@@ -84,6 +84,8 @@ export class FrameworkElement<
     _isRenderValid: boolean = false;
     _isMeasureValid: boolean = false;
     _gestureHandlers: boolean = false;
+    private _boundCallbacks?: Map<Function, Function>;
+    private _isMounted: boolean = false;
 
     private _templatedParent?: FrameworkElement;
     private _templatedStyle?: Style<any>;
@@ -95,10 +97,29 @@ export class FrameworkElement<
         return this.state.Style as Style<any>;
     }
 
+    public get IsMounted(): boolean
+    {
+        return this._isMounted;
+    }
+
     public get TemplatedParent(): FrameworkElement | undefined
     {
         return this._templatedParent;
     }
+
+    protected Callback(unbound: Function): any
+    {
+        let bound: Function | undefined = undefined;
+        if (!this._boundCallbacks)
+            this._boundCallbacks = new Map<Function, Function>();
+        else if ((bound = this._boundCallbacks.get(unbound)))
+            return bound;
+        
+        bound = unbound.bind(this) as Function;
+        this._boundCallbacks.set(unbound, bound);
+        return bound;                    
+    }
+
     //public set TemplatedParent(value: FrameworkElement|undefined)
     //{
     //    if (this._templatedParent === value &&
@@ -345,7 +366,7 @@ export class FrameworkElement<
         if (this.state[stateVar] === newValue)
             return;
 
-        Antimatter.TargetChanged(this, stateVar, newValue, reRender, silent);
+        Antimatter.UpdateModelValue(this, stateVar, newValue, reRender, silent);
 
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
     }    
@@ -466,6 +487,7 @@ export class FrameworkElement<
 
     readonly componentDidMount = () =>
     {
+        this._isMounted = true;
         this.OnComponentMount();
         this.OnElementRendered();
         this.ExecutePropCommandHandler(this.state.OnDidMount);

@@ -76,6 +76,13 @@ namespace Antimatter.Net.Internal
             this.Binding?.SetEffectiveValue(this.Index);
         }
 
+        internal object GetValue()
+        {
+            if (this.LastPropertySource == null)
+                return null;
+            return this.PropertyKey?.PropertyInfo?.GetValue(this.LastPropertySource);
+        }
+
         internal void OnTargetPropertyChanged(ModelValue modelValue, Reactor reactor)
         {
             object lastPropertySource = this.LastPropertySource;
