@@ -5,6 +5,7 @@ import { ControlTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import { WebStyle } from '@antimatterjs/positron/src/Style';
 import { ISelectorProps, ISelectorState, Selector } from './Selector';
 import { SelectionMode } from '../../Enums';
+import { SemanticColor, Theme, ThemeColor } from '../../Theme';
 
 interface ISelectableItemCommon
 {
@@ -35,6 +36,31 @@ export class SelectableItemControlBase<
         {
             Template: new ControlTemplate((tp) => (<>{tp.props.children}</>)),
             TabIndex: 0
+        },
+        {
+            "@:focus-visible": {
+                // background: Theme.Value(SemanticColor.ListItemBackgroundHovered),
+                outline: "none",                
+                // outline: `1px inset ${Theme.Value(SemanticColor.FocusBorder)}`
+            },
+            "@:focus-visible:after": {
+                content: "''",
+                pointerEvents: "none",
+                position: "absolute",
+                boxSizing: "border-box",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                borderRadius: "0",
+                borderWidth: "1px",
+                borderStyle: "dotted",
+                borderColor: Theme.Value(SemanticColor.FocusBorder),
+            }
+            //"@:focus-visible.selected": {
+            //    // background: Theme.Value(ThemeColor.NeutralPrimary),
+            //    outline: `1px solid ${Theme.Value(SemanticColor.FocusBorder)}`
+            //}
         });
 
     public get Parent(): Selector|undefined

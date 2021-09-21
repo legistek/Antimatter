@@ -9,8 +9,8 @@ import { Control, IControlProps, IControlState } from './Control';
 import { StackPanel } from './StackPanel';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { Orientation } from '../Enums';
-import { WebStyle } from '../Style';
-import { FontStyle, Theme } from '../Theme';
+import { TemplateProp, WebStyle } from '../Style';
+import { FontStyle, SemanticColor, Theme, ThemeEffect, ThemeLayout } from '../Theme';
 
 export interface IDatePickerProps extends IControlProps
 {
@@ -109,6 +109,7 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                     root: {
                         //Align bottom, in case datepicker has label
                         marginTop: 'auto',
+                        marginLeft: Theme.Value(ThemeLayout.ControlSpacing),
                     },
                     field: {
                         fontFamily: Theme.Value(FontStyle.FontFamily)
@@ -121,7 +122,10 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
     static DefaultStyle: WebStyle<IDatePickerProps> = new WebStyle<IDatePickerProps>(
         {
             FontFamily: FontStyle.FontFamily,
-            Template: DatePickerBase.template
+            Template: DatePickerBase.template,
+            BorderBrush: SemanticColor.ButtonBorder,
+            Background: SemanticColor.BodyBackground,
+            BorderThickness: ThemeLayout.StandardBorder,
         },
         {
             "@ .ms-Label": {
@@ -129,7 +133,17 @@ class DatePickerBase<P extends IDatePickerProps = {}, S extends IDatePickerState
                 fontFamily: Theme.Value(FontStyle.FontFamily),
             },
             "@ .ms-TextField-field": {
-                fontFamily: Theme.Value(FontStyle.FontFamily),
+                fontFamily: Theme.Value(FontStyle.FontFamily),                
+            },
+            "@ .ms-TextField-fieldGroup": {
+                background: TemplateProp(nameof<IDatePickerProps>(p => p.Background)),
+                borderWidth: TemplateProp(nameof<IDatePickerProps>(p => p.BorderThickness)),
+                borderColor: TemplateProp(nameof<IDatePickerProps>(p=>p.BorderBrush)),
+                boxShadow: Theme.Value(ThemeEffect.ControlInnerShadow),
+                borderRadius: Theme.Value(ThemeLayout.StandardBorderRadius),
+            },
+            "@ .ms-TextField-fieldGroup:hover": {
+                borderColor: Theme.Value(SemanticColor.InputBorderHovered)
             }
         }
     );

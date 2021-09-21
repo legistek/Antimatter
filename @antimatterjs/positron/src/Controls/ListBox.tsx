@@ -4,7 +4,7 @@ import { TemplateProp, WebStyle } from '../Style';
 import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { Panel } from './Panel';
-import { SemanticColor, Theme } from '../Theme';
+import { SemanticColor, Theme, ThemeColor } from '../Theme';
 
 export interface IListBoxProps extends ISelectorProps
 {
@@ -61,13 +61,13 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                         cursor: "pointer"
                     },
                     "@.selected": {
-                        background: Theme.Value(SemanticColor.ListItemBackgroundChecked),
+                        background: Theme.Value(ThemeColor.ThemeLighter),
                         color: Theme.Value(SemanticColor.BodyTextChecked)
                     },
-                    "@:hover.selected": {
-                        background: Theme.Value(SemanticColor.ListItemBackgroundCheckedHovered),
-                    },
-                    "@:hover": {
+                    //"@:hover.selected": {
+                    //    background: Theme.Value(SemanticColor.ListItemBackgroundCheckedHovered),
+                    //},
+                    "@:hover:not(.selected)": {
                         background: Theme.Value(SemanticColor.ListItemBackgroundHovered)
                     },
                     "@ .listboxitem-border-layer": {
@@ -83,7 +83,7 @@ export class ListBox extends Selector<IListBoxProps, IListBoxState>
                         WebkitMaskRepeat: "no-repeat",
                         WebkitMaskSize: "150px 9999px"
                     },
-                    "@:hover .listboxitem-border-layer": {
+                    "@:hover:not(.selected) .listboxitem-border-layer": {
                         visibility: "visible",
                     }
                 },

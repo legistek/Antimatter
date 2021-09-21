@@ -75,6 +75,16 @@ export class SelectorBase<P extends ISelectorProps = { ItemsSource: [], Selected
             this.SelectionMode === SelectionMode.Extended;
     }
 
+    public SelectNext(previous: boolean = false)
+    {
+        var index = this.ItemsSource.indexOf(this.SelectedItem);
+        if (previous && index > 0 ||
+            !previous && index < this.ItemsSource.length - 1)
+        {
+            this.SetSingleItemSelection(!previous ? index + 1 : index - 1);
+        }
+    }
+
     public FocusSelected(scrollToView: boolean = true)
     {
         if (this.SelectionMode !== SelectionMode.Single ||

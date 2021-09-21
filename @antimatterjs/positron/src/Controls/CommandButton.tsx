@@ -406,6 +406,16 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             "@:active .ms-Button-menuIcon,@:active .ms-Button-icon": {
                 color: Theme.Value(SemanticColor.InputIcon),
             },
+            [Control.DisabledElement("ms-Button")]: {
+                background: "transparent",
+                borderColor: "transparent",
+            },
+            [Control.DisabledElement("ms-Button-icon")]: {
+                color: Theme.Value(SemanticColor.DisabledText)
+            },
+            [Control.DisabledElement("ms-Button-menuIcon")]: {
+                color: Theme.Value(SemanticColor.DisabledText)
+            }
         },
         CommandButton.BaseCommandButtonStyle);
 

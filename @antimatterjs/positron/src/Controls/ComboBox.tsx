@@ -126,7 +126,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                             Grid={{ Row: 1, Column: 0 }}
                             ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
                             OnClick={() => templatedParent.TogglePopup()}
-                            OnKeyPress={(event) => templatedParent.OnKeyPressed(event)}>
+                            OnKeyDown={(event) => templatedParent.OnKeyDown(event)}>
                             {
                                 templatedParent.TitleElem ||
                                 templatedParent.PlaceholderText &&
@@ -297,11 +297,18 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         this.PopupIsOpen = !this.PopupIsOpen;
     }
 
-    private async OnKeyPressed(event: KeyboardEvent)
-    {
-        if (event.key != "Enter" && event.key != " ")
+    private async OnKeyDown(event: KeyboardEvent)
+    {        
+        if (event.key === "Enter" || event.key === " ")
+            this.TogglePopup();
+        else if (event.key === "ArrowUp")
+            this.SelectNext(true);
+        else if (event.key === "ArrowDown")
+            this.SelectNext();
+        else
             return;
-        this.TogglePopup();        
+
+        event.preventDefault();
     }
 
     private async OnPopupOpened() //: void
