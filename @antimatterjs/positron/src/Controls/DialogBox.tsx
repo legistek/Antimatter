@@ -100,13 +100,14 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                     Margin="0px"
                                     Style={TextBlock.DialogHeaderStyle}/>
 
-                                {/*Close Butotn*/}
+                                {/*Close Button*/}
                                 <CommandButton
                                     Grid={{ Column: 2 }}
                                     Command={new Binding("CancelCommand")}
                                     VerticalAlignment={VerticalAlignment.Center}
                                     Padding="0px"
                                     Margin="0px"
+                                    TabIndex={-1}
                                     Style={CommandButton.IconButtonStyle}/>
                             </Grid>
 

@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { Style, WebStyle } from '../Style';
+import { ThemeLayout } from '../Theme';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IGridProps extends IPanelProps
@@ -93,6 +95,7 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
         var styles = super.getCSSStyles();     
         styles.gridTemplateColumns = this.ConstructGridColumnTemplate();
         styles.gridTemplateRows = this.ConstructGridRowTemplate();
+        styles.gap = this.ItemSpacing;
         return styles;
     }
 

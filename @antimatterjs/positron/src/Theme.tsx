@@ -34,6 +34,7 @@ export interface IThemeLayout
 {
     StandardBorder: string,
     ControlSpacing: string,
+    GridSpacing: string,
     StandardBorderRadius: string,
 }
 
@@ -116,6 +117,7 @@ export class Theme
     public readonly Layout: IThemeLayout = {
         StandardBorder: '1px',
         ControlSpacing: '7px',
+        GridSpacing: "4px",
         StandardBorderRadius: "0px"
     }
 
@@ -206,6 +208,7 @@ export enum ThemeLayout
 {
     StandardBorder = 102000000000,
     ControlSpacing,
+    GridSpacing,
     StandardBorderRadius
 }
 
