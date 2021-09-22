@@ -339,6 +339,7 @@ namespace AntimatterJS.Sample.AppModel
                             this.Employees.Remove(e);
                             if (this.SelectedEmployee == e)
                                 this.SelectedEmployee = this.Employees.FirstOrDefault();
+                            this.SelectedEmployees.Clear();
                         }
                     })
                 {

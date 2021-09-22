@@ -153,7 +153,14 @@ namespace Antimatter.Net.Internal
 
                         case NotifyCollectionChangedAction.Remove:
                             for (int i = update.Index; i < update.Index + update.Count; i++)
-                                _reactor.TryGetObjectReference(list[i])?.Release(this._reactor);
+                            {
+                                var objRef = _reactor.TryGetObjectReference(list[i]);
+                                if (objRef != null)
+                                {
+                                    objRef?.Release(this._reactor);
+                                    this._currentObjectCollection.Remove(objRef.Handle);
+                                }                                
+                            }
                             if (olist != null)
                                 olist.RemoveRange(update.Index, update.Count);
                             else
@@ -161,7 +168,7 @@ namespace Antimatter.Net.Internal
                                 var count = update.Count;
                                 while (count-- > 0)
                                     list.RemoveAt(update.Index);
-                            }                            
+                            }
                             break;
                     }
                 }

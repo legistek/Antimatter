@@ -5,10 +5,11 @@ import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
-import { Antimatter, Binding, BindingMode, ModelObjectReference } from '@antimatterjs/react';
+import { Antimatter, Binding, BindingMode, ModelObjectReference, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { FontStyle, SemanticColor, Theme } from '../Theme';
+import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 interface IDataGridCellCommon
 {
@@ -79,11 +80,13 @@ export class DataGridBase<
     S extends IDataGridState = {}>
     extends ItemsControlBase<P, S>
 {
-    /* private */ _selection: Fluent.Selection;
+    private _selection?: Fluent.Selection;
+    private _suspendModelNotifySelectionChanged: boolean = false;
 
     public static DefaultBindings = {
         SelectedItems: {
-            Mode: BindingMode.TwoWay
+            Mode: BindingMode.TwoWay,
+            NotifyCollectionChanged: true
         },
         IsSelectAll: {
             Mode: BindingMode.TwoWay
@@ -96,10 +99,6 @@ export class DataGridBase<
     constructor(props)
     {
         super(props);
-        this._selection = new Fluent.Selection(
-            {
-                onSelectionChanged: this.OnSelectionChanged.bind(this)
-            });
     }
 
     private _selectedItems: any[] = [];
@@ -108,17 +107,69 @@ export class DataGridBase<
         return this.GetValue(nameof(this.props.SelectedItems), this._selectedItems);
     }
 
-    /* private */ OnSelectionChanged()
+    override OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
-        const isAll = this._selection.isAllSelected();
-        if (isAll !== this.state.IsSelectAll)
-            this.SetValue(nameof(this.state.IsSelectAll), this._selection.isAllSelected(), false);
-        if (isAll)
+        if (prop === nameof(this.state.ItemsSource))
+        {
+            this._selection = new Fluent.Selection(
+                {
+                    onSelectionChanged: this.OnSelectionChanged.bind(this),
+                    items: this.ItemsSource,
+                    getKey: item => Utilities.SmartGetKey(item)
+                });
+            this.OnSelectedItemsCollectionChanged(this);
+        }
+        else if (prop === nameof(this.state.SelectedItems))
+        {
+            if (oldValue?.IsBoundCollection)
+                (oldValue as BoundCollection<any>).CollectionChanged.unsubscribe(this.Callback(this.OnSelectedItemsCollectionChanged));
+
+            if (value?.IsBoundCollection)
+                (value as BoundCollection<any>).CollectionChanged.subscribe(this.Callback(this.OnSelectedItemsCollectionChanged));
+            this.OnSelectedItemsCollectionChanged(this);
+        }
+
+        super.OnPropertyChanged(prop, value, oldValue);
+    }
+
+    protected OnSelectedItemsCollectionChanged(sender: any, e: void)
+    {
+        if (!this._selection)
             return;
 
-        var sel = this._selection.getSelection();
+        this._suspendModelNotifySelectionChanged = true;
 
-        this.SelectedItems.splice(0, this.SelectedItems.length, ...sel);
+        try
+        {
+            this._selection.setAllSelected(false);
+            if (this.SelectedItems && this.SelectedItems.length > 0)
+            {
+                for (var item of this.SelectedItems)
+                    this._selection.setKeySelected(Utilities.SmartGetKey(item), true, false);
+            }
+        }
+        finally
+        {
+            this._suspendModelNotifySelectionChanged = false;
+        }
+        
+        this.InvalidateRender();
+    }
+
+    private OnSelectionChanged()
+    {
+        if (this._suspendModelNotifySelectionChanged)
+            return;
+
+        const isAll = this._selection?.isAllSelected();
+        if (isAll !== this.state.IsSelectAll)
+            this.SetValue(nameof(this.state.IsSelectAll), this._selection?.isAllSelected(), false);
+        if (isAll)
+            return;
+        
+        var sel = this._selection?.getSelection();
+        if (sel)
+            this.SelectedItems.splice(0, this.SelectedItems.length, ...sel);
 
         // this.SetValue(nameof(this.state.SelectedItems), sel, false);
     }

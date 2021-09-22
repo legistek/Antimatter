@@ -227,7 +227,7 @@ namespace Antimatter.Net
             _dict.Remove(reference.Handle);
             _freedHandles.Add(reference.Handle);
             int liveObjects = _dict.Count;
-            //Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
+            Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
         }
 
         internal void Release(int objHandle)
@@ -354,107 +354,12 @@ namespace Antimatter.Net
                 };
                 this._dict[handle] = reference;
                 this._references.Add(obj, reference);                
-                //Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
+                Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
             }
 
             reference.AddRef();
             return reference;
         }
-
-        //internal void SetValue(int objectReference, string property, DotNetValue value)
-        //{
-        //    ObjectReference reference;
-        //    if (!_dict.TryGetValue(objectReference, out reference))
-        //        return;
-
-        //    var obj = reference.Object;
-        //    if (obj == null)
-        //        return;
-
-        //    var pi = obj.GetType().GetProperty(property);
-        //    if (pi == null)
-        //    {
-        //        return;
-        //    }
-
-        //    switch (value.type)
-        //    {
-        //        case DotNetValueType.Object:
-        //            ObjectReference valueObjRef;
-        //            object valueObj = null;
-        //            _dict.TryGetValue(value.objectHandle, out valueObjRef);
-        //            pi.SetValue(obj, valueObj);
-        //            break;
-        //        case DotNetValueType.Float:
-        //            pi.SetValue(obj, value.floatValue);
-        //            break;
-        //        case DotNetValueType.Double:
-        //            pi.SetValue(obj, value.doubleValue);
-        //            break;
-        //        case DotNetValueType.Int:
-        //            pi.SetValue(obj, value.intValue);
-        //            break;
-        //        case DotNetValueType.Long:
-        //            pi.SetValue(obj, value.longValue);
-        //            break;
-        //        case DotNetValueType.String:
-        //            pi.SetValue(obj, value.stringValue);
-        //            break;
-        //    }
-        //}
-
-        //internal DotNetValue GetValue(int objectReference, string property)
-        //{
-        //    ObjectReference reference;
-        //    if (!_dict.TryGetValue(objectReference, out reference))
-        //        return default;
-
-        //    var obj = reference.Object;
-        //    if (obj == null)
-        //        return default;
-
-        //    var pi = obj.GetType().GetProperty(property);
-        //    if (pi == null)
-        //        return default;
-
-        //    DotNetValueType type;
-        //    if (!_typeConv.TryGetValue(pi.PropertyType, out type))
-        //        type = DotNetValueType.Object;
-
-        //    DotNetValue v = new DotNetValue
-        //    {
-        //        type = type
-        //    };
-
-        //    object value = pi.GetValue(obj);
-        //    if (value != null)
-        //    {
-        //        switch (type)
-        //        {
-        //            case DotNetValueType.Object:
-        //            case DotNetValueType.Collection:
-        //                v.objectHandle = GetOrCreateReference(value).Handle;
-        //                break;
-        //            case DotNetValueType.Int:
-        //                v.intValue = (int)value;
-        //                break;
-        //            case DotNetValueType.Long:
-        //                v.longValue = (long)value;
-        //                break;
-        //            case DotNetValueType.Float:
-        //                v.floatValue = (float)value;
-        //                break;
-        //            case DotNetValueType.Double:
-        //                v.doubleValue = (double)value;
-        //                break;
-        //            case DotNetValueType.String:
-        //                v.stringValue = (string)value;
-        //                break;
-        //        }
-        //    }
-
-        //    return v;
-        //}
 
         private readonly Dictionary<int, BindingExpression> Bindings = new Dictionary<int, BindingExpression>();
         private readonly HashSet<int> _freedHandles = new HashSet<int>();
