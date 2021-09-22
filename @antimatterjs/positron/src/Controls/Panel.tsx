@@ -12,6 +12,7 @@ export interface IPanelProps extends IFrameworkElementProps
     Width?: number | string | Binding,
     Height?: number | string | Binding,
     MinWidth?: number | Binding,
+    MaxWidth?: number | string | Binding,
     MinHeight?: number | Binding,
     Background?: string | Binding | ThemeColor | SemanticColor,
     BorderBrush?: string | Binding | ThemeColor | SemanticColor,
@@ -30,6 +31,7 @@ export interface IPanelState extends IFrameworkElementState
     Width?: number | string,
     Height?: number | string,
     MinWidth?: number,
+    MaxWidth?: number | string,
     MinHeight?: number,
     //Background?: string,
     //BorderBrush?: string,
@@ -45,9 +47,9 @@ export interface IPanelState extends IFrameworkElementState
 export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> extends FrameworkElement<P, S>
 {
     constructor(props: IPanelProps)
-    {        
+    {
         super(props);
-        if (props.ItemsParent)        
+        if (props.ItemsParent)
             props.ItemsParent.ItemsPanelInstance = this;
     }
 
@@ -76,27 +78,28 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         return this.GetValue(nameof(this.props.Foreground));
     }
 
-    /* override */ getCSSStyles() : React.CSSProperties
+    /* override */ getCSSStyles(): React.CSSProperties
     {
         var styles = {
             width: this.state.Width,
             height: this.state.Height,
             minWidth: this.state.MinWidth,
             minHeight: this.state.MinHeight,
+            maxWidth: this.state.MaxWidth,
             color: this.Foreground,
-            background:  this.Background,
+            background: this.Background,
             borderColor: this.BorderBrush,
             borderWidth: this.BorderThickness,
             borderStyle: "solid",
             boxShadow: this.state.BoxShadow,
             padding: this.state.Padding,
             overflowX: Panel.GetScrollBarVisibilityCSSValue(this.state.HorizontalScrollBarVisibility),
-            overflowY: Panel.GetScrollBarVisibilityCSSValue(this.state.VerticalScrollBarVisibility)            
+            overflowY: Panel.GetScrollBarVisibilityCSSValue(this.state.VerticalScrollBarVisibility)
         };
         return Object.assign(super.getCSSStyles(), styles);
     }
 
-    /* override */ constructClasses() : string
+    /* override */ constructClasses(): string
     {
         return `${CSSClasses.Panel} ` +
             ((this.state.HorizontalScrollBarVisibility && this.state.HorizontalScrollBarVisibility !== ScrollBarVisibility.Hidden)
@@ -119,7 +122,7 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
     static GetScrollBarVisibilityCSSValue(v?: ScrollBarVisibility): "auto" | "hidden" | "scroll" | undefined
     {
         switch (v)
-        {            
+        {
             case undefined:
                 return undefined;
             case ScrollBarVisibility.Hidden:

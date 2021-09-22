@@ -29,9 +29,9 @@ export class GroupBox extends Control<IGroupBoxProps, IGroupBoxState>
     static DefaultStyle: WebStyle<IGroupBoxProps> = new WebStyle(
         {
             Background: SemanticColor.BodyBackground,
-            BorderBrush: SemanticColor.InputBorder,
+            BorderBrush: SemanticColor.VariantBorder,
             BorderThickness: "1px",
-            Padding: "10px",
+            Padding: "15px",
             Template: new ControlTemplate((templatedParent: GroupBox) =>
             (
                 <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}

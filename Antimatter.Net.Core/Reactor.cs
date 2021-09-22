@@ -501,7 +501,8 @@ namespace Antimatter.Net
                     dnv.ObjectHandle = dnr.Handle;
                 },
                 (mgr, dnv, value) => dnv.BoolValue = (bool)value,
-                (mgr, dnv, value) => dnv.StringValue = ((Guid)value).ToString(),
+                (mgr, dnv, value) => 
+                    dnv.GuidValue = (Guid)value,
                 (mgr, dnv, value) =>
                 {
                     dnv.DoubleValue = ((DateTime)value).ToUniversalTime().Ticks / 10000.0d; 

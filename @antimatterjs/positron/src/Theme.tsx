@@ -1,3 +1,6 @@
+import { type } from "os";
+import { Key } from "react";
+
 export enum ThemeColor
 {
     ThemePrimary = 100000000000,
@@ -30,13 +33,53 @@ export enum ThemeColor
     LightGreen
 }
 
-export interface IThemeLayout
+
+export enum FontStyle
 {
-    StandardBorder: string,
-    ControlSpacing: string,
-    GridSpacing: string,
-    StandardBorderRadius: string,
+    FontFamily = 101000000000,
+    Tiny,
+    ExtraSmall,
+    Small,
+    SmallPlus,
+    Medium,
+    MediumPlus,
+    Large,
+    ExtraLarge,
+    ExtraLargePlus,
+    ExtraExtraLarge,
+    ExtraExtraLargePlus,
+    SuperLarge,
+    Glyph1x,
 }
+
+export enum ThemeLayout
+{
+    StandardBorder = 102000000000,
+    ControlSpacing,
+    GridSpacing,
+    StandardBorderRadius,
+    MarginStandardLTRB,
+    MarginStandardL,
+    MarginStandardT,
+    MarginStandardR,
+    MarginStandardB,
+    MarginStandardLR,
+    MarginStandardTB,
+}
+
+export enum ThemeEffect
+{
+    ControlInnerShadow = 103000000000,
+}
+
+export type ThemeEffects =
+    {
+        [key in ThemeEffect]: string;
+    };
+
+export type ThemeLayouts = {
+    [key in ThemeLayout]: string;
+};
 
 export interface IThemePalette
 {
@@ -88,10 +131,7 @@ export interface IThemeFontStyle
     Glyph1x: string,
 }
 
-export interface IThemeEffects
-{
-    ControlInnerShadow: string,
-}
+
 
 export class Theme
 {
@@ -114,15 +154,23 @@ export class Theme
         Glyph1x: ""
     };
 
-    public readonly Layout: IThemeLayout = {
-        StandardBorder: '1px',
-        ControlSpacing: '7px',
-        GridSpacing: "4px",
-        StandardBorderRadius: "0px"
+    public readonly Layout: ThemeLayouts = {
+        [ThemeLayout.StandardBorder]: '1px',
+        [ThemeLayout.ControlSpacing]: '10px',
+        [ThemeLayout.GridSpacing]: "7px",
+        [ThemeLayout.StandardBorderRadius]: "2px",
+
+        [ThemeLayout.MarginStandardLTRB]: '7px',
+        [ThemeLayout.MarginStandardL]: '0px 0px 0px 7px',
+        [ThemeLayout.MarginStandardT]: '7px 0px 0px 0px',
+        [ThemeLayout.MarginStandardR]: '0px 7px 0px 0px',
+        [ThemeLayout.MarginStandardB]: '0px 0px 7px 0px',
+        [ThemeLayout.MarginStandardLR]: '0px 7px',
+        [ThemeLayout.MarginStandardTB]: '7px 0px',
     }
 
-    public readonly Effects: IThemeEffects = {
-        ControlInnerShadow: "inset 0 1px 2px 0 var(--Palette_NeutralLight)",
+    public readonly Effects: ThemeEffects = {
+        [ThemeEffect.ControlInnerShadow]: "inset 0 1px 2px 0 var(--Palette_NeutralLight)",        
     }
 
     public readonly Palette: IThemePalette = {
@@ -163,9 +211,9 @@ export class Theme
         else if (resourceId >= 101000000000 && resourceId < 102000000000)
             return `var(--Font_${FontStyle[resourceId]})`;
         else if (resourceId >= 102000000000 && resourceId < 103000000000)
-            return `var(--Layout_${ThemeLayout[resourceId]})`;
+            return `var(--Layout_${resourceId})`;
         else if (resourceId >= 103000000000 && resourceId < 104000000000)
-            return `var(--Effect_${ThemeEffect[resourceId]})`;
+            return `var(--Effect_${resourceId})`;
         return undefined;
     }
 
@@ -184,37 +232,6 @@ export class Theme
         for (let entry of Object.entries(this.Effects))
             r.style.setProperty(`--Effect_${entry[0]}`, entry[1]);
     }
-}
-
-export enum FontStyle
-{
-    FontFamily = 101000000000,
-    Tiny,
-    ExtraSmall,
-    Small,
-    SmallPlus,
-    Medium,
-    MediumPlus,
-    Large,
-    ExtraLarge,
-    ExtraLargePlus,
-    ExtraExtraLarge,
-    ExtraExtraLargePlus,
-    SuperLarge,
-    Glyph1x,
-}
-
-export enum ThemeLayout
-{
-    StandardBorder = 102000000000,
-    ControlSpacing,
-    GridSpacing,
-    StandardBorderRadius
-}
-
-export enum ThemeEffect
-{
-    ControlInnerShadow = 103000000000,
 }
 
 export enum SemanticColor

@@ -65,7 +65,8 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                         main: {
                             display: "flex",
                             minHeight: "50px",
-                            minWidth: "50vw",
+                            maxHeight: "75vh",
+                            // minWidth: "25vw",
                             borderRadius: "5px",
                             overflow: "hidden",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
@@ -97,7 +98,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                 <TextBlock
                                     Grid={{Column: 1}}
                                     Text={new Binding("Title")}
-                                    Margin="0px"
+                                    Margin="5px 0px"
                                     Style={TextBlock.DialogHeaderStyle}/>
 
                                 {/*Close Button*/}

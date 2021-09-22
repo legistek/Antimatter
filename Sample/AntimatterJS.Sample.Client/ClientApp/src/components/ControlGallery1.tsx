@@ -10,7 +10,7 @@ import
     CommandButton, PinnablePanelState, DocumentViewer,
     Grid, HorizontalAlignment, IDocument, IViewProps, IViewState,
     Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility,
-    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle, DataTemplate, SelectionMode, CheckBox
+    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle, DataTemplate, SelectionMode, CheckBox, PasswordBox
 } from "@antimatterjs/positron";
 import { Employee } from "./Company";
 import { Icon } from "@fluentui/react";
@@ -172,9 +172,13 @@ export default class ControlGallery1 extends View
 
                                 <TextBox
                                     MaxHeight="200px"
+                                    PlaceholderText="Try the Enter Key"
                                     Label="HStretch and Accept Return"
                                     AcceptsReturn={true} />
-                                <TextBox Label="HStretch and No Accept Return" />
+
+                                <TextBox
+                                    Label="HStretch and No Accept Return"
+                                    PlaceholderText="Ignores Enter Key"/>
 
                                 <WrapPanel>
                                     <TextBox Label="Icon + MinWidth"
@@ -182,7 +186,8 @@ export default class ControlGallery1 extends View
                                         Icon={"Search"}
                                         MinWidth="200px"
                                         PlaceholderText="Enter search terms" />
-                                    <TextBox Text="Unlabelled Text"
+                                    <TextBox
+                                        Text="Unlabelled Text"
                                         VerticalAlignment={VerticalAlignment.Bottom} />
                                     <TextBox Label="Disabled" IsEnabled={false} Text="Disabled Text" />
                                     <TextBox Label="Read Only" IsReadOnly={true} Text="Read Only Text" />
@@ -201,6 +206,10 @@ export default class ControlGallery1 extends View
                                     Padding="15px"
                                     FontSize={FontStyle.ExtraLarge}
                                     Text="Customized Text" />
+
+                                <PasswordBox
+                                    Label="Password"
+                                    PlaceholderText="Enter Password"/>
 
                             </StackPanel>                            
 

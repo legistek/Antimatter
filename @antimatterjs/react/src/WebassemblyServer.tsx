@@ -201,14 +201,14 @@ export class WebassemblyServer implements IServer
     {
         //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0
         //    C9 8B 91 35    6D 19    EA 40    97 79    88 9D 79 B7 53 F0
-
-        const guid: string = `${this.Module.HEAP32[ptr + 3].toString(16)}${this.Module.HEAP32[ptr + 2].toString(16)}${this.Module.HEAP32[ptr + 1].toString(16)}${this.Module.HEAP32[ptr + 0].toString(16)}-`
-            + `${this.Module.HEAP32[ptr + 5].toString(16)}${this.Module.HEAP32[ptr + 4].toString(16)}-`
-            + `${this.Module.HEAP32[ptr + 7].toString(16)}${this.Module.HEAP32[ptr + 6].toString(16)}-`
-            + `${this.Module.HEAP32[ptr + 8].toString(16)}${this.Module.HEAP32[ptr + 9].toString(16)}-`
-            + `${this.Module.HEAP32[ptr + 10].toString(16)}${this.Module.HEAP32[ptr + 11].toString(16)}`
-            + `${this.Module.HEAP32[ptr + 12].toString(16)}${this.Module.HEAP32[ptr + 13].toString(16)}`
-            + `${this.Module.HEAP32[ptr + 14].toString(16)}${this.Module.HEAP32[ptr + 15].toString(16)}`
+        
+        const guid: string = `${this.Module.HEAPU8[ptr + 3].toString(16)}${this.Module.HEAPU8[ptr + 2].toString(16)}${this.Module.HEAPU8[ptr + 1].toString(16)}${this.Module.HEAPU8[ptr + 0].toString(16)}-`
+            + `${this.Module.HEAPU8[ptr + 5].toString(16)}${this.Module.HEAPU8[ptr + 4].toString(16)}-`
+            + `${this.Module.HEAPU8[ptr + 7].toString(16)}${this.Module.HEAPU8[ptr + 6].toString(16)}-`
+            + `${this.Module.HEAPU8[ptr + 8].toString(16)}${this.Module.HEAPU8[ptr + 9].toString(16)}-`
+            + `${this.Module.HEAPU8[ptr + 10].toString(16)}${this.Module.HEAPU8[ptr + 11].toString(16)}`
+            + `${this.Module.HEAPU8[ptr + 12].toString(16)}${this.Module.HEAPU8[ptr + 13].toString(16)}`
+            + `${this.Module.HEAPU8[ptr + 14].toString(16)}${this.Module.HEAPU8[ptr + 15].toString(16)}`
 
         return guid;
     }
@@ -290,7 +290,8 @@ export class WebassemblyServer implements IServer
             case ModelValueType.Bool:
                 return this.getValueI32(valuePtr + 16) !== 0;
             case ModelValueType.Guid:
-                return this.getValueGuid(valuePtr + 16);
+                var guid = this.getValueGuid(valuePtr + 16);
+                return guid;
             case ModelValueType.DateTime:
                 return Utilities.DateFromTicks(this.getValueDouble(valuePtr + 16));
         }

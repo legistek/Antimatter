@@ -108,6 +108,20 @@ export class FrameworkElement<
         return this._templatedParent;
     }
 
+    protected ExecuteCommand(cmd: ModelObjectReference | ((commandParameter: any) => void), parameter?: any )
+    {
+        if (typeof (cmd) === "function")
+        {
+            (cmd as any)(parameter);
+        }
+        else 
+        {
+            Antimatter.Server.ExecuteICommand(
+                cmd as ModelObjectReference,
+                ModelValue.Get(parameter));
+        }
+    }
+
     protected Callback(unbound: Function): any
     {
         let bound: Function | undefined = undefined;

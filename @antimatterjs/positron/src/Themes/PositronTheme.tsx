@@ -1,4 +1,4 @@
-import { IThemeFontStyle, IThemeLayout, IThemePalette, Theme } from '../Theme'
+import { IThemeFontStyle, IThemePalette, Theme } from '../Theme'
 
 export class PositronTheme extends Theme
 {
@@ -71,7 +71,7 @@ export class PositronTheme extends Theme
         Small: "12px",
         SmallPlus: "13px",
         Medium: "14px",
-        MediumPlus: "15px",
+        MediumPlus: "16px",
         Large: "18px",
         ExtraLarge: "20px",
         ExtraLargePlus: "21px",
@@ -79,12 +79,5 @@ export class PositronTheme extends Theme
         ExtraExtraLargePlus: "25px",
         SuperLarge: "36px",
         Glyph1x: "16px",
-    }
-
-    public override readonly Layout: IThemeLayout = {
-        StandardBorder: "1px",
-        StandardBorderRadius: "2px",
-        ControlSpacing: "10px",
-        GridSpacing: "7px",
-    }
+    }    
 }

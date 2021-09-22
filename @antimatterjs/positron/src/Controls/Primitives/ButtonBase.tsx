@@ -23,15 +23,7 @@ export class ButtonBase<
     /* virtual */ OnClick(e?: MouseEvent): void
     {
         ButtonBase.LastMouseEvent = e;
-        if (typeof (this.state.Command) === "function")
-        {
-            (this.state.Command as any)(this.state.CommandParameter);
-        }
-        else if (this.state.Command instanceof ModelObjectReference)
-        {
-            Antimatter.Server.ExecuteICommand(
-                this.state.Command as ModelObjectReference,
-                ModelValue.Get(this.state.CommandParameter));
-        }
+        if (this.state.Command)
+            this.ExecuteCommand(this.state.Command, this.state.CommandParameter);
     }
 }

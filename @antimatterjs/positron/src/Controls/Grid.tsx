@@ -62,6 +62,15 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
         };
     }
 
+    public static FittedColumn(): IColumnDefinition
+    {
+        return {
+            Width: {
+                GridUnitType: GridUnitType.Fit
+            }
+        }
+    }
+
     public static RowDefinition(height?: number , star?: boolean): IRowDefinition
     {
         return {
@@ -141,6 +150,8 @@ export class GridBase<P extends IGridProps = {}, S extends IGridState = {}> exte
                 columnTemplate += "max-content ";
             else if (column.Width.GridUnitType === GridUnitType.Pixel)
                 columnTemplate += `${column.Width.Value}px `;
+            else if (column.Width.GridUnitType === GridUnitType.Fit)
+                columnTemplate += `fit-content(100%) `
             else
                 columnTemplate += `${column.Width.Value}fr `;
         }

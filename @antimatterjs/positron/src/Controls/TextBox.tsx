@@ -1,32 +1,33 @@
 import * as React from 'react';
-import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
+import { Binding, BindingMode, ModelObjectReference, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
+
 import { Control, IControlProps, IControlState } from './Control';
-import { Autofill, IconType, ITextField, TextField } from '@fluentui/react';
-import { TemplateProp, WebStyle } from '../Style';
+import { Style, TemplateProp, WebStyle } from '../Style';
 import { ControlTemplate } from '../FrameworkTemplate';
 import { FontStyle, SemanticColor, Theme, ThemeColor, ThemeEffect, ThemeLayout } from '../Theme';
 import { Grid } from './Grid';
 import { ITextBlockProps, TextBlock } from './TextBlock';
 import { Panel } from './Panel';
 import { Glyph } from './Glyph';
-import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from '../Enums';
+import { HorizontalAlignment, VerticalAlignment } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
 
 export interface ITextBoxProps extends IControlProps
 {
     MinWidth?: string,
     MaxHeight?: string,
+    SubmitCommand?: ModelObjectReference | Binding | ((commandParameter: any) => void),
     AcceptsReturn?: boolean | Binding,
     IsPassword?: boolean | Binding,
     IsReadOnly?: boolean,
     Text?: string | Binding,
     PlaceholderText?: string | Binding,
     Label?: string | Binding,
-    Icon?: number | string | Binding,    
-    SelectOnFocus?: boolean|Binding,
+    Icon?: number | string | Binding,
+    SelectOnFocus?: boolean | Binding,
 }
 export interface ITextBoxState extends IControlState
-{    
+{
 }
 
 export class TextBox extends Control<ITextBoxProps, ITextBoxState>
@@ -44,10 +45,15 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         this.SetValue(
             nameof(this.props.Text),
             value,
-            false);
+            !this.AcceptsReturn);
         this.PropertyChanged?.invoke(
             this,
             new PropertyChangedEventArgs(nameof(this.props.Text)));
+    }
+
+    public get SubmitCommand(): ModelObjectReference | ((commandParameter: any) => void) | undefined
+    {
+        return this.GetValue(nameof(this.props.SubmitCommand));
     }
 
     public get PlaceholderText(): string | undefined
@@ -107,7 +113,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
     {
         return this.GetValue(nameof(this.props.IsPassword), false);
     }
-    
+
     private get SafeText(): string
     {
         if (!this.Text)
@@ -140,7 +146,83 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         }
     );
 
-    static DefaultStyle: WebStyle<ITextBoxProps> = new WebStyle(
+    private ConstructStandardInputElement(): JSX.Element
+    {
+        return (
+            <input
+                value={this.Text}
+                className="tb-input"
+                readOnly={this.IsReadOnly}
+                ref={r => this._input = r}
+                tabIndex={0}
+                type={this.IsPassword ? "password" : "text"}
+                onKeyDown={
+                    (e) =>
+                        this.OnKeyDown(e.nativeEvent)
+                }
+                onFocus={(() =>
+                {
+                    if (!this._suspendFocusHandler)
+                        this.IsFocused = true;
+                    if (this.SelectOnFocus && this._input)
+                        (this._input as HTMLInputElement).select();                        
+                }).bind(this)}
+                onChange={
+                    (e) =>
+                        this.Text = e.target.value
+                }
+                onBlur={(() =>
+                {
+                    if (!this._suspendFocusHandler)
+                        this.IsFocused = false;
+                }).bind(this)}/>
+        );
+    }
+
+    private ConstructCustomInputElement(): JSX.Element
+    {
+        return (<span
+            className="tb-input"
+            contentEditable={!this.IsReadOnly}
+            ref={r => this._input = r}
+            placeholder={this.PlaceholderText}
+
+            onPaste={(e) =>
+            {
+                e.preventDefault();
+                if (!e.nativeEvent.clipboardData)
+                    return;
+                var text = e.nativeEvent.clipboardData.getData('text');
+                if (!text)
+                    return;
+                const selection = window.getSelection();
+                if (!selection)
+                    return;
+                if (!selection.rangeCount)
+                    return false;
+                selection.deleteFromDocument();
+                selection.getRangeAt(0).insertNode(document.createTextNode(text));
+                selection.collapseToEnd();
+            }}
+            onKeyDown={e => this.OnKeyDown(e.nativeEvent, true)}
+            onFocus={() =>
+            {
+                if (!this._suspendFocusHandler)
+                    this.IsFocused = true;
+                if (this.SelectOnFocus && this._input)
+                    Utilities.SelectElementContents(this._input);
+            }}
+            dangerouslySetInnerHTML={{
+                __html: this.SafeText
+            }}
+            onBlur={() =>
+            {
+                if (!this._suspendFocusHandler)
+                    this.IsFocused = false;
+            }} />);
+    }
+
+    static DefaultStyle = new WebStyle<ITextBoxProps>(
         {
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,
@@ -148,8 +230,8 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             MinWidth: "150px",
             Background: SemanticColor.BodyBackground,
             BorderThickness: ThemeLayout.StandardBorder,
-            Padding: "5px",
-            FontSize: FontStyle.Medium,
+            Padding: "10px",
+            FontSize: FontStyle.MediumPlus,
             Template: new ControlTemplate((templatedParent: TextBox) => (
                 <Grid
                     ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
@@ -160,73 +242,30 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                             ClassName="tb-label"
                             FontWeight="bold"
                             Foreground={TemplateProp(nameof<ITextBoxProps>(p => p.Foreground))}
-                            Grid={{ Column: 0, Row: 0 }}                            
+                            Grid={{ Column: 0, Row: 0 }}
                             Text={templatedParent.Label} />)
                     }
 
                     <Panel
-                        TabIndex={-1} ClassName="tb-input-panel"                        
+                        TabIndex={templatedParent.AcceptsReturn ? -1 : undefined}
+                        ClassName="tb-input-panel"
                         Grid={{ Column: 0, Row: 1 }}>
-                        <span
-                            className="tb-input"
-                            contentEditable={!templatedParent.IsReadOnly}
-                            ref={r => templatedParent._input = r}
-                            placeholder={templatedParent.PlaceholderText}
 
-                            onPaste={(e) =>
-                            {
-                                e.preventDefault();
-                                if (!e.nativeEvent.clipboardData)
-                                    return;
-                                var text = e.nativeEvent.clipboardData.getData('text');
-                                if (!text)
-                                    return;
-                                const selection = window.getSelection();
-                                if (!selection)
-                                    return;
-                                if (!selection.rangeCount)
-                                    return false;
-                                selection.deleteFromDocument();
-                                selection.getRangeAt(0).insertNode(document.createTextNode(text));
-                                selection.collapseToEnd();
-                            }}
-                            onKeyDown={async (e) =>
-                            {
-                                if (!templatedParent.AcceptsReturn && e.key === 'Enter')
-                                {
-                                    e.preventDefault();
-                                    return;
-                                }
-                                await Utilities.SleepAsync(1);
-                                templatedParent.Text = templatedParent._input?.innerText;
-                            }}
-                            onFocus={() =>
-                            {
-                                if (!templatedParent._suspendFocusHandler)
-                                    templatedParent.IsFocused = true;
-                                if (templatedParent.SelectOnFocus && templatedParent._input)
-                                    Utilities.SelectElementContents(templatedParent._input);       
-                            }}
-                            dangerouslySetInnerHTML={{
-                                __html: templatedParent.SafeText
-                            }}
-                            onBlur={() =>
-                            {
-                                if (!templatedParent._suspendFocusHandler)
-                                    templatedParent.IsFocused = false;
-                            }} />
-                                                    
+                        {templatedParent.IsPassword || !templatedParent.AcceptsReturn
+                            ? templatedParent.ConstructStandardInputElement()
+                            : templatedParent.ConstructCustomInputElement()}
+
                         <TextBlock
                             ClassName="tb-placeholder"
-                            Margin={templatedParent.Icon ? "0px 0px 0px 28px" : "0px"}
-                            Style={TextBox.PlaceholderTextBlockStyle}                            
+                            Margin={templatedParent.Icon ? "0px 0px 0px 28px" : TemplateProp(nameof<ITextBoxProps>(p => p.Padding))}
+                            Style={TextBox.PlaceholderTextBlockStyle}
                             IsVisible={new Binding({
                                 Path: nameof(templatedParent.Text),
                                 Source: templatedParent,
                                 Converter: (t?: string) => t === undefined || t.length === 0
-                            })}                            
+                            })}
                             Overlaps={true}
-                            Text={templatedParent.PlaceholderText} />                        
+                            Text={templatedParent.PlaceholderText} />
 
                         {
                             templatedParent.IsInvalid &&
@@ -256,7 +295,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                     {templatedParent.InfoTip && (
                         <Glyph
                             Margin="0px 0px 0px 5px"
-                            Grid={{Column: 1, Row: 1}}
+                            Grid={{ Column: 1, Row: 1 }}
                             ClassName="tb-infotip"
                             Icon="Info"
                             VerticalAlignment={VerticalAlignment.Center}
@@ -272,6 +311,8 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
                 width: "100%",
                 overflowX: "auto",
                 alignSelf: "center",
+                borderWidth: "0px",
+                background: "transparent",
                 margin: TemplateProp(nameof<ITextBoxProps>(p => p.Padding)),
                 color: TemplateProp(nameof<ITextBoxProps>(p => p.Foreground)),
                 fontFamily: TemplateProp(nameof<ITextBoxProps>(p => p.FontFamily)),
@@ -354,7 +395,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             [Control.DisabledElement("tb-label")]: {
                 color: `${Theme.Value(SemanticColor.DisabledBodyText)} !important`,
             },
-            [Control.DisabledElement("tb-input-panel")]: {                
+            [Control.DisabledElement("tb-input-panel")]: {
                 background: Theme.Value(SemanticColor.DisabledBackground),
                 boxShadow: "none"
             },
@@ -363,17 +404,44 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             }
         }
     );
-    
+
+    private async OnKeyDown(e: KeyboardEvent, customInput: boolean = false)
+    {
+        if (!this.AcceptsReturn && e.key === 'Enter')
+        {
+            e.preventDefault();
+            if (this.SubmitCommand)
+                this.ExecuteCommand(this.SubmitCommand);
+            return;
+        }
+
+        if (customInput)
+        {
+            await Utilities.SleepAsync(1);
+            this.Text = this._input?.innerText;
+        }
+    }
+
     override constructClasses()
     {
-        return super.constructClasses()            
+        return super.constructClasses()
             + (this.IsFocused ? " focused " : "")
             + (this.IsReadOnly ? " read-only " : "")
             + (this.Icon ? " has-icon " : "")
             + (this.AcceptsReturn ? " accepts-return " : "");
     }
 
-    _field: ITextField | null = null;
-    _input: HTMLSpanElement | null = null;
+    _input: HTMLElement | null = null;
     _suspendFocusHandler: boolean = false;
+}
+
+export class PasswordBox extends TextBox
+{
+    public static DefaultStyle = new WebStyle<ITextBoxProps>(
+        {
+            IsPassword: true
+        },
+        undefined,
+        TextBox.DefaultStyle
+    )
 }

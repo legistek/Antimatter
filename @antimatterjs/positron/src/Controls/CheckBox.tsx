@@ -45,7 +45,7 @@ export class CheckBox extends ToggleButtonBase<ICheckBoxProps, ICheckBoxState>
             Padding: "1px",
             Template: new ControlTemplate((templatedParent: CheckBox) => (
                 <Grid
-                    ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
+                    ColumnDefinitions={[Grid.ColumnDefinition(), Grid.FittedColumn(), Grid.ColumnDefinition(), Grid.ColumnDefinition()]}
                     OnClick={(e) => templatedParent.OnClick(e)}>
                     <div className={`ckb-box ${CSSClasses.Base} ${CSSClasses.HACenter} ${CSSClasses.VACenter}`}
                         onKeyPress={(e) =>
