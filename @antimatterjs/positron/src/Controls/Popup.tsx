@@ -74,7 +74,7 @@ export class PopupBase<
                 }}
                 style={{
                     background: this.Background,
-                    padding: this.state.Padding,
+                    padding: this.Padding,
                 }}
                 isBeakVisible={false}
                 coverTarget={this.state.Placement === PlacementMode.Cover}

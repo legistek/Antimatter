@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace Antimatter.Net.Model
 {
+    [AntimatterModel]
     public abstract class DialogViewModel : ObservableObject
     {
         public abstract string DialogTemplate { get; }

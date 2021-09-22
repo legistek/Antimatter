@@ -128,6 +128,10 @@ export class BoundCollection<T> extends Array<T>
             case NotifyCollectionChangedAction.Remove:
                 super.splice(update.Index, update.Count);
                 break;
+            case NotifyCollectionChangedAction.Replace:
+                for (var i = 0, j = update.Index; i < update.Count; i++, j++)
+                    this[j] = update.Items[i];
+                break;
         }
         this.CollectionChanged.invoke(this);
     };

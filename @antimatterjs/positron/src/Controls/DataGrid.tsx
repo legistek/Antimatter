@@ -80,7 +80,7 @@ export class DataGridBase<
     S extends IDataGridState = {}>
     extends ItemsControlBase<P, S>
 {
-    private _selection?: Fluent.Selection;
+    private _selection: Fluent.Selection;
     private _suspendModelNotifySelectionChanged: boolean = false;
 
     public static DefaultBindings = {
@@ -99,6 +99,11 @@ export class DataGridBase<
     constructor(props)
     {
         super(props);
+        this._selection = new Fluent.Selection(
+            {
+                onSelectionChanged: this.OnSelectionChanged.bind(this),
+                getKey: item => Utilities.SmartGetKey(item)
+            });
     }
 
     private _selectedItems: any[] = [];
@@ -109,17 +114,7 @@ export class DataGridBase<
 
     override OnPropertyChanged(prop: string, value: any, oldValue: any)
     {
-        if (prop === nameof(this.state.ItemsSource))
-        {
-            this._selection = new Fluent.Selection(
-                {
-                    onSelectionChanged: this.OnSelectionChanged.bind(this),
-                    items: this.ItemsSource,
-                    getKey: item => Utilities.SmartGetKey(item)
-                });
-            this.OnSelectedItemsCollectionChanged(this);
-        }
-        else if (prop === nameof(this.state.SelectedItems))
+        if (prop === nameof(this.state.SelectedItems))
         {
             if (oldValue?.IsBoundCollection)
                 (oldValue as BoundCollection<any>).CollectionChanged.unsubscribe(this.Callback(this.OnSelectedItemsCollectionChanged));
@@ -132,11 +127,16 @@ export class DataGridBase<
         super.OnPropertyChanged(prop, value, oldValue);
     }
 
+    protected override OnItemsSourceCollectionChanged(sender: any, e: void)
+    {
+        super.OnItemsSourceCollectionChanged(sender);
+        this._selection?.setItems(this.ItemsSource, false);
+        this.OnSelectedItemsCollectionChanged(this);
+        this.OnSelectionChanged();
+    }
+
     protected OnSelectedItemsCollectionChanged(sender: any, e: void)
     {
-        if (!this._selection)
-            return;
-
         this._suspendModelNotifySelectionChanged = true;
 
         try

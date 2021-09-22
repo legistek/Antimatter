@@ -11,6 +11,13 @@ namespace Antimatter.Net
 {
     public class TypescriptGenerator
     {
+        public static void Generate(Type[] rootTypes, StreamWriter sw)
+        {
+            foreach (var type in rootTypes)
+                GenerateTS(type, sw);
+            GenerateDependencies(sw);
+        }
+
         public static void Generate(Type rootType, StreamWriter sw)
         {
             GenerateTS(rootType, sw);
@@ -101,12 +108,21 @@ namespace Antimatter.Net
                 csType == typeof(ushort) ||
                 csType == typeof(byte) ||
                 csType == typeof(long) ||
-                csType == typeof(ulong))
+                csType == typeof(ulong) ||
+                csType == typeof(int?) ||
+                csType == typeof(uint?) ||
+                csType == typeof(float?) ||
+                csType == typeof(double?) ||
+                csType == typeof(short?) ||
+                csType == typeof(ushort?) ||
+                csType == typeof(byte?) ||
+                csType == typeof(long?) ||
+                csType == typeof(ulong?) )
                 baseType = "number";
             else if (csType == typeof(string) ||
                 csType == typeof(Guid))
                 baseType = "string";
-            else if (csType == typeof(bool))
+            else if (csType == typeof(bool) || csType == typeof(bool?))
                 baseType = "boolean";
             else if (csType == typeof(DateTime) ||
                 csType == typeof(TimeSpan))

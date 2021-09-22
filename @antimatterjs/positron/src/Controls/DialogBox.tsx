@@ -21,11 +21,21 @@ interface IDialogBoxCommon
 export interface IDialogBoxProps extends IControlProps, IDialogBoxCommon
 {
     DialogTemplate?: string | Binding,
+    CancelCommand?: Binding | ModelObjectReference,
+    Title?: string | Binding,
+    PrimaryCommands?: ModelObjectReference[] | Binding,
+    SecondaryCommands?: ModelObjectReference[] | Binding,
+    Icon?: number | string | Binding,
     ViewModel?: ModelObjectReference | Binding   
 }
 export interface IDialogBoxState extends IControlState, IDialogBoxCommon
-{
+{    
     DialogTemplate?: string,
+    CancelCommand?: ModelObjectReference,
+    Title?: string,
+    PrimaryCommands?: ModelObjectReference[],
+    SecondaryCommands?: ModelObjectReference[],
+    Icon?: number | string,
     ViewModel?: ModelObjectReference
 }
 
@@ -71,84 +81,91 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             overflow: "hidden",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
                         }}}>
-                    <DataContext Value={templatedParent.state.ViewModel}>
-                        <Grid RowDefinitions={[
-                            Grid.RowDefinition(),
-                            Grid.RowDefinition(),
-                            Grid.RowDefinition(1, true),
-                            Grid.RowDefinition(),
-                            Grid.RowDefinition(),
-                        ]}>
+                    
+                    <Grid RowDefinitions={[
+                        Grid.RowDefinition(),
+                        Grid.RowDefinition(),
+                        Grid.RowDefinition(1, true),
+                        Grid.RowDefinition(),
+                        Grid.RowDefinition(),
+                    ]}>
 
-                            {/*Header*/}
-                            <Grid
-                                Grid={{Row: 0}}
-                                ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
-                                Margin="10px 10px 5px 10px">
-                                {/*Icon*/}
-                                <Icon
-                                    style={{
-                                        alignSelf: "center",
-                                        height: "fit-content",
-                                        margin: "0px 5px 0px 0px"
-                                    }}
-                                    iconName={templatedParent.BindState({ Path: "Icon", Converter: CommandButton.ModelIconConverter, Source: templatedParent.state.ViewModel })} />
+                        {
+                            templatedParent.state.Title &&
+                            (<>
+                                {/*Header Row */}
+                                <Grid
+                                    Grid={{Row: 0}}
+                                    ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                                    Margin="10px 10px 5px 10px">
+                                    {/*Icon*/}
+                                    <Icon
+                                        style={{
+                                            alignSelf: "center",
+                                            height: "fit-content",
+                                            margin: "0px 5px 0px 0px"
+                                        }}
+                                        iconName={CommandButton.ModelIconConverter(templatedParent.state.Icon)} />
 
-                                {/*Title Header*/}
-                                <TextBlock
-                                    Grid={{Column: 1}}
-                                    Text={new Binding("Title")}
-                                    Margin="5px 0px"
-                                    Style={TextBlock.DialogHeaderStyle}/>
+                                    {/*Title Header*/}
+                                    <TextBlock
+                                        Grid={{ Column: 1 }}
+                                        Text={templatedParent.state.Title}
+                                        Margin="5px 0px"
+                                        Style={TextBlock.DialogHeaderStyle}/>
 
-                                {/*Close Button*/}
-                                <CommandButton
-                                    Grid={{ Column: 2 }}
-                                    Command={new Binding("CancelCommand")}
-                                    VerticalAlignment={VerticalAlignment.Center}
-                                    Padding="0px"
-                                    Margin="0px"
-                                    TabIndex={-1}
-                                    Style={CommandButton.IconButtonStyle}/>
-                            </Grid>
+                                    {/*Close Button*/}
+                                    <CommandButton
+                                        Grid={{ Column: 2 }}
+                                        Command={templatedParent.state.CancelCommand}
+                                        VerticalAlignment={VerticalAlignment.Center}
+                                        Padding="0px"
+                                        Margin="0px"
+                                        TabIndex={-1}
+                                        Style={CommandButton.IconButtonStyle}/>
+                                </Grid>
 
-                            {/*Separator*/}
-                            <Separator Grid={{ Row: 1 }} />
-
-                            {/*Body*/}
-                            <Grid Padding="10px" Grid={{ Row: 2 }}
-                                VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-                                {
-                                    DialogBox._templates
-                                        .get(templatedParent.BindState({ Path: "DialogTemplate", Source: templatedParent.state.ViewModel }))
-                                        ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
-                                }
-                            </Grid>
-
-                            {/*Separator*/}
-                            <Separator Grid={{ Row: 3 }}/>
-
-                            {/*Buttons*/}
-                            <Grid
-                                Grid={{ Row: 4 }}
-                                ColumnDefinitions={[Grid.ColumnDefinition(1,true), Grid.ColumnDefinition()]}
-                                Margin="10px">
-                                <CommandBar
-                                    Grid={{ Column: 0 }}
-                                    ItemsSource={new Binding("SecondaryCommands")}
-                                    HorizontalAlignment={HorizontalAlignment.Left}
-                                    ItemContainerStyle={DialogBox.DialogButtonStyle}/>                                
-
-                                {/* Primary Buttons */}
-                                <CommandBar
-                                    Grid={{ Column: 1 }}
-                                    ItemsSource={new Binding("PrimaryCommands")}
-                                    HorizontalAlignment={HorizontalAlignment.Right}
-                                    ItemContainerStyle={DialogBox.DialogButtonStyle}/>
-                            </Grid>
+                                {/*Separator*/}
+                                <Separator Grid={{ Row: 1 }} />
                         
+                            </>)
+                        }
+
+                        {/*Body*/}
+                        <Grid Padding="10px" Grid={{ Row: 2 }}
+                            VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                            {
+                                templatedParent.state.DialogTemplate
+                                    ? DialogBox._templates
+                                        .get(templatedParent.state.DialogTemplate)
+                                        ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
+                                    : null
+                            }
                         </Grid>
-                    </DataContext>
+
+                        {/*Separator*/}
+                        <Separator Grid={{ Row: 3 }}/>
+
+                        {/*Buttons*/}
+                        <Grid
+                            Grid={{ Row: 4 }}
+                            ColumnDefinitions={[Grid.ColumnDefinition(1,true), Grid.ColumnDefinition()]}
+                            Margin="10px">
+                            <CommandBar
+                                Grid={{ Column: 0 }}
+                                ItemsSource={templatedParent.state.SecondaryCommands}
+                                HorizontalAlignment={HorizontalAlignment.Left}
+                                ItemContainerStyle={DialogBox.DialogButtonStyle}/>                                
+
+                            {/* Primary Buttons */}
+                            <CommandBar
+                                Grid={{ Column: 1 }}
+                                ItemsSource={templatedParent.state.PrimaryCommands}
+                                HorizontalAlignment={HorizontalAlignment.Right}
+                                ItemContainerStyle={DialogBox.DialogButtonStyle}/>
+                        </Grid>
+                        
+                    </Grid>                    
                 </Modal>
             ))
         }

@@ -24,9 +24,9 @@ export class StackPanelBase<P extends IStackPanelProps = {}, S extends IStackPan
             ItemSpacing: ThemeLayout.ControlSpacing
         },
         {
-            [`@.${CSSClasses.HStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:first-child)`]: {
-                marginLeft: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
-            },
+            //[`@.${CSSClasses.HStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:first-child)`]: {
+            //    marginLeft: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
+            //},
             [`@.${CSSClasses.HStack} > .${CSSClasses.Base}:not(.amx-ptn-fe:last-child)`]: {
                 marginRight: TemplateProp(nameof<IStackPanelProps>(p => p.ItemSpacing)),
             },

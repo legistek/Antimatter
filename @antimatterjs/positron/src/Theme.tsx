@@ -65,6 +65,7 @@ export enum ThemeLayout
     MarginStandardB,
     MarginStandardLR,
     MarginStandardTB,
+    MarginWideLTRB,
 }
 
 export enum ThemeEffect
@@ -167,6 +168,8 @@ export class Theme
         [ThemeLayout.MarginStandardB]: '0px 0px 7px 0px',
         [ThemeLayout.MarginStandardLR]: '0px 7px',
         [ThemeLayout.MarginStandardTB]: '7px 0px',
+
+        [ThemeLayout.MarginWideLTRB]: '15px',
     }
 
     public readonly Effects: ThemeEffects = {

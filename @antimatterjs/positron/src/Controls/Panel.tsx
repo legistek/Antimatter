@@ -5,13 +5,13 @@ import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
 import { ScrollBarVisibility } from '../Enums';
 import { CSSClasses } from '../CSSClasses';
-import { ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
+import { ThemeColor, SemanticColor, ThemeLayout, ThemeEffect } from '../Theme';
 
 export interface IPanelProps extends IFrameworkElementProps
 {
     Width?: number | string | Binding,
     Height?: number | string | Binding,
-    MinWidth?: number | Binding,
+    MinWidth?: number | string | Binding,
     MaxWidth?: number | string | Binding,
     MinHeight?: number | Binding,
     Background?: string | Binding | ThemeColor | SemanticColor,
@@ -19,8 +19,8 @@ export interface IPanelProps extends IFrameworkElementProps
     BorderThickness?: string | Binding,
     Foreground?: string | Binding | ThemeColor | SemanticColor,
     ItemSpacing?: string | ThemeLayout,
-    Padding?: string,
-    BoxShadow?: string,
+    Padding?: string | ThemeLayout,
+    BoxShadow?: string | ThemeEffect,
     ItemsParent?: ItemsControlBase<IItemsControlProps, IItemsControlState>,
     HorizontalScrollBarVisibility?: ScrollBarVisibility,
     VerticalScrollBarVisibility?: ScrollBarVisibility
@@ -51,6 +51,11 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
         super(props);
         if (props.ItemsParent)
             props.ItemsParent.ItemsPanelInstance = this;
+    }
+
+    public get Padding(): string | undefined
+    {
+        return this.GetValue(nameof(this.props.Padding));
     }
 
     public get ItemSpacing(): string | undefined
@@ -92,7 +97,7 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
             borderWidth: this.BorderThickness,
             borderStyle: "solid",
             boxShadow: this.state.BoxShadow,
-            padding: this.state.Padding,
+            padding: this.Padding,
             overflowX: Panel.GetScrollBarVisibilityCSSValue(this.state.HorizontalScrollBarVisibility),
             overflowY: Panel.GetScrollBarVisibilityCSSValue(this.state.VerticalScrollBarVisibility)
         };

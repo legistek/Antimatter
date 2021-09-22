@@ -7,8 +7,10 @@ import { FetchData } from './components/FetchData';
 import { Company, Employee } from './components/Company';
 import { createTheme, Icon, loadTheme } from '@fluentui/react';
 import { Antimatter, DataContext, Binding, ModelObjectReference, AntimatterComponent } from '@antimatterjs/react';
-import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, NavMenu, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout } from '@antimatterjs/positron';
+import { DialogBox, Grid, HorizontalAlignment, MultitouchTransform, Orientation, Panel, PinnablePanel, PinnablePanelBase, ResizePanel, Side, StackPanel, NavMenu, TextBlock, TreeView, VerticalAlignment, Window, WindowLayout, MessageBar, ThemeLayout } from '@antimatterjs/positron';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
+
+import * as Model from './model/Model';
 
 //import './custom.css'
 import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
@@ -73,6 +75,32 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         )
     }
 
+    private static DialogTemplate = new DataTemplate((item) => (
+        <DataContext Value={item}>
+            <DialogBox
+                Title={new Binding(nameof<Model.DialogViewModel>(m => m.Title))}
+                CancelCommand={new Binding(nameof<Model.DialogViewModel>(m => m.CancelCommand))}
+                PrimaryCommands={new Binding(nameof<Model.DialogViewModel>(m => m.PrimaryCommands))}
+                SecondaryCommands={new Binding(nameof<Model.DialogViewModel>(m => m.SecondaryCommands))}
+                DialogTemplate={new Binding(nameof<Model.DialogViewModel>(m => m.DialogTemplate))}
+                Icon={new Binding(nameof<Model.DialogViewModel>(m => m.Icon))}
+                ViewModel={item} />
+        </DataContext>
+    ));
+
+    private static ToastTemplate = new DataTemplate((params: ModelObjectReference) => (
+        <MessageBar
+            Content={new Binding({ Path: "Content", Source: params })}
+            MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
+            PrimaryCommand={new Binding({ Path: "PrimaryCommand", Source: params })}
+            SecondaryCommand={new Binding({ Path: "SecondaryCommand", Source: params })}
+            ShowCloseButton={new Binding({ Path: "ShowCloseButton", Source: params })}
+            Duration={new Binding({ Path: "Duration", Source: params })}
+            IsVisible={new Binding({ Path: "IsVisible", Source: params })}
+            Animate={true}
+            Margin={ThemeLayout.MarginWideLTRB}
+        />));
+
     private employeeTemplate: DataTemplate = new DataTemplate(
         (item) => (
             <StackPanel Orientation={Orientation.Horizontal}>
@@ -103,8 +131,19 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
     {
         return (
             <Window
+                ToastTemplate={App.ToastTemplate}
+                Toasts={new Binding({
+                    Source: this.state.Model,
+                    Path: "Company.Toasts",
+                    NotifyCollectionChanged: true
+                })}
                 Model={this.state.Model}
-                Dialogs={new Binding({ Path: "Dialogs", Source: this.state.Model, NotifyCollectionChanged: true })}>
+                DialogTemplate={App.DialogTemplate}
+                Dialogs={new Binding({
+                    Path: "Dialogs",
+                    Source: this.state.Model,
+                    NotifyCollectionChanged: true
+                })}>
                     <NavMenu Style={NavMenu.DefaultStyle}
                         Items={
                             [

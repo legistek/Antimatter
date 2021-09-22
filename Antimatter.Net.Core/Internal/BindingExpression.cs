@@ -434,6 +434,11 @@ namespace Antimatter.Net.Internal
 
             switch (e.Action)
             {
+                case NotifyCollectionChangedAction.Replace:
+                    update.Count = e.NewItems.Count;
+                    update.Index = e.NewStartingIndex;
+                    items = e.NewItems;
+                    break;
                 case NotifyCollectionChangedAction.Reset:
                     // Nothing else is important
                     break;

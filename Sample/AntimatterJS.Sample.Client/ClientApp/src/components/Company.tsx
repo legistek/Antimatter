@@ -248,22 +248,22 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return button;
     }
 
-    private get ToastContent(): DataTemplate
-    {
-        const template: DataTemplate = new DataTemplate((params: ModelObjectReference) => (
-            <MessageBar
-                Content={new Binding({ Path: "Content", Source: params })}
-                MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
-                PrimaryCommand={new Binding({ Path: "PrimaryCommand", Source: params })}
-                SecondaryCommand={new Binding({ Path: "SecondaryCommand", Source: params })}
-                ShowCloseButton={new Binding({ Path: "ShowCloseButton", Source: params })}
-                Duration={new Binding({ Path: "Duration", Source: params })}
-                IsVisible={new Binding({ Path: "IsVisible", Source: params })}
-                Animate={true}
-                Margin="1px"
-            />));
-        return template;
-    }
+    //private get ToastContent(): DataTemplate
+    //{
+    //    const template: DataTemplate = new DataTemplate((params: ModelObjectReference) => (
+    //        <MessageBar
+    //            Content={new Binding({ Path: "Content", Source: params })}
+    //            MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
+    //            PrimaryCommand={new Binding({ Path: "PrimaryCommand", Source: params })}
+    //            SecondaryCommand={new Binding({ Path: "SecondaryCommand", Source: params })}
+    //            ShowCloseButton={new Binding({ Path: "ShowCloseButton", Source: params })}
+    //            Duration={new Binding({ Path: "Duration", Source: params })}
+    //            IsVisible={new Binding({ Path: "IsVisible", Source: params })}
+    //            Animate={true}
+    //            Margin="1px"
+    //        />));
+    //    return template;
+    //}
 
 
     private get MessageBar1(): JSX.Element
@@ -586,19 +586,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                             })}>
                     </TreeView>
                 </ResizePanel>
-
-                <ToastControl
-                    Overlaps={true}
-                    ItemsSource={new Binding(nameof<Model.Company>(c => c.Toasts))}
-                    ItemTemplate={this.ToastContent}
-                    VerticalAlignment={VerticalAlignment.Bottom}
-                    HorizontalAlignment={HorizontalAlignment.Center}
-                />
-                {/*
-                <div className="amx-ptn-fe" style={{ height: 1024 }}>
-
-                </div>
-
+                
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}
                 {/*        {ctx => (*/}

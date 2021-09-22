@@ -56,19 +56,25 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
             this._timeout = setTimeout(() => this.Close(), this.state.Duration * 1000);
         }
 
-        const textStyle: IStyle = {
-            fontFamily: this.FontFamily,
-            color: this.Foreground,
-            fontSize: this.FontSize ?? 16
-        };
-
-        return (
+        return ( 
             <FluentMessageBar
                 messageBarType={this.state.MessageBarType}
                 onDismiss={this.Dismiss}
                 actions={this.Commands}
-                styles={{ text: textStyle }}
-            >
+                styles={
+                    {
+                        root: {
+                            padding: this.Margin
+                        },
+                        content: {
+                            
+                        },
+                        text: {
+                            fontFamily: this.FontFamily,
+                            color: this.Foreground,
+                            fontSize: this.FontSize ?? 16
+                        },
+                    }}>
                 {this.Content}
             </FluentMessageBar>
         );

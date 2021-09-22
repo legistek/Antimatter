@@ -123,12 +123,12 @@ export class ItemsControlBase<
                 (value as BoundCollection<any>).CollectionChanged.subscribe(this.Callback(this.OnItemsSourceCollectionChanged));
 
             this._itemContainers = new Array((value as any[])?.length || 0);
-            this.ItemsPanelInstance?.InvalidateRender();
+            this.OnItemsSourceCollectionChanged(this);
         }
         super.OnPropertyChanged(property, value, oldValue);
     }
 
-    private OnItemsSourceCollectionChanged (sender: any, e: void)
+    protected /* virtual */ OnItemsSourceCollectionChanged (sender: any, e: void)
     {
         this.InvalidateRender();
     };

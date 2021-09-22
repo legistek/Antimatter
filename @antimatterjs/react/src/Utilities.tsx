@@ -37,7 +37,7 @@ export class Utilities
             return "";
 
         if (item?.IsModelObjectReference)
-            return (item as ModelObjectReference).Handle.toString();
+            return (item as ModelObjectReference).Key.toString();
         else if (typeof (item) === 'number')
             return item;
         else if (item?.key)

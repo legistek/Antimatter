@@ -226,8 +226,8 @@ namespace Antimatter.Net
                 _references.Remove(obj);
             _dict.Remove(reference.Handle);
             _freedHandles.Add(reference.Handle);
-            int liveObjects = _dict.Count;
-            Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
+            //int liveObjects = _dict.Count;
+            //Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
         }
 
         internal void Release(int objHandle)
@@ -354,7 +354,7 @@ namespace Antimatter.Net
                 };
                 this._dict[handle] = reference;
                 this._references.Add(obj, reference);                
-                Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
+                //Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
             }
 
             reference.AddRef();

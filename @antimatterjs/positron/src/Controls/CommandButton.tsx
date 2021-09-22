@@ -304,12 +304,14 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
 
     public static CommandBarButtonStyle = new WebStyle<ICommandButtonProps>(
         {
-            Padding: "8px",            
-            Foreground: ThemeColor.NeutralSecondary,
+            Padding: "8px 0px",
+            Foreground: ThemeColor.NeutralPrimaryAlt,
             Background: "transparent",
             BorderBrush: "transparent",
+            //FontWeight: "normal",
             BorderThickness: "1px",
             IconForeground: SemanticColor.MenuIcon,
+            VerticalAlignment: VerticalAlignment.Center,
             Template: new ControlTemplate((templatedParent: CommandButton) =>
             (
                 <CommandBarButton
@@ -335,6 +337,10 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                 background: Theme.Value(SemanticColor.ButtonBackgroundPressed),
                 borderColor: Theme.Value(SemanticColor.ButtonBackgroundPressed),
                 color: Theme.Value(SemanticColor.ButtonTextPressed),
+            },
+            [Control.DisabledElement("ms-Button")]: {
+                background: "transparent",
+                borderColor: "transparent"
             },
             [Control.DisabledElement("ms-Icon")]: {
                 color: Theme.Value(SemanticColor.DisabledBodyText)

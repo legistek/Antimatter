@@ -5,12 +5,12 @@ import { Antimatter, Binding, Event, ModelObjectReference, ReactDataContext } fr
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
-import { DialogBox } from './DialogBox';
 import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
 import { CSSClasses } from '../CSSClasses';
 import { Theme } from '../Theme';
 import { PositronTheme } from '../Themes/PositronTheme';
+import { ToastControl } from './ToastControl';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
@@ -18,6 +18,9 @@ export interface IWindowProps extends IPanelProps
 {
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[] | Binding;
+    Toasts?: ModelObjectReference[] | Binding;
+    DialogTemplate?: DataTemplate;
+    ToastTemplate?: DataTemplate;    
     Layout?: WindowLayout;
 }
 
@@ -25,6 +28,9 @@ export interface IWindowState extends IPanelState
 {
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[];
+    Toasts?: ModelObjectReference[];
+    DialogTemplate?: DataTemplate;
+    ToastTemplate?: DataTemplate;
     Layout?: WindowLayout;
     Theme?: Theme;
 }
@@ -105,7 +111,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         return super.constructClasses() + `${CSSClasses.Root} `;
     }
 
-    protected /* override */ renderElement(): JSX.Element | null
+    protected override renderElement(): JSX.Element | null
     {
         (this.state as any)["DataContext"] = this.state.Model;                                  
         return (
@@ -115,15 +121,22 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
                         ItemsSource={this.state.Dialogs || []}
                         VerticalAlignment={VerticalAlignment.Bottom}
                         Overlaps={true}
-                        ItemTemplate={this._dialogTemplate}>
+                        ItemTemplate={this.state.DialogTemplate}>
                     </ItemsControl>
-                    {super.renderElement()}                    
+                    {super.renderElement()}
+                    <ToastControl
+                        ItemsSource={this.state.Toasts}
+                        ItemTemplate={this.state.ToastTemplate}
+                        VerticalAlignment={VerticalAlignment.Bottom}
+                        HorizontalAlignment={HorizontalAlignment.Center}
+                        Overlaps={true}
+                    />
                 </WindowLayoutContext.Provider>
             </ReactDataContext.Provider>
         );
     }
 
-    /* override */ OnComponentMount()
+    override OnComponentMount()
     {        
         // Prevent accidental magnification
         this.Container?.addEventListener("wheel", (e) =>
@@ -134,7 +147,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         });
     }
 
-    /* protected virtual */ GetLayout(): WindowLayout
+    protected /* virtual */ GetLayout(): WindowLayout
     {
         if (window.outerWidth < 1024)
             return WindowLayout.Tablet;
@@ -148,9 +161,4 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
             return;
         newTheme.Apply();
     }
-
-    _dialogTemplate: DataTemplate = new DataTemplate((item) =>
-    (
-        <DialogBox ViewModel={item} />
-    ));
 }

@@ -131,7 +131,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
         }
     };
 
-    static PlaceholderTextBlockStyle: WebStyle<ITextBlockProps> = new WebStyle(
+    static PlaceholderTextBlockStyle: Style<ITextBlockProps> = new WebStyle(
         {
             FontFamily: TemplateProp("FontFamily"),
             FontSize: TemplateProp("FontSize"),
@@ -222,7 +222,7 @@ export class TextBox extends Control<ITextBoxProps, ITextBoxState>
             }} />);
     }
 
-    static DefaultStyle = new WebStyle<ITextBoxProps>(
+    static DefaultStyle: Style<ITextBoxProps> = new WebStyle<ITextBoxProps>(
         {
             BorderBrush: SemanticColor.ButtonBorder,
             FontFamily: FontStyle.FontFamily,

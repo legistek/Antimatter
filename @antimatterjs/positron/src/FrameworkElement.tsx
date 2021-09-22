@@ -12,15 +12,14 @@ import { ManipulationHelper } from './Input/ManipulationHelper';
 import { Point } from './Foundation';
 import { Style, WebStyle } from './Style';
 import { CSSClasses } from './CSSClasses';
-import { ThemeColor, Theme } from './Theme';
+import { ThemeColor, Theme, ThemeLayout } from './Theme';
 
 export const TemplatedParentContext = React.createContext<FrameworkElement | undefined>(undefined);
 
 interface IFrameworkElementCommon
 {
     // Use only for control development; never use for cross-platform views    
-    Style?: Style<any>,
-    Margin?: string,
+    Style?: Style<any>,    
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -45,6 +44,7 @@ interface IFrameworkElementCommon
 
 export interface IFrameworkElementProps extends IFrameworkElementCommon
 {
+    Margin?: string | ThemeLayout,
     IsEnabled?: boolean | Binding,
     ClassName?: string|Binding,
     HorizontalAlignment?: HorizontalAlignment |Binding,
@@ -262,7 +262,7 @@ export class FrameworkElement<
 
     public get Margin(): string|undefined
     {
-        return this.GetValue(nameof(this.state.Margin));
+        return this.GetValue(nameof(this.props.Margin));
     }
 
     public get ActualHeight(): number

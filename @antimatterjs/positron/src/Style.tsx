@@ -58,12 +58,13 @@ export class WebStyle<T> extends Style<T>
 
     public TemplateHasRendered: boolean = false;
 
-    constructor(propSetters: T, sheet?: ICSSSheet, basedOn?: WebStyle<T>)
+    constructor(propSetters: T, sheet?: ICSSSheet, basedOnBase?: Style<T>)
     {
-        super(propSetters, basedOn);
+        super(propSetters, basedOnBase);
 
-        if (basedOn)
-        {            
+        if (basedOnBase instanceof WebStyle)
+        {
+            var basedOn = basedOnBase as WebStyle<T>;
             if (sheet && !basedOn._sheet)
                 this._sheet = sheet;
             else if (!sheet && basedOn._sheet)

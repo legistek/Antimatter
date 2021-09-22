@@ -27,7 +27,7 @@ class CommandBarPanel extends PanelBase<IPanelProps, IPanelState>
                         padding: "0px",
                         height: "auto",
                         background: "transparent",
-                        margin: this.state.Padding
+                        margin: this.Padding
                     }
                 }}
             />
