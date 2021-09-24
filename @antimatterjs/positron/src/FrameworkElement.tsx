@@ -423,7 +423,15 @@ export class FrameworkElement<
         {
             //styles.transform = this.state.Transform.ToCSS();
             styles.transformOrigin = "0px 0px";
-        }        
+        }
+
+        if (this.state.Style instanceof WebStyle)
+        {
+            var props = (this.state.Style as WebStyle<any>).TemplateProps;
+            if (props?.size > 0)
+                this.SetupTemplateProps(styles, props);
+        }
+
         return styles;
     }
 
@@ -444,6 +452,19 @@ export class FrameworkElement<
             this.state.LoadedCommand as ModelObjectReference,
             ModelValue.Get(this.GetLoadedCommandParameter()));
         this.OnLoaded();
+    }
+
+    private SetupTemplateProps(styles: React.CSSProperties, names: Set<string>)
+    {
+        for (var name of names)
+        {
+            if (!(this.props as any)[name])
+                continue;
+            var val = this.GetValue(name);
+            if (val === undefined)
+                continue;
+            styles[`--prop-${name}${this.state.Style?._styleID}`] = val;
+        }
     }
 
     private readonly ExecutePropCommandHandler = (handler: undefined | ModelObjectReference | ((sender: FrameworkElement) => void)) =>

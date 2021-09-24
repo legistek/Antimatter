@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BindingMode } from '@antimatterjs/react';
 import { TemplateProp, WebStyle } from '../Style';
-import { ISelectorProps, ISelectorState, Selector } from './Primitives/Selector';
+import { ISelectorProps, ISelectorState, Selector, SelectorBase } from './Primitives/Selector';
 import { ISelectableItemControlProps, SelectableItemControl, SelectableItemControlBase } from './Primitives/SelectableItemControl';
 import { Panel } from './Panel';
 import { SemanticColor, Theme, ThemeColor } from '../Theme';
@@ -14,7 +14,7 @@ export interface IListBoxState extends ISelectorState
 {
 }
 
-export class ListBox extends Selector<IListBoxProps, IListBoxState>
+export class ListBox extends SelectorBase<IListBoxProps, IListBoxState>
 {    
     public static DefaultBindings = {
         ItemsSource: {

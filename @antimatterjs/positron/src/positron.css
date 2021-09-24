@@ -149,6 +149,7 @@ body {
 
 .amx-ptn-datagridcell {
     display: flex;
+    padding-right: 5px;
     height: 100%;
 }
 

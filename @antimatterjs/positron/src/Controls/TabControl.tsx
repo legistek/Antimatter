@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Antimatter, Binding, BindingParameters, ModelObjectReference, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { Control, IControlProps, IControlState } from './Control';
 import { DefaultEffects, MotionAnimations } from '@fluentui/react';
-import { WebStyle } from '../Style';
+import { TemplateProp, WebStyle } from '../Style';
 import { Grid } from './Grid';
 import { ItemsControl } from './ItemsControl';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -38,6 +38,7 @@ export interface ITabControlCommon
 }
 export interface ITabControlProps extends IControlProps, ITabControlCommon
 {
+    AllCapsLabels?: boolean,
     SelectedItem?: string | Binding,
     SelectedIndex?: number | Binding,
 }
@@ -71,10 +72,14 @@ export class TabControlBase<
         {
             MinTabWidth: 100,
             Padding: "5px",
+            AllCapsLabels: true,
+            BorderBrush: "transparent",
+            BorderThickness: "0px",
             Template: new ControlTemplate((templatedParent: TabControl) =>
             {
                 return (
-                    <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}>
+                    <Grid RowDefinitions={[Grid.RowDefinition(), Grid.RowDefinition(1, true)]}
+                        Background={TemplateProp(nameof<ITabControlProps>(p => p.Background))}>
                         <Grid
                             BorderThickness="0px 0px 1px 0px"
                             BorderBrush={SemanticColor.BodyFrameDivider}
@@ -150,13 +155,18 @@ export class TabControlBase<
             Items: []
         },
         {
+            "@": {
+                borderColor: TemplateProp(nameof<ITabControlProps>(p => p.BorderBrush)),
+                borderWidth: TemplateProp(nameof<ITabControlProps>(p => p.BorderThickness)),
+                borderStyle: "solid",
+            },
             "@ .tab-menu-item": {                
                 color: Theme.Value(SemanticColor.BodySubtext),
                 fontFamily: Theme.Value(FontStyle.FontFamily),
                 borderWidth: "0px 0px 2px 0px",
                 borderColor: "transparent",
                 //padding: "10px 45px 10px 10px",
-                background: "transparent",
+                background: TemplateProp(nameof<ITabControlProps>(p => p.Background)),
                 cursor: "pointer",
                 margin: "0px 5px",
                 maxWidth: "unset !important"
@@ -179,6 +189,11 @@ export class TabControlBase<
         }
 
     );
+
+    public get AllCapsLabels(): boolean
+    {
+        return this.GetValue(nameof(this.props.AllCapsLabels));
+    }
 
     // #region TabPanelOverflows Property
     private _tabPanelOverflows: boolean = false;
@@ -254,7 +269,7 @@ export class TabControlBase<
                     <StackPanel Grid={{ Column: 1 }}
                         Orientation={Orientation.Vertical}
                         VerticalAlignment={VerticalAlignment.Center}>
-                        <TextBlock Text={tab.Label}
+                        <TextBlock Text={this.AllCapsLabels ? tab.Label?.toUpperCase() : tab.Label}
                             ClassName="tab-label"
                             Margin="12px 0px 12px 0px"
                             FontSize={this.FontSize}

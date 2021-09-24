@@ -1,7 +1,7 @@
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import * as React from 'react';
 import { Binding } from '@antimatterjs/react';
-import { WebStyle } from '../Style';
+import { TemplateProp, WebStyle } from '../Style';
 import { FontStyle, ThemeColor, SemanticColor, Theme } from '../Theme';
 
 export interface ITextBlockProps extends IFrameworkElementProps
@@ -10,6 +10,7 @@ export interface ITextBlockProps extends IFrameworkElementProps
     Foreground?: string | Binding | ThemeColor | SemanticColor,
     FontFamily?: string | FontStyle,
     FontSize?: string | FontStyle,
+    MaxLines?: string,
     FontWeight?: undefined | "bold" | "normal" | number
 }
 interface ITextBlockState extends IFrameworkElementState
@@ -26,8 +27,16 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
             Foreground: Theme.Value(SemanticColor.BodyText),
             FontFamily: Theme.Value(FontStyle.FontFamily),
             FontSize: Theme.Value(FontStyle.Medium),
-            FontWeight: "normal"
-        },    
+            FontWeight: "normal",
+            MaxLines: "1"
+        },
+        {
+            "@": {
+                display: "-webkit-box",
+                WebkitLineClamp: TemplateProp(nameof<ITextBlockProps>(p => p.MaxLines)),
+                WebkitBoxOrient: "vertical"
+            }
+        }
     );
 
     public static DialogHeaderStyle = new WebStyle(
@@ -56,6 +65,11 @@ export class TextBlock extends FrameworkElement<ITextBlockProps, ITextBlockState
     public get Foreground(): string | undefined
     {
         return this.GetValue(nameof(this.props.Foreground));
+    }
+
+    public get MaxLines(): string|undefined
+    {
+        return this.GetValue(nameof(this.props.MaxLines), "1");
     }
 
     public get FontFamily(): string | undefined

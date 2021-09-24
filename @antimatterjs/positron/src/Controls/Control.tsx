@@ -182,13 +182,6 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
         if (!this.IsEnabled)
             styles.pointerEvents = "none";
 
-        if (this.state.Style instanceof WebStyle)
-        {
-            var props = (this.state.Style as WebStyle<any>).TemplateProps;
-            if (props?.size > 0)
-                this.SetupTemplateProps(styles, props);
-        }
-
         return styles;
     }
 
@@ -202,19 +195,6 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
     {
         if (this.ValidationError !== error)
             this.SetValue(nameof(this.props.ValidationError), error, true, true);
-    }
-
-    private SetupTemplateProps(styles: React.CSSProperties, names: Set<string>)
-    {
-        for (var name of names)
-        {
-            if (!(this.props as any)[name])
-                continue;
-            var val = this.GetValue(name);
-            if (val === undefined)
-                continue;
-            styles[`--prop-${name}${this.state.Style?._styleID}`] = val;
-        }
     }
 
     // Hideous ridiculous hack necessitated by Javascript stupidity

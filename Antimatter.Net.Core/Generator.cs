@@ -70,9 +70,14 @@ namespace Antimatter.Net
 
             foreach (var prop in allProps)
             {
+                if (prop.Name == "Locked")
+                {
+                 
+                }
                 if (!(prop.GetAccessors(false)?.Length > 0))
                     continue;   // no public getters
                 if (prop.PropertyType.IsGenericType &&
+                    Nullable.GetUnderlyingType(prop.PropertyType) == null &&
                     !typeof(IEnumerable).IsAssignableFrom(prop.PropertyType))
                     continue;   // we don't do generics yet
                 if (prop.PropertyType.Name.Contains("Tuple"))
@@ -122,7 +127,9 @@ namespace Antimatter.Net
             else if (csType == typeof(string) ||
                 csType == typeof(Guid))
                 baseType = "string";
-            else if (csType == typeof(bool) || csType == typeof(bool?))
+            else if (csType == typeof(bool))
+                baseType = "boolean";
+            else if (csType == typeof(bool?))
                 baseType = "boolean";
             else if (csType == typeof(DateTime) ||
                 csType == typeof(TimeSpan))
