@@ -224,6 +224,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             Template: new ControlTemplate((templatedParent: CommandButtonBase<ICommandButtonProps, ICommandButtonState>) =>
                 templatedParent.IsDefault
                     ? (<PrimaryButton
+                        autoFocus={false}
                         styles={{
                             label: {
                                 color: templatedParent.Foreground || Theme.Value(SemanticColor.PrimaryButtonText),
@@ -239,7 +240,8 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
                         menuProps={templatedParent.menuProps}>
                         {templatedParent.ActualLabel}
                     </PrimaryButton>)
-                    : (<DefaultButton                        
+                    : (<DefaultButton
+                        autoFocus={false}
                         onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                         disabled={!templatedParent.state.IsEnabled}
                         menuProps={templatedParent.menuProps}>
@@ -289,6 +291,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             Template: new ControlTemplate((templatedParent: CommandButton) =>
             (
                 <PrimaryButton
+                    autoFocus={false}
                     onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                     iconProps={{
                         iconName: CommandButton.ModelIconConverter(templatedParent.Icon)
@@ -313,8 +316,13 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             IconForeground: SemanticColor.MenuIcon,
             VerticalAlignment: VerticalAlignment.Center,
             Template: new ControlTemplate((templatedParent: CommandButton) =>
-            (
+            (                
                 <CommandBarButton
+                    autoFocus={false}
+                    onFocus={(e) =>
+                    {
+                        console.log('hobo');
+                    }}
                     onClick={(e) => templatedParent.OnClick(e.nativeEvent)}
                     iconProps={{
                         iconName: CommandButton.ModelIconConverter(templatedParent.Icon)
@@ -357,6 +365,7 @@ export class CommandButton extends CommandButtonBase<ICommandButtonProps, IComma
             Template: new ControlTemplate((templatedParent: CommandButton) =>
             (
                 <IconButton
+                    autoFocus={false}
                     styles={{                        
                         root: {
                             background: templatedParent.Background,

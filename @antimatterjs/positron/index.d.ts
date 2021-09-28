@@ -9,6 +9,8 @@ export * from './src/FrameworkElement';
 export * from './src/FrameworkTemplate';
 export { Style } from './src/Style';
 export * from './src/DialogTemplate';
+export * from './src/Shapes/Shape';
+export * from './src/Shapes/Ellipse';
 export * from './src/Controls/View';
 export * from './src/Controls/ContentPresenter';
 export * from './src/Controls/TextBlock';

@@ -23,7 +23,8 @@ export class ButtonBase<
     /* virtual */ OnClick(e?: MouseEvent): void
     {
         ButtonBase.LastMouseEvent = e;
+        document.body.focus();
         if (this.state.Command)
-            this.ExecuteCommand(this.state.Command, this.state.CommandParameter);
+            this.ExecuteCommand(this.state.Command, this.state.CommandParameter);        
     }
 }

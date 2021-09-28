@@ -6,9 +6,9 @@ export class Ellipse extends Shape<IShapeProps, IShapeState>
     public /* override */ getCSSStyles(): React.CSSProperties
     {
         var styles: React.CSSProperties = {
-            background: this.state.Fill,
+            background: this.Fill,
             borderWidth: this.state.StrokeThickness,
-            borderColor: this.state.Stroke,
+            borderColor: this.Stroke,
             width: this.state.Width,
             height: this.state.Height,
             borderStyle: "solid",

@@ -18,7 +18,7 @@ export interface IContentPresenterState extends IFrameworkElementState
     Layout?: WindowLayout
 }
 
-export class ContentPresenter<
+export class ContentPresenterBase<
     P extends IContentPresenterProps = {},
     S extends IContentPresenterState = {}>
     extends FrameworkElement<P, S>
@@ -31,12 +31,31 @@ export class ContentPresenter<
                     (layout) =>
                     {
                         (this.state as any).Layout = layout;
-                        return (
-                            <DataContext Value={this.state.Content}>
-                                {this.state.ContentTemplate ? this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content) : (<></>)}
-                            </DataContext>);
+                        if (this.state.Content)
+                        {
+                            return (
+                                <DataContext Value={this.state.Content}>
+                                    {this.RenderContent()}
+                                </DataContext>);
+                        }
+                        else
+                        {
+                            return this.RenderContent();
+                        }
                     }                    
                 }
             </WindowLayoutContext.Consumer>);
     }
+
+    private RenderContent(): JSX.Element
+    {
+        return this.state.ContentTemplate
+            ? this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content)
+            : (<></>);
+    }
+}
+
+
+export class ContentPresenter extends ContentPresenterBase<IContentPresenterProps, IContentPresenterState>
+{
 }

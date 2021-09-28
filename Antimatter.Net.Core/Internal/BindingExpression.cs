@@ -388,6 +388,20 @@ namespace Antimatter.Net.Internal
                     this.ReportValidationError(selfValidationError);
                 }
             }
+            else if (lastPropertySource is INotifyDataErrorInfo inde)
+            {
+                string error = inde.HasErrors ? inde.GetErrors(pc.ComponentName)?.Cast<string>()?.FirstOrDefault() : null;
+                if (!string.IsNullOrEmpty(error))
+                {
+                    pc.HasIDEIValidationError = true;
+                    this.ReportValidationError(error);
+                }
+                else if (pc.HasIDEIValidationError)
+                {
+                    pc.HasIDEIValidationError = false;
+                    this.ReportValidationError(null);
+                }
+            }
         }
 
         internal static string GetErrorsForProperty(object source, string property)
@@ -474,9 +488,10 @@ namespace Antimatter.Net.Internal
 
         private void OnSourceValidationError(object sender, DataErrorsChangedEventArgs e)
         {
-            if (sender is INotifyDataErrorInfo indei)
+            if (sender is INotifyDataErrorInfo indei && 
+                this.PathComponents?.LastOrDefault()?.ComponentName == e.PropertyName)
             {
-                var errors = indei.GetErrors(e.PropertyName)?.Cast<String>();
+                var errors = indei.GetErrors(e.PropertyName)?.Cast<string>();
                 this.ReportValidationError(errors?.FirstOrDefault());
             }
         }

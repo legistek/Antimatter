@@ -27,3 +27,8 @@ export class Binding
         return new BindingExpression(target, targetProperty, this.Parameters);
     }
 }
+
+export function Bind(args: BindingParameters|string): Binding
+{
+    return new Binding(args);
+}

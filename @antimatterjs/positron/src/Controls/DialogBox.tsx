@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react';
-import { DefaultEffects, Dialog, Icon, Modal, MotionAnimations } from '@fluentui/react';
+import { DefaultEffects, Dialog, Icon, Modal, MotionAnimations, ResponsiveMode } from '@fluentui/react';
 
 import { StackPanel } from './StackPanel';
 import { TextBlock } from './TextBlock';
@@ -11,32 +11,41 @@ import { ItemsControl } from './ItemsControl';
 import { CommandButton, ICommandButtonProps } from './CommandButton';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
-import { ControlTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from '../Enums';
 import { Panel } from './Panel';
+import { ContentPresenter } from './ContentPresenter';
+import { ProgressRing } from './ProgressRing';
 
 interface IDialogBoxCommon
-{    
+{
 }
 export interface IDialogBoxProps extends IControlProps, IDialogBoxCommon
 {
     DialogTemplate?: string | Binding,
+    IsBusy?: boolean | Binding,
+    DefaultCommand?: Binding | ModelObjectReference,
     CancelCommand?: Binding | ModelObjectReference,
     Title?: string | Binding,
     PrimaryCommands?: ModelObjectReference[] | Binding,
     SecondaryCommands?: ModelObjectReference[] | Binding,
     Icon?: number | string | Binding,
-    ViewModel?: ModelObjectReference | Binding   
+    ViewModel?: ModelObjectReference | Binding,
+    ErrorTemplate?: DataTemplate,
+    HasError?: boolean | Binding,
 }
 export interface IDialogBoxState extends IControlState, IDialogBoxCommon
-{    
+{
     DialogTemplate?: string,
+    IsBusy?: boolean,
+    DefaultCommand?: ModelObjectReference,
     CancelCommand?: ModelObjectReference,
     Title?: string,
     PrimaryCommands?: ModelObjectReference[],
     SecondaryCommands?: ModelObjectReference[],
     Icon?: number | string,
-    ViewModel?: ModelObjectReference
+    ViewModel?: ModelObjectReference,
+    ErrorTemplate?: DataTemplate,
 }
 
 export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
@@ -46,9 +55,14 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
 
     public static RegisterTemplate(
         templateName: string,
-        template: ((viewModel: ModelObjectReference) => JSX.Element))
+        template: ((viewModel: any) => JSX.Element))
     {
         DialogBox._templates.set(templateName, template);
+    }
+
+    public get HasError(): boolean
+    {
+        return this.GetValue(nameof(this.props.HasError), false);
     }
 
     private static DialogButtonStyle = new WebStyle<ICommandButtonProps>(
@@ -64,9 +78,11 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
         {
             Template: new ControlTemplate((templatedParent: DialogBox) =>
             (
-                <Modal
+                <Modal                    
                     isOpen={true}
-                    styles={{                        
+                    elementToFocusOnDismiss={document.body}
+                    forceFocusInsideTrap={true}                    
+                    styles={{
                         scrollableContent: {
                             overflow: 'hidden',
                             height: "auto",
@@ -80,22 +96,88 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                             borderRadius: "5px",
                             overflow: "hidden",
                             animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`
-                        }}}>
-                    
-                    <Grid RowDefinitions={[
-                        Grid.RowDefinition(),
-                        Grid.RowDefinition(),
-                        Grid.RowDefinition(1, true),
-                        Grid.RowDefinition(),
-                        Grid.RowDefinition(),
-                    ]}>
+                        }
+                    }}>
 
+                    <Grid
+                        ClassName="main-grid"
+                        TabIndex={-1}
+                        OnKeyDown={(e) =>
+                        {
+                            if (e.key == "Enter" && templatedParent.state.DefaultCommand)
+                                templatedParent.ExecuteCommand(templatedParent.state.DefaultCommand);
+                            else if (e.key == 'Escape' && templatedParent.state.CancelCommand)
+                                templatedParent.ExecuteCommand(templatedParent.state.CancelCommand);
+                        }}
+                        RowDefinitions={[
+                            Grid.RowDefinition(),
+                            Grid.RowDefinition(),
+                            Grid.RowDefinition(1, true),
+                            Grid.RowDefinition(),
+                            Grid.RowDefinition(),
+                            Grid.RowDefinition(),
+                        ]}>
+                        
+                        {/*Body*/}
+                        <Grid Padding="10px" Grid={{ Row: 2 }}
+                            VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
+                            {
+                                templatedParent.state.DialogTemplate
+                                    ? DialogBox._templates
+                                        .get(templatedParent.state.DialogTemplate)
+                                        ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
+                                    : null
+                            }
+                        </Grid>
+
+                        {/*Busy Signal*/}
+                        <Panel
+                            IsVisible={templatedParent.state.IsBusy}
+                            Overlaps={true}
+                            Background="rgba(255,255,255,0.75"
+                            Grid={{ Row: 2 }}>
+                            <ProgressRing
+                                HorizontalAlignment={HorizontalAlignment.Center}
+                                VerticalAlignment={VerticalAlignment.Center} />
+                        </Panel>
+
+
+                        {/*Error*/}
+                        <ContentPresenter
+                            Grid={{ Row: 3 }}
+                            Margin="10px"
+                            IsVisible={templatedParent.HasError}
+                            ContentTemplate={templatedParent.state.ErrorTemplate} />
+
+                        {/*Separator*/}
+                        <Separator Grid={{ Row: 4 }} />
+
+                        {/*Buttons*/}
+                        <Grid
+                            Grid={{ Row: 5 }}
+                            ColumnDefinitions={[Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
+                            Margin="10px">
+                            <CommandBar
+                                Grid={{ Column: 0 }}
+                                ItemsSource={templatedParent.state.SecondaryCommands}
+                                HorizontalAlignment={HorizontalAlignment.Left}
+                                ItemContainerStyle={DialogBox.DialogButtonStyle} />
+
+                            {/* Primary Buttons */}
+                            <CommandBar
+                                Grid={{ Column: 1 }}
+                                ItemsSource={templatedParent.state.PrimaryCommands}
+                                HorizontalAlignment={HorizontalAlignment.Right}
+                                ItemContainerStyle={DialogBox.DialogButtonStyle} />
+                        </Grid>
+
+                        {/* Last so that focus starts where it should */}
                         {
                             templatedParent.state.Title &&
                             (<>
                                 {/*Header Row */}
                                 <Grid
-                                    Grid={{Row: 0}}
+                                    Grid={{ Row: 0 }}
                                     ColumnDefinitions={[Grid.ColumnDefinition(), Grid.ColumnDefinition(1, true), Grid.ColumnDefinition()]}
                                     Margin="10px 10px 5px 10px">
                                     {/*Icon*/}
@@ -112,7 +194,7 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                         Grid={{ Column: 1 }}
                                         Text={templatedParent.state.Title}
                                         Margin="5px 0px"
-                                        Style={TextBlock.DialogHeaderStyle}/>
+                                        Style={TextBlock.DialogHeaderStyle} />
 
                                     {/*Close Button*/}
                                     <CommandButton
@@ -122,52 +204,23 @@ export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>
                                         Padding="0px"
                                         Margin="0px"
                                         TabIndex={-1}
-                                        Style={CommandButton.IconButtonStyle}/>
+                                        Style={CommandButton.IconButtonStyle} />
                                 </Grid>
 
                                 {/*Separator*/}
                                 <Separator Grid={{ Row: 1 }} />
-                        
+
                             </>)
                         }
 
-                        {/*Body*/}
-                        <Grid Padding="10px" Grid={{ Row: 2 }}
-                            VerticalScrollBarVisibility={ScrollBarVisibility.Auto}>
-                            {
-                                templatedParent.state.DialogTemplate
-                                    ? DialogBox._templates
-                                        .get(templatedParent.state.DialogTemplate)
-                                        ?.call(templatedParent, templatedParent.state.ViewModel as ModelObjectReference)
-                                    : null
-                            }
-                        </Grid>
-
-                        {/*Separator*/}
-                        <Separator Grid={{ Row: 3 }}/>
-
-                        {/*Buttons*/}
-                        <Grid
-                            Grid={{ Row: 4 }}
-                            ColumnDefinitions={[Grid.ColumnDefinition(1,true), Grid.ColumnDefinition()]}
-                            Margin="10px">
-                            <CommandBar
-                                Grid={{ Column: 0 }}
-                                ItemsSource={templatedParent.state.SecondaryCommands}
-                                HorizontalAlignment={HorizontalAlignment.Left}
-                                ItemContainerStyle={DialogBox.DialogButtonStyle}/>                                
-
-                            {/* Primary Buttons */}
-                            <CommandBar
-                                Grid={{ Column: 1 }}
-                                ItemsSource={templatedParent.state.PrimaryCommands}
-                                HorizontalAlignment={HorizontalAlignment.Right}
-                                ItemContainerStyle={DialogBox.DialogButtonStyle}/>
-                        </Grid>
-                        
-                    </Grid>                    
+                    </Grid>
                 </Modal>
             ))
+        },
+        {
+            "@ .main-grid:focus": {
+                outline: "none"
+            }
         }
     );
 

@@ -193,8 +193,15 @@ export class Control<P extends IControlProps = {}, S extends IControlState = {}>
 
     NotifyValidationError(error?: string)
     {
+        let actualError: string | undefined = undefined;
+        if (error && error.length > 0)
+            actualError = error;
         if (this.ValidationError !== error)
-            this.SetValue(nameof(this.props.ValidationError), error, true, true);
+            this.SetValue(
+                nameof(this.props.ValidationError),
+                actualError,
+                true,
+                true);
     }
 
     // Hideous ridiculous hack necessitated by Javascript stupidity

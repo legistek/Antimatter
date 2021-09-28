@@ -64,7 +64,7 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
                 styles={
                     {
                         root: {
-                            padding: this.Margin
+                            padding: this.Padding
                         },
                         content: {
                             

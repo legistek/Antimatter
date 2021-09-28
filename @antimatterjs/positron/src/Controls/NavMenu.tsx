@@ -219,6 +219,7 @@ export class NavMenuBase<
 
                     {tab.Description && (<TextBlock
                         Text={tab.Description}
+                        MaxLines={mobile ? "99" : "2"}
                         FontSize={FontStyle.Medium} />)}
                 </StackPanel>
             </Grid>);

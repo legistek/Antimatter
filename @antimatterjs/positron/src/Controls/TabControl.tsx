@@ -276,7 +276,7 @@ export class TabControlBase<
                             FontWeight="bold" />
 
                         {tab.Description && (<TextBlock
-                            Text={tab.Description}
+                            Text={tab.Description}                            
                             FontSize={(this.FontSize as number) * 0.50} />)}
                     </StackPanel>
                 </StackPanel>

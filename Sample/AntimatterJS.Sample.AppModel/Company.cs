@@ -306,8 +306,9 @@ namespace AntimatterJS.Sample.AppModel
                     {
                         if (this.SelectedEmployees == null || this.SelectedEmployees.Count == 0)
                             return;
-                        
-                        foreach (var empl in SelectedEmployees)
+
+                        var sel = this.SelectedEmployees.ToArray(); // avoid collection modified error
+                        foreach (var empl in sel)
                             this.Employees.Remove(empl);
 
                         this.SelectedEmployees.Clear();

@@ -4,7 +4,7 @@ import { TemplateProp, WebStyle } from '../Style';
 import { Control, IControlProps, IControlState } from './Control';
 import { CheckBox } from './CheckBox';
 import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase } from './ItemsControl';
-import { ContentPresenter, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
+import { ContentPresenter, ContentPresenterBase, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
 import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
@@ -23,7 +23,7 @@ export interface IDataGridCellState extends IContentPresenterState, IDataGridCel
 export class DataGridCell<
     P extends IDataGridCellProps = {},
     S extends IDataGridCellState = {}>
-    extends ContentPresenter<P, S>
+    extends ContentPresenterBase<P, S>
 {
     //public static DefaultStyle: Style<IDataGridCellProps> = new Style<IDataGridCellProps>(
     //    {
