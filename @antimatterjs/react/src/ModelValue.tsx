@@ -60,6 +60,11 @@ export class ModelValue
                         var iter = jsValue as IterableIterator<any>;
                         val.Collection = Array.from(iter).map(item => this.Get(item));
                     }
+                    else
+                    {
+                        val.Type = ModelValueType.MarshalledObject;
+                        val.StringValue = JSON.stringify(jsValue);
+                    }
                     break;
             }
         }
@@ -119,6 +124,7 @@ export enum ModelValueType
     TimeSpan = 11,
     MarshalledObject = 12,
 
+    MonoObject = 1000,
 
     ValidationError = 2147483647
 }

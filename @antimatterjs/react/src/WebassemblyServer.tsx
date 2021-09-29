@@ -7,15 +7,19 @@ import { ModelValue, ModelValueType } from "./ModelValue";
 import { Utilities } from "./Utilities";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
 
+import './Mono/MonoTypes';
+import { System_Array, System_Object } from "./Mono/Platform";
+
 //const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
 //const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
 {
     private _startupResolver?: ((value: void) => void) = undefined;
+    private _binding: typeof BINDING = (window as any).BINDING;
 
     StartupAsync(): Promise<void>
-    {
+    {        
         if ((window as any).ServerStarted)
         {
             console.log("Server started before Client");
@@ -123,9 +127,83 @@ export class WebassemblyServer implements IServer
         this._updateBoundCollectionMethod(bxIndex, JSON.stringify(value));
     }
 
+    ExecuteCallback(callback: number, returnType: ModelValueType,  value: any)
+    {
+        if (!this._executeCallbackMethod)
+        {
+            this._executeCallbackMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallback"));
+        }
+        this._executeCallbackMethod(callback, returnType, value);
+    }
+
+    ExecuteCallbackReturnBuffer(callback: number, length: number, value: any)
+    {
+        if (!this._executeCallbackReturnBufferMethod)
+        {
+            this._executeCallbackReturnBufferMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallbackReturnBuffer"),
+                "im"
+            );
+        }
+        this._executeCallbackReturnBufferMethod(callback, value);
+    }
+
     //#endregion
 
     //#region Server-Invocable Methods
+
+    public async ReadFileAsync(fileHandle: number, callback: number)
+    {
+        let file: File | undefined = this._accessibleFiles.get(fileHandle);
+        if (!file)
+            return;
+
+        try
+        {
+            var buf = await file.arrayBuffer();
+            var jsarr = new Uint8Array(buf);
+            var monoArray = this._binding.js_typed_array_to_array(jsarr);
+            this.ExecuteCallbackReturnBuffer(callback, jsarr.length, monoArray);
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+    }
+
+    _accessibleFiles: Map<number, File> = new Map<number, File>();
+    _nextFileHandle: number = 0;    
+
+    public SelectFileAsync(acceptList: string, callback: number): void
+    {        
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = acceptList;
+        input.click();
+        input.onchange = ((e) =>
+        {
+            var file = input.files?.item(0);
+            if (!file)
+                return;
+
+            var modelFile = {
+                handle: this._nextFileHandle++,
+                name: file?.name,
+                size: file?.size,
+                modified: new Date(file?.lastModified)
+            };
+
+            this._accessibleFiles.set(modelFile.handle, file);
+            this.ExecuteCallback(callback, ModelValueType.MarshalledObject, JSON.stringify(modelFile));
+        }).bind(this);
+    }
 
     public OnUpdateBoundCollection(bxIndex: number, valuePtr: number)
     {
@@ -184,7 +262,7 @@ export class WebassemblyServer implements IServer
             return '';
         }
 
-        return (window as any).BINDING.conv_string(fieldValue) as string;
+        return this._binding.conv_string(fieldValue) as string;
     }
 
     getValueI16(ptr: number)
@@ -299,12 +377,14 @@ export class WebassemblyServer implements IServer
     }
 
     static readonly c_ServerAssembly: string = "Antimatter.Net.Webassembly";
-    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyServer";
+    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyReactor";
     _cachedMethods: Map<string, any> = new Map<string, any>();
     _bindMethod: any;
     _executeICommandMethod: any;
     _updateSourceValueMethod: any;
     _updateBoundCollectionMethod: any;
+    _executeCallbackMethod: any;
+    _executeCallbackReturnBufferMethod: any;
     _unbindMethod: any;
 
     //#endregion

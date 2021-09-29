@@ -68,13 +68,21 @@ namespace Antimatter.Net.SignalR
             return Task.CompletedTask;
         }
 
+        public object MarshalClientObject(Type desiredType, ModelValue clientValue)
+        {
+            if (clientValue.Type != ModelValueType.JSON ||
+                string.IsNullOrEmpty(clientValue.StringValue))
+                throw new Exception();
+            return JsonConvert.DeserializeObject(clientValue.StringValue, desiredType);
+        }
+
         public ModelValue MarshalObject(object obj)
         {
             try
             {
                 return new ModelValue
                 {
-                    Type = ModelValueType.MarshalledObject,
+                    Type = ModelValueType.JSON,
                     StringValue = JsonConvert.SerializeObject(obj)
                 };
             }
@@ -98,6 +106,16 @@ namespace Antimatter.Net.SignalR
         {
             var json = JsonConvert.SerializeObject(value);
             Instance.Clients.Client(clientID)?.SendAsync("UpdateBinding", bxIndex, json);
+        }
+
+        Task<ClientFile> IClient.SelectFileAsync(string acceptList)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<byte[]> IClient.ReadFileAsync(int handle)
+        {
+            throw new NotImplementedException();
         }
 
         private Reactor GetOrCreateReactor()

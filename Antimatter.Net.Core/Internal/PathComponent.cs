@@ -93,7 +93,7 @@ namespace Antimatter.Net.Internal
                 if (Reactor._customConverters.TryGetValue(targetPropType, out IModelValueConverter converter))
                     value = converter.ConvertFrom(modelValue);
                 else
-                    value = modelValue.ToCSValue(reactor, this.PropertyKey.PropertyInfo.PropertyType);
+                    value = modelValue.Value(reactor, this.PropertyKey.PropertyInfo.PropertyType);
                 
                 Debug.WriteLine(
                     $"Property change triggering update for source {this.LastPropertySource}");

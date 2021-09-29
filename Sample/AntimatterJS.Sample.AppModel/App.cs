@@ -40,6 +40,8 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
+        public Files Files { get; } = new Files();
+
         public Company Company { get; } = new Company()
         {
             Name = "Edison Electric"

@@ -74,7 +74,7 @@ export class Employee extends View
             /*animation: `${MotionAnimations.slideDownIn.replace("100ms", "400ms")}, ${MotionAnimations.fadeIn.replace("100ms", "400ms")}`*/
             >
 
-                <StackPanel>
+                <StackPanel>                    
 
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}

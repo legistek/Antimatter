@@ -33,6 +33,7 @@ export class ReactClient implements IClient
 {
     _root?: Component;
 
+
     RegisterRoot(root: any)
     {
         this._root = root as Component;

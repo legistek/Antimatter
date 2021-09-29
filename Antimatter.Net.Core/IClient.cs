@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -52,10 +53,22 @@ namespace Antimatter.Net
         /// </summary>
         /// <param name="obj">The object to marshal.</param>
         /// <returns>A <see cref="ModelValue"/>. The <see cref="ModelValue.Type"/>
-        /// member must be <see cref="ModelValueType.MarshalledObject"/>. The
+        /// member must be <see cref="ModelValueType.JSON"/>. The
         /// rest is up to the implementation. For example, a Web/Javascript client
         /// would marshal to a JSON string.
         /// </returns>
         ModelValue MarshalObject(object obj);
+
+        /// <summary>
+        /// Initiates a file selection operation on the client.
+        /// </summary>
+        /// <param name="acceptList">A comma-separated list of
+        /// file extensions or MIME types to select.</param>
+        /// <returns>A task handle.</returns>
+        Task<ClientFile> SelectFileAsync(string acceptList);
+
+        Task<byte[]> ReadFileAsync(int handle);
+
+        object MarshalClientObject(Type desiredType, ModelValue clientValue);
     }
 }

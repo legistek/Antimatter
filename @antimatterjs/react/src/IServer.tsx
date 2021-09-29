@@ -1,7 +1,7 @@
 import { BindingExpression } from "./BindingExpression";
 import { ICollectionUpdate } from "./ICollectionUpdate";
 import { ModelObjectReference } from "./ModelObjectReference";
-import { ModelValue } from "./ModelValue";
+import { ModelValue, ModelValueType } from "./ModelValue";
 
 export interface IServer
 {
@@ -13,4 +13,6 @@ export interface IServer
     Unbind(exp: BindingExpression);
     UpdateBindingSource(bxIndex: number, value: ModelValue);
     UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate);
+    ExecuteCallback(callback: number, returnType: ModelValueType, value: any);
+    SelectFileAsync(acceptList: string, callback: number): void;
 }

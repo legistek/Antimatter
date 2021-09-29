@@ -22,6 +22,21 @@ namespace Antimatter.Net
         #region Static Methods
 
         /// <summary>
+        /// Attempts to retrieve the <see cref="Reactor"/> instance associated
+        /// with the model object. Used in rare cases when model operations need
+        /// to directly invoke <see cref="Reactor"/> instance methods.
+        /// </summary>
+        /// <param name="obj">The model object.</param>
+        /// <returns>The <see cref="Reactor"/> instance if any, otherwise 
+        /// <c>null</c></returns>
+        public static Reactor GetFor(object obj)
+        {
+            if (!_reactors.TryGetValue(obj, out var reactor))
+                return null;
+            return reactor;
+        }
+
+        /// <summary>
         /// Initializes the entire platform. Must be called exactly once
         /// by any Model Server at startup, regardless whether the server is
         /// single tenant or multi-tenant.
@@ -105,9 +120,17 @@ namespace Antimatter.Net
         /// Invoked by model servers to signal to clients that
         /// they are ready to start.
         /// </summary>   
-        public async Task StartupAsync()
+        public Task StartupAsync()
         {
-            await Reactor.Client.StartupAsync();
+            return Client.StartupAsync();
+        }
+
+        public async Task<ClientFile> SelectFileAsync(string acceptList)
+        {
+            var file = await Client.SelectFileAsync(acceptList);
+            file.ReactorClient = Client;
+            file.Reactor = this;
+            return file;
         }
                 
         public static object SessionContext => _currentSessionContext.Value;
@@ -115,6 +138,7 @@ namespace Antimatter.Net
         #endregion
 
         #region Client-Invocable Methods
+
         /// <summary>
         /// Invoked by clients to update model (source) properties in response to
         /// UI actions.
@@ -152,7 +176,7 @@ namespace Antimatter.Net
             bool marshalValue)
         {
             ObjectReference objRef;
-            if (!_dict.TryGetValue(handle, out objRef))
+            if (!_refsByHandle.TryGetValue(handle, out objRef))
                 return;
 
             var bx = new BindingExpression(this, path)
@@ -195,7 +219,7 @@ namespace Antimatter.Net
         public void ExecuteICommand(int netRef, ModelValue commandParameter)
         {
             _currentSessionContext.Value = _sessionContextObject;
-            (GetReference(netRef)?.Object as ICommand)?.Execute(commandParameter?.ToCSValue(this));
+            (GetReference(netRef)?.Object as ICommand)?.Execute(commandParameter?.Value(this));
         }
 
         /// <summary>
@@ -219,13 +243,15 @@ namespace Antimatter.Net
 
         internal string ClientID { get; }
 
+
+
         internal void FinalDispose(ObjectReference reference)
         {            
             var obj = reference.Object;
             if (obj != null)
-                _references.Remove(obj);
-            _dict.Remove(reference.Handle);
-            _freedHandles.Add(reference.Handle);
+                _refsByInstance.Remove(obj);
+            _refsByHandle.Remove(reference.Handle);
+            _reactors.Remove(obj);
             //int liveObjects = _dict.Count;
             //Console.WriteLine($"Freeing {reference.Handle} {obj?.ToString()}; {liveObjects} remaining.");            
         }
@@ -254,7 +280,7 @@ namespace Antimatter.Net
         internal ObjectReference GetReference(int index)
         {
             ObjectReference dnor = null;
-            _dict.TryGetValue(index, out dnor);                
+            _refsByHandle.TryGetValue(index, out dnor);                
             return dnor;
         }
 
@@ -322,38 +348,22 @@ namespace Antimatter.Net
         internal ObjectReference TryGetObjectReference(object obj)
         {
             ObjectReference reference = null;
-            this._references.TryGetValue(obj, out reference);
+            this._refsByInstance.TryGetValue(obj, out reference);
             return reference;
-        }
-
-        private int GetNextHandle()
-        {
-            int handle = 0;
-            if (this._freedHandles.Count > 0)
-            {
-                handle = this._freedHandles.First();
-                this._freedHandles.Remove(handle);
-            }
-            else
-            {
-                handle = this._nextHandle++;
-            }
-            return handle;
         }
 
         private ObjectReference GetOrCreateReference(object obj)
         {
             ObjectReference reference = null;
-            if (!this._references.TryGetValue(obj, out reference))
+            if (!this._refsByInstance.TryGetValue(obj, out reference))
             {                
-                var handle = GetNextHandle();
                 reference = new ObjectReference
-                {
-                    Handle = handle,
+                {                    
                     Object = obj
                 };
-                this._dict[handle] = reference;
-                this._references.Add(obj, reference);                
+                reference.Handle = _refsByHandle.Add(reference);                
+                this._refsByInstance.Add(obj, reference);
+                _reactors.Add(obj, this);
                 //Console.WriteLine($"Creating ref {handle} to {obj?.ToString()}");
             }
 
@@ -361,15 +371,15 @@ namespace Antimatter.Net
             return reference;
         }
 
-        private readonly Dictionary<int, BindingExpression> Bindings = new Dictionary<int, BindingExpression>();
-        private readonly HashSet<int> _freedHandles = new HashSet<int>();
-        private int _nextHandle = 0;
-        private Dictionary<int, ObjectReference> _dict = new Dictionary<int, ObjectReference>();
-        private ConditionalWeakTable<object, ObjectReference> _references =
+        private readonly Dictionary<int, BindingExpression> Bindings = new Dictionary<int, BindingExpression>();        
+        private RecyclingDictionary<ObjectReference> _refsByHandle = new RecyclingDictionary<ObjectReference>();
+        private ConditionalWeakTable<object, ObjectReference> _refsByInstance =
             new ConditionalWeakTable<object, ObjectReference>();
         private Dictionary<string, ObjectReference> _rootObjects = new Dictionary<string, ObjectReference>();
+        
         private object _sessionContextObject;
         private static AsyncLocal<object> _currentSessionContext = new AsyncLocal<object>();
+        private static ConditionalWeakTable<object, Reactor> _reactors = new ConditionalWeakTable<object, Reactor>();
 
         private static Action<Reactor, ModelValue, object>[] _setters =
             // This order MUST match the order in hte ModelValueType enum
