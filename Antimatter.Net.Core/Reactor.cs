@@ -125,12 +125,15 @@ namespace Antimatter.Net
             return Client.StartupAsync();
         }
 
-        public async Task<ClientFile> SelectFileAsync(string acceptList)
+        public async Task<ClientFile[]> SelectFileAsync(string acceptList, bool allowMultiple = false)
         {
-            var file = await Client.SelectFileAsync(acceptList);
-            file.ReactorClient = Client;
-            file.Reactor = this;
-            return file;
+            var files = await Client.SelectFileAsync(acceptList, allowMultiple);
+            foreach (var file in files)
+            {
+                (file as IReactorObject).ReactorClient = Client;
+                (file as IReactorObject).Reactor = this;
+            }
+            return files;
         }
                 
         public static object SessionContext => _currentSessionContext.Value;
@@ -219,7 +222,11 @@ namespace Antimatter.Net
         public void ExecuteICommand(int netRef, ModelValue commandParameter)
         {
             _currentSessionContext.Value = _sessionContextObject;
-            (GetReference(netRef)?.Object as ICommand)?.Execute(commandParameter?.Value(this));
+            var cmd = GetReference(netRef)?.Object as ICommand;
+            if (cmd == null)
+                return;
+            
+            cmd?.Execute(commandParameter?.Value(this, cmd.GetType().GenericTypeArguments?.FirstOrDefault()));
         }
 
         /// <summary>

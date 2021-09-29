@@ -108,7 +108,7 @@ namespace Antimatter.Net.SignalR
             Instance.Clients.Client(clientID)?.SendAsync("UpdateBinding", bxIndex, json);
         }
 
-        Task<ClientFile> IClient.SelectFileAsync(string acceptList)
+        Task<ClientFile[]> IClient.SelectFileAsync(string acceptList, bool allowMultiple)
         {
             throw new NotImplementedException();
         }

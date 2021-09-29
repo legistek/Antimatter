@@ -7,11 +7,12 @@ import { IServer } from "./IServer";
 import { ModelValue } from "./ModelValue";
 import { Utilities } from "./Utilities";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
+import { IClientFile } from "./IClientFile";
 
 export class Antimatter
 {
     static _client: IClient;
-
+    
     public static Server: IServer;   
 
     public static async StartAsync(server: IServer|null, client: IClient): Promise<void>
@@ -70,4 +71,29 @@ export class Antimatter
     {
         return Antimatter._client.ModelUpdateBoundCollection(bx, action, index, count, items);
     }
+
+    public static GetFile(handle: number): File | undefined
+    {
+        return Antimatter._accessibleFiles.get(handle);
+    }
+
+    public static HoldFile(file: File): IClientFile
+    {        
+        var clientFile: IClientFile = {
+            handle: Antimatter._nextFileHandle++,
+            name: file.name,
+            size: file?.size,
+            modified: new Date(file?.lastModified)
+        };
+        this._accessibleFiles.set(clientFile.handle as number, file);
+        return clientFile;
+    }
+
+    public static FreeFile(handle: number)
+    {
+        Antimatter._accessibleFiles.delete(handle);
+    }
+
+    private static _accessibleFiles: Map<number, File> = new Map<number, File>();
+    private static _nextFileHandle: number = 0;
 }

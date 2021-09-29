@@ -114,7 +114,7 @@ export class PanelBase<P extends IPanelProps = {}, S extends IPanelState = {}> e
             super.constructClasses();
     }
 
-    protected /* override */ renderElement(): JSX.Element | null
+    protected override renderElement(): JSX.Element | null
     {
         return (<>{this.props.children}</>);
     }

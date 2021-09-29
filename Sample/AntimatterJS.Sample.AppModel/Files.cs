@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
@@ -20,11 +22,13 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectFileCommand ?? (_SelectFileCommand = new Command(
                     async (arg) =>
                     {
+                        await Task.Delay(500);
+
                         var reactor = Reactor.GetFor(this);
                         if (reactor == null)
                             return;
 
-                        this.SelectedFile = await reactor.SelectFileAsync("*.txt");
+                        this.SelectedFile = (await reactor.SelectFileAsync(".txt")).FirstOrDefault();
                     })
                 {
                     Name = "Select File",
@@ -57,6 +61,27 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
+
+
+        #region IUICommand DropFiles Command
+
+        private Command _DropFilesCommand;
+        public ICommand DropFilesCommand
+        {
+            get
+            {
+                return _DropFilesCommand ?? (_DropFilesCommand = new Command<ClientFile[]>(
+                    async (arg) =>
+                    {
+                        int a = 5;
+                    })
+                {                    
+                });
+            }
+        }
+
+        #endregion
+
 
         #region ClientFile SelectedFile property
         private ClientFile _SelectedFile;

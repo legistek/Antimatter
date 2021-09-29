@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace Antimatter.Net.Webassembly
 {
-    public class WebassemblyReactor : IClient
-    {
-        private static RecyclingDictionary<Action<ModelValueType, object>> _callbacks = new RecyclingDictionary<Action<ModelValueType, object>>();
+    public delegate void JSCallback(object returnValue, string exception);
 
+    public class WebassemblyReactor : IClient
+    {                
         static WebassemblyReactor()
         {
             WebAssemblyHostBuilder.CreateDefault(); // need this to ensure dlls are included
@@ -38,24 +38,22 @@ namespace Antimatter.Net.Webassembly
             return JsonConvert.DeserializeObject(clientValue.StringValue, desiredType);
         }
 
-        Task<ClientFile> IClient.SelectFileAsync(string acceptList)
-        {
-            var task = this.RegisterTaskCallback<ClientFile>(true, out var handle);
-            JS.InvokeUnmarshalled<string, int, object, object>(
+        Task<ClientFile[]> IClient.SelectFileAsync(string acceptList, bool allowMultiple)
+        {                        
+            JS.InvokeUnmarshalled<string, JSCallback, bool, object>(
                 "window.AntimatterServer.SelectFileAsync",
-                $"[\"{acceptList}\"]",
-                handle,
-                null);
+                acceptList,
+                CreateTaskCallback<ClientFile[]>(out Task<ClientFile[]> task, isModelValue: true),
+                allowMultiple);
             return task;
         }
 
         Task<byte[]> IClient.ReadFileAsync(int fileHandle)
-        {
-            var task = this.RegisterTaskCallback<byte[]>(true, out var callback);
-            JS.InvokeUnmarshalled<int, int, object, object>(
+        {            
+            JS.InvokeUnmarshalled<int, JSCallback, object, object>(
                 "window.AntimatterServer.ReadFileAsync",
                 fileHandle,
-                callback,
+                CreateTaskCallback(out Task<byte[]> task),
                 null);
             return task;
         }
@@ -102,55 +100,19 @@ namespace Antimatter.Net.Webassembly
                 return ModelValue.Null;
             }
         }
-
-        internal Task<T> RegisterTaskCallback<T>(bool oneTime, out int handle)
-        {
-            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
-
-            int callbackID = 0;
-            callbackID = _callbacks.Add((type, result) =>
-            {
-                object finalValue = null;
-
-                if ((WasmModelValueType)type == WasmModelValueType.MonoObject)
-                {
-                    finalValue = result;
-                }
-                else if (type == ModelValueType.JSON && result is string s)
-                {
-                    finalValue = JsonConvert.DeserializeObject<T>(s);
-                }
-
-                tcs.SetResult(finalValue is T ? (T)finalValue : default);
-                if (oneTime)
-                    _callbacks.Remove(callbackID);
-            });
-
-            handle = callbackID;
-
-            return tcs.Task;
-        }
-
+        
         #region Invoked by Client
 
         [AMXClientInvocable]
-        public static void ExecuteCallbackReturnBuffer(int callbackID, byte[] value)
+        public static void ExecuteCallback(JSCallback callback, object value)
         {
-            if (!_callbacks.TryGetValue(callbackID, out var callback))
-                return;
-
-            //byte[] buf = new byte[length];
-            //Marshal.Copy(value, buf, 0, length);
-
-            callback((ModelValueType)WasmModelValueType.MonoObject, value);
+            callback(value, null);
         }
 
         [AMXClientInvocable]
-        public static void ExecuteCallback(int callbackID, int type, object value)
-        {            
-            if (!_callbacks.TryGetValue(callbackID, out var callback))
-                return;
-            callback((ModelValueType)type, value);
+        public static void ExecuteCallbackException(JSCallback callback, string exception)
+        {
+            callback(null, exception);
         }
 
         [AMXClientInvocable]
@@ -195,5 +157,35 @@ namespace Antimatter.Net.Webassembly
         }
 
         #endregion
+
+        private JSCallback CreateTaskCallback<T>(out Task<T> task, bool isModelValue = false)
+        {
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+            task = tcs.Task;
+            return new JSCallback((value, exception) =>
+            {
+                if (!string.IsNullOrEmpty(exception))
+                    tcs.SetException(new Exception(exception));
+                else if (isModelValue)
+                {
+                    if (value is string s)
+                    {
+                        var modelValue = JsonConvert.DeserializeObject<ModelValue>(s);
+                        var objValue = modelValue.Value(Reactor, typeof(T));
+                        tcs.SetResult((T)objValue);
+                    }
+                    else
+                        tcs.SetException(new Exception("Return value is not JSON string"));
+                }
+                else if (value is T typedValue)
+                {
+                    tcs.SetResult(typedValue);
+                }
+                else
+                {
+                    tcs.SetException(new Exception($"Return value is not expected type."));
+                }
+            });
+        }
     }
 }

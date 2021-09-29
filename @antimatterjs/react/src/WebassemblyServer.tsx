@@ -8,7 +8,8 @@ import { Utilities } from "./Utilities";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
 
 import './Mono/MonoTypes';
-import { System_Array, System_Object } from "./Mono/Platform";
+import { Pointer, System_Array, System_Object, System_String } from "./Mono/Platform";
+import { IClientFile } from "./IClientFile";
 
 //const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
 //const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
@@ -127,7 +128,7 @@ export class WebassemblyServer implements IServer
         this._updateBoundCollectionMethod(bxIndex, JSON.stringify(value));
     }
 
-    ExecuteCallback(callback: number, returnType: ModelValueType,  value: any)
+    ExecuteCallback(callback: System_Object, value: System_Object)
     {
         if (!this._executeCallbackMethod)
         {
@@ -135,42 +136,42 @@ export class WebassemblyServer implements IServer
                 this.MakeMethodKey(
                     WebassemblyServer.c_ServerAssembly,
                     WebassemblyServer.c_ServerType,
-                    "ExecuteCallback"));
+                    "ExecuteCallback"),
+                "mm");
         }
-        this._executeCallbackMethod(callback, returnType, value);
+        this._executeCallbackMethod(callback, value);
     }
 
-    ExecuteCallbackReturnBuffer(callback: number, length: number, value: any)
+    ExecuteCallbackException(callback: System_Object, exception: string)
     {
-        if (!this._executeCallbackReturnBufferMethod)
+        if (!this._executeCallbackExceptionMethod)
         {
-            this._executeCallbackReturnBufferMethod = this.Module.mono_bind_static_method(
+            this._executeCallbackExceptionMethod = this.Module.mono_bind_static_method(
                 this.MakeMethodKey(
                     WebassemblyServer.c_ServerAssembly,
                     WebassemblyServer.c_ServerType,
-                    "ExecuteCallbackReturnBuffer"),
-                "im"
-            );
+                    "ExecuteCallbackException"),
+                "mm");
         }
-        this._executeCallbackReturnBufferMethod(callback, value);
+        this._executeCallbackExceptionMethod(callback, this._binding.js_string_to_mono_string(exception));
     }
 
     //#endregion
 
     //#region Server-Invocable Methods
 
-    public async ReadFileAsync(fileHandle: number, callback: number)
+    public async ReadFileAsync(fileHandle: number, callback: System_Object)
     {
-        let file: File | undefined = this._accessibleFiles.get(fileHandle);
+        var file = Antimatter.GetFile(fileHandle);
         if (!file)
             return;
 
         try
-        {
+        {            
             var buf = await file.arrayBuffer();
-            var jsarr = new Uint8Array(buf);
-            var monoArray = this._binding.js_typed_array_to_array(jsarr);
-            this.ExecuteCallbackReturnBuffer(callback, jsarr.length, monoArray);
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_typed_array_to_array(new Uint8Array(buf)));
         }
         catch (e)
         {
@@ -178,30 +179,47 @@ export class WebassemblyServer implements IServer
         }
     }
 
-    _accessibleFiles: Map<number, File> = new Map<number, File>();
-    _nextFileHandle: number = 0;    
+ 
 
-    public SelectFileAsync(acceptList: string, callback: number): void
+    public SelectFileAsync(acceptList: System_String, callback: System_Object, allowMultiple: boolean): void
     {        
+        var list = this._binding.conv_string(acceptList) as string;
         var input = document.createElement("input");
         input.type = "file";
-        input.accept = acceptList;
+        input.accept = list;
+        input.multiple = allowMultiple;
         input.click();
+        
+        var cancelDetector = (() =>
+        {
+            document.removeEventListener("mousemove", cancelDetector);
+            this.ExecuteCallback(callback, this._binding.js_string_to_mono_string("[]"));            
+        }).bind(this);
+        document.addEventListener("mousemove", cancelDetector);
+
         input.onchange = ((e) =>
         {
-            var file = input.files?.item(0);
-            if (!file)
-                return;
+            document.removeEventListener("mousemove", cancelDetector);
 
-            var modelFile = {
-                handle: this._nextFileHandle++,
-                name: file?.name,
-                size: file?.size,
-                modified: new Date(file?.lastModified)
-            };
+            var modelFiles: IClientFile[] = [];
 
-            this._accessibleFiles.set(modelFile.handle, file);
-            this.ExecuteCallback(callback, ModelValueType.MarshalledObject, JSON.stringify(modelFile));
+            var files = input.files;
+            if (files && files.length > 0)
+            {
+                for (let i = 0; i < files.length; i++)
+                {
+                    var file = files.item(i);
+                    if (!file)
+                        continue;
+                    var modelFile = Antimatter.HoldFile(file);
+                    modelFiles.push(modelFile);                    
+                }
+            }
+           
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get(files))));
         }).bind(this);
     }
 
@@ -253,7 +271,7 @@ export class WebassemblyServer implements IServer
         return (window as any).Module;
     }
 
-    getStringValue(ptr: number): string
+    getStringValue(ptr: number|Pointer): string
     {
         const fieldValue = this.getValueI32(ptr);
 
@@ -270,9 +288,9 @@ export class WebassemblyServer implements IServer
         return this.Module.HEAP16[ptr >> 1];
     }
 
-    getValueI32(ptr: number)
+    getValueI32(ptr: number|Pointer)
     {
-        return this.Module.HEAP32[ptr >> 2];
+        return this.Module.HEAP32[(ptr as number) >> 2];
     }
 
     getValueGuid(ptr: number)
@@ -384,6 +402,7 @@ export class WebassemblyServer implements IServer
     _updateSourceValueMethod: any;
     _updateBoundCollectionMethod: any;
     _executeCallbackMethod: any;
+    _executeCallbackExceptionMethod: any;
     _executeCallbackReturnBufferMethod: any;
     _unbindMethod: any;
 

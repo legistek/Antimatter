@@ -1,4 +1,5 @@
 ﻿import { Utilities } from "@antimatterjs/react/src/Utilities";
+import { Antimatter } from "..";
 
 export class ModelValue
 {
@@ -24,6 +25,12 @@ export class ModelValue
         {
             val.Type = ModelValueType.DateTime;
             val.DoubleValue = Utilities.TicksMSFromDate(jsValue);
+        }
+        else if (jsValue instanceof File)
+        {
+            var file = jsValue as File;
+            val.Type = ModelValueType.MarshalledObject;
+            val.StringValue = JSON.stringify(Antimatter.HoldFile(file));
         }
         else
         {

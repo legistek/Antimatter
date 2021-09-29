@@ -64,8 +64,14 @@ namespace Antimatter.Net
         /// </summary>
         /// <param name="acceptList">A comma-separated list of
         /// file extensions or MIME types to select.</param>
-        /// <returns>A task handle.</returns>
-        Task<ClientFile> SelectFileAsync(string acceptList);
+        /// <param name="allowMultiple">Indicates whether to allow
+        /// multiple files to be selected. If <c>false</c>, 
+        /// a successful return value will always be an array of 1.
+        /// </param>
+        /// <returns>A <see cref="ClientFile"/> array. The array will
+        /// be empty if no files are selected.
+        /// </returns>
+        Task<ClientFile[]> SelectFileAsync(string acceptList, bool allowMultiple);
 
         Task<byte[]> ReadFileAsync(int handle);
 

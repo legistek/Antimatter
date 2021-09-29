@@ -4,11 +4,20 @@ using System.Windows.Input;
 
 namespace Antimatter.Net.Model
 {
+    public class Command<T> : Command
+    {
+        public Command(Action<T> action, [CallerMemberName] string name = null) 
+            : base(
+                  (arg) => action(arg is T ? (T)arg : default(T)), 
+                  name)
+        {            
+        }
+    }
+
     public class Command : ObservableObject, ICommand
     {
         private Action<object> _action;
         private string _name;
-
 
         public event EventHandler CanExecuteChanged;
 

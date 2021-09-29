@@ -4,25 +4,37 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+using Antimatter.Net.Internal;
+
 namespace Antimatter.Net
 {
-    public class ClientFile
+    public class ClientFile : IReactorObject
     {
-        private long _position = 0;
+        public ClientFile() : base()
+        {           
+        }
 
-        internal Reactor Reactor { get; set; }
+        #region JSON Serializable
 
-        internal IClient ReactorClient { get; set; }
-
-        public int Handle { get; set; }
-
-        public string Name { get; set; }
+        public int Handle { get; set; }        
 
         public long Size { get; set; }
 
+        public string Name { get; set; }
+
+        public DateTime Modified { get; set; }
+
+        #endregion
+               
         public Task<byte[]> ReadContentsAsync()
         {
-            return ReactorClient.ReadFileAsync(this.Handle);
+            return (this as IReactorObject).ReactorClient.ReadFileAsync(this.Handle);
         }
+
+        Reactor IReactorObject.Reactor { get; set; }
+
+        IClient IReactorObject.ReactorClient { get; set; }
     }
+
+    
 }

@@ -13,3 +13,5 @@ export * from './src/ModelValue';
 export * from './src/React/ReactClient';
 export * from './src/React/DataContext';
 export * from './src/React/AntimatterComponent';
+
+export * from './src/IClientFile';

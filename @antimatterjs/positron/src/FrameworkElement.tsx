@@ -55,7 +55,7 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
     LoadedCommand?: ModelObjectReference | Binding,
     IsLoading?: boolean | Binding,
     OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),    
-    OnWillUnmount?: ModelObjectReference | Binding,
+    OnWillUnmount?: ModelObjectReference | Binding,    
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon

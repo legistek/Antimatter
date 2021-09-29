@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Linq;
 using System.Collections;
+using Antimatter.Net.Internal;
 
 namespace Antimatter.Net
 {
@@ -123,7 +124,13 @@ namespace Antimatter.Net
             switch (this.Type)
             {
                 case ModelValueType.JSON:
-                    return Reactor.Client.MarshalClientObject(desiredType, this);
+                    var obj = Reactor.Client.MarshalClientObject(desiredType, this);
+                    if (obj is IReactorObject iro)
+                    {
+                        iro.Reactor = reactor;
+                        iro.ReactorClient = Reactor.Client;
+                    }
+                    return obj;
                 case ModelValueType.Float:
                     return this.FloatValue;
                 case ModelValueType.Double:
@@ -155,6 +162,9 @@ namespace Antimatter.Net
                 case ModelValueType.Object:
                     return reactor.GetReference(this.objectHandle)?.Object;
                 case ModelValueType.Collection:
+                    if (desiredType == null)
+                        desiredType = typeof(object[]);
+
                     if (desiredType.IsArray)
                     {
                         Type elementType = desiredType.GetElementType();

@@ -33,9 +33,6 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
-
-
-
         #region ClientFile File property
         private ClientFile _File;
         public ClientFile File
@@ -54,10 +51,6 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
-
-
-
-
 
         #region DocumentPosition DocPosition property
         private DocumentPosition _DocPosition = DocumentPosition.Default;
@@ -122,6 +115,10 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
+
+
+
+
         //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
 
         public IEnumerable<Employee> SomeEmployees => Employees.Take(50);
