@@ -193,7 +193,10 @@ export class WebassemblyServer implements IServer
         var cancelDetector = (() =>
         {
             document.removeEventListener("mousemove", cancelDetector);
-            this.ExecuteCallback(callback, this._binding.js_string_to_mono_string("[]"));            
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get([]))));
         }).bind(this);
         document.addEventListener("mousemove", cancelDetector);
 

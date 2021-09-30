@@ -212,7 +212,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                 },
                                 {
                                     Label: "Files",
-                                    Icon: "Disk",
+                                    Icon: "Save",
                                     IconBackground: "#00FFFF",
                                     IconForeground: "white",
                                     Key: "files",

@@ -22,8 +22,6 @@ namespace AntimatterJS.Sample.AppModel
                 return _SelectFileCommand ?? (_SelectFileCommand = new Command(
                     async (arg) =>
                     {
-                        await Task.Delay(500);
-
                         var reactor = Reactor.GetFor(this);
                         if (reactor == null)
                             return;
@@ -50,8 +48,18 @@ namespace AntimatterJS.Sample.AppModel
                     {
                         if (this.SelectedFile == null)
                             return;
-                        var bytes = await this.SelectedFile.ReadContentsAsync();
-                        this.FileContents = Encoding.UTF8.GetString(bytes);
+                        this.IsLoading = true;
+                        try
+                        {
+                            this._LoadFileCommand.IsEnabled = false;
+                            var bytes = await this.SelectedFile.ReadContentsAsync();
+                            this.FileContents = Encoding.UTF8.GetString(bytes);
+                        }
+                        finally
+                        {
+                            this.IsLoading = false;
+                            this._LoadFileCommand.IsEnabled = true;
+                        }
                     })
                 {
                     Name = "Load Contents",
@@ -61,7 +69,6 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
-
 
         #region IUICommand DropFiles Command
 
@@ -73,15 +80,16 @@ namespace AntimatterJS.Sample.AppModel
                 return _DropFilesCommand ?? (_DropFilesCommand = new Command<ClientFile[]>(
                     async (arg) =>
                     {
-                        int a = 5;
+                        if (arg == null || arg.Length == 0)
+                            return;
+                        this.SelectedFile = arg[0];
                     })
-                {                    
+                {
                 });
             }
         }
 
         #endregion
-
 
         #region ClientFile SelectedFile property
         private ClientFile _SelectedFile;
@@ -121,5 +129,25 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
+
+        #region bool IsLoading property
+        private bool _IsLoading;
+        public bool IsLoading
+        {
+            get
+            {
+                return _IsLoading;
+            }
+            set
+            {
+                if (_IsLoading != value)
+                {
+                    _IsLoading = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
     }
 }

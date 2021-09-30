@@ -8,10 +8,11 @@ import { CSSClasses } from '../CSSClasses';
 import { ThemeColor, SemanticColor, ThemeLayout, ThemeEffect } from '../Theme';
 import { IPanelProps, IPanelState, Panel, PanelBase } from './Panel';
 import { DataTemplate } from '../FrameworkTemplate';
+import { ContentPresenter } from './ContentPresenter';
 
 export interface IFileDropTargetProps extends IPanelProps
 {
-    DragOverTemplate?: JSX.Element,
+    DragOverTemplate?: (parent: any) => JSX.Element,
     FilesDroppedCommand?: ModelObjectReference | Binding,
 }
 
@@ -32,7 +33,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         return this.GetValue(nameof(this.props.FilesDroppedCommand));
     }
 
-    public get DragOverTemplate(): JSX.Element
+    public get DragOverTemplate(): (parent: any) => JSX.Element
     {
         return this.GetValue(nameof(this.props.DragOverTemplate));
     }
@@ -40,16 +41,23 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
     override renderElement()
     {
         if (this._isDraggedOver)
-            return this.DragOverTemplate;
+        {
+            return (<ContentPresenter IsHitTestVisible={false} ContentTemplate={this.DragOverTemplate} />);
+        }
         else
+        {
             return super.renderElement();
+        }
     }
 
     private OnDragOver(e: DragEvent): void
     {
         if (!this._isDraggedOver)
             return;
-        e.preventDefault();
+        if (e.dataTransfer)
+            e.dataTransfer.dropEffect = "copy";
+        e.stopPropagation();
+        e.preventDefault();        
     }
 
     private OnDragEnter(e: DragEvent): void
@@ -58,7 +66,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         {
             this._isDraggedOver = true;
             this.InvalidateRender();
-
+            e.dataTransfer.dropEffect = "copy";
             e.stopPropagation();
             e.preventDefault();
         }

@@ -123,7 +123,21 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
                         Overlaps={true}
                         ItemTemplate={this.state.DialogTemplate}>
                     </ItemsControl>
-                    {super.renderElement()}
+                    <div className="amx-ptn-fe amx-ptn-va-stretch amx-ptn-ha-stretch"
+                        onDragEnter={e =>
+                        {
+                            e.dataTransfer.dropEffect = 'none';
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }}
+                        onDragOver={e =>
+                        {
+                            e.dataTransfer.dropEffect = 'none';
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }}>
+                        {super.renderElement()}
+                    </div>
                     <ToastControl
                         ItemsSource={this.state.Toasts}
                         ItemTemplate={this.state.ToastTemplate}
