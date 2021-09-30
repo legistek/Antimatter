@@ -36,7 +36,10 @@ export class DocViewer {
 	public PrevPageCommand?: ICommand;
 }
 
-export class ICommand {
+export class ICommand
+{
+	public Name?: string;
+	public Icon?: number;
 }
 
 export class Company {
@@ -112,6 +115,7 @@ export class Employee {
 	public MakeBonusEligibleCommand?: Command;
 	public DoSomethingElseCommand?: Command;
 	public IsExpanded?: boolean;
+	public StartDate?: Date;
 }
 
 export class Command {

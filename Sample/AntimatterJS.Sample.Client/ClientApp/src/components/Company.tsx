@@ -6,6 +6,8 @@ import { DefaultEffects, AnimationStyles, MotionAnimations, Modal, FontWeights, 
 import * as Model from '../model/Model';
 import
 {
+    Breadcrumb,
+
     MessageBar,
     MessageBarType,
 
@@ -66,6 +68,19 @@ export class Employee extends View
         //return <></>;
     }
 
+    private _customBreadcrumbTemplate: DataTemplate = new DataTemplate((item) => (
+        <StackPanel Orientation={Orientation.Horizontal}>
+            <Glyph
+                Icon={new Binding({ Path: nameof<Model.ICommand>(c => c.Icon), Source: item })}
+                VerticalAlignment={VerticalAlignment.Center}
+            />
+            <TextBlock
+                Text={new Binding({ Path: nameof<Model.ICommand>(c => c.Name), Source: item })}
+                FontSize={14}
+            />
+        </StackPanel>
+    ));
+
     View()
     {
         // amx-grow-entrance
@@ -75,6 +90,17 @@ export class Employee extends View
             >
 
                 <StackPanel>
+
+
+                    <Breadcrumb
+                        ItemsSource={new Binding("Commands")}
+                        FontSize={18}
+                    />
+
+                    <Breadcrumb
+                        ItemsSource={new Binding("Commands")}
+                        ItemTemplate={this._customBreadcrumbTemplate}
+                    />
 
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
@@ -586,7 +612,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                             })}>
                     </TreeView>
                 </ResizePanel>
-                
+
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}
                 {/*        {ctx => (*/}

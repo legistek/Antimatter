@@ -43,6 +43,7 @@ export * from './src/Controls/DataGrid';
 export * from './src/Controls/Popup';
 export * from './src/Controls/ColorPicker';
 export * from './src/Controls/Spinner';
+export * from './src/Controls/Breadcrumb';
 export * from './src/Controls/TeachingBubble';
 export * from './src/Controls/VirtualizedPanel';
 export * from './src/Controls/VirtualizingItemsControl';
