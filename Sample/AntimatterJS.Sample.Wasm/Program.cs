@@ -17,9 +17,9 @@ namespace AntimatterJS.Sample.WASM
             Console.WriteLine($"C# WASM Antimatter App Server started!!");            
             var app = new AntimatterJS.Sample.AppModel.App();
             await app.StartAsync();
-            WebassemblyServer.Reactor.RegisterRootObject("app", app);
-            WebassemblyServer.Reactor.RegisterSessionContext(app);
-            await WebassemblyServer.Reactor.StartupAsync();
+            WebassemblyReactor.Reactor.RegisterRootObject("app", app);
+            WebassemblyReactor.Reactor.RegisterSessionContext(app);
+            await WebassemblyReactor.Reactor.StartupAsync();
             Console.WriteLine($"C# WASM Antimatter App Startup Complete!!");
 
             //var limine = LimineWebSession.Current;

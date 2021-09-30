@@ -1,7 +1,8 @@
 import { BindingExpression } from "./BindingExpression";
 import { ICollectionUpdate } from "./ICollectionUpdate";
 import { ModelObjectReference } from "./ModelObjectReference";
-import { ModelValue } from "./ModelValue";
+import { ModelValue, ModelValueType } from "./ModelValue";
+import { System_Object } from "./Mono/Platform";
 
 export interface IServer
 {
@@ -12,5 +13,5 @@ export interface IServer
     Bind(ref: ModelObjectReference, path: string | undefined, expression: BindingExpression);
     Unbind(exp: BindingExpression);
     UpdateBindingSource(bxIndex: number, value: ModelValue);
-    UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate);
+    UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate);        
 }

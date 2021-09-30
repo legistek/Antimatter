@@ -8,13 +8,13 @@ import { DataTemplate } from '../FrameworkTemplate';
 export interface IContentPresenterProps extends IFrameworkElementProps
 {
     Content?: ModelObjectReference | Binding
-    ContentTemplate?: DataTemplate,
+    ContentTemplate?: DataTemplate | ((parent: any) => JSX.Element),
     Layout?: WindowLayout
 }
 export interface IContentPresenterState extends IFrameworkElementState
 {
     Content?: ModelObjectReference,
-    ContentTemplate?: DataTemplate,
+    ContentTemplate?: DataTemplate | ((parent: any) => JSX.Element),
     Layout?: WindowLayout
 }
 
@@ -49,9 +49,12 @@ export class ContentPresenterBase<
 
     private RenderContent(): JSX.Element
     {
-        return this.state.ContentTemplate
-            ? this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content)
-            : (<></>);
+        if (this.state.ContentTemplate instanceof DataTemplate)
+            return this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content);
+        else if (typeof (this.state.ContentTemplate) === "function")
+            return this.state.ContentTemplate(this.state.Content);
+        else
+            return (<></>);
     }
 }
 

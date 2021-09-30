@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-
+using System.Threading.Tasks;
 using WebAssembly.JSInterop;
 
 namespace Antimatter.Net.Webassembly
@@ -50,7 +50,7 @@ namespace Antimatter.Net.Webassembly
                 Console.WriteLine($"exception {exception}");
             }
         }
-        
+
         public static TResult InvokeUnmarshalled<T0, T1, T2, TResult>(string identifier, T0 arg0, T1 arg1, T2 arg2)
         {
             var callInfo = new JSCallInfo

@@ -1,4 +1,5 @@
 import { Component } from "react";
+import * as internal from "stream";
 import { BindingExpression } from "./BindingExpression";
 import { BindingParameters } from "./BindingParameters";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
@@ -25,5 +26,5 @@ export interface IClient
         target: any,
         targetProperty: string,
         update: ICollectionUpdate,
-        reRender: boolean): void;
+        reRender: boolean): void;    
 }

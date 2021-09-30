@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Linq;
 using System.Collections;
+using Antimatter.Net.Internal;
 
 namespace Antimatter.Net
 {
@@ -118,13 +119,18 @@ namespace Antimatter.Net
             set => _collection = value;
         }
 
-        internal bool IsReferenceCounted => this.Type == ModelValueType.Collection ||
-            this.Type == ModelValueType.Object;
-
-        internal object ToCSValue(Reactor mgr, Type desiredType = null)
+        public object Value(Reactor reactor, Type desiredType = null)
         {
             switch (this.Type)
             {
+                case ModelValueType.JSON:
+                    var obj = Reactor.Client.MarshalClientObject(desiredType, this);
+                    if (obj is IReactorObject iro)
+                    {
+                        iro.Reactor = reactor;
+                        iro.ReactorClient = Reactor.Client;
+                    }
+                    return obj;
                 case ModelValueType.Float:
                     return this.FloatValue;
                 case ModelValueType.Double:
@@ -148,20 +154,23 @@ namespace Antimatter.Net
                     }
                 case ModelValueType.DateTime:
                     return new DateTime(
-                        (long)(this.DoubleValue * 10000.0d), 
+                        (long)(this.DoubleValue * 10000.0d),
                         DateTimeKind.Utc);
                 case ModelValueType.TimeSpan:
                     return new TimeSpan(
                         (long)(this.DoubleValue * 10000.0d));
-                case ModelValueType.Object:                
-                    return mgr.GetReference(this.objectHandle)?.Object;
+                case ModelValueType.Object:
+                    return reactor.GetReference(this.objectHandle)?.Object;
                 case ModelValueType.Collection:
+                    if (desiredType == null)
+                        desiredType = typeof(object[]);
+
                     if (desiredType.IsArray)
                     {
                         Type elementType = desiredType.GetElementType();
                         Array arr = Array.CreateInstance(elementType, this.Collection.Length);
                         for (int i = 0; i < this.Collection.Length; i++)
-                            arr.SetValue(this.Collection[i].ToCSValue(mgr, elementType), i);
+                            arr.SetValue(this.Collection[i].Value(reactor, elementType), i);
                         return arr;
                     }
                     else if (desiredType.IsGenericType && typeof(IList).IsAssignableFrom(desiredType))
@@ -169,12 +178,15 @@ namespace Antimatter.Net
                         var coll = Activator.CreateInstance(desiredType) as IList;
                         Type elementType = desiredType.GetGenericArguments()[0];
                         for (int i = 0; i < this.Collection.Length; i++)
-                            coll.Add(this.Collection[i].ToCSValue(mgr, elementType));
+                            coll.Add(this.Collection[i].Value(reactor, elementType));
                         return coll;
                     }
                     break;
             }
             return null;
         }
+
+        internal bool IsReferenceCounted => this.Type == ModelValueType.Collection ||
+            this.Type == ModelValueType.Object;            
     }
 }

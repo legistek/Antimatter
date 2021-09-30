@@ -1,4 +1,5 @@
 ﻿import { Utilities } from "@antimatterjs/react/src/Utilities";
+import { Antimatter } from "..";
 
 export class ModelValue
 {
@@ -24,6 +25,12 @@ export class ModelValue
         {
             val.Type = ModelValueType.DateTime;
             val.DoubleValue = Utilities.TicksMSFromDate(jsValue);
+        }
+        else if (jsValue instanceof File)
+        {
+            var file = jsValue as File;
+            val.Type = ModelValueType.MarshalledObject;
+            val.StringValue = JSON.stringify(Antimatter.HoldFile(file));
         }
         else
         {
@@ -59,6 +66,11 @@ export class ModelValue
                         val.Type = ModelValueType.Collection;
                         var iter = jsValue as IterableIterator<any>;
                         val.Collection = Array.from(iter).map(item => this.Get(item));
+                    }
+                    else
+                    {
+                        val.Type = ModelValueType.MarshalledObject;
+                        val.StringValue = JSON.stringify(jsValue);
                     }
                     break;
             }
@@ -119,6 +131,7 @@ export enum ModelValueType
     TimeSpan = 11,
     MarshalledObject = 12,
 
+    MonoObject = 1000,
 
     ValidationError = 2147483647
 }

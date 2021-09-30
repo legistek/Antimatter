@@ -33,6 +33,25 @@ namespace AntimatterJS.Sample.AppModel
         public ObservableCollection<Employee> Employees { get; } =
             new ObservableCollection<Employee>();
 
+        #region ClientFile File property
+        private ClientFile _File;
+        public ClientFile File
+        {
+            get
+            {
+                return _File;
+            }
+            set
+            {
+                if (_File != value)
+                {
+                    _File = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
+
         #region DocumentPosition DocPosition property
         private DocumentPosition _DocPosition = DocumentPosition.Default;
         public DocumentPosition DocPosition
@@ -96,6 +115,10 @@ namespace AntimatterJS.Sample.AppModel
             }
         }
         #endregion
+
+
+
+
         //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
 
         public IEnumerable<Employee> SomeEmployees => Employees.Take(50);
@@ -323,7 +346,6 @@ namespace AntimatterJS.Sample.AppModel
         }
 
         #endregion
-
 
         #region IUICommand DeleteEmployee Command
 

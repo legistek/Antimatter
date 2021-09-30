@@ -118,12 +118,12 @@ namespace Antimatter.Net.Internal
 
                                 // Now actually add them to the list
                                 if (olist != null)
-                                    olist.Reset(update.Items.Select(item => item.ToCSValue(this._reactor)));
+                                    olist.Reset(update.Items.Select(item => item.Value(this._reactor)));
                                 else
                                 {
                                     list.Clear();
                                     foreach (var item in update.Items)
-                                        list.Add(item.ToCSValue(this._reactor));
+                                        list.Add(item.Value(this._reactor));
                                 }
                             }                    
                             else
@@ -135,12 +135,12 @@ namespace Antimatter.Net.Internal
                         case NotifyCollectionChangedAction.Add:
                             if (olist != null)
                             {
-                                olist.AddRange(update.Items.Select(item => item.ToCSValue(this._reactor)).ToArray());
+                                olist.AddRange(update.Items.Select(item => item.Value(this._reactor)).ToArray());
                             }
                             else
                             {
                                 foreach (var item in update.Items)
-                                    list.Add(item.ToCSValue(this._reactor));
+                                    list.Add(item.Value(this._reactor));
                             }
 
                             foreach (var item in update.Items)

@@ -37,13 +37,19 @@ namespace Antimatter.Net
         Guid = 9,
 
         /// <summary>
-        /// Always use UTC; timezone conversions must be made UI-side. 
-        /// Uses .NET ticks. Data contained in <see cref="ModelValue.LongValue"/>
+        /// This is milliseconds since January 1, 0001 12:00 AM UTC.
+        /// (We don't use straight .NET ticks because BigInt support
+        /// in Javascript is still sketchy on some older OS's, *cough*,
+        /// Apple.) Since Javascript's max safe integer is 9 007 199 254 740 991, 
+        /// (9 quadrillion) we are good until at least the year 285,616
+        /// and even longer if millisecond precision is not needed.
+        /// Data contained in <see cref="ModelValue.DoubleValue"/>.
+        /// Remember timezone conversions must be made UI-side. 
         /// </summary>
         DateTime = 10,
 
         /// <summary>
-        /// Ticks; data in <see cref="ModelValue.LongValue"/>
+        /// Substantive the same as <see cref="DateTime"/>. 
         /// </summary>
         TimeSpan = 11,
 
@@ -54,8 +60,13 @@ namespace Antimatter.Net
         /// Just remember big booms occur when too much matter and antimatter 
         /// collide uncontrolled... 
         /// </summary>
-        MarshalledObject = 12,
+        JSON = 12,
 
+        //
+        // Values from 1000-2000 are reserved for specific platforms which
+        // may have other means of communicating data.
+        //
+       
         // This only gets sent from model to client. Validation
         // message is contained in StringValue.
         ValidationError = int.MaxValue,

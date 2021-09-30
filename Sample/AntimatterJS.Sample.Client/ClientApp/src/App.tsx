@@ -18,6 +18,7 @@ import ViewerTest from './components/ViewerTest';
 import DataGridTest from './components/DataGridTest';
 import PinnablePanelTest from './components/PinnablePanelTest';
 import ControlGallery1 from './components/ControlGallery1';
+import Files from './components/Files';
 
 
 const theme = createTheme({
@@ -207,6 +208,17 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     Padding: "0px",
                                     Content: (
                                         <PinnablePanelTest />
+                                    )
+                                },
+                                {
+                                    Label: "Files",
+                                    Icon: "Save",
+                                    IconBackground: "#00FFFF",
+                                    IconForeground: "white",
+                                    Key: "files",
+                                    Padding: "0px",
+                                    Content: (
+                                        <Files ViewModel={new Binding("Files")} />
                                     )
                                 }
                             ]} />

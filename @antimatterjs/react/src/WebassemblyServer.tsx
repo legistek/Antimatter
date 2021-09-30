@@ -7,15 +7,20 @@ import { ModelValue, ModelValueType } from "./ModelValue";
 import { Utilities } from "./Utilities";
 import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
 
+import './Mono/MonoTypes';
+import { Pointer, System_Array, System_Object, System_String } from "./Mono/Platform";
+import { IClientFile } from "./IClientFile";
+
 //const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
 //const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
 
 export class WebassemblyServer implements IServer
 {
     private _startupResolver?: ((value: void) => void) = undefined;
+    private _binding: typeof BINDING = (window as any).BINDING;
 
     StartupAsync(): Promise<void>
-    {
+    {        
         if ((window as any).ServerStarted)
         {
             console.log("Server started before Client");
@@ -123,9 +128,103 @@ export class WebassemblyServer implements IServer
         this._updateBoundCollectionMethod(bxIndex, JSON.stringify(value));
     }
 
+    ExecuteCallback(callback: System_Object, value: System_Object)
+    {
+        if (!this._executeCallbackMethod)
+        {
+            this._executeCallbackMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallback"),
+                "mm");
+        }
+        this._executeCallbackMethod(callback, value);
+    }
+
+    ExecuteCallbackException(callback: System_Object, exception: string)
+    {
+        if (!this._executeCallbackExceptionMethod)
+        {
+            this._executeCallbackExceptionMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallbackException"),
+                "mm");
+        }
+        this._executeCallbackExceptionMethod(callback, this._binding.js_string_to_mono_string(exception));
+    }
+
     //#endregion
 
     //#region Server-Invocable Methods
+
+    public async ReadFileAsync(fileHandle: number, callback: System_Object)
+    {
+        var file = Antimatter.GetFile(fileHandle);
+        if (!file)
+            return;
+
+        try
+        {            
+            var buf = await file.arrayBuffer();
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_typed_array_to_array(new Uint8Array(buf)));
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+    }
+
+ 
+
+    public SelectFileAsync(acceptList: System_String, callback: System_Object, allowMultiple: boolean): void
+    {        
+        var list = this._binding.conv_string(acceptList) as string;
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = list;
+        input.multiple = allowMultiple;
+        input.click();
+        
+        var cancelDetector = (() =>
+        {
+            document.removeEventListener("mousemove", cancelDetector);
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get([]))));
+        }).bind(this);
+        document.addEventListener("mousemove", cancelDetector);
+
+        input.onchange = ((e) =>
+        {
+            document.removeEventListener("mousemove", cancelDetector);
+
+            var modelFiles: IClientFile[] = [];
+
+            var files = input.files;
+            if (files && files.length > 0)
+            {
+                for (let i = 0; i < files.length; i++)
+                {
+                    var file = files.item(i);
+                    if (!file)
+                        continue;
+                    var modelFile = Antimatter.HoldFile(file);
+                    modelFiles.push(modelFile);                    
+                }
+            }
+           
+            this.ExecuteCallback(
+                callback,
+                this._binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get(files))));
+        }).bind(this);
+    }
 
     public OnUpdateBoundCollection(bxIndex: number, valuePtr: number)
     {
@@ -175,7 +274,7 @@ export class WebassemblyServer implements IServer
         return (window as any).Module;
     }
 
-    getStringValue(ptr: number): string
+    getStringValue(ptr: number|Pointer): string
     {
         const fieldValue = this.getValueI32(ptr);
 
@@ -184,7 +283,7 @@ export class WebassemblyServer implements IServer
             return '';
         }
 
-        return (window as any).BINDING.conv_string(fieldValue) as string;
+        return this._binding.conv_string(fieldValue) as string;
     }
 
     getValueI16(ptr: number)
@@ -192,9 +291,9 @@ export class WebassemblyServer implements IServer
         return this.Module.HEAP16[ptr >> 1];
     }
 
-    getValueI32(ptr: number)
+    getValueI32(ptr: number|Pointer)
     {
-        return this.Module.HEAP32[ptr >> 2];
+        return this.Module.HEAP32[(ptr as number) >> 2];
     }
 
     getValueGuid(ptr: number)
@@ -299,12 +398,15 @@ export class WebassemblyServer implements IServer
     }
 
     static readonly c_ServerAssembly: string = "Antimatter.Net.Webassembly";
-    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyServer";
+    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyReactor";
     _cachedMethods: Map<string, any> = new Map<string, any>();
     _bindMethod: any;
     _executeICommandMethod: any;
     _updateSourceValueMethod: any;
     _updateBoundCollectionMethod: any;
+    _executeCallbackMethod: any;
+    _executeCallbackExceptionMethod: any;
+    _executeCallbackReturnBufferMethod: any;
     _unbindMethod: any;
 
     //#endregion
