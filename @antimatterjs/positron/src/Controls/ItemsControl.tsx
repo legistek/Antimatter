@@ -7,14 +7,14 @@ import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style, WebStyle } from '../Style';
-import { DataTemplate } from '../FrameworkTemplate';
+import { DataTemplate, DataTemplateValue, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
 import { WindowLayoutContext } from './Window';
 import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 export interface IItemsControlProps extends IControlProps
 {
     ItemsSource?: any[] | Binding,
-    ItemTemplate?: DataTemplate,
+    ItemTemplate?: DataTemplateValue,
     ItemPadding?: string,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
@@ -26,7 +26,7 @@ export interface IItemsControlProps extends IControlProps
 export interface IItemsControlState extends IControlState
 {
     ItemsSource?: any[],
-    ItemTemplate?: DataTemplate,
+    ItemTemplate?: DataTemplateValue,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>
@@ -144,10 +144,10 @@ export class ItemsControlBase<
         return PanelBase;
     }
 
-    GetTemplateForItem(item?: any): (item?: any) => JSX.Element
+    GetTemplateForItem(item?: any): TemplateFunction
     {
         if (this.state.ItemTemplate)
-            return this.state.ItemTemplate.GetVisualTree(this.Layout);
+            return FrameworkTemplate.GetRenderer(this.state.ItemTemplate, this.Layout);
         else
             return ItemsControl.GetDefaultTemplateForItem(item);
     }

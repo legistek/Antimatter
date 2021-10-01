@@ -5,12 +5,18 @@ import { Antimatter, Binding, Event, ModelObjectReference, ReactDataContext } fr
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
-import { DataTemplate } from '../FrameworkTemplate';
+import { DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
 import { CSSClasses } from '../CSSClasses';
 import { Theme } from '../Theme';
 import { PositronTheme } from '../Themes/PositronTheme';
 import { ToastControl } from './ToastControl';
+import { MultitouchTransform } from '../Media/MultitouchTransform';
+import { ContentPresenter } from './ContentPresenter';
+import { Point } from '../Foundation';
+import { FrameworkElement } from '../FrameworkElement';
+import { DragPanel } from './DragPanel';
+import { DragGhost } from './Primitives/DragGhost';
 
 export const WindowLayoutContext = React.createContext<WindowLayout>(WindowLayout.Default);
 
@@ -19,8 +25,8 @@ export interface IWindowProps extends IPanelProps
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[] | Binding;
     Toasts?: ModelObjectReference[] | Binding;
-    DialogTemplate?: DataTemplate;
-    ToastTemplate?: DataTemplate;    
+    DialogTemplate?: DataTemplateValue;
+    ToastTemplate?: DataTemplateValue;
     Layout?: WindowLayout;
 }
 
@@ -29,8 +35,8 @@ export interface IWindowState extends IPanelState
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[];
     Toasts?: ModelObjectReference[];
-    DialogTemplate?: DataTemplate;
-    ToastTemplate?: DataTemplate;
+    DialogTemplate?: DataTemplateValue;
+    ToastTemplate?: DataTemplateValue;
     Layout?: WindowLayout;
     Theme?: Theme;
 }
@@ -38,12 +44,29 @@ export interface IWindowState extends IPanelState
 @withRouter
 export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> extends PanelBase<IWindowProps, IWindowState>
 {
-    private static _router: any;
-
-    private static _route: string = "/";
     public static get Route(): string
     {
         return Window._route;
+    }
+
+    public static get CurrentWindow(): Window | undefined
+    {
+        return this._currentWindow;
+    }
+
+    public get DragGhost(): DragGhost|null
+    {
+        return this._ghost;
+    }
+
+    public get IsDragging(): boolean
+    {
+        return this._isDragging;
+    }
+
+    public get DragContent(): any
+    {
+        return this._dragContent;
     }
 
     constructor(props)
@@ -74,6 +97,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
         });
 
         this.OnThemeChange(this.state.Theme);
+        Window._currentWindow = this;
     }
 
     public static CombineRoute(components: string[]): string
@@ -106,9 +130,21 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
     public static readonly RouteEvent: Event<RouteEventArgs> = new Event<RouteEventArgs>();
 
-    /* override */ constructClasses() : string
+    public BeginDrag(data: any, template: DataTemplateValue, startingPoint: Point)
     {
-        return super.constructClasses() + `${CSSClasses.Root} `;
+        this._isDragging = true;
+        this._dragTemplate = template;
+        this._dragContent = data;
+        this._dragGhostTransform.Translate(startingPoint);
+        this.InvalidateRender();
+    }
+
+    override constructClasses() : string
+    {
+        let elem: HTMLElement;
+        return super.constructClasses()
+            + `${CSSClasses.Root} `
+            + (this._isDragging ? 'is-dragging ' : '');
     }
 
     protected override renderElement(): JSX.Element | null
@@ -122,32 +158,52 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
                         VerticalAlignment={VerticalAlignment.Bottom}
                         Overlaps={true}
                         ItemTemplate={this.state.DialogTemplate}>
-                    </ItemsControl>
-                    <div className="amx-ptn-fe amx-ptn-va-stretch amx-ptn-ha-stretch"
-                        onDragEnter={e =>
-                        {
-                            e.dataTransfer.dropEffect = 'none';
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }}
-                        onDragOver={e =>
-                        {
-                            e.dataTransfer.dropEffect = 'none';
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }}>
-                        {super.renderElement()}
-                    </div>
+                    </ItemsControl>                    
+                    {super.renderElement()}                    
                     <ToastControl
                         ItemsSource={this.state.Toasts}
                         ItemTemplate={this.state.ToastTemplate}
                         VerticalAlignment={VerticalAlignment.Bottom}
                         HorizontalAlignment={HorizontalAlignment.Center}
+                        Overlaps={true} />
+                    <DragGhost
+                        ref={r => this._ghost = r}
                         Overlaps={true}
-                    />
+                        IsHitTestVisible={false}
+                        IsVisible={this._isDragging}
+                        Content={this._dragContent}
+                        ContentTemplate={this._dragTemplate}
+                        Transform={this._dragGhostTransform} />
                 </WindowLayoutContext.Provider>
             </ReactDataContext.Provider>
         );
+    }
+
+    OverrideContainerAttributes(containerProps: React.HTMLAttributes<HTMLElement> & React.ClassAttributes<HTMLElement>)
+    {
+        containerProps.onDragEnter = e =>
+        {
+            e.dataTransfer.dropEffect = 'none';
+            e.stopPropagation();
+            e.preventDefault();
+        };
+        containerProps.onDragOver = e =>
+        {
+            e.dataTransfer.dropEffect = 'none';
+            e.stopPropagation();
+            e.preventDefault();
+        };
+        containerProps.onMouseMove = ((e: React.MouseEvent) =>
+        {
+            if (!this._isDragging)
+                return;
+            this._dragGhostTransform.Translate({ X: e.clientX, Y: e.clientY });
+        }).bind(this);
+        containerProps.onMouseUp = ((e: React.MouseEvent) =>
+        {
+            this._isDragging = false;
+            this.InvalidateRender();
+        });        
     }
 
     override OnComponentMount()
@@ -175,4 +231,15 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
             return;
         newTheme.Apply();
     }
+
+    private static _router: any;
+    private static _route: string = "/";
+    private static _currentWindow: Window | undefined;
+
+    private _ghost: DragGhost | null = null;
+    private _dragContent: any;
+    private _dragTemplate?: DataTemplateValue;
+    private _isDragging: boolean = false;
+    private _dragGhostTransform: MultitouchTransform = new MultitouchTransform();
+    private _currentDragTarget?: DragPanel;
 }

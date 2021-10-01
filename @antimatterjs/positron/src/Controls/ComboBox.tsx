@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
-import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, DataTemplateValue, FrameworkTemplate } from '../FrameworkTemplate';
 import { Style, TemplateProp, WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
@@ -23,13 +23,13 @@ export interface IComboBoxProps extends ISelectorProps
     Label?: string | Binding,
     MinWidth?: string,
     MaxDropdownHeight?: string | Binding,
-    TitleOverride?: DataTemplate | string | Binding,
+    TitleOverride?: DataTemplateValue | string | Binding,
     PreventAutoCheckboxes?: boolean | Binding,
     PlaceholderText?: string | Binding
 }
 export interface IComboBoxState extends ISelectorState
 {
-    TitleOverride?: DataTemplate | string,
+    TitleOverride?: DataTemplateValue | string,
     PreventAutoCheckboxes?: boolean,
 }
 
@@ -175,7 +175,7 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
                         <StackPanel ItemsParent={templatedParent} />
                     </Popup>
                 </>),
-            ItemTemplate: new DataTemplate((item: any) => ComboBox.DefaultItemTemplate(item))
+            ItemTemplate: (item: any) => ComboBox.DefaultItemTemplate(item)
         },
         {
             "@ .panel": {
@@ -317,14 +317,14 @@ export class ComboBoxBase<P extends IComboBoxProps = {}, S extends IComboBoxStat
         this.FocusSelected(true);
     }
 
-    private get TitleElem(): JSX.Element | undefined
+    private get TitleElem(): JSX.Element | undefined | null
     {
         if (this.state.TitleOverride)
         {
-            if (this.state.TitleOverride instanceof DataTemplate)
-                return this.state.TitleOverride.GetVisualTree()(this);
-            else if (typeof this.state.TitleOverride == 'string')
+            if (typeof this.state.TitleOverride == 'string')
                 return this.ConstructTitleFromString(this.state.TitleOverride);
+            else
+                return FrameworkTemplate.GetRenderer(this.state.TitleOverride, this.Layout)(this);
         }
 
         if (this.IsMultiSelect)

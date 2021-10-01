@@ -93,12 +93,12 @@ export class NavMenuBase<
                         ref={ic => templatedParent._tabList = ic}
                         ClassName="menu-content"
                         ItemsSource={templatedParent.state.Items}
-                        ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                        ItemTemplate={(tab: ITabItem) =>
                         {
                             if (!templatedParent.GetTabIsVisible(tab))
                                 return (<></>);
                             return templatedParent.RenderTabLabel(tab, true);
-                        })} />
+                        }} />
                 </Route>)
             ];
 
@@ -146,12 +146,12 @@ export class NavMenuBase<
                     Grid={{ Column: 0 }}
                     Margin="0px 20px 0px 0px"
                     ref={ic => templatedParent._tabList = ic}
-                    ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                    ItemTemplate={(tab: ITabItem) =>
                     {
                         if (!templatedParent.GetTabIsVisible(tab))
                             return (<></>);
                         return templatedParent.RenderTabLabel(tab, false);
-                    })}
+                    }}
                     ItemsSource={templatedParent.state.Items} />
 
                 <Panel Grid={{ Column: 1 }}>

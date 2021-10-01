@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, DataTemplateValue, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
 import { WebStyle } from '../Style';
 import { CommandButton } from './CommandButton';
 import { StackPanel } from './StackPanel';
@@ -12,7 +12,7 @@ export import MessageBarType = FluentMessageBarType;
 
 interface IMessageBarProps extends IControlProps
 {
-    Content?: DataTemplate | string | Binding,
+    Content?: DataTemplateValue | string | Binding,
     MessageBarType?: MessageBarType | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,
     SecondaryCommand?: ModelObjectReference | Binding,
@@ -22,7 +22,7 @@ interface IMessageBarProps extends IControlProps
 }
 interface IMessageBarState extends IControlState
 {
-    Content?: DataTemplate | string,
+    Content?: DataTemplateValue | string,
     MessageBarType?: MessageBarType,
     PrimaryCommand?: ModelObjectReference,
     SecondaryCommand?: ModelObjectReference,
@@ -80,13 +80,14 @@ export class MessageBar extends Control<IMessageBarProps, IMessageBarState>
         );
     }
 
-    private get Content(): JSX.Element
+    private get Content(): JSX.Element|null
     {
         if (!this.state.Content)
             return <></>;
-        if (this.state.Content instanceof DataTemplate)
-            return this.state.Content.GetVisualTree()(this);
-        return (<>{this.state.Content}</>);
+        if (typeof (this.state.Content) === "string")
+            return (<>{this.state.Content}</>);
+        else
+            return FrameworkTemplate.GetRenderer(this.state.Content)(this);
     }
 
     private get Commands(): JSX.Element | undefined

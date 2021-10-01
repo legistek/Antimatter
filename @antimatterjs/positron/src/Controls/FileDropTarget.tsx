@@ -20,12 +20,13 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
 {
     private _isDraggedOver: boolean = false;
 
-    override OnComponentMount()
+    override OverrideContainerAttributes(
+        containerProps: React.HTMLAttributes<HTMLElement> & React.ClassAttributes<HTMLElement>): void
     {
-        this.Container?.addEventListener("dragenter", (e) => this.OnDragEnter(e));
-        this.Container?.addEventListener("dragleave", (e) => this.OnDragLeave(e));
-        this.Container?.addEventListener("dragover", (e) => this.OnDragOver(e));
-        this.Container?.addEventListener("drop", (e) => this.OnDrop(e));
+        containerProps.onDragEnter = (e) => this.OnDragEnter(e);
+        containerProps.onDragLeave = (e) => this.OnDragLeave(e);
+        containerProps.onDragOver = (e) => this.OnDragOver(e);
+        containerProps.onDrop = (e) => this.OnDrop(e);
     }
 
     public get FilesDroppedCommand(): ModelObjectReference
@@ -50,7 +51,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         }
     }
 
-    private OnDragOver(e: DragEvent): void
+    private OnDragOver(e: React.DragEvent): void
     {
         if (!this._isDraggedOver)
             return;
@@ -60,7 +61,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         e.preventDefault();        
     }
 
-    private OnDragEnter(e: DragEvent): void
+    private OnDragEnter(e: React.DragEvent): void
     {
         if (e.dataTransfer?.types?.includes("Files"))
         {
@@ -72,7 +73,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         }
     }
 
-    private OnDragLeave(e: DragEvent): void
+    private OnDragLeave(e: React.DragEvent): void
     {
         if (!this._isDraggedOver)
             return;
@@ -84,7 +85,7 @@ export class FileDropTargetBase<P,S> extends PanelBase<IFileDropTargetProps, IPa
         e.preventDefault();
     }
 
-    private OnDrop(e: DragEvent): void
+    private OnDrop(e: React.DragEvent): void
     {
         e.preventDefault();
         this._isDraggedOver = false;

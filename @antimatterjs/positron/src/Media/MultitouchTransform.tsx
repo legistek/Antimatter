@@ -1,3 +1,4 @@
+import { Point } from "../Foundation";
 import { FrameworkElement } from "../FrameworkElement";
 import { Matrix } from "./Matrix";
 
@@ -217,6 +218,15 @@ export class MultitouchTransform
     public get AbsoluteRotation()
     {
         return Math.atan2(this.Value.M12, this.Value.M11);
+    }
+
+    public Translate(pt: Point)
+    {
+        this._pendingTranslation.TranslateX = pt.X;
+        this._pendingTranslation.TranslateY = pt.Y;
+        this._isCSSDirty = true;
+        this._isMatrixDirty = true;
+        this.UpdateTarget();
     }
 
     public Reset()

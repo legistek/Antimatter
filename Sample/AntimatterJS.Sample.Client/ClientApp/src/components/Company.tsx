@@ -44,7 +44,7 @@ import
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
-import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { DataTemplate, DataTemplateValue } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 
 export class Employee extends View
@@ -225,15 +225,15 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         super(props);
     }
 
-    _firstNameTemplate: DataTemplate = new DataTemplate((item) => (
+    _firstNameTemplate: DataTemplateValue = (item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
-    ));
-    _lastNameTemplate: DataTemplate = new DataTemplate((item) => (
+    );
+    _lastNameTemplate: DataTemplateValue = (item) => (
         <TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />
-    ));
-    _ageTemplate: DataTemplate = new DataTemplate((item) => (
+    );
+    _ageTemplate: DataTemplateValue = (item) => (
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
-    ));
+    );
 
     private openButtonElem?: FrameworkElement | null;
     private get OpenBubbleButton(): JSX.Element
@@ -305,7 +305,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return elem;
     }
 
-    _messageBarCustomContent: DataTemplate = new DataTemplate(() => (
+    _messageBarCustomContent: DataTemplateValue = () => (
         <StackPanel Orientation={Orientation.Vertical}>
             <TextBlock
                 Text="Custom template here"
@@ -320,7 +320,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 FontSize={16}
             />
         </StackPanel>
-    ));
+    );
 
     private get Bubble(): JSX.Element
     {
@@ -365,28 +365,23 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return <></>;
     }
 
-    _comboBoxOptionTemplate: DataTemplate = new DataTemplate((item) =>
+    _comboBoxOptionTemplate: DataTemplateValue = (item) =>
     {
         const elem: JSX.Element = (
-
             <TextBlock
                 Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
                 VerticalAlignment={VerticalAlignment.Center}
                 Style={ComboBox.DefaultTextblockStyle}
             />
-
-
-
         );
         return elem;
-    }
+    };
 
-    );
-    _comboBoxRedundantStringTemplate: DataTemplate = new DataTemplate((item: string) =>
-        <TextBlock Text={item} />
-    );
-    _comboBoxOptionTemplate_CustomMultiselect: DataTemplate = new DataTemplate((item) =>
-        <Grid
+    _comboBoxRedundantStringTemplate: DataTemplateValue = (item: string) =>
+        (<TextBlock Text={item} />);
+
+    _comboBoxOptionTemplate_CustomMultiselect: DataTemplateValue = (item) =>
+        (<Grid
             //Background="limegreen"
             RowDefinitions={[Grid.RowDefinition(30)]}
         >
@@ -399,8 +394,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                 Margin="0 6px"
             />
 
-        </Grid>
-    );
+        </Grid>);
 
     private get comboBox2_Strings(): JSX.Element
     {
@@ -560,8 +554,8 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                         SelectionChangedCommand={new Binding("SelectedEmployeeChangedCommand")}
                         IsExpandedPath="IsExpanded"
                         IsSelectedPath="IsSelected"
-                        ItemTemplate={new DataTemplate(
-                            (item) => (
+                        ItemTemplate={{
+                            [WindowLayout.Default]: (item) => (
                                 <StackPanel Orientation={Orientation.Horizontal}>
                                     <Glyph Icon="Contact"
                                         VerticalAlignment={VerticalAlignment.Center}
@@ -570,20 +564,17 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                                     <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
                                         Foreground={new Binding({ Path: "Color", Source: item })} />
                                 </StackPanel>),
-                            {
-                                Layout: WindowLayout.Tablet,
-                                VisualTree: (item) => (
-                                    <StackPanel Orientation={Orientation.Horizontal}>
-                                        <Icon iconName="e96a"
-                                            style={{
-                                                alignSelf: "center",
-                                                margin: "0px 5px 0px 0px"
-                                            }} />
-                                        <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
-                                        <TextBlock Text="Tablet!" />
-                                    </StackPanel>
-                                )
-                            })}>
+                            [WindowLayout.Tablet]: (item) => (
+                                <StackPanel Orientation={Orientation.Horizontal}>
+                                    <Icon iconName="e96a"
+                                        style={{
+                                            alignSelf: "center",
+                                            margin: "0px 5px 0px 0px"
+                                        }} />
+                                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })} />
+                                    <TextBlock Text="Tablet!" />
+                                </StackPanel>)
+                            }}>
                     </TreeView>
                 </ResizePanel>
                 

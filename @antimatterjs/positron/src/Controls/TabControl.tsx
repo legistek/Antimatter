@@ -117,12 +117,12 @@ export class TabControlBase<
                                     MinWidth: templatedParent.state.MinTabWidth,
                                     Width: "100%"
                                 })}
-                                ItemTemplate={new DataTemplate((tab: ITabItem) =>
+                                ItemTemplate={(tab: ITabItem) =>
                                 {
                                     if (!templatedParent.GetTabIsVisible(tab))
                                         return (<></>);
                                     return templatedParent.RenderTabLabel(tab, false);
-                                })}
+                                }}
                                 ItemsSource={templatedParent.state.Items} />
                             <CommandButton
                                 ref={r => templatedParent._scrollRightButton = r}

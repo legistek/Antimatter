@@ -7,9 +7,11 @@ import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase 
 import { ContentPresenter, ContentPresenterBase, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
-import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
 import { FontStyle, SemanticColor, Theme, ThemeColor, ThemeLayout } from '../Theme';
 import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
+import { Panel } from './Panel';
+import { DragPanel } from './DragPanel';
 
 interface IDataGridCellCommon
 {
@@ -38,7 +40,7 @@ export class DataGridCell<
     //        }
     //    });
 
-    protected /* override */ constructClasses(): string
+    override constructClasses(): string
     {
         return super.constructClasses() + " amx-ptn-datagridcell ";
     }
@@ -59,6 +61,8 @@ export interface IDataGridProps extends IItemsControlProps, IDataGridCommon
     IsSelectAll?: boolean | Binding,
     SelectedItems?: any[] | Binding,
     SelectedItem?: any | Binding,
+    CanDragRows?: boolean | Binding,
+    RowDragTemplate?: DataTemplateValue,
     AllCapsHeader?: boolean,
 }
 export interface IDataGridState extends IItemsControlState, IDataGridCommon
@@ -71,12 +75,12 @@ export interface IDataGridState extends IItemsControlState, IDataGridCommon
 
 export interface IDataGridColumn
 {
-    Template: DataTemplate;
+    Template: DataTemplateValue;
     Header: string;
     Key: string;
     Width?: number,
     CanResize?: boolean,
-    EditTemplate?: DataTemplate;
+    EditTemplate?: DataTemplateValue;
     Data?: any;
 }
 
@@ -112,6 +116,16 @@ export class DataGridBase<
                 onSelectionChanged: this.OnSelectionChanged.bind(this),
                 getKey: item => Utilities.SmartGetKey(item)
             });
+    }
+
+    public get CanDragRows(): boolean
+    {
+        return this.GetValue(nameof(this.props.CanDragRows), false);
+    }
+
+    public get RowDragTemplate(): DataTemplateValue
+    {
+        return this.GetValue(nameof(this.props.RowDragTemplate));
     }
 
     public get HeaderBackground(): string | undefined
@@ -331,7 +345,22 @@ export class DataGridBase<
                                     minHeight: 0
                                 },
                             };
-                            return defaultRender ? defaultRender(props) : (<></>);
+
+                            var rowContentRender = defaultRender ? defaultRender(props) : (<></>);
+                            if (templatedParent.CanDragRows)
+                            {
+                                return (
+                                    <DragPanel
+                                        Background="#E0E0FF"
+                                        Content={props.item}
+                                        DragTemplate={templatedParent.RowDragTemplate || ((item) => rowContentRender)}>
+                                        {rowContentRender}
+                                    </DragPanel>);
+                            }
+                            else
+                            {
+                                return rowContentRender;
+                            }
                         }}
                         constrainMode={Fluent.ConstrainMode.unconstrained}
                         layoutMode={Fluent.DetailsListLayoutMode.fixedColumns}

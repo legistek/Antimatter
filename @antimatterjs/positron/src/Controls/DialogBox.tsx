@@ -11,7 +11,7 @@ import { ItemsControl } from './ItemsControl';
 import { CommandButton, ICommandButtonProps } from './CommandButton';
 import { CommandBar } from './CommandBar';
 import { Separator } from './Separator';
-import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
 import { HorizontalAlignment, ScrollBarVisibility, VerticalAlignment } from '../Enums';
 import { Panel } from './Panel';
 import { ContentPresenter } from './ContentPresenter';
@@ -31,7 +31,7 @@ export interface IDialogBoxProps extends IControlProps, IDialogBoxCommon
     SecondaryCommands?: ModelObjectReference[] | Binding,
     Icon?: number | string | Binding,
     ViewModel?: ModelObjectReference | Binding,
-    ErrorTemplate?: DataTemplate,
+    ErrorTemplate?: DataTemplateValue,
     HasError?: boolean | Binding,
 }
 export interface IDialogBoxState extends IControlState, IDialogBoxCommon
@@ -45,7 +45,7 @@ export interface IDialogBoxState extends IControlState, IDialogBoxCommon
     SecondaryCommands?: ModelObjectReference[],
     Icon?: number | string,
     ViewModel?: ModelObjectReference,
-    ErrorTemplate?: DataTemplate,
+    ErrorTemplate?: DataTemplateValue,
 }
 
 export class DialogBox extends Control<IDialogBoxProps, IDialogBoxState>

@@ -116,8 +116,24 @@ namespace AntimatterJS.Sample.AppModel
         }
         #endregion
 
-
-
+        #region DragDrop DragDrop property
+        private DragDrop _DragDrop;
+        public DragDrop DragDrop
+        {
+            get
+            {
+                return _DragDrop ?? (_DragDrop = new DragDrop(this));
+            }
+            set
+            {
+                if (_DragDrop != value)
+                {
+                    _DragDrop = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        #endregion
 
         //public ObservableCollection<Employee> SomeEmployees { get; } = new ObservableCollection<Employee>();
 

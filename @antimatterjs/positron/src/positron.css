@@ -27,6 +27,14 @@ body {
     overflow: hidden;
 }
 
+.amx-ptn-root.is-dragging {
+    cursor: no-drop;
+}
+
+.amx-ptn-root.is-dragging .amx-ptn-fe {    
+    pointer-events: none;
+}
+
 .amx-ptn-disabled .amx-ptn-fe {
     pointer-events: none;   
 }

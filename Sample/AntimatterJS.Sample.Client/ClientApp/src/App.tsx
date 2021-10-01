@@ -13,12 +13,13 @@ import { initializeIcons } from '@fluentui/react/lib/Icons';
 import * as Model from './model/Model';
 
 //import './custom.css'
-import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { DataTemplate, DataTemplateValue } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
 import DataGridTest from './components/DataGridTest';
 import PinnablePanelTest from './components/PinnablePanelTest';
 import ControlGallery1 from './components/ControlGallery1';
 import Files from './components/Files';
+import DragDrop from './components/DragDrop';
 
 
 const theme = createTheme({
@@ -76,7 +77,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         )
     }
 
-    private static DialogTemplate = new DataTemplate((item) => (
+    private static DialogTemplate: DataTemplateValue = (item) => (
         <DataContext Value={item}>
             <DialogBox
                 Title={new Binding(nameof<Model.DialogViewModel>(m => m.Title))}
@@ -87,9 +88,9 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                 Icon={new Binding(nameof<Model.DialogViewModel>(m => m.Icon))}
                 ViewModel={item} />
         </DataContext>
-    ));
+    );
 
-    private static ToastTemplate = new DataTemplate((params: ModelObjectReference) => (
+    private static ToastTemplate: DataTemplateValue = (params: ModelObjectReference) => (
         <MessageBar
             Content={new Binding({ Path: "Content", Source: params })}
             MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
@@ -100,22 +101,23 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             IsVisible={new Binding({ Path: "IsVisible", Source: params })}
             Animate={true}
             Margin={ThemeLayout.MarginWideLTRB}
-        />));
+        />);
 
-    private employeeTemplate: DataTemplate = new DataTemplate(
-        (item) => (
-            <StackPanel Orientation={Orientation.Horizontal}>
-                <Icon iconName="e96a"
-                    style={{
-                        alignSelf: "center",
-                        margin: "0px 5px 0px 0px"
-                    }}/>
-                <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
-                    Foreground={new Binding({ Path: "Color", Source: item })}  />
-            </StackPanel>),
-        {
-            Layout: WindowLayout.Tablet,
-            VisualTree: (item) => (
+    private employeeTemplate: DataTemplateValue = {
+        [WindowLayout.Default]:
+            (item) => (
+                <StackPanel Orientation={Orientation.Horizontal}>
+                    <Icon iconName="e96a"
+                        style={{
+                            alignSelf: "center",
+                            margin: "0px 5px 0px 0px"
+                        }}/>
+                    <TextBlock Text={new Binding({ Path: "FullName", Source: item })}
+                        Foreground={new Binding({ Path: "Color", Source: item })}  />
+                </StackPanel>
+            ),
+        [WindowLayout.Tablet]: 
+            (item) => (
                 <StackPanel Orientation={Orientation.Horizontal}>
                     <Icon iconName="e96a"
                         style={{
@@ -126,7 +128,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                     <TextBlock Text="Tablet!" />
                 </StackPanel>
             )
-        });
+        };
 
     render()
     {
@@ -216,10 +218,15 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
                                     IconBackground: "#00FFFF",
                                     IconForeground: "white",
                                     Key: "files",
-                                    Padding: "0px",
                                     Content: (
                                         <Files ViewModel={new Binding("Files")} />
                                     )
+                                },
+                                {
+                                    Label: "Drag & Drop",
+                                    Key: "dragdrop",
+                                    Icon: "DragObject",
+                                    Content: (<DragDrop ViewModel={new Binding("Company.DragDrop")} />)
                                 }
                             ]} />
 

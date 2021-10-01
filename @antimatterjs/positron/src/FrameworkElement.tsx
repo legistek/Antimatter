@@ -19,7 +19,7 @@ export const TemplatedParentContext = React.createContext<FrameworkElement | und
 interface IFrameworkElementCommon
 {
     // Use only for control development; never use for cross-platform views    
-    Style?: Style<any>,    
+    Style?: Style<any>,
     OnClick?: (event: MouseEvent) => void,
     OnScroll?: (event: UIEvent) => void,
     OnPointerDown?: (event: PointerEvent) => void,
@@ -46,16 +46,16 @@ export interface IFrameworkElementProps extends IFrameworkElementCommon
 {
     Margin?: string | ThemeLayout,
     IsEnabled?: boolean | Binding,
-    ClassName?: string|Binding,
-    HorizontalAlignment?: HorizontalAlignment |Binding,
-    VerticalAlignment?: VerticalAlignment|Binding,
+    ClassName?: string | Binding,
+    HorizontalAlignment?: HorizontalAlignment | Binding,
+    VerticalAlignment?: VerticalAlignment | Binding,
     IsVisible?: boolean | Binding,
     IsHitTestVisible?: boolean | Binding,
     ToolTip?: string | JSX.Element | Binding,
     LoadedCommand?: ModelObjectReference | Binding,
     IsLoading?: boolean | Binding,
-    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),    
-    OnWillUnmount?: ModelObjectReference | Binding,    
+    OnDidMount?: ModelObjectReference | Binding | ((sender: FrameworkElement) => void),
+    OnWillUnmount?: ModelObjectReference | Binding,
 }
 
 export interface IFrameworkElementState extends IFrameworkElementCommon
@@ -70,7 +70,7 @@ export interface IFrameworkElementState extends IFrameworkElementCommon
     DataContext?: ModelObjectReference,
     LoadedCommand?: ModelObjectReference,
     IsLoading?: boolean,
-    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),    
+    OnDidMount?: ModelObjectReference | ((sender: FrameworkElement) => void),
     OnWillUnmount?: ModelObjectReference,
     TemplatedParent?: FrameworkElement
 }
@@ -81,13 +81,12 @@ export class FrameworkElement<
     extends React.Component<P, S>
     implements INotifyPropertyChanged
 {
-    _calledLoaded: boolean = false;
-    _isRenderValid: boolean = false;
-    _isMeasureValid: boolean = false;
-    _gestureHandlers: boolean = false;
+    private _calledLoaded: boolean = false;
+    private _isRenderValid: boolean = false;
+    private _isMeasureValid: boolean = false;
+    private _gestureHandlers: boolean = false;
     private _boundCallbacks?: Map<Function, Function>;
     private _isMounted: boolean = false;
-
     private _templatedParent?: FrameworkElement;
     private _templatedStyle?: Style<any>;
 
@@ -108,7 +107,7 @@ export class FrameworkElement<
         return this._templatedParent;
     }
 
-    protected ExecuteCommand(cmd: ModelObjectReference | ((commandParameter: any) => void), parameter?: any )
+    protected ExecuteCommand(cmd: ModelObjectReference | ((commandParameter: any) => void), parameter?: any)
     {
         if (typeof (cmd) === "function")
         {
@@ -129,10 +128,10 @@ export class FrameworkElement<
             this._boundCallbacks = new Map<Function, Function>();
         else if ((bound = this._boundCallbacks.get(unbound)))
             return bound;
-        
+
         bound = unbound.bind(this) as Function;
         this._boundCallbacks.set(unbound, bound);
-        return bound;                    
+        return bound;
     }
 
     //public set TemplatedParent(value: FrameworkElement|undefined)
@@ -172,6 +171,13 @@ export class FrameworkElement<
             this.state.Transform.AssignTarget(this);
     }
 
+    protected /* virtual */ OverrideContainerAttributes(
+        containerProps:
+            React.HTMLAttributes<HTMLElement> &
+            React.ClassAttributes<HTMLElement>)
+    {
+    }
+
     readonly render = (): JSX.Element | null =>
     {
         if (this.state.IsVisible === false)
@@ -195,62 +201,64 @@ export class FrameworkElement<
                 {ctx =>
                 {
                     this._templatedParent = ctx;
-                    return (
-                        <div
-                            ref={r =>
-                            {
-                                this.Container = r;
-                            }}
-                            style={this.getCSSStyles()}
-                            onScroll={this.state.OnScroll
-                                ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
-                                : undefined}
-                            onClick={this.state.OnClick
-                                ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
-                                : undefined}
-                            onKeyDown={this.state.OnKeyDown
-                                ? (event) => this.state.OnKeyDown?.call(this, event.nativeEvent)
-                                : undefined}
-                            onKeyPress={this.state.OnKeyPress
-                                ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
-                                : undefined}
-                            onPointerMove={this.state.OnPointerMove || this._gestureHandlers
-                                ? (event) => this.OnPointerMove(event)
-                                : undefined}
-                            onPointerDown={this.state.OnPointerDown || this._gestureHandlers
-                                ? (event) => this.OnPointerDown(event)
-                                : undefined}
-                            onPointerUp={this.state.OnPointerUp || this._gestureHandlers
-                                ? (event) => this.OnPointerUp(event)
-                                : undefined}
-                            onLostPointerCapture={this.state.OnLostPointerCapture
-                                ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
-                                : undefined}
-                            onPointerLeave={this.state.OnPointerLeave || this._gestureHandlers
-                                ? (event) => this.OnPointerLeave(event)
-                                : undefined}
-                            onPointerCancel={this.state.OnPointerCancel || this._gestureHandlers
-                                ? (event) => this.OnPointerCancel(event)
-                                : undefined}
-                            onPointerOut={this.state.OnPointerOut || this._gestureHandlers
-                                ? (event) => this.OnPointerOut(event)
-                                : undefined}
-                            className={this.constructor.name + " " + (this.state.ClassName || "") + " " + webStyleClass + " " + this.constructClasses()}
-                            tabIndex={this.state.TabIndex}>
-                            {
-                                this.state.IsLoading && this.state.LoadingTemplate
-                                    ? this.state.LoadingTemplate()
-                                    : (this.state.ToolTip
-                                        ? (<TooltipHost content={this.state.ToolTip}>
-                                            {
-                                                this.renderElement()
-                                            }
-                                        </TooltipHost>)
-                                        : this.renderElement())
-                            }
-                        </div>)
-                    }
-                }
+                    var divProps: React.HTMLAttributes<HTMLElement> & React.ClassAttributes<HTMLElement> = {
+                        ref: r =>
+                        {
+                            this.Container = r;
+                        },
+                        style: this.getCSSStyles(),
+                        onScroll: this.state.OnScroll
+                            ? (event) => this.state.OnScroll?.call(this, event.nativeEvent)
+                            : undefined,
+                        onClick: this.state.OnClick
+                            ? (event) => this.state.OnClick?.call(this, event.nativeEvent)
+                            : undefined,
+                        onKeyDown: this.state.OnKeyDown
+                            ? (event) => this.state.OnKeyDown?.call(this, event.nativeEvent)
+                            : undefined,
+                        onKeyPress: this.state.OnKeyPress
+                            ? (event) => this.state.OnKeyPress?.call(this, event.nativeEvent)
+                            : undefined,
+                        onPointerMove: this.state.OnPointerMove || this._gestureHandlers
+                            ? (event) => this.OnPointerMove(event)
+                            : undefined,
+                        onPointerDown: this.state.OnPointerDown || this._gestureHandlers
+                            ? (event) => this.OnPointerDown(event)
+                            : undefined,
+                        onPointerUp: this.state.OnPointerUp || this._gestureHandlers
+                            ? (event) => this.OnPointerUp(event)
+                            : undefined,
+                        onLostPointerCapture: this.state.OnLostPointerCapture
+                            ? (event) => this.state.OnLostPointerCapture?.call(this, event.nativeEvent)
+                            : undefined,
+                        onPointerLeave: this.state.OnPointerLeave || this._gestureHandlers
+                            ? (event) => this.OnPointerLeave(event)
+                            : undefined,
+                        onPointerCancel: this.state.OnPointerCancel || this._gestureHandlers
+                            ? (event) => this.OnPointerCancel(event)
+                            : undefined,
+                        onPointerOut: this.state.OnPointerOut || this._gestureHandlers
+                            ? (event) => this.OnPointerOut(event)
+                            : undefined,
+                        className: this.constructor.name + " " + (this.state.ClassName || "") + " " + webStyleClass + " " + this.constructClasses(),
+                        tabIndex: this.state.TabIndex
+                    };
+
+                    this.OverrideContainerAttributes(divProps);
+
+                    var children =
+                        this.state.IsLoading && this.state.LoadingTemplate
+                            ? this.state.LoadingTemplate()
+                            : (this.state.ToolTip
+                                ? (<TooltipHost content={this.state.ToolTip}>
+                                    {
+                                        this.renderElement()
+                                    }
+                                </TooltipHost>)
+                                : this.renderElement());
+
+                    return React.createElement('div', divProps, children);
+                }}
             </TemplatedParentContext.Consumer>
         );
     }
@@ -260,7 +268,7 @@ export class FrameworkElement<
         return this.GetValue<boolean>(nameof(this.props.IsEnabled), true);
     }
 
-    public get Margin(): string|undefined
+    public get Margin(): string | undefined
     {
         return this.GetValue(nameof(this.props.Margin));
     }
@@ -278,7 +286,7 @@ export class FrameworkElement<
     public InvalidateRender()
     {
         if (!this._isRenderValid)
-            return;        
+            return;
         this._isRenderValid = false;
         this.OnInvalidateRender();
         this.setState((state, props) =>
@@ -380,9 +388,9 @@ export class FrameworkElement<
         Antimatter.UpdateModelValue(this, stateVar, newValue, reRender, silent);
 
         // TODO - Should this fire INotifyPropertyChanged.PropertyChanged?
-    }    
+    }
 
-    protected GetValue<T>(property: string, defaultValue: T|undefined = undefined): T
+    protected GetValue<T>(property: string, defaultValue: T | undefined = undefined): T
     {
         var val = (this.state as any)[property];
         if (typeof (val) === "number" && (val as number) >= Theme.FirstResourceId)
@@ -421,7 +429,7 @@ export class FrameworkElement<
         //    styles.touchAction = "pan-y";
         if (this.state.Transform)
         {
-            //styles.transform = this.state.Transform.ToCSS();
+            styles.transform = this.state.Transform.ToCSS();
             styles.transformOrigin = "0px 0px";
         }
 
@@ -484,7 +492,7 @@ export class FrameworkElement<
     protected /* virtual */ OnComponentMount()
     {
     }
-    
+
     protected /* virtual */ OnComponentWillUnmount()
     {
     }
@@ -530,7 +538,7 @@ export class FrameworkElement<
         this.OnComponentWillUnmount();
         this.ExecutePropCommandHandler(this.state.OnWillUnmount);
     }
-    
+
     protected /* virtual */ constructClasses(): string
     {
         let cls: string = ` ${CSSClasses.Base} `;

@@ -3,25 +3,26 @@ import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react'
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { WindowLayout } from '../Enums';
 import { WindowLayoutContext } from './Window';
-import { DataTemplate } from '../FrameworkTemplate';
+import { DataTemplate, DataTemplateValue, FrameworkTemplate } from '../FrameworkTemplate';
+import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
-export interface IContentPresenterProps extends IFrameworkElementProps
+export interface IContentPresenterProps extends IPanelProps
 {
     Content?: ModelObjectReference | Binding
-    ContentTemplate?: DataTemplate | ((parent: any) => JSX.Element),
+    ContentTemplate?: DataTemplateValue,
     Layout?: WindowLayout
 }
-export interface IContentPresenterState extends IFrameworkElementState
+export interface IContentPresenterState extends IPanelState
 {
     Content?: ModelObjectReference,
-    ContentTemplate?: DataTemplate | ((parent: any) => JSX.Element),
+    ContentTemplate?: DataTemplateValue,
     Layout?: WindowLayout
 }
 
 export class ContentPresenterBase<
     P extends IContentPresenterProps = {},
     S extends IContentPresenterState = {}>
-    extends FrameworkElement<P, S>
+    extends PanelBase<P, S>
 {    
     /* override */ renderElement(): JSX.Element
     {
@@ -47,14 +48,12 @@ export class ContentPresenterBase<
             </WindowLayoutContext.Consumer>);
     }
 
-    private RenderContent(): JSX.Element
+    private RenderContent(): JSX.Element | null
     {
-        if (this.state.ContentTemplate instanceof DataTemplate)
-            return this.state.ContentTemplate.GetVisualTree(this.state.Layout)(this.state.Content);
-        else if (typeof (this.state.ContentTemplate) === "function")
-            return this.state.ContentTemplate(this.state.Content);
-        else
-            return (<></>);
+        var renderer = FrameworkTemplate.GetRenderer(
+            this.state.ContentTemplate,
+            this.state.Layout);
+        return renderer(this.state.Content);
     }
 }
 

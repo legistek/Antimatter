@@ -21,7 +21,7 @@ export class ColorPicker extends ComboBoxBase<IComboBoxProps, IComboBoxState>
             ItemsSource: [],
             Padding: "0px",
             Template: new ControlTemplate((templatedParent: ColorPicker) => templatedParent.template),
-            ItemTemplate: new DataTemplate((item: any) => ColorPicker.DefaultItemTemplate(item)),
+            ItemTemplate: (item: any) => ColorPicker.DefaultItemTemplate(item),
             ItemContainerStyle: new WebStyle<ISelectableItemControlProps>(
                 {
                     // Margin: "0px",

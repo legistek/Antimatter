@@ -10,19 +10,19 @@ import
     CommandButton, PinnablePanelState, DocumentViewer,
     Grid, HorizontalAlignment, IDocument, IViewProps, IViewState,
     Orientation, Panel, PDFJSDocument, PinnablePanel, ScrollBarVisibility,
-    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle, DataTemplate, SelectionMode, CheckBox, PasswordBox
+    Side, StackPanel, TextBlock, TextBox, VerticalAlignment, View, ViewBase, TabControl, WrapPanel, ComboBox, CommandBar, IconCommandButton, FontStyle, DataTemplate, SelectionMode, CheckBox, PasswordBox, DataTemplateValue
 } from "@antimatterjs/positron";
 import { Employee } from "./Company";
 import { Icon } from "@fluentui/react";
 
 export default class ControlGallery1 extends View
 {
-    private static EmployeeTemplate = new DataTemplate(item => (
+    private static EmployeeTemplate: DataTemplateValue = item => (
         <TextBlock
             Text={new Binding({ Path: nameof<Model.Employee>(e => e.FullName), Source: item })}
             VerticalAlignment={VerticalAlignment.Center}
             Style={ComboBox.DefaultTextblockStyle}
-        />));
+        />);
 
     override View()
     {
@@ -267,9 +267,9 @@ export default class ControlGallery1 extends View
                                     HorizontalAlignment={HorizontalAlignment.Left}
                                     SelectedItem={"red"}
                                     ItemsSource={["red", "orange", "yellow", "green", "blue", "purple"]}
-                                    ItemTemplate={new DataTemplate(item => (
+                                    ItemTemplate={item => (
                                         <Panel HorizontalAlignment={HorizontalAlignment.Center} Width={50} Height={50} Background={item} />
-                                    ))} />
+                                    )} />
 
 
                             </StackPanel>

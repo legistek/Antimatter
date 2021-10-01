@@ -54,4 +54,6 @@ export * from './src/Controls/ProgressBar';
 export * from './src/Controls/DatePicker';
 export * from './src/Controls/PinnablePanel';
 export * from './src/Controls/ComboBox';
+export * from './src/Controls/DragPanel';
+export * from './src/Controls/DropPanel';
 export * from './src/Controls/FileDropTarget';
