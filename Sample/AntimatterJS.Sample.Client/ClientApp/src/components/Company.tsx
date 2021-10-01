@@ -44,7 +44,7 @@ import
 } from '@antimatterjs/positron';
 
 import { TextBlock, TextBox, StackPanel, Orientation, CheckBox, Grid } from '@antimatterjs/positron'
-import { DataTemplate, DataTemplateValue } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 
 
 export class Employee extends View
@@ -225,13 +225,13 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         super(props);
     }
 
-    _firstNameTemplate: DataTemplateValue = (item) => (
+    _firstNameTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
     );
-    _lastNameTemplate: DataTemplateValue = (item) => (
+    _lastNameTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />
     );
-    _ageTemplate: DataTemplateValue = (item) => (
+    _ageTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     );
 
@@ -305,7 +305,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return elem;
     }
 
-    _messageBarCustomContent: DataTemplateValue = () => (
+    _messageBarCustomContent: DataTemplate = () => (
         <StackPanel Orientation={Orientation.Vertical}>
             <TextBlock
                 Text="Custom template here"
@@ -365,7 +365,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return <></>;
     }
 
-    _comboBoxOptionTemplate: DataTemplateValue = (item) =>
+    _comboBoxOptionTemplate: DataTemplate = (item) =>
     {
         const elem: JSX.Element = (
             <TextBlock
@@ -377,10 +377,10 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
         return elem;
     };
 
-    _comboBoxRedundantStringTemplate: DataTemplateValue = (item: string) =>
+    _comboBoxRedundantStringTemplate: DataTemplate = (item: string) =>
         (<TextBlock Text={item} />);
 
-    _comboBoxOptionTemplate_CustomMultiselect: DataTemplateValue = (item) =>
+    _comboBoxOptionTemplate_CustomMultiselect: DataTemplate = (item) =>
         (<Grid
             //Background="limegreen"
             RowDefinitions={[Grid.RowDefinition(30)]}

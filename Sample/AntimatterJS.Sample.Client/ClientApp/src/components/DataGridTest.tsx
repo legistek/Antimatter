@@ -5,20 +5,20 @@ import
         CommandButton,
         DataTemplate,
         TextBlock,
-        DataGrid, DocumentViewer, Grid, HorizontalAlignment, IDocument, Orientation, Panel, PDFJSDocument, StackPanel, TextBox, VerticalAlignment, View, DataTemplateValue
+        DataGrid, DocumentViewer, Grid, HorizontalAlignment, IDocument, Orientation, Panel, PDFJSDocument, StackPanel, TextBox, VerticalAlignment, View, DataTemplate
     } from "@antimatterjs/positron";
 import React from "react";
 import { DefaultEffects } from "@fluentui/react";
 
 export default class DataGridTest extends View
 {
-    _firstNameTemplate: DataTemplateValue = (item) => (
+    _firstNameTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("FirstName")} VerticalAlignment={VerticalAlignment.Center} />
     );
-    _lastNameTemplate: DataTemplateValue = (item) => (
+    _lastNameTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("LastName")} VerticalAlignment={VerticalAlignment.Center} />
     );
-    _ageTemplate: DataTemplateValue = (item) => (
+    _ageTemplate: DataTemplate = (item) => (
         <TextBlock Text={new Binding("Age")} VerticalAlignment={VerticalAlignment.Center} />
     );
 
@@ -45,7 +45,7 @@ export default class DataGridTest extends View
                 <DataGrid
                     Grid={{ Row: 1 }}
                     CanDragRows={true}
-                    RowDragTemplate={(item) => <TextBlock Text={new Binding({Source: item, Path: "FullName"}) }/>}
+                    RowDragTemplate={(item) => <TextBlock Text={new Binding({Source: item[0], Path: "FullName"}) }/>}
                     ItemsSource={new Binding(nameof<Model.Company>(c => c.Employees))}
                     RowHeight={44}
                     SelectedItems={new Binding("SelectedEmployees")}

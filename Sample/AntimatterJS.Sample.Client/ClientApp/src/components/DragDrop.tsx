@@ -4,7 +4,7 @@ import
 {
     CommandButton,
     TextBlock,
-    StackPanel, TextBox, View, FileDropTarget, VerticalAlignment, HorizontalAlignment, SemanticColor, Panel, ProgressRing, DragPanel, DataTemplate, Grid, DropPanel, DataTemplateValue
+    StackPanel, TextBox, View, FileDropTarget, VerticalAlignment, HorizontalAlignment, SemanticColor, Panel, ProgressRing, DragPanel, DataTemplate, Grid, DropPanel, DataTemplate
 } from "@antimatterjs/positron";
 import React from "react";
 import { DefaultEffects } from "@fluentui/react";
@@ -39,7 +39,7 @@ export default class DragDrop extends View
         );
     }
 
-    private static _dropTemplate: DataTemplateValue = (item) => (
+    private static _dropTemplate: DataTemplate = (item) => (
         <Panel Background="#FFFFFF">
             <TextBlock
                 Text="Drop It Now!!!"
@@ -47,7 +47,7 @@ export default class DragDrop extends View
                 HorizontalAlignment={HorizontalAlignment.Center} />
         </Panel>);
 
-    private static _dragTemplate: DataTemplateValue = (item) => (
+    private static _dragTemplate: DataTemplate = (item) => (
         <TextBlock
             Text="I'm being dragged!"
             Foreground="red" />);

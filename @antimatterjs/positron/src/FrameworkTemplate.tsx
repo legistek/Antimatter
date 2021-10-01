@@ -6,7 +6,7 @@ export type TemplateFunction = ((item: any) => JSX.Element | null);
 
 export type ITemplateLayouts =
     {
-        [key in WindowLayout]?: ((item: any) => JSX.Element | null);
+        [key in WindowLayout]?: (item: any) => JSX.Element | null;
     }
 
 export interface ILayoutTemplate
@@ -50,7 +50,7 @@ export class FrameworkTemplate
 
     private static _emptyTemplate: TemplateFunction = (item) => (<></>);
 
-    public static GetRenderer(val: DataTemplateValue, layout?: WindowLayout): TemplateFunction
+    public static GetRenderer(val: DataTemplate, layout?: WindowLayout): TemplateFunction
     {
         if (!val)
             return FrameworkTemplate._emptyTemplate;
@@ -70,14 +70,10 @@ export class FrameworkTemplate
     }
 }
 
-export type DataTemplateValue = ITemplateLayouts | TemplateFunction | undefined;
+export type DataTemplate = ITemplateLayouts | TemplateFunction | undefined;
 
 export type ControlTemplateValue = ITemplateLayouts | TemplateFunction | undefined;
 
 export class ControlTemplate extends FrameworkTemplate
 {    
-}
-
-export class DataTemplate extends FrameworkTemplate
-{
 }

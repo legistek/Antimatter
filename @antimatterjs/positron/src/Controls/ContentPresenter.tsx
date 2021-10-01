@@ -3,19 +3,19 @@ import { Binding, DataContext, ModelObjectReference } from '@antimatterjs/react'
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState } from '../FrameworkElement';
 import { WindowLayout } from '../Enums';
 import { WindowLayoutContext } from './Window';
-import { DataTemplate, DataTemplateValue, FrameworkTemplate } from '../FrameworkTemplate';
+import { DataTemplate, FrameworkTemplate } from '../FrameworkTemplate';
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 
 export interface IContentPresenterProps extends IPanelProps
 {
     Content?: ModelObjectReference | Binding
-    ContentTemplate?: DataTemplateValue,
+    ContentTemplate?: DataTemplate,
     Layout?: WindowLayout
 }
 export interface IContentPresenterState extends IPanelState
 {
     Content?: ModelObjectReference,
-    ContentTemplate?: DataTemplateValue,
+    ContentTemplate?: DataTemplate,
     Layout?: WindowLayout
 }
 

@@ -3,7 +3,7 @@ import { Binding, BindingMode, BindingParameters, ModelObjectReference, Utilitie
 
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState, TemplatedParentContext } from '../FrameworkElement';
 import { WindowLayout } from '../Enums';
-import { ControlTemplate, DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { FontStyle, ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
 import { WebStyle } from '../Style';
 import { Window, WindowLayoutContext } from './Window';
@@ -13,9 +13,9 @@ import { TextBlock } from './TextBlock';
 
 export interface IDragPanelProps extends IPanelProps
 {
-    Content?: any | Binding,
+    Content?: any | (() => any) | Binding,
     CanDrag?: boolean | Binding,
-    DragTemplate?: DataTemplateValue,
+    DragTemplate?: DataTemplate,
 }
 
 export class DragPanelBase<P, S> extends PanelBase<IDragPanelProps, IPanelState>
@@ -25,14 +25,18 @@ export class DragPanelBase<P, S> extends PanelBase<IDragPanelProps, IPanelState>
         return this.GetValue(nameof(this.props.CanDrag), true);
     }
 
-    public get DragTemplate(): DataTemplateValue
+    public get DragTemplate(): DataTemplate
     {
         return this.GetValue(nameof(this.props.DragTemplate));
     }
 
     public get Content(): any
-    {        
-        return this.GetValue(nameof(this.props.Content));
+    {
+        var propVal = this.GetValue(nameof(this.props.Content));
+        if (typeof (propVal) === "function")
+            return propVal();
+        else
+            return propVal;
     }
 
     override OverrideContainerAttributes(

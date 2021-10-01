@@ -3,7 +3,7 @@ import { Binding, BindingMode, BindingParameters, ModelObjectReference, Utilitie
 
 import { FrameworkElement, IFrameworkElementProps, IFrameworkElementState, TemplatedParentContext } from '../FrameworkElement';
 import { WindowLayout } from '../Enums';
-import { ControlTemplate, DataTemplateValue } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { FontStyle, ThemeColor, SemanticColor, ThemeLayout } from '../Theme';
 import { WebStyle } from '../Style';
 import { Window, WindowLayoutContext } from './Window';
@@ -17,7 +17,7 @@ export interface IDropPanelProps extends IPanelProps
     AcceptDrop?: boolean | Binding,
     DragContent?: any | Binding,    
     DropCommands?: ModelObjectReference[] | Binding,
-    DropTemplate?: DataTemplateValue,
+    DropTemplate?: DataTemplate,
 }
 
 export class DropPanelBase<P, S> extends PanelBase<IDropPanelProps, IPanelState>
@@ -38,7 +38,7 @@ export class DropPanelBase<P, S> extends PanelBase<IDropPanelProps, IPanelState>
         return this.GetValue(nameof(this.props.AcceptDrop), true);
     }
 
-    public get DropTemplate(): DataTemplateValue
+    public get DropTemplate(): DataTemplate
     {
         return this.GetValue(nameof(this.props.DropTemplate));
     }

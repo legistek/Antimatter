@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingMode, PropertyChangedEventArgs, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, Orientation, SelectionMode, VerticalAlignment } from '../Enums';
 import { FrameworkElement } from '../FrameworkElement';
-import { ControlTemplate, DataTemplate, DataTemplateValue, FrameworkTemplate } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, FrameworkTemplate } from '../FrameworkTemplate';
 import { Style, TemplateProp, WebStyle } from '../Style';
 import { CheckBox } from './CheckBox';
 import { Glyph } from './Glyph';
@@ -23,13 +23,13 @@ export interface IComboBoxProps extends ISelectorProps
     Label?: string | Binding,
     MinWidth?: string,
     MaxDropdownHeight?: string | Binding,
-    TitleOverride?: DataTemplateValue | string | Binding,
+    TitleOverride?: DataTemplate | string | Binding,
     PreventAutoCheckboxes?: boolean | Binding,
     PlaceholderText?: string | Binding
 }
 export interface IComboBoxState extends ISelectorState
 {
-    TitleOverride?: DataTemplateValue | string,
+    TitleOverride?: DataTemplate | string,
     PreventAutoCheckboxes?: boolean,
 }
 

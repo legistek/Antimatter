@@ -7,7 +7,7 @@ import { IItemsControlProps, IItemsControlState, ItemsControl, ItemsControlBase 
 import { ContentPresenter, ContentPresenterBase, IContentPresenterProps, IContentPresenterState } from './ContentPresenter';
 import { Antimatter, Binding, BindingMode, ModelObjectReference, Utilities } from '@antimatterjs/react';
 import { HorizontalAlignment, SelectionMode, VerticalAlignment } from '../Enums';
-import { ControlTemplate, DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate } from '../FrameworkTemplate';
 import { FontStyle, SemanticColor, Theme, ThemeColor, ThemeLayout } from '../Theme';
 import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 import { Panel } from './Panel';
@@ -62,7 +62,7 @@ export interface IDataGridProps extends IItemsControlProps, IDataGridCommon
     SelectedItems?: any[] | Binding,
     SelectedItem?: any | Binding,
     CanDragRows?: boolean | Binding,
-    RowDragTemplate?: DataTemplateValue,
+    RowDragTemplate?: DataTemplate,
     AllCapsHeader?: boolean,
 }
 export interface IDataGridState extends IItemsControlState, IDataGridCommon
@@ -75,12 +75,12 @@ export interface IDataGridState extends IItemsControlState, IDataGridCommon
 
 export interface IDataGridColumn
 {
-    Template: DataTemplateValue;
+    Template: DataTemplate;
     Header: string;
     Key: string;
     Width?: number,
     CanResize?: boolean,
-    EditTemplate?: DataTemplateValue;
+    EditTemplate?: DataTemplate;
     Data?: any;
 }
 
@@ -123,7 +123,7 @@ export class DataGridBase<
         return this.GetValue(nameof(this.props.CanDragRows), false);
     }
 
-    public get RowDragTemplate(): DataTemplateValue
+    public get RowDragTemplate(): DataTemplate
     {
         return this.GetValue(nameof(this.props.RowDragTemplate));
     }
@@ -352,7 +352,12 @@ export class DataGridBase<
                                 return (
                                     <DragPanel
                                         Background="#E0E0FF"
-                                        Content={props.item}
+                                        Content={
+                                            () =>
+                                            {
+                                                return templatedParent.SelectedItems;
+                                            }
+                                        }
                                         DragTemplate={templatedParent.RowDragTemplate || ((item) => rowContentRender)}>
                                         {rowContentRender}
                                     </DragPanel>);

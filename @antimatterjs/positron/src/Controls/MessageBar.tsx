@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Binding, BindingMode, ModelObjectReference, RelativeSourceMode } from '@antimatterjs/react';
 import { IStyle, MessageBar as FluentMessageBar, MessageBarType as FluentMessageBarType } from '@fluentui/react';
 import { Control, IControlProps, IControlState } from './Control';
-import { ControlTemplate, DataTemplate, DataTemplateValue, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
+import { ControlTemplate, DataTemplate, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
 import { WebStyle } from '../Style';
 import { CommandButton } from './CommandButton';
 import { StackPanel } from './StackPanel';
@@ -12,7 +12,7 @@ export import MessageBarType = FluentMessageBarType;
 
 interface IMessageBarProps extends IControlProps
 {
-    Content?: DataTemplateValue | string | Binding,
+    Content?: DataTemplate | string | Binding,
     MessageBarType?: MessageBarType | Binding,
     PrimaryCommand?: ModelObjectReference | Binding,
     SecondaryCommand?: ModelObjectReference | Binding,
@@ -22,7 +22,7 @@ interface IMessageBarProps extends IControlProps
 }
 interface IMessageBarState extends IControlState
 {
-    Content?: DataTemplateValue | string,
+    Content?: DataTemplate | string,
     MessageBarType?: MessageBarType,
     PrimaryCommand?: ModelObjectReference,
     SecondaryCommand?: ModelObjectReference,

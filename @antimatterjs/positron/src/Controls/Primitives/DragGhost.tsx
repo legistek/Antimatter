@@ -29,7 +29,7 @@ export class DragGhostBase<P extends IDragGhostProps = {}, S extends IControlSta
                             Content={templatedParent.Content}
                             ContentTemplate={templatedParent.ContentTemplate} />
                         {
-                            templatedParent.DropCommands.length > 0 &&
+                            templatedParent.DropCommands.length === 1 &&
                             (<CommandButton
                                 Grid={{ Row: 1 }}
                                 Style={CommandButton.CommandBarButtonStyle}

@@ -5,7 +5,7 @@ import { Antimatter, Binding, Event, ModelObjectReference, ReactDataContext } fr
 import { IPanelProps, IPanelState, PanelBase } from './Panel';
 import { HorizontalAlignment, VerticalAlignment, WindowLayout } from '../Enums';
 import { ItemsControl } from './ItemsControl';
-import { DataTemplate, DataTemplateValue } from '../FrameworkTemplate';
+import { DataTemplate } from '../FrameworkTemplate';
 import { RouteEventArgs } from '../RouteEventArgs';
 import { CSSClasses } from '../CSSClasses';
 import { Theme } from '../Theme';
@@ -25,8 +25,8 @@ export interface IWindowProps extends IPanelProps
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[] | Binding;
     Toasts?: ModelObjectReference[] | Binding;
-    DialogTemplate?: DataTemplateValue;
-    ToastTemplate?: DataTemplateValue;
+    DialogTemplate?: DataTemplate;
+    ToastTemplate?: DataTemplate;
     Layout?: WindowLayout;
 }
 
@@ -35,8 +35,8 @@ export interface IWindowState extends IPanelState
     Model?: ModelObjectReference,
     Dialogs?: ModelObjectReference[];
     Toasts?: ModelObjectReference[];
-    DialogTemplate?: DataTemplateValue;
-    ToastTemplate?: DataTemplateValue;
+    DialogTemplate?: DataTemplate;
+    ToastTemplate?: DataTemplate;
     Layout?: WindowLayout;
     Theme?: Theme;
 }
@@ -130,7 +130,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
     public static readonly RouteEvent: Event<RouteEventArgs> = new Event<RouteEventArgs>();
 
-    public BeginDrag(data: any, template: DataTemplateValue, startingPoint: Point)
+    public BeginDrag(data: any, template: DataTemplate, startingPoint: Point)
     {
         this._isDragging = true;
         this._dragTemplate = template;
@@ -238,7 +238,7 @@ export class Window<P extends IWindowProps = {}, S extends IWindowState = {}> ex
 
     private _ghost: DragGhost | null = null;
     private _dragContent: any;
-    private _dragTemplate?: DataTemplateValue;
+    private _dragTemplate?: DataTemplate;
     private _isDragging: boolean = false;
     private _dragGhostTransform: MultitouchTransform = new MultitouchTransform();
     private _currentDragTarget?: DragPanel;

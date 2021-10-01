@@ -13,7 +13,7 @@ import { initializeIcons } from '@fluentui/react/lib/Icons';
 import * as Model from './model/Model';
 
 //import './custom.css'
-import { DataTemplate, DataTemplateValue } from '@antimatterjs/positron/src/FrameworkTemplate';
+import { DataTemplate } from '@antimatterjs/positron/src/FrameworkTemplate';
 import ViewerTest from './components/ViewerTest';
 import DataGridTest from './components/DataGridTest';
 import PinnablePanelTest from './components/PinnablePanelTest';
@@ -77,7 +77,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         )
     }
 
-    private static DialogTemplate: DataTemplateValue = (item) => (
+    private static DialogTemplate: DataTemplate = (item) => (
         <DataContext Value={item}>
             <DialogBox
                 Title={new Binding(nameof<Model.DialogViewModel>(m => m.Title))}
@@ -90,7 +90,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
         </DataContext>
     );
 
-    private static ToastTemplate: DataTemplateValue = (params: ModelObjectReference) => (
+    private static ToastTemplate: DataTemplate = (params: ModelObjectReference) => (
         <MessageBar
             Content={new Binding({ Path: "Content", Source: params })}
             MessageBarType={new Binding({ Path: "MessageBarType", Source: params })}
@@ -103,7 +103,7 @@ export default class App extends AntimatterComponent<{ Model: ModelObjectReferen
             Margin={ThemeLayout.MarginWideLTRB}
         />);
 
-    private employeeTemplate: DataTemplateValue = {
+    private employeeTemplate: DataTemplate = {
         [WindowLayout.Default]:
             (item) => (
                 <StackPanel Orientation={Orientation.Horizontal}>

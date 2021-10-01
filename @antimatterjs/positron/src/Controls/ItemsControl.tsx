@@ -7,14 +7,14 @@ import { Panel, IPanelProps, IPanelState, PanelBase } from './Panel';
 import { StackPanel, StackPanelBase } from './StackPanel';
 import { ScrollBarVisibility } from '../Enums';
 import { Style, WebStyle } from '../Style';
-import { DataTemplate, DataTemplateValue, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
+import { DataTemplate, FrameworkTemplate, TemplateFunction } from '../FrameworkTemplate';
 import { WindowLayoutContext } from './Window';
 import { BoundCollection } from '@antimatterjs/react/src/BoundCollection';
 
 export interface IItemsControlProps extends IControlProps
 {
     ItemsSource?: any[] | Binding,
-    ItemTemplate?: DataTemplateValue,
+    ItemTemplate?: DataTemplate,
     ItemPadding?: string,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
@@ -26,7 +26,7 @@ export interface IItemsControlProps extends IControlProps
 export interface IItemsControlState extends IControlState
 {
     ItemsSource?: any[],
-    ItemTemplate?: DataTemplateValue,
+    ItemTemplate?: DataTemplate,
     ItemsPanel?: React.ClassType<IPanelProps, Panel, any>,
     ItemsPanelStyle?: Style<IPanelProps>,
     ItemContainerStyle?: Style<IFrameworkElementProps>

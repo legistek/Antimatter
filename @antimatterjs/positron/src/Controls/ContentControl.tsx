@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Binding } from "@antimatterjs/react";
-import { ControlTemplate, DataTemplate, DataTemplateValue } from "../FrameworkTemplate";
+import { ControlTemplate, DataTemplate } from "../FrameworkTemplate";
 import { TemplateProp, WebStyle } from "../Style";
 import { Control, IControlProps, IControlState } from "./Control";
 import { ContentPresenter } from './ContentPresenter';
@@ -8,7 +8,7 @@ import { ContentPresenter } from './ContentPresenter';
 export interface IContentControlProps extends IControlProps
 {
     Content?: any | Binding;
-    ContentTemplate?: DataTemplateValue;
+    ContentTemplate?: DataTemplate;
 }
 
 export class ContentControlBase<P extends IContentControlProps = {}, S extends IControlState = {}> extends Control<P,S>
@@ -31,7 +31,7 @@ export class ContentControlBase<P extends IContentControlProps = {}, S extends I
         return this.GetValue(nameof(this.props.Content));
     }
 
-    public get ContentTemplate(): DataTemplateValue
+    public get ContentTemplate(): DataTemplate
     {
         return this.GetValue(nameof(this.props.ContentTemplate));
     }
