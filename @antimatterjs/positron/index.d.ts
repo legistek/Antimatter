@@ -26,6 +26,7 @@ export * from './src/Controls/Primitives/ToggleButton';
 export * from './src/Controls/Primitives/SelectableItemControl';
 export * from './src/Controls/Primitives/Selector';
 export * from './src/Controls/CheckBox';
+export * from './src/Controls/RadioButton';
 export * from './src/Controls/TextBox';
 export * from './src/Controls/ItemsControl';
 export * from './src/Controls/ListBox';

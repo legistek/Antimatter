@@ -223,7 +223,22 @@ namespace AntimatterJS.Sample.AppModel
                     _IsBonusEligible = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FullName));
+                    OnPropertyChanged(nameof(IsBonusIneligible));
                 }
+            }
+        }
+        #endregion
+
+        #region bool IsBonusIneligible property
+        public bool IsBonusIneligible
+        {
+            get => !IsBonusEligible;
+            set
+            {
+                if (IsBonusEligible == !value)
+                    return;
+                IsBonusEligible = !value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -359,11 +374,11 @@ namespace AntimatterJS.Sample.AppModel
             {
                 return _DisabledCommand ?? (_DisabledCommand = new Command(
                     (arg) =>
-                    {                        
+                    {
                     })
                 {
                     Name = "Disabled",
-                    Icon = 0xF00C,                    
+                    Icon = 0xF00C,
                     IsEnabled = false,
                     ToolTip = "Increase this person's age"
                 });

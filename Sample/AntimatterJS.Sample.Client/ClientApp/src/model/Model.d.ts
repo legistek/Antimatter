@@ -98,6 +98,7 @@ export class Employee {
 	public BonusAmount?: number;
 	public Color?: string;
 	public IsBonusEligible?: boolean;
+	public IsBonusIneligible?: boolean;
 	public FirstName?: string;
 	public LastName?: string;
 	public FullName?: string;
@@ -112,6 +113,7 @@ export class Employee {
 	public MakeBonusEligibleCommand?: Command;
 	public DoSomethingElseCommand?: Command;
 	public IsExpanded?: boolean;
+	public StartDate?: Date;
 }
 
 export class Command {

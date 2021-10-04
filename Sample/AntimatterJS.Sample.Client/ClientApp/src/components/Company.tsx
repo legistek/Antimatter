@@ -9,6 +9,8 @@ import
     MessageBar,
     MessageBarType,
 
+    RadioButton,
+
     ToggleButton,
     TeachingBubble,
 
@@ -75,6 +77,33 @@ export class Employee extends View
             >
 
                 <StackPanel>
+
+                    <StackPanel Orientation={Orientation.Horizontal}>
+                        <RadioButton
+                            VerticalAlignment={VerticalAlignment.Center}
+                            Label="Is Bonus Eligible"
+                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        />
+                        <RadioButton
+                            VerticalAlignment={VerticalAlignment.Center}
+                            Label="Isn't Bonus Eligible"
+                            IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusIneligible))}
+                        />
+                    </StackPanel>
+
+                    <RadioButton
+                        VerticalAlignment={VerticalAlignment.Center}
+                        Label="Is Bonus Eligible (Unselectable)"
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        IsUnselectable={true}
+                        InfoTip="Equivalent to a regular checkbox"
+                    />
+                    <RadioButton
+                        VerticalAlignment={VerticalAlignment.Center}
+                        Label="Is Bonus Eligible (Disabled)"
+                        IsChecked={new Binding(nameof<Model.Employee>(e => e.IsBonusEligible))}
+                        IsEnabled={false}
+                    />
 
                     <Spinner
                         Value={new Binding(nameof<Model.Employee>(e => e.Age))}
@@ -586,7 +615,7 @@ export class Company extends FrameworkElement<IFrameworkElementProps, IFramework
                             })}>
                     </TreeView>
                 </ResizePanel>
-                
+
                 {/*<DataContext Value={new Binding({ Path: "CEO"})}>*/}
                 {/*    <ReactDataContext.Consumer>*/}
                 {/*        {ctx => (*/}
