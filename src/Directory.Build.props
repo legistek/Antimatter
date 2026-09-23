@@ -1,0 +1,14 @@
+<Project>
+
+	<PropertyGroup>
+		<!-- The .NET SDK turns Source Link on automatically for any project inside a
+		     git repo. It stamps the PDB with raw.githubusercontent.com URLs for every
+		     source file, so the debugger fetches sources from GitHub instead of
+		     reading them off disk - which fails outright for files that are untracked
+		     or not yet pushed, and reports "source not found".
+
+		     We debug against local sources. Keep it off. -->
+		<EnableSourceLink>false</EnableSourceLink>
+	</PropertyGroup>
+
+</Project>

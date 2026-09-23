@@ -1,0 +1,13 @@
+{
+  "name": "transpire-workspace",
+  "private": true,
+  "workspaces": [
+    "Test/antimatter.test.server/ClientApp",
+    "@antimatterjs/React",
+    "@antimatterjs/Positron"
+  ],
+  "devDependencies": {
+    "ts-nameof": "^5.0.0",
+    "vite-plugin-ts-nameof": "^3.0.0"
+  }
+}

@@ -1,0 +1,6 @@
+@ReactFun2026_07.Server_HostAddress = http://localhost:5175
+
+GET {{ReactFun2026_07.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

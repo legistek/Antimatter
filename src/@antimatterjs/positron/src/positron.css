@@ -1,0 +1,741 @@
+/***********************************************************************************/
+/* Fundamental Classes                                                             */
+/* Do not alter these unless you know *exactly* what you're doing and are prepared */
+/* to scour the control gallery to ensure no regressions.                          */
+/* If you DO feel compelled to alter them, remember our overarching philosophy -   */
+/* use as few CSS properties and classes as humanly possible to do what you want.  */
+/***********************************************************************************/
+
+body {
+    margin: 0px;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: #0366d6;
+}
+
+rect {
+    fill: transparent;
+}
+
+code {
+    color: #E01A76;
+}
+
+pre {
+    margin: 0px;
+}
+
+div:focus {
+    outline: none;
+}
+
+input::-ms-reveal {
+    display: none;
+}
+
+.amx-ptn-ha-right > img {
+    margin-right: 0px;
+}
+.amx-ptn-ha-left > img {
+    margin-left: 0px;
+}
+.amx-ptn-ha-center > img {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+    svg * {
+        pointer-events: fill;
+        user-select: none;
+    }
+
+    svg:focus {
+        outline: none;
+    }
+
+    svg *:focus {
+        outline: none;
+    }
+
+.amx-ptn-root.amx-ptn-fe {
+    background: transparent;
+    height: 100vh;
+    max-height: -webkit-fill-available;
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.amx-ptn-fe {
+    position: relative;
+    touch-action: inherit;
+    margin: 0px;
+    padding: 0px;
+    line-height: normal;
+    box-sizing: border-box;
+    border-width: 0px;
+    border-style: solid;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    z-index: 0;
+    min-height: 0px;
+    min-width: 0px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.amx-ptn-panel {
+    border-style: solid;
+    border-width: 0px;
+    border-color: transparent;
+}
+.amx-ptn-panel.amx-ptn-vscroll.amx-ptn-va-center {
+    max-height: 100%;
+}
+.amx-ptn-root.is-dragging .amx-ptn-panel.autoscroll-drag {
+    pointer-events: auto;
+}
+/*.amx-ptn-fe:focus
+{
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}*/
+
+.amx-ptn-root.is-dragging {
+    cursor: no-drop;
+}
+
+    .amx-ptn-root.is-dragging * {
+        pointer-events: none;
+        cursor: no-drop;
+    }
+
+.amx-ptn-disabled .amx-ptn-fe {
+    pointer-events: none;
+}
+
+.amx-ptn-vscroll {
+    touch-action: pan-y;
+}
+
+    .amx-ptn-vscroll > .amx-ptn-fe {
+        overflow-y: inherit;
+        touch-action: pan-y;
+    }
+
+.amx-ptn-vstack:not(.amx-ptn-vscroll) {
+    overflow: visible;
+}
+
+.amx-ptn-hscroll {
+}
+
+    .amx-ptn-hscroll > .amx-ptn-fe {
+        overflow-x: inherit;
+        touch-action: pan-x;
+    }
+
+    .amx-ptn-hscroll.amx-ptn-vscroll > .amx-ptn-fe {
+        touch-action: pan-x pan-y;
+    }
+
+.amx-ptn-nopan .amx-ptn-hscroll.amx-ptn-vscroll > .amx-ptn-fe {
+    touch-action: none;
+}
+
+.amx-ptn-nopan .amx-ptn-hscroll > .amx-ptn-fe {
+    touch-action: none;
+}
+
+.amx-ptn-nopan .amx-ptn-vscroll > .amx-ptn-fe {
+    touch-action: none;
+}
+
+.amx-ptn-hstack {
+    flex-direction: row;
+    width: fit-content;
+    /*min-width: fit-content; */   /*  ok not sure why this was added in the first place but it prevents hstack's from self-scrolling */
+}
+
+.amx-ptn-hstack.amx-ptn-ha-left {
+    min-width: max-content;          /* now I know why this was added. Because when we DON'T want the stack to self-scroll we want it to take up the entire desired width of the children */
+}
+
+.amx-ptn-vstack {
+    display: block;
+}
+
+    .amx-ptn-vstack > .amx-ptn-fe {
+        min-height: fit-content;
+    }
+
+.amx-ptn-dlgroot > .amx-ptn-vstack {
+    align-self: flex-start;
+}
+
+.amx-ptn-hstack > .amx-ptn-fe {
+    min-width: fit-content;
+}
+
+:not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-stretch {
+    width: auto;    /* why? */
+}
+
+:not(.amx-ptn-hstack).amx-ptn-grid > .amx-ptn-ha-stretch {
+    width: auto;
+}
+
+:not(.amx-ptn-hstack).amx-ptn-vstack > .amx-ptn-ha-left {
+    margin-right: auto !important;
+}
+
+:not(.amx-ptn-hstack) > .amx-ptn-ha-right {
+    margin-left: auto !important;
+}
+
+.amx-ptn-ha-left {
+    width: max-content;
+}
+
+.amx-ptn-ha-right {
+    width: max-content;
+}
+
+.amx-ptn-ha-inline {
+    display: inline-flex;
+}
+
+.amx-ptn-fixed-width.amx-ptn-ha-stretch {
+    width: max-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel):not(.amx-ptn-grid):not(.amx-ptn-vstack) > .amx-ptn-ha-stretch {
+    width: 100%;
+}
+
+.amx-ptn-grid:not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel) > .amx-ptn-ha-center {
+    width: auto;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 100%;
+}
+
+:not(.amx-ptn-grid):not(.amx-ptn-hstack):not(.amx-ptn-wrap-panel) > .amx-ptn-ha-center {
+    width: max-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 100%;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-top {
+    align-self: flex-start;
+}
+
+:not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-va-stretch {
+    align-self: stretch;
+}
+
+:not(.amx-ptn-vstack):not(.amx-ptn-grid) > .amx-ptn-fixed-height.amx-ptn-va-stretch {
+    height: max-content;
+    align-self: center;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-center {
+    align-self: center;
+}
+
+:not(.amx-ptn-vstack) > .amx-ptn-va-bottom {
+    align-self: flex-end;
+}
+
+.amx-ptn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+
+    .amx-ptn-grid > .amx-ptn-fe {
+        grid-row: 1/auto;
+        grid-column: 1/auto;
+    }
+
+.amx-ptn-fixed-width {
+}
+
+.amx-ptn-fixed-height {
+}
+
+/* For some reason this is necessary for MS DetailsList resizing and
+    any other Layer's to work I guess. */
+.ms-Fabric.ms-Layer-content {
+    /*height: 100%;*/
+}
+
+.ms-Tooltip * {
+    user-select: text
+}
+
+.ms-Tooltip pre {
+    font-family: unset;
+    white-space: pre-wrap;
+}
+
+.amx-ptn-fe .ms-List-cell {
+    min-height: 0px;
+}
+
+.ms-DetailsRow-check.ms-Check-checkHost {
+    height: 100%;
+}
+
+.amx-ptn-datagridcell {
+    display: flex;
+    padding-right: 5px;
+    height: 100%;
+}
+
+    .amx-ptn-datagridcell > .amx-ptn-ha-stretch {
+        width: 100%;
+    }
+
+.amx-ptn-overlaps {
+    position: absolute;
+}
+
+    .amx-ptn-overlaps.amx-ptn-ha-stretch {
+        left: 0;
+        right: 0;
+    }
+
+    .amx-ptn-overlaps.amx-ptn-ha-center {
+        left: 50%;
+        transform: translate(-50%,0);
+    }
+
+    .amx-ptn-overlaps.amx-ptn-ha-right {
+        right: 0;
+    }
+
+    .amx-ptn-overlaps.amx-ptn-va-stretch {
+        top: 0;
+        bottom: 0;
+    }
+
+.amx-ptn-wrap-panel {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.amx-ptn-viewer-pagespanel {
+    /*width: calc(var(--pgs-max-wd) * var(--docviewer-scale));
+    height: calc(var(--pgs-total-ht) * var(--docviewer-scale));*/
+}
+
+.amx-ptn-image {
+    all: unset;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    -webkit-user-drag: none;
+}
+
+.amx-ptn-vstack .amx-ptn-image {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.amx-ptn-video {
+    all: unset;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-user-drag: none;
+    max-height: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: contain;
+}
+
+.amx-ptn-dgrow {
+    display: grid;
+    grid-template-columns: var(--DataGridColumns);
+    border-width: var(--DataGridRowBorderWidth);
+    border-color: var(--DataGridLinesColor);
+    border-style: solid;
+    height: var(--DataGridRowHeight);
+    min-height: var(--DataGridMinRowHeight) !important;
+    overflow: visible;
+    min-width: fit-content;
+}
+
+.amx-ptn-dgrow-dropparent {
+    min-width: fit-content;
+}
+
+
+    .amx-ptn-dgrow.frozen-column {
+        grid-template-columns: unset;
+        min-width: unset;
+    }
+
+    .amx-ptn-dgrow *:not(.icon):not(.ckb-icon):not(i) {
+        font-family: var(--DataGridFontFamily);
+        font-size: var(--DataGridFontSize);
+    }
+
+.amx-ptn-dgcell {
+    border-style: solid;
+    border-width: var(--DataGridCellBorderWidth);
+    border-color: var(--DataGridLinesColor);
+}
+
+.amx-ptn-linked-scrollbars {
+    scrollbar-width: none;
+    scrollbar-color: transparent;
+}
+
+    .amx-ptn-linked-scrollbars::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    .amx-ptn-dragghost {
+        z-index: 2000000000;
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        pointer-events: none;
+    }
+
+/**************/
+/* Animations */
+/**************/
+
+@keyframes textLiveEdit {
+    0% {
+        transform: scaleY(1);
+        text-shadow: 0 0 3px #3A88e5B0;
+        transform-origin: center;
+    }
+
+    25% {
+        transform: scaleY(1.03);
+        text-shadow: 0 0 5px #3A88e580;
+        transform-origin: center;
+    }
+
+    100% {
+        transform: scaleY(1);
+        text-shadow: none;
+        transform-origin: center;
+    }
+}
+
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes slideInFromLeftQuick {
+    0% {
+        transform: translateX(-25%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 100%;
+    }
+}
+
+@keyframes growWidthFromNothing {
+    0%: {
+        width: 0%;
+    }
+
+    100%: {
+        width: 100%;
+    }
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0%;
+    }
+
+    100% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+}
+
+@keyframes slideOutLeft {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0%;
+        display: none;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        transform: translateX(0%);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0%;
+        display: none;
+    }
+}
+
+@keyframes growFrom0 {
+    0% {
+        max-height: 0px;
+        opacity: 0%;
+    }
+
+    100% {
+        max-height: 1000px;
+        opacity: 100%;
+    }
+}
+
+@keyframes shrinkTo0 {
+    0% {
+        max-height: 100%;
+        opacity: 100%;
+        transform: translateX(0%);
+    }
+    50% {
+        max-height: 100%;
+        opacity: 0%;
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0%;
+        max-height: 0px;
+    }
+}
+
+@keyframes ptxfadein {
+    0% {
+        opacity: 0%;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes ptxfadeout {
+    0% {
+    }
+
+    100% {
+        opacity: 0%;
+    }
+}
+
+@keyframes shake {
+    15% {
+        transform: translate3d(0, -1px, 0);
+    }
+
+    25%, 75% {
+        transform: translate3d(0, 1px, 0);
+    }
+
+    30%, 50%, 70% {
+        transform: translate3d(0, -1px, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(0, 1px, 0);
+    }
+
+    80% {
+        transform: translate3d(0, 0px, 0);
+    }
+}
+
+.amx-ptn-animate-shake {
+    animation: shake 1s cubic-bezier(.36,.07,.19,.97) both;
+    animation-iteration-count: infinite;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
+
+.ms-TooltipHost {
+    width: 100%;
+    display: flex;
+}
+
+.amx-ptn-backdropblur20 {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+:not(.ms-ContextualMenu-list) .amx-ptn-btn-allcaps * {
+    text-transform: uppercase;
+}
+
+.ms-ContextualMenu-list :not(i) {
+    text-transform: none !important;
+    font-weight: normal !important;
+    font-size: var(--Font_Medium) !important;
+}
+
+.ms-ContextualMenu-list .amx-ptn-fe {
+    margin-left: 0px !important;
+}
+
+.ms-ContextualMenu-list .ms-Button.ms-Button--commandBar {
+    margin-left: 0px;
+    padding-left: 0px;
+    background: transparent;
+}
+
+.ms-ContextualMenu-list .ms-Button:not(.is-disabled) .ms-Button-icon {
+    color: var(--Palette_ThemePrimary) !important;
+}
+
+.ms-ContextualMenu-list .ms-Button-icon {
+    margin: 3px 7px !important;
+}
+
+.ms-ContextualMenu-list .ms-Button:not(.is-disabled) .ms-Button-label {
+    color: var(--Palette_NeutralDark) !important;
+}
+
+.ms-ContextualMenu-list .ms-Button-label {
+    text-align: start;
+}
+
+.ms-ContextualMenu-list button, .ms-ContextualMenu-list .amx-ptn-ha-left {
+    width: 100%;
+}
+
+.ms-Callout-main > .amx-ptn-fe.amx-ptn-va-stretch
+{
+    max-height: 100vh;
+}
+
+input.tb-input.tb-custom-password {
+    -webkit-text-security: disc;
+}
+
+.fe-ctxmenu-open {
+    background: var(--Palette_NeutralQuaternaryAlt);
+}
+
+.ms-TeachingBubble-footer > .ms-StackItem {
+    width: 100%;
+    min-width: 100%;
+}
+
+.ms-TeachingBubble .ms-Callout-main {
+    background: var(--Palette_ThemeSecondary) !important;
+    pointer-events: auto;
+}
+
+.ms-TeachingBubble .ms-Callout-beak {
+    background: var(--Palette_ThemeSecondary) !important;
+}
+
+/* Fix Fluent tooltip looking disconnected from tail (w/ drop-shadow instead of box-shadow b/c of Chrome weirdness) */
+.ms-Callout.ms-Tooltip {
+    box-shadow: none;
+    filter: drop-shadow(0px 0px 4px rgb(0 0 0 / 15%));
+}
+
+.ms-Callout.ms-Tooltip .ms-Callout-beak:before, .ms-Callout.ms-Tooltip .ms-Callout-beakCurtain:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: drop-shadow(0px 0px 4px rgb(0 0 0 / 15%));
+    z-index: -1;
+}
+
+.ms-Fabric.ms-Layer-content {
+    height: 100%;
+    pointer-events: none;
+}
+
+.ms-Callout-container {
+    height: 100%;
+    pointer-events: none;
+}
+
+.ms-Callout {
+    max-height: -webkit-fill-available;
+    max-height: -moz-available;
+    display: flex;
+}
+
+.ms-Callout-main {
+    width: 100%;
+}
+
+.amx-ptn-indicatehover {
+    transition: background-color 0.1s ease-in-out;
+}
+
+    .amx-ptn-indicatehover:hover {
+        background: var(--prop-HoverBackground) !important;
+    }
+
+
+.ms-ContextualMenu-list i {
+    font-size: var(--Font_Glyph1x);
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.amx-ptn-hoveraware .amx-ptn-visibileonparenthover {
+    /*visibility: hidden;*/
+    animation: 0.25s ease 0s 1 normal forwards running ptxfadeout;
+}
+
+.amx-ptn-hoveraware:hover .amx-ptn-visibileonparenthover {
+    /*visibility: unset;*/
+    animation: 0.1s ease 0s 1 normal forwards running ptxfadein;
+}
