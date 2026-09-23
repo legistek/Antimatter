@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Antimatter.Net.Webassembly": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:51058;http://localhost:51059"
+    }
+  }
+}

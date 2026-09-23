@@ -1,0 +1,1115 @@
+import { Antimatter } from "./Antimatter";
+import { BindingExpression } from "./BindingExpression";
+import { ModelObjectReference } from "./ModelObjectReference";
+
+import { IServer } from "./IServer";
+import { ModelValue, ModelValueType } from "./ModelValue";
+import { Utilities } from "./Utilities";
+import { ICollectionUpdate, NotifyCollectionChangedAction } from "./ICollectionUpdate";
+
+import { DotnetPublicAPI, BINDINGType, MonoString, MonoObject, VoidPtr, MonoArray } from './Mono/dotnet';
+
+// import './Mono/MonoTypes';
+import { Pointer, System_Array, System_Object, System_String } from "./Mono/Platform";
+import { IClientFile } from "./IClientFile";
+import { BindingMode } from "./BindingParameters";
+import { UploadFileArgs } from "./UploadFileArgs";
+import { request } from "http";
+import * as exp from "constants";
+import { Rect, Size } from "./Foundation";
+
+//const maxSafeNumberHighPart: bigint = BigInt(Math.pow(2, 21) - 1); // The high-order int32 from Number.MAX_SAFE_INTEGER
+//const uint64HighOrderShift: bigint = BigInt(Math.pow(2, 32));
+
+const c_bool1Offset = 2;
+const c_shortOffset = 2;
+const c_handleOffset = 4;
+const c_intOffset = 4;
+const c_floatOffset = 4;
+const c_guidOffset = 4;
+const c_float2Offset = 8;
+const c_doubleOffset = 8;
+const c_int2Offset = 8;
+const c_float3Offset = 12;
+const c_int3Offset = 12;
+const c_double2Offset = 12;
+const c_float4Offset = 16;
+const c_int4Offset = 16;
+const c_stringOffset = 20;
+const c_arrayOffset = 20;
+
+const js_owned_gc_handle = Symbol.for("wasm js_owned_gc_handle");
+
+interface TrueBinding
+{
+    ModelBindingIndex: number,
+    Expressions: BindingExpression[],
+    LastValue?: any,
+    LastValueType?: ModelValueType,
+}
+
+export class WebassemblyServer implements IServer
+{
+    private _startupResolver?: ((value: void) => void) = undefined;
+
+    private get DotNet(): DotnetPublicAPI
+    {
+        return (window as any as DotnetPublicAPI);
+    }
+
+    private _binding: BINDINGType | undefined;
+    private get Binding(): BINDINGType
+    {
+        return this._binding || (this._binding = (window as any as DotnetPublicAPI).BINDING);
+    }
+
+    DownloadUrl(url: string, fileName: string|null|undefined)
+    {
+        var link = document.createElement("a");
+        link.setAttribute('download', fileName || 'file');
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+
+    StartupAsync(): Promise<void>
+    {        
+        if ((window as any).ServerStarted)
+        {
+            console.log("Server started before Client");
+            return Promise.resolve();
+        }
+
+        localStorage.setItem('lastActivity', (new Date()).getTime().toString());
+        localStorage.setItem('forceLogout', 'false');
+        window.addEventListener("storage", (event) =>
+        {
+            if (event.storageArea != localStorage)
+                return;
+            if (event.key === 'forceLogout' && localStorage.getItem(event.key) === 'true')
+                this.OnForceLogout();            
+        });
+
+        return new Promise((resolve, reject) =>
+        {
+            this._startupResolver = resolve;
+        });
+    }
+
+    //#region Client-Invocable Methods
+
+    OnServerStartup()
+    {
+        console.log("Client started before server");
+        if (this._startupResolver)
+            this._startupResolver();
+    }
+
+    GetRootObject(objectid: string): Promise<ModelObjectReference>
+    {
+        var handle = this.CallStaticMethod(
+            WebassemblyServer.c_ServerAssembly,
+            WebassemblyServer.c_ServerType,
+            "GetRootObject",
+            objectid);
+        return Promise.resolve(new ModelObjectReference(handle, objectid));
+    }
+
+    //ExecuteICommand(netRef: ModelObjectReference, parameter?: ModelValue): Promise<void>
+    //{
+    //    if (!this._executeICommandMethod)
+    //    {
+    //        this._executeICommandMethod = this.Module.mono_bind_static_method(
+    //            this.MakeMethodKey(
+    //                WebassemblyServer.c_ServerAssembly,
+    //                WebassemblyServer.c_ServerType,
+    //                "ExecuteICommand"));
+    //    }
+    //    this._executeICommandMethod(
+    //        netRef.Handle,
+    //        parameter
+    //            ? JSON.stringify(parameter)
+    //            : null);
+    //    return Promise.resolve();
+    //}
+
+    private _lastRefresh: number = 0;
+
+    OnUserActivity(silent?: boolean)
+    {
+        var act = (new Date()).getTime();
+        localStorage.setItem('lastActivity', act.toString());
+        if (silent)
+            // Model is informing us that it knows of a non-idle event that
+            // we don't, so we can just update our lastRefresh time to reflect this
+            this._lastRefresh = act;
+        else if (act > this._lastRefresh + 120000)
+        {            
+            // inform model only if it's been more than 2 minutes
+            this.NotifyModelOfUserActivity();
+            this._lastRefresh = act;
+        }        
+    }
+
+    private NotifyModelOfUserActivity()
+    {
+        if (!this._notifyUserNotIdleMethod)
+        {
+            this._notifyUserNotIdleMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "NotifyUserNotIdle"));            
+        }
+        this._notifyUserNotIdleMethod();
+    }
+
+    OnForceLogout(): void
+    {
+        if (!this._onForceLogoutMethod)
+        {
+            this._onForceLogoutMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "OnForceLogout"));
+            this._onForceLogoutMethod();
+        }
+    }
+
+    ExecuteICommand(netRef: ModelObjectReference, parameter?: any): Promise<void>
+    {
+        if (!this._executeICommandMethod)
+        {
+            this._executeICommandMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteICommandUnmarshalled"),
+            "im");
+        }
+        let ptr: number = 0;
+        if (parameter !== null && parameter !== undefined)
+        {
+            parameter = ModelValue.Get(parameter);
+            ptr = this.createManagedModelValue(parameter) as any as number;
+        }
+        
+        this._executeICommandMethod(netRef.Handle, ptr);
+        // TODO - FREE OBJECTS??
+        return Promise.resolve();
+    }
+
+    InvokeBeforeClose(): boolean
+    {
+        if (!this._invokeBeforeClose)
+        {
+            this._invokeBeforeClose = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "InvokeBeforeClose"));
+        }
+        return this._invokeBeforeClose() as boolean;        
+    }
+
+    ParseLocallyFormattedDate(date: string): Date
+    {
+        if (!this._executeParseLocallyFormattedDateMethod)
+        {
+            this._executeParseLocallyFormattedDateMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ParseLocallyFormattedDate"));
+        }
+        var dateNum = this._executeParseLocallyFormattedDateMethod(date) as number;
+        return Utilities.DateFromTicks(dateNum);
+    }
+
+    InvokeModelObjectMethod(netRef: ModelObjectReference | number, method: string, args?: any[]): any
+    {
+        if (!this._executeModelMethod)
+        {
+            this._executeModelMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "InvokeModelObjectMethod"));
+        }
+
+        if (args)
+            args = args.map((arg) => ModelValue.Get(arg));
+
+        var ptrptr = this._executeModelMethod(
+            typeof (netRef) === 'number' ? netRef : netRef.Handle,
+            method,
+            args
+                ? JSON.stringify(args)
+                : null);
+        
+        if (ptrptr)
+        {
+            var valuePtr = this.DotNet.BINDING.js_to_mono_obj(ptrptr) as any as number;
+            var type = this.getValueI16(valuePtr + 8) as ModelValueType;
+            var val = this.getModelValue(valuePtr, type);
+            // We got what we needed; free it for GC since .NET gave us a
+            // GC-aware reference.
+            var gch = ptrptr[js_owned_gc_handle];
+            this.DotNet.BINDING._release_js_owned_object_by_gc_handle(gch);
+            return val;
+        }
+        else
+        {
+            return undefined;
+        }                
+    }
+
+    CreateActualBindingKey(handle: number, path: string, exp: BindingExpression): string
+    {
+        return `${handle}`
+            + `.${path}`
+            + `.${exp.Parameters?.Mode || BindingMode.OneWay}`
+            + `.${exp.Parameters.MarshalValue || 0}`
+            + `.${exp.Parameters.ModelSideConverter || 0}`
+            //+ `.${exp.Parameters.RelativeSource || 0}`
+            //+ `.${exp.Parameters.RelativeSourceMode || 0}`
+            ;
+    }
+
+    private static _trueBindingsByKey = new Map<string, TrueBinding>();
+    private static _trueBindingsByModelIndex = new Map<number, TrueBinding>();
+    private static _trueBindingsByBxIndex = new Map<number, TrueBinding>();
+    private static _nextTrueBindingIndex: number = 0;
+    private static _redundantBindingsAvoided: number = 0;
+    private static _trueBindings: number = 0;
+
+    Bind(ref: ModelObjectReference, path: string, expression: BindingExpression)
+    {
+        if (ref === undefined)
+            return;
+
+        if (!this._bindMethod)
+        {
+            this._bindMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "Bind"));
+        }
+
+        var key = this.CreateActualBindingKey(ref.Handle, path, expression);
+        let trueBinding: TrueBinding | undefined = undefined;
+        if (trueBinding = WebassemblyServer._trueBindingsByKey.get(key))
+        {
+            trueBinding.Expressions.push(expression);
+            WebassemblyServer._trueBindingsByBxIndex.set(expression.Index, trueBinding);
+            BindingExpression.OnModelValueChanged(
+                expression.Index,
+                trueBinding.LastValue,
+                trueBinding.LastValueType || ModelValueType.Null);
+            WebassemblyServer._redundantBindingsAvoided++;
+            return;
+        }
+        trueBinding = {
+            Expressions: [expression],
+            ModelBindingIndex: WebassemblyServer._nextTrueBindingIndex++
+        };
+        WebassemblyServer._trueBindings++;
+        WebassemblyServer._trueBindingsByKey.set(key, trueBinding);
+        WebassemblyServer._trueBindingsByModelIndex.set(trueBinding.ModelBindingIndex, trueBinding);
+        WebassemblyServer._trueBindingsByBxIndex.set(expression.Index, trueBinding);
+
+        this._bindMethod(
+            ref.Handle,
+            path ? path : null,
+            trueBinding.ModelBindingIndex,
+            expression.Parameters?.Mode || BindingMode.OneWay,
+            expression.Parameters?.MarshalValue || false,
+            expression.Parameters?.ModelSideConverter ? expression.Parameters?.ModelSideConverter : null
+        );
+    }
+
+    Unbind(bx: BindingExpression)
+    {
+        if (!this._unbindMethod)
+        {
+            this._unbindMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "Unbind"));
+        }
+
+        if (!bx._resolvedSource?.NetRef?.Handle)
+            return;
+
+        var key = this.CreateActualBindingKey(
+            bx._resolvedSource.NetRef.Handle,
+            bx.Parameters?.Path || "",
+            bx);
+        var trueBinding = WebassemblyServer._trueBindingsByKey.get(key);
+        if (!trueBinding)
+            // Should be impossible
+            return;
+
+        var expIndex = trueBinding.Expressions.findIndex(e => e === bx);
+        if (expIndex === -1)
+            // Should be impossible
+            return;
+        trueBinding.Expressions.splice(expIndex, 1);
+        WebassemblyServer._trueBindingsByBxIndex.delete(bx.Index);
+        if (trueBinding.Expressions.length === 0)
+        {
+            this._unbindMethod(trueBinding.ModelBindingIndex);
+            WebassemblyServer._trueBindingsByKey.delete(key);
+            WebassemblyServer._trueBindingsByModelIndex.delete(trueBinding.ModelBindingIndex);
+        }
+    }
+
+    GetCollectionMembers(handle: number, offset: number, count: number)
+    {
+        if (!this._getCollectionMembers)
+        {
+            this._getCollectionMembers = this.DotNet.BINDING.bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "GetCollectionMembers"),
+                "iii");
+        }
+        var ptrptr = this._getCollectionMembers(handle, offset, count);
+        var mo = this.DotNet.BINDING.js_to_mono_obj(ptrptr);
+        var val = this.getArrayValue(mo as any as number, true);
+        if (ptrptr)
+        {
+            // We got what we needed; free it for GC since .NET gave us a
+            // GC-aware reference.
+            var gch = ptrptr[js_owned_gc_handle];
+            this.DotNet.BINDING._release_js_owned_object_by_gc_handle(gch);
+        }
+        return val;
+    }
+
+    GetCollectionSize(handle: number): number
+    {
+        if (!this._getCollectionSize)
+        {
+            this._getCollectionSize = this.DotNet.BINDING.bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "GetCollectionSize"),
+                "i");
+        }
+        return this._getCollectionSize(handle);
+    }
+
+    UpdateBindingSource(bxIndex: number, value: any)
+    {
+        if (!this._updateSourceValueMethod)
+        {
+            this._updateSourceValueMethod = this.DotNet.BINDING.bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "UpdateBindingSourceUnmarshalled"),
+                "im");
+        }
+
+        var trueBinding = WebassemblyServer._trueBindingsByBxIndex.get(bxIndex);
+        if (!trueBinding)
+            // Should be impossible
+            return;
+
+        var mv = ModelValue.Get(value);
+        var ptr = this.createManagedModelValue(mv);
+        this._updateSourceValueMethod(trueBinding.ModelBindingIndex, ptr);
+
+        // Need to update the other expressions that might be dependent on this value
+        for (var exp of trueBinding.Expressions)
+        {
+            if (exp.Index === bxIndex)
+                continue;
+            BindingExpression.OnModelValueChanged(
+                exp.Index,
+                value,
+                mv.Type || ModelValueType.Null);
+        }
+
+        // TODO - FREE OBJECTS??
+    }
+
+    UpdateBoundCollection(bxIndex: number, value: ICollectionUpdate)
+    {
+        if (!this._updateBoundCollectionMethod)
+        {
+            this._updateBoundCollectionMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "UpdateBoundCollection"));
+        }
+
+        var trueBinding = WebassemblyServer._trueBindingsByBxIndex.get(bxIndex);
+        if (!trueBinding)
+            // Should be impossible
+            return;
+
+        this._updateBoundCollectionMethod(trueBinding.ModelBindingIndex, JSON.stringify(value));
+        // Need to update the other expressions that might be dependent on this value
+        for (var exp of trueBinding.Expressions) {
+            if (exp.Index === bxIndex)
+                continue;
+            BindingExpression.OnModelBoundCollectionChanged(
+                exp.Index,
+                value);
+        }
+    }
+
+    CreateModelValue(): MonoObject
+    {
+        if (!this._createModelValueMethod)
+        {
+            this._createModelValueMethod = this.DotNet.BINDING.bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "CreateModelValue"));
+        }
+        return this._createModelValueMethod();
+    }
+
+    ExecuteCallback(callback: number, value: MonoObject | null)
+    {
+        if (!this._executeCallbackMethod)
+        {
+            this._executeCallbackMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallback"),
+                "im");
+        }
+        this._executeCallbackMethod(callback, value);
+    }
+
+    ExecuteCallbackException(callback: number, exception: string)
+    {
+        if (!this._executeCallbackExceptionMethod)
+        {
+            this._executeCallbackExceptionMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ExecuteCallbackException"),
+                "im");
+        }
+        this._executeCallbackExceptionMethod(callback, this.Binding.js_string_to_mono_string(exception));
+    }    
+
+    AddRef(handle: number)
+    {
+        if (!this._addRefMethod)
+        {
+            this._addRefMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "AddRef"),
+                "i");
+        }
+        this._addRefMethod(handle);
+    }
+
+    ReleaseRef(handle: number)
+    {
+        if (!this._releaseRefMethod)
+        {
+            this._releaseRefMethod = this.Module.mono_bind_static_method(
+                this.MakeMethodKey(
+                    WebassemblyServer.c_ServerAssembly,
+                    WebassemblyServer.c_ServerType,
+                    "ReleaseRef"),
+                "i");
+        }
+        this._releaseRefMethod(handle);
+    }
+
+    //#endregion
+
+    //#region Server-Invocable Methods
+
+    public GetIsMobile(): boolean
+    {
+        return Utilities.IsMobile();
+    }
+
+    public InvokeClientMethod(identifier: MonoString, argsJson: MonoString): any
+    {
+        var id = this.Binding.conv_string(identifier);
+        if (!id)
+            return null;
+        var func = eval(id);
+        if (!func || typeof func !== "function")
+            return null;
+        var argsString = this.Binding.conv_string(argsJson);
+        if (!argsString)
+            return;
+        var finalArgs = JSON.parse(argsString);
+        var result = func(finalArgs);
+        if (!result)
+            return null;
+
+        var mv = ModelValue.Get(result);
+        var jsonResult = JSON.stringify(mv);
+        return this.Binding.js_string_to_mono_string(jsonResult);
+    }
+
+    public async InvokeClientMethodAsync(identifier: MonoString, argsJson: MonoString, callback: number)
+    {
+        if (!callback)
+            return; // can't do anything
+
+        var id = this.Binding.conv_string(identifier);
+        if (!id)
+        {
+            this.ExecuteCallbackException(callback, `Invalid identifier`);
+            return;
+        }
+
+        var func = eval(id);
+        if (!func || typeof func !== "function")
+        {
+            this.ExecuteCallbackException(callback, `Invalid identifier ${identifier}`);
+            return;
+        }
+
+        var argsString = this.Binding.conv_string(argsJson);
+        if (!argsString)
+            return;
+        var finalArgs = JSON.parse(argsString);
+
+        let trueRetVal: any;
+        try
+        {
+            var retVal = func(finalArgs);
+            if (retVal instanceof Promise)
+            {
+                trueRetVal = await retVal;
+            }
+            else
+            {
+                trueRetVal = retVal;
+            }
+        }
+        catch (error: any)
+        {
+            this.ExecuteCallbackException(callback, error?.toString());
+        }
+
+        this.ExecuteCallback(
+            callback,
+            this.Binding.js_string_to_mono_string(
+                JSON.stringify(ModelValue.Get(trueRetVal))));
+    }
+
+    public UploadFileAsync(args: UploadFileArgs): Promise<void>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (!args ||
+                !args.Method ||
+                !args.Url ||
+                args.FileHandle === undefined ||
+                args.Start === undefined ||
+                args.Length === undefined)
+            {
+                reject("Argument(s) must be defined");
+                return;
+            }
+
+            var file = Antimatter.GetFile(args.FileHandle);
+            if (!file)
+            {
+                reject("Invalid file handle");
+                return;
+            }
+
+            var request = new XMLHttpRequest();
+            request.open(args.Method || "PUT", args.Url);
+            var entries = Object.entries(args.Headers);
+            request.withCredentials = true;
+            request.onload = (e) =>
+            {
+                if (request.status >= 400)
+                    reject(request.response?.toString());
+                resolve();
+            };
+            request.onerror = (e) =>
+            {
+                reject(request.statusText);
+            };
+
+            for (const entry of entries)
+                request.setRequestHeader(entry[0], entry[1]);
+
+            var blob = file.slice(args.Start, args.Start + args.Length, "application/octet-stream");
+            request.send(blob);
+        });
+    }
+
+    public async ReadFileAsync(args: any)
+    {
+        //var argsString = this.Binding.conv_string(args) as string;
+        //var trueArgs = JSON.parse(argsString);
+
+        var file = Antimatter.GetFile(args.fileHandle);
+        if (!file)
+            return;
+
+        try
+        {
+            var blob = file.slice(args.start, args.start + args.length);
+            var buf = await blob.arrayBuffer();
+            this.ExecuteCallback(
+                args.callback,
+                this.Binding.js_typed_array_to_array(new Uint8Array(buf)));
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+    }
+
+    public async SelectFileAsync(acceptList: MonoString, callback: number, allowMultiple: boolean)
+    {
+        var list = this.Binding.conv_string(acceptList) as string;
+        var input = document.createElement("input");
+
+        input.type = "file";
+        input.accept = list;
+        input.multiple = allowMultiple;
+
+        var hasSelected: boolean = false;
+
+        var cancelDetector = (async () =>
+        {
+            document.removeEventListener("mousemove", cancelDetector);
+
+            // Sometimes on a genuine selection the mousemove event for the doc fires
+            // before onchange for the input. So wait for a blip to see if there was
+            // a legit selection.
+            await Utilities.SleepAsync(100);
+            if (hasSelected)
+                return;
+
+            this.ExecuteCallback(
+                callback,
+                this.Binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get([]))));
+        }).bind(this);
+
+        input.onchange = ((e) =>
+        {
+            hasSelected = true;
+            document.removeEventListener("mousemove", cancelDetector);
+            var modelFiles: IClientFile[] = [];
+
+            var files = input.files;
+            if (files && files.length > 0)
+            {
+                for (let i = 0; i < files.length; i++)
+                {
+                    var file = files.item(i);
+                    if (!file)
+                        continue;
+                    var modelFile = Antimatter.HoldFile(file);
+                    modelFiles.push(modelFile);
+                }
+            }
+
+            this.ExecuteCallback(
+                callback,
+                this.Binding.js_string_to_mono_string(
+                    JSON.stringify(ModelValue.Get(files))));
+        }).bind(this);
+
+        input.click();
+
+        // ensure the modal has actually opened before the cancel detector is attached
+        await Utilities.SleepAsync(100);
+
+        document.addEventListener("mousemove", cancelDetector);
+    }
+
+    public OnUpdateBoundCollection(bxIndex: number, valuePtr: number)
+    {
+        valuePtr += 8;
+        let update: ICollectionUpdate = {
+            Action: this.getValueI32(valuePtr + 0) as NotifyCollectionChangedAction,
+            Index: this.getValueI32(valuePtr + 4),
+            Count: this.getValueI32(valuePtr + 8),
+            Items: this.getArrayValue(valuePtr + 12)
+        };
+        var trueBinding = WebassemblyServer._trueBindingsByModelIndex.get(bxIndex);
+        if (!trueBinding)
+            // Should be impossible
+            return;
+        for (var exp of trueBinding.Expressions)
+            BindingExpression.OnModelBoundCollectionChanged(exp.Index, update);
+    }
+
+    public UpdateBinding(bxIndex: number, valuePtr: number)
+    {
+        var type = this.getValueI16(valuePtr + 8) as ModelValueType;
+        var value = this.getModelValue(valuePtr, type);
+        var trueBinding = WebassemblyServer._trueBindingsByModelIndex.get(bxIndex);
+        if (!trueBinding)
+            // Should be impossible
+            return;
+        trueBinding.LastValue = value;
+        trueBinding.LastValueType = type;
+        for (var exp of trueBinding.Expressions)
+            BindingExpression.OnModelValueChanged(exp.Index, value, type);
+    }
+
+    public CopyToClipboard(valuePtr: number, mineType: MonoString)
+    {
+        var type = this.getValueI16(valuePtr + 8) as ModelValueType;
+        var value = this.getModelValue(valuePtr, type);
+        if (value)
+        {
+            var r = new Uint8Array(value);
+            var mimeTypeString = this.Binding.conv_string(mineType) as string;
+            var data = [
+                new ClipboardItem({
+                    [mimeTypeString]: new Blob([r.buffer],
+                    {
+                        type: mimeTypeString
+                    }) as any,                    
+                })
+            ];
+            navigator.clipboard.write(data);
+        }
+    }
+
+    public NavigateTo(route: string, hard: boolean)
+    {
+        Antimatter._client.NavigateTo(route, hard);
+    }
+
+    public OpenPopup(route: string, mini: boolean)
+    {
+        Antimatter._client.OpenPopup(route, mini);
+    }
+
+    //#endregion
+
+    //#region Private Members
+
+    private createManagedModelValue (mv: ModelValue): MonoObject
+    {
+        var newmv = this.CreateModelValue();        
+        var valuePtr = this.DotNet.BINDING.js_to_mono_obj(newmv) as any as number;       
+        var baseAddr = valuePtr as any as number + 8;
+
+        this.setValueI16(baseAddr, mv.Type as number);
+        
+        switch (mv.Type)
+        {
+            case ModelValueType.Null:
+                break;
+            case ModelValueType.Bool:
+                this.setValue8(baseAddr + c_bool1Offset, mv.BoolValue ? 1 : 0);
+                break;
+            case ModelValueType.Float:
+                this.setValueFloat(baseAddr + c_floatOffset, mv.FloatValue || 0);
+                break;
+            case ModelValueType.Int:
+                this.setValueI32(baseAddr + c_intOffset, mv.IntValue || 0);
+                break;
+            case ModelValueType.ObjectHandle:
+                this.setValueI32(baseAddr + c_handleOffset, mv.ObjectHandle || 0);
+                break;
+            case ModelValueType.String:
+            case ModelValueType.ValidationError:
+            case ModelValueType.MarshalledObject:
+            case ModelValueType.ClientFile:
+                this.setStringValue(baseAddr + c_stringOffset, mv.StringValue);
+                break;
+            case ModelValueType.Collection:
+                if (mv.ObjectHandle !== undefined)
+                    this.setValueI32(baseAddr + c_handleOffset, mv.ObjectHandle);
+                if (mv.Collection)
+                    this.setArrayValue(baseAddr + c_arrayOffset, mv.Collection);
+                break;
+            case ModelValueType.DateTime:
+                this.setValueDouble(baseAddr + c_doubleOffset, mv.DoubleValue || 0);
+                break;
+            case ModelValueType.Size:
+                this.setValueFloat(baseAddr + c_floatOffset, mv.FloatValue || 0);
+                this.setValueFloat(baseAddr + c_float2Offset, mv.FloatValue2 || 0);
+                break;
+            case ModelValueType.Rect:
+                this.setValueFloat(baseAddr + c_floatOffset, mv.FloatValue || 0);
+                this.setValueFloat(baseAddr + c_float2Offset, mv.FloatValue2 || 0);
+                this.setValueFloat(baseAddr + c_float3Offset, mv.FloatValue3 || 0);
+                this.setValueFloat(baseAddr + c_float4Offset, mv.FloatValue4 || 0);
+                break;
+            case ModelValueType.MultimediaEvent:
+                this.setValueI16(baseAddr + c_shortOffset, mv.ShortValue || 0);
+                this.setValueDouble(baseAddr + c_doubleOffset, mv.DoubleValue || 0);
+                this.setValueI32(baseAddr + c_intOffset, mv.IntValue || 0);
+                this.setValueI32(baseAddr + c_int4Offset, mv.FloatValue4 || 0);
+                break;
+        }
+
+        return valuePtr as any as MonoObject;
+    }
+
+
+    getModelValue(valuePtr: number, type: ModelValueType): any
+    {
+        valuePtr += 8;  // C# class data is 8 bytes off from address
+        switch (type)
+        {
+            case ModelValueType.Null:
+                return undefined;
+            case ModelValueType.String:
+            case ModelValueType.ValidationError:
+                return this.getStringValue(valuePtr + c_stringOffset);
+            case ModelValueType.MarshalledObject:
+                let s: string = this.getStringValue(valuePtr + c_stringOffset);
+                return JSON.parse(s);
+            case ModelValueType.CollectionReference:
+                var index = this.getValueI32(valuePtr + c_handleOffset);
+                var key = this.getStringValue(valuePtr + c_stringOffset);
+                return new ModelObjectReference(index, key);
+            case ModelValueType.ObjectHandle:            
+                var index = this.getValueI32(valuePtr + c_handleOffset);
+                var key = this.getStringValue(valuePtr + c_stringOffset);
+                return new ModelObjectReference(index, key);
+            case ModelValueType.Bool:
+                return this.getValue8(valuePtr + c_bool1Offset) !== 0;
+            case ModelValueType.Float:
+                return this.getValueFloat(valuePtr + c_floatOffset);
+            case ModelValueType.Double:
+                return this.getValueDouble(valuePtr + c_doubleOffset);
+            case ModelValueType.Int:
+                return this.getValueI32(valuePtr + c_intOffset);
+            case ModelValueType.Collection:
+                var handle = this.getValueI32(valuePtr + c_handleOffset);
+                var array = this.getArrayValue(valuePtr + c_arrayOffset);
+                (array as any).AMXModelObjectHandle = handle;
+                return array;
+            case ModelValueType.Guid:
+                var guid = this.getValueGuid(valuePtr + c_guidOffset);
+                return guid;
+            case ModelValueType.DateTime:
+                return Utilities.DateFromTicks(this.getValueDouble(valuePtr + c_doubleOffset));
+            case ModelValueType.TimeSpan:
+                return this.getValueDouble(valuePtr + c_doubleOffset);
+            case ModelValueType.Size:
+                var width = this.getValueFloat(valuePtr + c_floatOffset);
+                var height = this.getValueFloat(valuePtr + c_float2Offset);
+                return new Size(width, height);
+            case ModelValueType.Rect:
+                var x = this.getValueFloat(valuePtr + c_floatOffset);
+                var y = this.getValueFloat(valuePtr + c_float2Offset);
+                var width = this.getValueFloat(valuePtr + c_float3Offset);
+                var height = this.getValueFloat(valuePtr + c_float4Offset);
+                return new Rect(x, y, width, height);
+        }
+        return undefined;
+    }
+
+    CallStaticMethod(assembly: string, className: string, methodName: string, ...parameters: any[]): any
+    {
+        const methodKey = this.MakeMethodKey(assembly, className, methodName);
+        let method: any = this._cachedMethods.get(methodKey);
+        if (!method)
+        {
+            if (!this.Module.mono_bind_static_method)
+                throw "how can this be?";
+            method = this.Module.mono_bind_static_method(methodKey);
+            if (method)
+                this._cachedMethods.set(methodKey, method);
+        }
+        return method(...parameters);
+    }
+
+    get Module(): any
+    {
+        return (window as any).Module;
+    }
+
+    getStringValue(ptr: number | Pointer): string
+    {
+        const fieldValue = this.getValueI32(ptr);
+
+        if (fieldValue === 0)
+            return '';
+        return this.DotNet.BINDING.conv_string(fieldValue) as string;
+    }
+    setStringValue(ptr: number, value?: string): MonoString|null
+    {
+        if (!value)
+        {
+            this.DotNet.Module.HEAP32[ptr >> 2] = 0;
+            return null;
+        }
+        else
+        {
+            var strPtr = this.DotNet.BINDING.js_string_to_mono_string(value);
+            this.DotNet.Module.HEAP32[ptr >> 2] = (strPtr as any as number) || 0;
+            return strPtr;
+        }
+    }
+
+    getValue8(ptr: number)
+    {
+        return this.DotNet.Module.HEAP8[ptr];
+    }
+    setValue8(ptr: number, value: number)
+    {
+        this.DotNet.Module.HEAP8[ptr] = value;
+    }
+
+    getValueI16(ptr: number)
+    {
+        return this.Module.HEAP16[ptr >> 1];
+    }
+    setValueI16(ptr: number, value: number)
+    {
+        this.DotNet.Module.HEAP16[ptr >> 1] = value;
+    }
+
+    getValueI32(ptr: number | Pointer)
+    {
+        return this.Module.HEAP32[(ptr as number) >> 2];
+    }
+    setValueI32(ptr: number, value: number)
+    {
+        this.DotNet.Module.HEAP32[ptr >> 2] = value;
+    }
+
+    getValueGuid(ptr: number)
+    {
+        //    Guid: 35918bc9-196d-40ea-9779-889d79b753f0
+        //    C9 8B 91 35    6D 19    EA 40    97 79    88 9D 79 B7 53 F0
+
+        const guid: string = `${this.Module.HEAPU8[ptr + 3].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 2].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 1].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 0].toString(16).padStart(2,'0')}-`
+            + `${this.Module.HEAPU8[ptr + 5].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 4].toString(16).padStart(2,'0')}-`
+            + `${this.Module.HEAPU8[ptr + 7].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 6].toString(16).padStart(2,'0')}-`
+            + `${this.Module.HEAPU8[ptr + 8].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 9].toString(16).padStart(2,'0')}-`
+            + `${this.Module.HEAPU8[ptr + 10].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 11].toString(16).padStart(2,'0')}`
+            + `${this.Module.HEAPU8[ptr + 12].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 13].toString(16).padStart(2,'0')}`
+            + `${this.Module.HEAPU8[ptr + 14].toString(16).padStart(2,'0')}${this.Module.HEAPU8[ptr + 15].toString(16).padStart(2,'0')}`
+
+        return guid;
+    }
+
+    //getValueU64(ptr: number): bigint
+    //{
+    //    // There is no Module.HEAPU64, and Module.getValue(..., 'i64') doesn't work because the implementation
+    //    // treats 'i64' as being the same as 'i32'. Also we must take care to read both halves as unsigned.
+    //    const heapU32Index = ptr >> 2;
+    //    const highPart = BigInt(this.Module.HEAPU32[heapU32Index + 1]);
+    //    //if (highPart > maxSafeNumberHighPart)
+    //    //{
+    //    //    throw new Error(`Cannot read uint64 with high order part ${highPart}, because the result would exceed Number.MAX_SAFE_INTEGER.`);
+    //    //}
+
+    //    return (highPart * uint64HighOrderShift) + BigInt(this.Module.HEAPU32[heapU32Index]);
+    //}
+
+    getValueFloat(ptr: number)
+    {
+        return this.Module.HEAPF32[ptr >> 2];
+    }
+    setValueFloat(ptr: number, value: number)
+    {        
+        this.DotNet.Module.setValue(ptr as any as VoidPtr, value, "float");
+        //this.DotNet.Module.HEAP32[ptr >> 2] = value;
+    }
+
+    getValueDouble(ptr: number)
+    {
+        var val = this.Module.getValue(ptr, 'double');
+        return val;
+    }
+    setValueDouble(ptr: number, value: number)
+    {
+        this.DotNet.Module.HEAPF64[ptr >> 3] = value;
+    }
+
+    getArrayValue(ptr: number, direct?: boolean)
+    {
+        if (!direct)
+        // Where the array's actual data is
+            ptr = this.getValueI32(ptr);
+
+        // Length is 12 bytes up
+        var len = this.getValueI32(ptr + 12);
+
+        // Actual element ptrs begin at 16, then
+        // each array entry is a 32-bit pointer to a DotNetValue
+        let arr: Array<any> = new Array<any>(len);
+        for (let i: number = 0; i < len; i++)
+        {
+            var itemPtr = this.getValueI32(ptr + 16 + i * 4);
+            var type = this.getValueI32(itemPtr + 8) as ModelValueType;
+            arr[i] = this.getModelValue(itemPtr, type);
+        }
+
+        return arr;
+    }
+    setArrayValue(ptrptr: number, values: ModelValue[])
+    {
+        var monoArray = this.DotNet.BINDING.mono_obj_array_new(values.length);
+        for (let i = 0; i < values.length; i++)
+            this.DotNet.BINDING.mono_obj_array_set(
+                monoArray,
+                i,
+                this.createManagedModelValue(values[i]));
+        this.setValueI32(ptrptr, monoArray as any as number);
+    }
+
+    MakeMethodKey(assembly: string, className: string, methodName: string): string
+    {
+        return `[${assembly}] ${className}:${methodName}`;
+    }
+
+
+    static readonly c_ServerAssembly: string = "Antimatter.Net.Webassembly";
+    static readonly c_ServerType: string = "Antimatter.Net.Webassembly.WebassemblyReactor";
+    _cachedMethods: Map<string, any> = new Map<string, any>();
+    _bindMethod: any;
+    _onForceLogoutMethod: any;
+    _notifyUserNotIdleMethod: any;
+    _executeICommandMethod: any;
+    _executeModelMethod: any;
+    _executeParseLocallyFormattedDateMethod: any;
+    _updateSourceValueMethod: any;
+    _getCollectionMembers: any;
+    _getCollectionSize: any;
+    _updateBoundCollectionMethod: any;
+    _executeCallbackMethod: any;
+    _executeCallbackExceptionMethod: any;
+    _executeCallbackReturnBufferMethod: any;
+    _unbindMethod: any;
+    _createModelValueMethod: any;
+    _invokeBeforeClose: any;
+    _addRefMethod: any;
+    _releaseRefMethod: any;
+
+    //#endregion
+
+
+    
+
+
+
+}

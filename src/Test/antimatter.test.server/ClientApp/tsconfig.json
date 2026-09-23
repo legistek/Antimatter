@@ -1,0 +1,9 @@
+{
+  "files": [
+    "../../../node_modules/ts-nameof/ts-nameof.d.ts"
+  ],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

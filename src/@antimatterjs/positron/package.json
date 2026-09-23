@@ -1,0 +1,13 @@
+{
+  "name": "@antimatterjs/positron",
+  "version": "0.0.0",
+  "main": "./index.ts",
+  "private": true,
+  "dependencies": {
+    "@antimatterjs/react": "*",
+    "@fluentui/react": "8.125.7",    
+    "dompurify": "3.4.12",
+    "marked": "18.0.7",
+    "react-router-dom": "7.18.1"
+  }
+}

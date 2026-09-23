@@ -1,0 +1,9 @@
+/* Provide sufficient contrast against white background */
+
+@font-face {
+    font-family: "IconFont";
+    src: url("./Legistek-Custom.woff") format('woff');
+}
+
+span {    
+}

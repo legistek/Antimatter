@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <UserSecretsId>606472e6-7c56-4fc7-bee6-1ce6c0339eaa</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lorem.Universal.Net" Version="4.0.80" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Antimatter.NET\Antimatter.Net.Core\Antimatter.Net.Core.csproj" />
+    <ProjectReference Include="..\..\Antimatter.NET\Antimatter.Net.Webassembly\Antimatter.Net.Webassembly.csproj" />
+  </ItemGroup>
+
+
+</Project>

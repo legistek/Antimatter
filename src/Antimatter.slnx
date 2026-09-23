@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/Antimatter.NET/">
+    <Project Path="Antimatter.NET/Antimatter.Net.Core/Antimatter.Net.Core.csproj" />
+    <Project Path="Antimatter.NET/Antimatter.Net.Hosting/Antimatter.Net.Hosting.csproj" Id="ac0b5133-933a-499c-ae11-e0cb8cf87da3" />
+    <Project Path="Antimatter.NET/Antimatter.Net.Webassembly/Antimatter.Net.Webassembly.csproj" />
+  </Folder>
+  <Folder Name="/AntimatterJS/">
+    <Project Path="@antimatterjs/positron/Positron.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+    <Project Path="@antimatterjs/react/React.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="package.json" />
+  </Folder>
+  <Folder Name="/Testing/">
+    <Project Path="Test/antimatter.test.client.model.app/antimatter.test.client.model.app.csproj" />
+    <Project Path="Test/antimatter.test.client.model/antimatter.test.client.model.csproj" Id="f032441b-6616-47f9-9258-398ed741f133" />
+    <Project Path="Test/antimatter.test.server/antimatter.test.server.csproj" />
+    <Project Path="Test/antimatter.test.server/ClientApp/antimatter.test.client.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+</Solution>
